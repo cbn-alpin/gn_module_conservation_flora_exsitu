@@ -196,19 +196,6 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 ) ;
 
 
--- Create the "CFE_LOCATION_TYPE" nomenclature type
-INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
-    mnemonique, label_default, definition_default, label_fr, definition_fr, source
-) VALUES (
-    'CFE_LOCATION_TYPE',
-    'Type d''avancement de l''action',
-    'Nomenclature des types d''avancement des actions de stratégie de la conservation.',
-    'Type d''avancement de l''action',
-    'Nomenclature des types d''avancement des actions de stratégie de la conservation.',
-    'CBNA'
-) ;
-
-
 -- Create the "CFE_DISSEMINATION_UNIT" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
