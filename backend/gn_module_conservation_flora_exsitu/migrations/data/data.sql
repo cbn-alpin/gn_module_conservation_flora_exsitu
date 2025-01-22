@@ -212,23 +212,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 -- COMMONS
 
 -- Add module
-INSERT INTO gn_commons.t_modules (
-    module_code, 
-    module_label,
-    module_picto
-    module_desc, 
-    module_doc_url,
-    module_path,
-    active_frontend,
-    active_backend
-)
-VALUES (
-    :moduleCode, 
-    'FLORA EXSITU', 
-    'fa-envira',
-    'Outil de gestion des récoltes de graines (ex-situ et in-situ), de leur stockage, des tests de germination, des semis et mise en culture.', 
-    'https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu',
-    'exsitu',
-    TRUE,
-    TRUE
-);
+
+UPDATE gn_commons.t_modules
+SET
+    module_label = 'FLORA EXSITU',
+    module_picto = 'fa-envira',
+    module_desc = 'Outil de gestion des récoltes de graines (ex-situ et in-situ), de leur stockage, des tests de germination, des semis et mise en culture.',
+    module_doc_url = 'https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu'
+WHERE module_code = :moduleCode ;

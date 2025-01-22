@@ -17,7 +17,7 @@ from sqlalchemy.sql import text
 revision = '774793661884'
 down_revision = None
 branch_labels = MODULE_DB_BRANCH
-depends_on = 'f06cc80cc8ba' # GN 2.15.0
+depends_on = 'f06cc80cc8ba' # GN 2.14.2
 
 
 def copy_from_csv(
@@ -99,7 +99,6 @@ def upgrade():
                 "label_fr",
                 "definition_fr",
                 "source",
-                "active",
             ),
             source_cols=(
                 "ref_nomenclatures.get_id_nomenclature_type(type_nomenclature_code)",
@@ -110,11 +109,10 @@ def upgrade():
                 "label_fr",
                 "definition_fr",
                 "source",
-                "active",
             ),
             header=True,
             encoding="UTF-8",
-            delimiter=",",
+            delimiter=";",
         )
 
 
