@@ -1,0 +1,152 @@
+type_nomenclature_code;cd_nomenclature;mnemonique;label_default;definition_default;label_fr;definition_fr;source
+CFE_HARVEST_TYPE;rex;recolteExsitu;Récolte Ex situ;Récolte issue d’un jardin;Récolte Ex situ;Récolte issue d’un jardin;conservation_flora_exsitu
+CFE_HARVEST_TYPE;rin;recolteInsitu;Récolte In situ;Récolte provenant de la nature;Récolte In situ;Récolte provenant de la nature;conservation_flora_exsitu
+CFE_HARVEST_TYPE;indet;indeterminee;Indéterminée;Récolte d'origine indéterminée;Indéterminée;Récolte d'origine indéterminée;conservation_flora_exsitu
+CFE_METHOD_SAMPLE;cp;centrePopulation;Au centre de la population;Prélèvement au centre de la population de l'espèce végétale;Au centre de la population;Prélèvement au centre de la population de l'espèce végétale;conservation_flora_exsitu
+CFE_METHOD_SAMPLE;rrp;regulierementRepartiPopulation;Régulièrement réparti dans la population;Prélèvement homogène dans la population de l' espèce végétale;Régulièrement réparti dans la population;Prélèvement homogène dans la population de l' espèce végétale;conservation_flora_exsitu
+CFE_METHOD_SAMPLE;lltp;longLigneTraversantPopulation;Le long d'une ligne traversant la population;Prélèvement le long d'une ligne traversant la population de l' espèce végétale;Le long d'une ligne traversant la population;Prélèvement le long d'une ligne traversant la population de l' espèce végétale;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;pe;planteEntiere;Plante entière;Une plante entière est un  végétal qui comporte l'ensemble de ses parties;Plante entière;Une plante entière est un  végétal qui comporte l'ensemble de ses parties;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;rh;rhizome;Rhizome;Le rhizome est une tige souterraine pérennante portant racines et tiges aériennes;Rhizome;Le rhizome est une tige souterraine pérennante portant racines et tiges aériennes;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;bul;bulbe;Bulbe;Un bulbe est organe souterrain à tige courte et portant des écailles charnues remplies de réserves nutritives;Bulbe;Un bulbe est organe souterrain à tige courte et portant des écailles charnues remplies de réserves nutritives;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;bb;bulbille;Bulbille;Une bubille est un petit bulbe se formant à la base des écailles d'un bulbe et parfois m^me sur les organes aériens de la plante;Bulbille;Une bubille est un petit bulbe se formant à la base des écailles d'un bulbe et parfois m^me sur les organes aériens de la plante;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;es;eclatSouche;Eclat de souche;Un éclat de souche est un fragment de plante comprenant une partie aérienne et une partie souterraine;Eclat de souche;Un éclat de souche est un fragment de plante comprenant une partie aérienne et une partie souterraine;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;bout;bouture;Bouture;Une bouture est une portion de plante détachée afin d'être plantée et de donner un nouveau pied par bouturage;Bouture;Une bouture est une portion de plante détachée afin d'être plantée et de donner un nouveau pied par bouturage;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;ai;absenceInformation;Absence d'information;L'information n'est pas renseignée;Absence d'information;L'information n'est pas renseignée;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;gr;graine;Graine;La graine est un organe caractéristique des Spermatophytes résultant de la fécondation d'un ovule et contenant embryon et, chez les Angiospermes, albumen, protégé par un ou deux téguments;Graine;La graine est un organe caractéristique des Spermatophytes résultant de la fécondation d'un ovule et contenant embryon et, chez les Angiospermes, albumen, protégé par un ou deux téguments;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;sp;spore;Spore;Une spore est, chez les Embryophytes, une cellule libérée par un sporophyte diploïde engendrant après germination un gamétophyte haploïde;Spore;Une spore est, chez les Embryophytes, une cellule libérée par un sporophyte diploïde engendrant après germination un gamétophyte haploïde;conservation_flora_exsitu
+CFE_HARVEST_MATERIAL;prs;prelevementSol;Prélèvement de sol;Un échantillon de terre a été prélevé avec la récolte;Prélèvement de sol;Un échantillon de terre a été prélevé avec la récolte;conservation_flora_exsitu
+CFE_FOOT_COUNTING_CLASS;2;11-100;11 à 100 pieds;La station comprend entre 11 et 100 individus;11 à 100 pieds;La station comprend entre 11 et 100 individus;conservation_flora_exsitu
+CFE_FOOT_COUNTING_CLASS;3;101-1000;101 à 1000 pieds;La station comprend entre 101 et 1000 individus;101 à 1000 pieds;La station comprend entre 101 et 1000 individus;conservation_flora_exsitu
+CFE_FOOT_COUNTING_CLASS;4;1001-10000;1001 à 10000 pieds;La station comprend entre 1001 et 10000 individus;1001 à 10000 pieds;La station comprend entre 1001 et 10000 individus;conservation_flora_exsitu
+CFE_FOOT_COUNTING_CLASS;5;10000;> 10000 pieds;La station comprend plus de 10000 individus;> 10000 pieds;La station comprend plus de 10000 individus;conservation_flora_exsitu
+CFE_FOOT_COUNTING_CLASS;1;10;<= 10 pieds;La station comprend moins de 10 individus;<= 10 pieds;La station comprend moins de 10 individus;conservation_flora_exsitu
+CFE_PHENOLOGY;edev;etatDormanceEtatVegetatif;Etat de Dormance, Etat végétatif (D0);Avant végétation de l'année ou fin de cycle;Etat de Dormance, Etat végétatif;Avant végétation de l'année ou fin de cycle;conservation_flora_exsitu
+CFE_PHENOLOGY;dfa;debourrementFeuilleAvant;Débourrement feuille avant (D1);Bourgeon non dormant mais non débourré;Débourrement feuille avant;Bourgeon non dormant mais non débourré;conservation_flora_exsitu
+CFE_PHENOLOGY;df;debourrementFeuille;Débourrement feuille (D2);Nouvelles feuilles visibles à travers l’ouverture des écailles du bourgeon;Débourrement feuill;Nouvelles feuilles visibles à travers l’ouverture des écailles du bourgeon;conservation_flora_exsitu
+CFE_PHENOLOGY;dfasaf;debourrementFeuilleApresStadeAvantFeuillaison;Débourrement feuille après, et stade avant feuillaison (D3);Déploiement de la feuille;Débourrement feuille après, et stade avant feuillaison;Déploiement de la feuille;conservation_flora_exsitu
+CFE_PHENOLOGY;feui;feuillaison;Feuillaison (FE1);Feuille entièrement ouverte au stade initial , ou nouvelles feuilles visibles pour les espèces dont les feuilles ne sont pas pliées;Feuillaison;Feuille entièrement ouverte au stade initial , ou nouvelles feuilles visibles pour les espèces dont les feuilles ne sont pas pliées;conservation_flora_exsitu
+CFE_PHENOLOGY;fap;feuillaisonApres;Feuillaison après (FE2);Feuille entièrement ouverte au stade intermédiaire;Feuillaison après;Feuille entièrement ouverte au stade intermédiaire;conservation_flora_exsitu
+CFE_PHENOLOGY;pf;pleineFeuille;Pleine feuille (FE3);Feuille entièrement ouverte au stade final;Pleine feuille;Feuille entièrement ouverte au stade final;conservation_flora_exsitu
+CFE_PHENOLOGY;frea;feuilleRepousseEteAutomne;Feuille ou repousse d'été ou d'automne (FE4);Repousse d'été (pulmonaires et autres hemicryptophytes, phanerophytes et chaméphytes);Feuille ou repousse d'été ou d'automne;Repousse d'été (pulmonaires et autres hemicryptophytes, phanerophytes et chaméphytes);conservation_flora_exsitu
+CFE_PHENOLOGY;10;changementCouleur10;Changement de couleur (début 10%) ou désechement (S1);Quelques feuilles commencent à changer de couleur;Changement de couleur (début 10%) ou désechement;Quelques feuilles commencent à changer de couleur;conservation_flora_exsitu
+CFE_PHENOLOGY;50;changementCouleur50;Changement de couleur (moitié 50% ou +) ou désechement (S2);Individus bien colorés;Changement de couleur (moitié 50% ou +) ou désechement;Individus bien colorés;conservation_flora_exsitu
+CFE_PHENOLOGY;sen;senescence;Senescence (chute des feuilles pour moitié) (S3);Chute des feuilles en grande partie;Senescence (chute des feuilles pour moitié);Chute des feuilles en grande partie;conservation_flora_exsitu
+CFE_PHENOLOGY;ccf;chuteCompleteFeuille;Chute compléte des feuilles (S3);Chute des feuilles quasi complète;Chute compléte des feuilles;Chute des feuilles quasi complète;conservation_flora_exsitu
+CFE_PHENOLOGY;mont;montaison;Montaison (M);Allongement des espaces entre-nœuds de la tige dressée florifère;Montaison;Allongement des espaces entre-nœuds de la tige dressée florifère;conservation_flora_exsitu
+CFE_PHENOLOGY;bf;boutonFloral;Boutons floraux (FL1-EP1);Epis ou boutons floraux visibles;Boutons floraux;Epis ou boutons floraux visibles;conservation_flora_exsitu
+CFE_PHENOLOGY;flo;floraison;Floraison (FL2-EP2);Début d'anthèse, quelques corolles suffisamment ouvertes pour laisser voir l’intérieur de la fleur;Floraison;Début d'anthèse, quelques corolles suffisamment ouvertes pour laisser voir l’intérieur de la fleur;conservation_flora_exsitu
+CFE_PHENOLOGY;pflo;Pleine Floraison;Pleine Floraison (FL3-EP3);Majorité des individus en fleur;Pleine Floraison;Majorité des individus en fleur;conservation_flora_exsitu
+CFE_PHENOLOGY;ffff;finFloraisonFormationFruit;Fin de floraison et formation des fruits (FR1);La floraison est terminée et les fruits commencent à se former;Fin de floraison et formation des fruits;La floraison est terminée et les fruits commencent à se former;conservation_flora_exsitu
+CFE_PHENOLOGY;mf;maturationFruit;Maturation des fruits (FR2);Les fruits sont bien formés mais sont pas encore murs;Maturation des fruits;Les fruits sont bien formés mais sont pas encore murs;conservation_flora_exsitu
+CFE_PHENOLOGY;dec;disseminationEnCours;Dissémination en cours (FR3);Les graines commencent à être dispersées;Dissémination en cours;Les graines commencent à être dispersées;conservation_flora_exsitu
+CFE_PHENOLOGY;dc;disseminationTerminee;Dissémination terminée (FR4);La dispersion des graines est terminée;Dissémination terminée;La dispersion des graines est terminée;conservation_flora_exsitu
+CFE_PHENOLOGY;germ;germination;Germination (G);Début de développement d'une nouvelle plante;Germination;Début de développement d'une nouvelle plante;conservation_flora_exsitu
+CFE_PHENOLOGY;lev;levee;Levée (L);La plantule est sevrée de sa dépendance aux réserves de la graine;Levée;La plantule est sevrée de sa dépendance aux réserves de la graine;conservation_flora_exsitu
+CFE_FORM;aut;autre;Autre;;Autre;;conservation_flora_exsitu
+CFE_FORM;biconv;biconvexe;Biconvexe;En forme de deux surfaces convexes opposées;Biconvex;En forme de deux surfaces convexes opposées;conservation_flora_exsitu
+CFE_FORM;circ;circulaire;Circulaire;En forme de cercle;Circulaire;En forme de cercle;conservation_flora_exsitu
+CFE_FORM;cord;cordiforme;Cordiforme;En forme de coeur;Cordiforme;En forme de coeur;conservation_flora_exsitu
+CFE_FORM;delt;deltoïde;Deltoïde;En forme de delta;Deltoide;En forme de delta;conservation_flora_exsitu
+CFE_FORM;ell;elliptique;Elliptique;En forme d'ellipse;Elliptique;En forme d'ellipse;conservation_flora_exsitu
+CFE_FORM;efc;enFormeC;En forme de C;En forme de C;En forme de C;En forme de C;conservation_flora_exsitu
+CFE_FORM;efd;enFormeD;En forme de D;En forme de D;En forme de D;En forme de D;conservation_flora_exsitu
+CFE_FORM;irreg;irreguliere;Irrégulière;De forme irrégulière;Irrégulière;De forme irrégulière;conservation_flora_exsitu
+CFE_FORM;line;lineaire;Linéaire;En forme de ligne;Linéaire;En forme de ligne;conservation_flora_exsitu
+CFE_FORM;obl;oblongue;Oblongue;De forme allongée, plus longue que large;Oblongue;De forme allongée, plus longue que large;conservation_flora_exsitu
+CFE_FORM;obo;obovoïde;Obovoïde;De forme ovoïde, dont la partie supérieure est plus large que la partie inférieure;Obovoid;De forme ovoïde, dont la partie supérieure est plus large que la partie inférieure;conservation_flora_exsitu
+CFE_FORM;ovo;ovoïde;Ovoïde;En forme d'oeuf;Ovoid;En forme d'oeuf;conservation_flora_exsitu
+CFE_FORM;pyr;pyriforme;Pyriforme;En forme de poire;Pyriform;En forme de poire;conservation_flora_exsitu
+CFE_FORM;qua;quadrangulaire;Quadrangulaire;En forme figure à quatre cotés;Quadrangulaire;En forme figure à quatre cotés;conservation_flora_exsitu
+CFE_FORM;rect;rectangulaire;Rectangulaire;En forme de rectangle;Rectangulaire;En forme de rectangle;conservation_flora_exsitu
+CFE_FORM;ren;reniforme;Réniforme;En forme de rein;Réniforme;En forme de rein;conservation_flora_exsitu
+CFE_FORM;sig;sigmoïde;Sigmoïde;En forme de sigma;Sigmoide;En forme de sigma;conservation_flora_exsitu
+CFE_FORM;tri;triangulaire;Triangulaire;En forme de triangle;Triangulaire;En forme de triangle;conservation_flora_exsitu
+CFE_FORM;ai;absenceInformation;Absence d'information;L'information n'est pas renseignée;Absence d'information;L'information n'est pas renseignée;conservation_flora_exsitu
+CFE_FORM;obc;obconique;Obconique;En forme de cône inversé;Obconique;En forme de cône inversé;conservation_flora_exsitu
+CFE_FORM;cune;cuneiforme;Cunéiforme;En forme de coin;Cunéiforme;En forme de coin;conservation_flora_exsitu
+CFE_FORM;glob;globulaire;Globulaire;En forme de globe;Globulaire;En forme de globe;conservation_flora_exsitu
+CFE_FORM;lanc;lanceole;Lanceolé;En forme de fer de lance;Lanceolé;En forme de fer de lance;conservation_flora_exsitu
+CFE_FORM;oblan;oblanceole;Oblancéolé;En forme de fer de lance à l'envers;Oblancéolé;En forme de fer de lance à l'envers;conservation_flora_exsitu
+CFE_FORM;efds;enFormeDeSecteur;En forme de secteur;En forme de secteur;En forme de secteur;En forme de secteur;conservation_flora_exsitu
+CFE_FORM;cylin;cylindrique;Cylindrique;En forme de cylindre;Cylindrique;En forme de cylindre;conservation_flora_exsitu
+CFE_FORM;falci;falciforme;Falciforme ;En forme de faux;Falciforme ;En forme de faux;conservation_flora_exsitu
+CFE_FORM;cym;cymbiform;Cymbiform;En forme de navette;Cymbiform;En forme de navette;conservation_flora_exsitu
+CFE_ATWATER_TYPE;peris;perisperme;Périsperme;Se dit d'une  graine pourvue d'un périsperme, tissu nutritif issu du nucelle, à l'extérieur du sac embryonnaire;Autre;Se dit d'une  graine pourvue d'un périsperme, tissu nutritif issu du nucelle, à l'extérieur du sac embryonnaire;conservation_flora_exsitu
+CFE_ATWATER_TYPE;albu;albuminee;Albuminée;Se dit d'une graine pourvue d' albumen, réserve alimentaire conteue dans la graine et formée lors de la seconde fécondation chez les Angiospermes;Albuminée;Se dit d'une graine pourvue d' albumen, réserve alimentaire conteue dans la graine et formée lors de la seconde fécondation chez les Angiospermes;conservation_flora_exsitu
+CFE_ATWATER_TYPE;exal;exalbuminee;Exalbuminée;Se dit d'une graine dépourvue d' albumen, soit par absence de réserves, soit par absorption de celles-ci par les cotylédons.;Exalbuminée;Se dit d'une graine dépourvue d' albumen, soit par absence de réserves, soit par absorption de celles-ci par les cotylédons.;conservation_flora_exsitu
+CFE_ATWATER_TYPE;autm;autreMiniature;Autre(miniature);;Autre(miniature);;conservation_flora_exsitu
+CFE_ATWATER_TYPE;ai;absenceInformation;Absence d'information;L'information n'est pas renseignée;Absence d'information;L'information n'est pas renseignée;conservation_flora_exsitu
+CFE_SEED_QUALITY;tbe;tresBonEtat;Trés bon état;Lot en un trés bon état;Trés bon état (TBE);Lot en un trés bon état;conservation_flora_exsitu
+CFE_SEED_QUALITY;be;bonEtat;Bon état;Lot en bon état;Bon état (BE);Lot en bon état;conservation_flora_exsitu
+CFE_SEED_QUALITY;moy;moyen;Moyen;Lot en état moyen;Moyen;Lot en état moyen;conservation_flora_exsitu
+CFE_SEED_QUALITY;mauv;mauvais;Mauvais;Lot en mauvais état;Mauvais;Lot en mauvais état;conservation_flora_exsitu
+CFE_SEED_QUALITY;indet;indeterminee;Indéterminée;;Indéterminée;;conservation_flora_exsitu
+CFE_GROWTH;ail;aile;Aile;Une aile est un appendice étalé en bordure d'organe;Aile;Une aile est un appendice étalé en bordure d'organe;conservation_flora_exsitu
+CFE_GROWTH;ari;arille;Arille;Un arille est une excroissance charnue et parfois velue se formant à partir du hile ou du funicule d'une graine.;Arille;Un arille est une excroissance charnue et parfois velue se formant à partir du hile ou du funicule d'une graine.;conservation_flora_exsitu
+CFE_GROWTH;auc;aucune;Aucune;Absence d'excroissance;Aucune;Absence d'excroissance;conservation_flora_exsitu
+CFE_GROWTH;aut;autre;Autre;;Autre;;conservation_flora_exsitu
+CFE_GROWTH;car;caroncule;Caroncule;Une caroncule est une excroissance située au niveau du micropyle de certaines graines.;Caroncule;Une caroncule est une excroissance située au niveau du micropyle de certaines graines.;conservation_flora_exsitu
+CFE_GROWTH;fun;funicule;Funicule;Un funicule est un filament unissant l'ovule au placenta, parfois persistant, allongé attaché au tégument de la graine.;Funicule;Un funicule est un filament unissant l'ovule au placenta, parfois persistant, allongé attaché au tégument de la graine.;conservation_flora_exsitu
+CFE_GROWTH;pap;pappus;Pappus;Un pappus est une aigrette de pols surmontant les akènes des Asteraceae et familles voicines (vestige du calice);Pappus;Un pappus est une aigrette de pols surmontant les akènes des Asteraceae et familles voicines (vestige du calice);conservation_flora_exsitu
+CFE_GROWTH;tep;termineeEnPointe;Apex;Un apex est l'extrémité d'un organe (regroupe mucron, papille, aiguille et bec);Terminée en pointe;Un apex est l'extrémité d'un organe (regroupe mucron, papille, aiguille et bec);conservation_flora_exsitu
+CFE_GROWTH;trich;trichome;Trichome;Un trichome est un ensemble de poils;Trichomes;Un trichome est un ensemble de poils;conservation_flora_exsitu
+CFE_GROWTH;poil;poilue;à fusionner avec Trichomes;;Poilue;;conservation_flora_exsitu
+CFE_GROWTH;cour;couronne;Couronne;Une couronne est une excroissance pétaloïde;Couronne;Une couronne est une excroissance pétaloïde;conservation_flora_exsitu
+CFE_DECORATION;aig;aiguillon;Aiguillons;La surface est couverte de piquants (regroupe aussi crochets,  barbes et épines pour les  fruits);Aiguillons;La surface est couverte de piquants (regroupe aussi crochets,  barbes et épines pour les  fruits);conservation_flora_exsitu
+CFE_DECORATION;areo;areole;Aréoles;La surface est couverte d'aréoles;Aréoles;La surface est couverte d'aréoles;conservation_flora_exsitu
+CFE_DECORATION;auc;aucune;à fusionner avec lisse;;Aucune;;conservation_flora_exsitu
+CFE_DECORATION;cre;crete;à fusionner avec sillons;;Crêtes;;conservation_flora_exsitu
+CFE_DECORATION;eca;ecaille;Ecailles;La surface est couverte d'écailles;Ecailles;La surface est couverte d'écailles;conservation_flora_exsitu
+CFE_DECORATION;efe;enFormeEchelle;En forme d'échelles;La surface est en forme d'échelles;En forme d'échelle;La surface est en forme d'échelles;conservation_flora_exsitu
+CFE_DECORATION;efv;enFormeViscere;En forme de viscères;La surface est en forme de viscères;En forme de viscères;La surface est en forme de viscères;conservation_flora_exsitu
+CFE_DECORATION;fn;finementNervuree;Finement nervurée;La surface est finement nervurée;Finement nervurée;La surface est finement nervurée;conservation_flora_exsitu
+CFE_DECORATION;gran;granulation;Granulations;La surface est granulée;Granulations;La surface est granulée;conservation_flora_exsitu
+CFE_DECORATION;lig;ligne;Lignes;La surface est couvertes de lignes;Lignes;La surface est couvertes de lignes;conservation_flora_exsitu
+CFE_DECORATION;lptf;ligneParalleleTresFine;Lignes parallèles très fines;La surface est couvertes de lignes parrallèles très fines;Lignes parallèles très fines;La surface est couvertes de lignes parrallèles très fines;conservation_flora_exsitu
+CFE_DECORATION;nerv;nervure;Nervures;La surface est nervurée;Nervures;La surface est nervurée;conservation_flora_exsitu
+CFE_DECORATION;ond;ondulation;Ondulations;La surface est ondulée;Ondulations;La surface est ondulée;conservation_flora_exsitu
+CFE_DECORATION;pd;petiteDepression;Petites dépressions;La surface est marquée par de petites dépressions;Petites dépressions;La surface est marquée par de petites dépressions;conservation_flora_exsitu
+CFE_DECORATION;pdr;petiteDepressionReticulee;Petites dépressions réticulées;La surface est marquée par de petites dépressions réticulées;Petites dépressions réticulées;La surface est marquée par de petites dépressions réticulées;conservation_flora_exsitu
+CFE_DECORATION;pp;petitPointille;Petits pointillés ;La surface est couverte de petits pointillés;Petits pointillés ;La surface est couverte de petits pointillés;conservation_flora_exsitu
+CFE_DECORATION;poin;pointillee;Pointillés;La surface est couverte de pointillés;Pointillée;La surface est couverte de pointillés;conservation_flora_exsitu
+CFE_DECORATION;ponc;ponctuation;Ponctuations;La surface est ponctuée;Ponctuations;La surface est ponctuée;conservation_flora_exsitu
+CFE_DECORATION;pust;pustule;Pustules;La surface est couverte de pustules;Pustules;La surface est couverte de pustules;conservation_flora_exsitu
+CFE_DECORATION;ra;renflementArrondi;Renflements arrondis;La surface est couverte de renflements arrondis;Renflements arrondis;La surface est couverte de renflements arrondis;conservation_flora_exsitu
+CFE_DECORATION;ret;reticule;Réticules;La surface est réticulée;vRéticules;La surface est réticulée;conservation_flora_exsitu
+CFE_DECORATION;rid;ride;Rides;La surface est froissée;Rides;La surface est froissée;conservation_flora_exsitu
+CFE_DECORATION;sil;sillon;Sillons;La surface est sillonnée ou rainurée;Sillons;La surface est sillonnée ou rainurée;conservation_flora_exsitu
+CFE_DECORATION;str;strie;Stries ou Côtes;La surface est marquée par des lignes ou des crêtes parallèles;Stries;La surface est marquée par des lignes ou des crêtes parallèles;conservation_flora_exsitu
+CFE_DECORATION;tpd;tresPetiteDepression;Très petites dépressions;La surface est marquée par de très petites dépressions;Très petites dépressions;La surface est marquée par de très petites dépressions;conservation_flora_exsitu
+CFE_DECORATION;tub;tubercule;Tubercules;La surface est couverte de tubercules;Tubercules;La surface est couverte de tubercules;conservation_flora_exsitu
+CFE_DECORATION;verr;verrue;Verrues;La surface est couverte de verrues;Verrues;La surface est couverte de verrues;conservation_flora_exsitu
+CFE_DECORATION;gd;grosseDepression;Grosses dépressions;La surface est marqué par de grosses dépressions;Grosses dépressions;La surface est marqué par de grosses dépressions;conservation_flora_exsitu
+CFE_DECORATION;alv;alveole;Alvéoles;La surface est alvéolée;Alvéoles;La surface est alvéolée;conservation_flora_exsitu
+CFE_DECORATION;lis;lisse;Lisse;La surface est lisse;Lisse;La surface est lisse;conservation_flora_exsitu
+CFE_DECORATION;tpp;toutPetitPointille;Tout petits pointillés;La surface est marquée par de tout petits pointillés;Tout petits pointillés;La surface est marquée par de tout petits pointillés;conservation_flora_exsitu
+CFE_EMBRYO_TYPE;axia;axial;Axial;"L'embryon est droit, plusieurs fois plus long que large, courbé ou enroulé ; les cotylédons non agrandis";Axial;"L'embryon est droit, plusieurs fois plus long que large, courbé ou enroulé ; les cotylédons non agrandis";conservation_flora_exsitu
+CFE_EMBRYO_TYPE;bas;basal;Basal;L'embryon est situé à la base du bas de la graine;Basal;L'embryon est situé à la base du bas de la graine;conservation_flora_exsitu
+CFE_EMBRYO_TYPE;feuil;feuille;Feuillé;"L'embryon est feuillé, droit avec des cotylédons variables (repliés ; minces et largements étendus et repliés ; épais en position axiale ; mince à épais)";Feuillé;"L'embryon est feuillé, droit avec des cotylédons variables (repliés ; minces et largements étendus et repliés ; épais en position axiale ; mince à épais)";conservation_flora_exsitu
+CFE_EMBRYO_TYPE;min;miniature;Miniature;L'embryon est axial, de taille variable en fonction des semences, de très petite taille ou allant jusqu'a la totalité de l'espace de la graine. Le terme est utilisé pour les graines de petites tailles faisant de 0 à 2mm de long.;Miniature;L'embryon est axial, de taille variable en fonction des semences, de très petite taille ou allant jusqu'a la totalité de l'espace de la graine. Le terme est utilisé pour les graines de petites tailles faisant de 0 à 2mm de long.;conservation_flora_exsitu
+CFE_EMBRYO_TYPE;per;peripherique;Périphérique;L'embryon est pressé sur le coté du tégument;Périphérique;L'embryon est pressé sur le coté du tégument;conservation_flora_exsitu
+CFE_EMBRYO_TYPE;spi;spirale;Spiralé;L'embryon forme une spirale;Spiralé;L'embryon forme une spirale;conservation_flora_exsitu
+CFE_UNIT;pi;pied;Pieds;Les unités récoltées sont des plantes entières;Pieds;Les unités récoltées sont des plantes entières;conservation_flora_exsitu
+CFE_UNIT;hf;hampeFlorale;Hampes florale;Les unités récoltées sont des inflorescences;Hampes florale;Les unités récoltées sont des inflorescences;conservation_flora_exsitu
+CFE_UNIT;fl;fleur;Fleurs;Les unités récoltées sont des fleurs;Fleurs;Les unités récoltées sont des fleurs;conservation_flora_exsitu
+CFE_UNIT;gr;graine;Graines;Les unités récoltées sont des graines;Graines;Les unités récoltées sont des graines;conservation_flora_exsitu
+CFE_UNIT;frui;fruit;Fruits;Les unités récoltées sont des fruits;Fruits;Les unités récoltées sont des fruits;conservation_flora_exsitu
+CFE_UNIT;fg;fruitGroupe;Fruits groupés;Les unités récoltées sont des fruits groupés;Fruits groupés;Les unités récoltées sont des fruits groupés;conservation_flora_exsitu
+CFE_UNIT;ai;absenceInformation;Absence d'information;L'information n'est pas renseignée;Absence d'information;;conservation_flora_exsitu
+CFE_STOCK_LOCATION;cong;congElateur;Congélateur;Appareil utilisé pour le stockage et la conservation des semences au froid négatif;Congélateur;Appareil utilisé pour le stockage et la conservation des semences au froid négatif;conservation_flora_exsitu
+CFE_STOCK_LOCATION;cf;chambreFroide;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;conservation_flora_exsitu
+CFE_STOCK_LOCATION;ps;sechage;Salle de séchage (Graines fraiches);Installation utilisée pour le séchage des semences avant stockage;Pré-séchage (Graines fraiches);Installation utilisée pour le séchage des semences avant stockage;conservation_flora_exsitu
+CFE_STOCK_LOCATION;lyo;lyophilisation;Lyophilisation;Semences lyophilisées, la lyophilisation est un procédé de séchage à basse température permettant de retirer l'eau contenue dans les semences.;Lyophilisation;Semences lyophilisées, la lyophilisation est un procédé de séchage à basse température permettant de retirer l'eau contenue dans les semences.;conservation_flora_exsitu
+CFE_STOCK_FLOW;ds;donSemence;Don Semence;Don d'une partie ou de la totalité des semences;Don Semence;Don d'une partie ou de la totalité des semences;conservation_flora_exsitu
+CFE_STOCK_FLOW;cc;correctionSemence;Correction Semence;;Correction Semence;;conservation_flora_exsitu
+CFE_STOCK_FLOW;ci;correctionIntegritee;Correction integritée;;Correction integritée;;conservation_flora_exsitu
+CFE_COLOR_TABLET;bl;bleu;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité ;Bleu;Couleur du gel de silice indicant un faible taux d'humidité ;conservation_flora_exsitu
+CFE_COLOR_TABLET;vio;violet;Couleur intermédiaire;Couleur du gel de silice indicant un taux d'humidité moyen;Violet;Couleur du gel de silice indicant un taux d'humidité moyen;conservation_flora_exsitu
+CFE_COLOR_TABLET;ro;rose;Blanc/Rose;Couleur du gel de silice indicant un fort taux d'humidité;Rose;Couleur du gel de silice indicant un fort taux d'humidité;conservation_flora_exsitu
+CFE_COLOR_TABLET;rou;rouge;Rouge;;Rouge;;conservation_flora_exsitu
+CFE_DISSEMINATION_UNIT;gr;graine;Graine;L' unité de dissémination est la graine;Graine;L' unité de dissémination est la graine;conservation_flora_exsitu
+CFE_DISSEMINATION_UNIT;frui;fruit;Fruit;L' unité de dissémination est le fruit;Fruit;L' unité de dissémination est le fruit;conservation_flora_exsitu
+CFE_DISSEMINATION_UNIT;sp;spore;Spore;L' unité de dissémination est la spore;Spore;L' unité de dissémination est la spore;conservation_flora_exsitu
