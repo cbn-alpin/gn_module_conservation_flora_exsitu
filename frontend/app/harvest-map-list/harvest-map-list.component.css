@@ -1,0 +1,101 @@
+/* 📌 Wrapper général */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: stretch;
+  background-color: white;
+}
+
+/* 📌 Bande supérieure avec les boutons */
+.header-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: white; /* Fond blanc */
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+  gap: 10px;
+}
+
+/* 📌 Contenu principal */
+.content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 🛠 SECTION FILTRES */
+.filter-section {
+  max-height: 86vh;
+  overflow: auto;
+  position: unset;
+  max-width: 27vh;
+}
+
+:host ::ng-deep ngb-typeahead-window > button > span {
+  font-size: 12px !important;
+  cursor: pointer;
+}
+
+:host ::ng-deep ngb-typeahead-window > button {
+  padding-left: 5px;
+}
+
+
+
+.filter-actions {
+  padding: 2px;
+  float: right;
+}
+
+/* 📌 Style des blocs de filtres */
+fieldset {
+  padding: 0.35em 0.625em 0.75em !important;
+  border: 1px solid silver !important;
+  margin: 0 2px !important;
+  border-radius: 3px;
+}
+
+/* 📌 Style du titre des blocs */
+legend {
+  width: auto;
+  font-size: inherit;
+}
+
+/* 📌 Style des boutons de filtrage */
+.filter-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* 🗺️ SECTION CARTE */
+.map-section {
+  flex: 1;
+  text-align: center;
+  background-color: white; /* Fond blanc */
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+/* 📊 SECTION TABLEAU */
+.table-section {
+  width: 35%;
+  min-width: 350px;
+  padding: 10px;
+  border-left: 1px solid #ddd;
+  background-color: white; /* Fond blanc */
+  overflow-y: auto;
+  max-height: calc(100vh - 50px);
+  flex-shrink: 0;
+}
+
+/* 📊 Contenu du tableau */
+.table-content {
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: white;
+  padding: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+}

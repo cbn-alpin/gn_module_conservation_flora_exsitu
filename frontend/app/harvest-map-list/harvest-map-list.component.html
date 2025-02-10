@@ -1,0 +1,301 @@
+<div class="wrapper">
+  <!-- Bande avec boutons -->
+  <div class="header-bar">
+    <button (click)="onAddHarvest()" mat-raised-button class="button-success uppercase">
+      <i class="fa fa-plus-circle" aria-hidden="true"> </i>
+      Ajouter une récolte</button>
+    <button mat-raised-button color="primary">Télécharger</button>
+    <button mat-raised-button color="primary">Importer</button>
+  </div>
+
+  <div class="row row-0">
+    <!-- SECTION FILTRES -->
+    <div class="card filter-section">
+      <form>
+        <!-- Bloc QUOI -->
+        <fieldset>
+          <legend>Quoi ?</legend>
+          <pnx-taxonomy
+            id="taxon"
+            label="Taxon"
+            [charNumber]="3"
+            [listLength]="20"
+            matTooltipPosition="above"
+            [parentFormControl]="filterForm.controls.cd_nom"
+            >
+          </pnx-taxonomy>
+
+          <pnx-autocomplete
+              id="habitat"
+              apiEndPoint="{{ storeService.config.API_ENDPOINT }}/habref/habitats/autocomplete"
+              [searchAsParameter]="false"
+              queryParamSearch="search_name"
+              [parentFormControl]="filterForm.controls.cd_hab"
+              keyValue="search_name"
+              [formatter]="formatter"
+              label="Habitat"
+              placeholder="Tapez les premières lettres..."
+            ></pnx-autocomplete>
+
+        </fieldset>
+
+        <!-- Bloc QUAND -->
+        <fieldset>
+          <legend>Quand ?</legend>
+          <div class="row row-sm">
+            <pnx-date
+              label="Date min"
+              [parentFormControl]="filterForm.controls.date_start"
+            ></pnx-date>
+          </div>
+          <div class="row row-sm">
+            <pnx-date
+              label="Date max"
+              [parentFormControl]="filterForm.controls.date_end"
+            ></pnx-date>
+          </div>
+        </fieldset>
+
+        <!-- Bloc OU -->
+        <fieldset>
+          <legend>Qui ?</legend>
+          <pnx-observers
+            [bindAllItem]="true"
+            [parentFormControl]="filterForm.controls.observers"
+            [codeList]="storeService.cfeConfig.observers_list_code"
+            matTooltipPosition="above"
+            [multiSelect]="true"
+          >
+          </pnx-observers>
+        </fieldset>
+
+        <!-- Bloc OU -->
+        <fieldset>
+          <legend>Où ?</legend>
+          <div class="form-group">
+            <label for="communes">Communes</label>
+            <input type="text" class="form-control form-control-sm" id="communes">
+          </div>
+          <div class="form-group">
+            <label for="departements">Départements</label>
+            <input id="departements" type="text" class="form-control form-control-sm">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Statuts ?</legend>
+          <div class="form-group">
+            <label>Statuts de protection</label>
+            <input type="text" class="form-control form-control-sm" id="stattus">
+          </div>
+        </fieldset>
+
+        <div class="filter-actions">
+          <button color="warn" type="button" mat-raised-button>
+            <i
+              class="fa fa-refresh"
+              aria-hidden="true"
+            ></i>
+          </button>
+          <button mat-raised-button type="button" class="button-success uppercase">Rechercher</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- SECTION CARTE -->
+    <div class="map-section">
+      <pnx-map height="91vh">
+        <pnx-geojson> </pnx-geojson>
+      </pnx-map>
+    </div>
+
+    <!-- SECTION TABLEAU (scrollable) -->
+    <div class="table-section">
+      <ngx-datatable
+        #dataTable
+        class="material striped margin-top-xs table-size expandable"
+        maxWidth="90"
+        [headerHeight]="35"
+        [footerHeight]="40"
+        [rowHeight]="40"
+        [columnMode]="'force'"
+        [selected]="mapListService.selectedRow"
+        [selectionType]="'single'"
+        [rowClass]="mapListService.getRowClass"
+        [loadingIndicator]="mapListService.isLoading"
+        [externalPaging]="true"
+        [count]="harvestList.length"
+        [offset]="mapListService.page.pageNumber"
+        [limit]="10"
+        (select)="mapListService.onRowSelect($event)"
+        [rows]="harvestList"
+        data-qa="harvest-list-datatable"
+      
+      >
+      <ngx-datatable-row-detail #myDetailRow rowHeight="100">
+        <ng-template ngx-datatable-row-detail-template let-row="row">
+          <div><strong>ID Récolte :</strong> {{ row.id_harvest }}</div>
+          <div><strong>Commentaire :</strong> {{ row.comment }}</div>
+          <div><strong>Altitude :</strong> {{ row.altitude }}</div>
+          <div><strong>Observateurs :</strong></div>
+          <div style="margin-left: 20px">
+            <div *ngFor="let obs of row.observers">{{ obs }}</div>
+          </div>
+        </ng-template>
+      </ngx-datatable-row-detail>
+    
+      <!-- Colonne Action -->
+      <ngx-datatable-column 
+        [width]="10"
+        [resizeable]="false"
+        [sortable]="false"
+        [draggable]="false"
+        [canAutoResize]="false"
+      >
+        <ng-template ngx-datatable-header-template>
+          <i
+            id="dropdownMenuButton"
+            class="fa fa-cog clickable"
+            aria-hidden="true"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            matTooltip="{{ 'List.Columns' | translate }}"
+          ></i>
+        </ng-template>
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <a
+            href="javascript:void(0)"
+            matTooltip="Ouvrir/fermer le détail"
+            [class.datatable-icon-right]="!expanded"
+            [class.datatable-icon-down]="expanded"
+            (click)="toggleExpandRow(row)"
+          ></a>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column maxWidth="10">
+        <ng-template
+          let-row="row"
+          ngx-datatable-cell-template
+        >
+          <ng-container>
+            <a
+              data-qa="edit-releve"
+              class="btn btn-outline-shadow btn-no-padding btn-ghost"
+            >
+              <i
+                matTooltip="Editer la récolte"
+                class="fa fa-pencil-square-o"
+                aria-hidden="true"
+              ></i>
+            </a>
+          </ng-container>
+          <ng-template #disabledEditBlc>
+            <button
+              class="btn btn-outline-shadow btn-no-padding btn-ghost"
+              disabled="true"
+            >
+              <i
+                class="fa fa-pencil-square-o disabled"
+                matTooltip="Editer la récolte"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </ng-template>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column maxWidth="10">
+        <ng-template
+          let-row="row"
+          ngx-datatable-cell-template
+        >
+          <ng-container>
+            <a
+              class="btn btn-outline-shadow btn-no-padding btn-ghost"
+            >
+              <i
+                matTooltip="Informations récolte"
+                class="fa fa-info-circle"
+                aria-hidden="true"
+              ></i>
+            </a>
+          </ng-container>
+          <ng-template #disabledInfoBlc>
+            <button
+              class="btn btn-outline-shadow btn-no-padding btn-ghost"
+              disabled="true"
+            >
+              <i
+                class="fa fa-info-circle disabled"
+                matTooltip="Informations récolte"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </ng-template>
+        </ng-template>
+      </ngx-datatable-column>
+
+
+      <ngx-datatable-column maxWidth="10">
+        <ng-template
+          let-row="row"
+          let-rowIndex="rowIndex"
+          ngx-datatable-cell-template
+        >
+          <button
+            class="btn btn-outline-shadow btn-no-padding btn-ghost"
+            [disabled]="true"
+            data-qa="pnx-occtax-delete-taxa"
+          >
+            <i
+              #iElement
+              matTooltip="Supprimer la récolte"
+              class="fa fa-trash-o"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Type de Récolte -->
+      <ngx-datatable-column name="Type de récolte">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span matTooltip="{{ row.harvest_type_label }}">
+            <span class="badge badge-dark">{{ row.harvest_materials?.length }}</span>
+            {{ row.harvest_type }}
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+    
+      <!-- Exposition -->
+      <ngx-datatable-column name="Exposition">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span matTooltip="{{ row.exposition_label }}">
+            {{ row.exposition }}
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+    
+      <!-- Habitat -->
+      <ngx-datatable-column name="Habitat">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span matTooltip="{{ row.cd_hab_label }}">
+            {{ row.cd_hab }}
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+    
+      <!-- Date de début -->
+      <ngx-datatable-column name="Date de début">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span matTooltip="{{ row.date_start | date: 'dd-MM-yyyy' }}">
+            {{ row.date_start | date: 'dd-MM-yyyy' }}
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>
