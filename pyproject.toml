@@ -1,0 +1,73 @@
+[project]
+name = "gn-module-conservation-flora-exsitu"
+description = "GeoNature module for conservation flora exsitu."
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["conservation", "flora", "exsitu"]
+license = {file = "LICENSE"}
+maintainers = [
+    {name = "Conservatoire Botanique National Alpin", email = "geonature@cbn-alpin.fr"},
+]
+authors = [
+    {name = "Ahmadou Bassirou DIALLO", email = "ab.diallo@cbn-alpin.fr"},
+    {name = "Cendrine HOARAU", email = "c.hoarau@cbn-alpin.fr"},
+    {name = "Jean-Pascal MILCENT", email = "jp.milcent@cbn-alpin.fr"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+]
+urls.homepage = "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu"
+urls.documentation = "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu"
+urls.repository = "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu"
+dynamic = ["version"]
+dependencies = [
+    "geonature>=2.14.2",
+    
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    # Manually install gn_conservation_backend_shared with `pip install -e <path-to-gn-conservation-backend-shared>` if not installed in venv
+]
+
+[project.entry-points.gn_module]
+code = "gn_module_conservation_flora_exsitu:MODULE_CODE"
+picto = "gn_module_conservation_flora_exsitu:MODULE_PICTO"
+blueprint = "gn_module_conservation_flora_exsitu.blueprint:blueprint"
+config_schema = "gn_module_conservation_flora_exsitu.conf_schema_toml:GnModuleSchemaConf"
+migrations = "gn_module_conservation_flora_exsitu:migrations"
+alembic_branch = "gn_module_conservation_flora_exsitu:MODULE_DB_BRANCH"
+
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools>=60.0.0", "wheel"]  # PEP 508 specifications.
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+include = ["gn_module_conservation_flora_exsitu*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"gn_module_monitoring_habitat_station.migrations.data" = ["*.sql", "*.csv"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "backend",
+]
+
+[tool.distutils.bdist_wheel]
+universal = true
+
+[tool.black]
+line-length = 100
