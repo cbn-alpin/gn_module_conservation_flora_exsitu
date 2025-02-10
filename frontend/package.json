@@ -1,0 +1,19 @@
+{
+  "name": "gn_module_conservation_flora_exsitu",
+  "version": "1.0.0",
+  "description": "Outil de gestion des récoltes de graines (ex-situ et in-situ), de leur stockage, des tests de germination, des semis et mise en culture.",
+  "author": "Ahmadou Bassirou DIALLO",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu/issues"
+  },
+  "homepage": "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu#readme",
+  "dependencies": {
+    "@angular-material-components/datetime-picker": "^15.0.0",
+    "@angular-material-components/moment-adapter": "^15.0.0",
+    "Leaflet.Deflate": "^2.1.0",
+    "ngx-bootstrap": "^10.3.0",
+    "ngx-toastr": "^16.1.0",
+    "rxjs": "^7.8.1"
+  }
+}
