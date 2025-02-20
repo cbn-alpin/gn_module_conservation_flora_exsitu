@@ -1,0 +1,101 @@
+<div class="card filter-section">
+    <form>
+      <!-- Bloc QUOI -->
+      <fieldset>
+        <legend>Quoi ?</legend>
+        <pnx-taxonomy
+          id="taxon"
+          label="Taxon"
+          [charNumber]="3"
+          [listLength]="20"
+          matTooltipPosition="above"
+          [parentFormControl]="filterForm.controls.cd_nom"
+          >
+        </pnx-taxonomy>
+
+        <pnx-autocomplete
+            id="habitat"
+            apiEndPoint="{{ storeService.config.API_ENDPOINT }}/habref/habitats/autocomplete"
+            [searchAsParameter]="false"
+            queryParamSearch="search_name"
+            [parentFormControl]="filterForm.controls.cd_hab"
+            keyValue="search_name"
+            [formatter]="formatter"
+            label="Habitat"
+            placeholder="Tapez les premières lettres..."
+          ></pnx-autocomplete>
+
+          <div class="form-group mt-2">
+            <small>N° de récolte</small>
+            <input type="text" class="form-control form-control-sm" id="num">
+          </div>
+
+          <div class="form-group">
+            <small>Type de récolte</small>
+            <input type="text" class="form-control form-control-sm" id="type">
+          </div>
+
+      </fieldset>
+
+      <!-- Bloc QUAND -->
+      <fieldset>
+        <legend>Quand ?</legend>
+        <div class="row row-sm">
+          <pnx-date
+            label="Date min"
+            [parentFormControl]="filterForm.controls.date_start"
+          ></pnx-date>
+        </div>
+        <div class="row row-sm">
+          <pnx-date
+            label="Date max"
+            [parentFormControl]="filterForm.controls.date_end"
+          ></pnx-date>
+        </div>
+      </fieldset>
+
+      <!-- Bloc OU -->
+      <fieldset>
+        <legend>Qui ?</legend>
+        <pnx-observers
+          [bindAllItem]="true"
+          [parentFormControl]="filterForm.controls.observers"
+          [codeList]="storeService.cfeConfig.observers_list_code"
+          matTooltipPosition="above"
+          [multiSelect]="true"
+        >
+        </pnx-observers>
+      </fieldset>
+
+      <!-- Bloc OU -->
+      <fieldset>
+        <legend>Où ?</legend>      
+        
+        <pnx-areas
+          label="Commune"
+          [typeCodes]="['COM']"
+          [parentFormControl]="filterForm.controls.municipality"
+          >
+        </pnx-areas>
+
+       <pnx-areas
+          label="Département"
+          [typeCodes]="['DEP']"
+          [parentFormControl]="filterForm.controls.departement"
+          >
+       </pnx-areas>
+
+      </fieldset>
+
+
+      <div class="filter-actions">
+        <button color="warn" type="button" mat-raised-button>
+          <i
+            class="fa fa-refresh"
+            aria-hidden="true"
+          ></i>
+        </button>
+        <button mat-raised-button type="button" class="button-success uppercase">Rechercher</button>
+      </div>
+    </form>
+</div>

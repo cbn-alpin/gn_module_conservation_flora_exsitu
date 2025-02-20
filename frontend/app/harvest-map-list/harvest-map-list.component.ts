@@ -17,6 +17,11 @@ export class HarvestMapListComponent implements OnInit {
   filterForm: FormGroup;
   harvestList: any[] = [];
   @ViewChild('dataTable') dataTable: DatatableComponent;
+  public isCollapseSyntheseNavBar = false;
+  public searchBarHidden = false;
+  public marginButton: number;
+  public center;
+  public zoom;
 
 
   constructor(
@@ -31,6 +36,14 @@ export class HarvestMapListComponent implements OnInit {
   ngOnInit() {
     this.initializeZpForm();
     this.getAllHarvests();
+    this.zoom = this.storeService.cfeConfig.zoom
+    this.center = this.storeService.cfeConfig.zoom_center
+
+    this.api.getHarvestAll().subscribe({
+      next: (data)=>{
+        console.log(data);
+      }
+    })
   }
 
   formatter(item) {
@@ -48,7 +61,11 @@ export class HarvestMapListComponent implements OnInit {
   }
 
   onAddHarvest() {
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/harvest`]);
+    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest`]);
+  }
+
+  mooveButton() {
+    this.searchBarHidden = !this.searchBarHidden;
   }
 
   getAllHarvests(){
