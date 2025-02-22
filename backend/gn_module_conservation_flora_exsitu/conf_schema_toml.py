@@ -13,3 +13,5 @@ class GnModuleSchemaConf(Schema):
     module_title = fields.String(load_default="Exsitu")
     module_code_pf = fields.String(load_default="FLORA_EXSITU")
     observers_list_code = fields.String(load_default="OFS")
+    zoom_center = fields.List(fields.Float(), load_default=[44.982667966765845, 6.062455200884894])
+    zoom = fields.Integer(load_default=10)
