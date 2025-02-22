@@ -1,0 +1,99 @@
+<div style="background-color: white;">
+    <!-- Les onglets -->
+    <div class="tab mb-2">
+        <div class="tab-left">
+            <!-- Récolte (Toujours activé) -->
+            <a class="tablinks"
+                [class.active]="exsituFormService.currentTab === 'harvest'"
+                (click)="goToTab('harvest')"
+            >
+                <mat-icon class="example-tab-icon">place</mat-icon>
+                Récolte
+            </a>
+
+            <!-- Matériel récolté (Activé après ajout de la récolte) -->
+            <a 
+                class="tablinks" 
+                [class.disabled]="!exsituFormService.idHarvest"
+                [ngClass]="{ active: exsituFormService.currentTab === 'materials' }"
+                (click)="goToTab('materials')"
+            >
+                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                Matériels récoltés
+            </a>
+
+            <!-- Semences (Activé après ajout de matériel) -->
+            <a 
+                class="tablinks" 
+                [class.disabled]="!idMaterial"
+                (click)="idMaterial ? goToTab('seeds') : null">
+                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                Semences
+            </a>
+
+            <!-- Test de germination -->
+            <a 
+                class="tablinks" 
+                [class.disabled]="!idMaterial"
+                (click)="idMaterial ? goToTab('seeds') : null">
+                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                Test de germination
+            </a>            
+
+            <!-- Semis -->
+            <a class="tablinks disabled">
+                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                Semis
+            </a>
+
+            <!-- Culture -->
+            <a class="tablinks disabled">
+                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                Culture
+            </a>
+        </div>
+    </div>
+
+    <!-- Les header -->
+
+    <div class="mb-5" *ngIf="exsituFormService.currentTab !== 'harvest'">
+        <cs-header></cs-header>
+    </div>
+
+
+    <!-- Les contents -->
+
+    <div *ngIf="exsituFormService.currentTab === 'harvest'"
+        [ngStyle]="{ 'min-height.px': cardContentHeight }"
+    >
+        <div class="row row-0">
+            <div class="col-xl-6 col-lg-7 col-sm-6"
+                [ngStyle]="{ 'height.px': cardContentHeight }"
+            >
+                <ex-harvest-map></ex-harvest-map>
+            </div>
+            <div class="col-xl-6 col-lg-7 col-sm-6"
+                style="overflow-y: scroll"
+                [ngStyle]="{ 'height.px': cardContentHeight }"
+            >
+                <ex-harvest-form></ex-harvest-form>
+            </div>
+        </div>
+        
+    </div>
+
+    <div *ngIf="exsituFormService.currentTab === 'materials'"
+            [ngStyle]="{ 'height.px': cardContentHeight }"
+            style="overflow-y: scroll"
+    >
+        <div class="row row-0">
+            <div class="col-xl-6 col-lg-7 col-sm-6">
+                <cs-material-form></cs-material-form>
+            </div>
+            <div class="col-xl-4 col-lg-5 col-sm-6">
+                <cs-material-list></cs-material-list>
+            </div>
+        </div>
+    </div>
+     
+</div>

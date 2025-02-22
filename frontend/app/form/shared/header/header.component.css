@@ -1,0 +1,8 @@
+.header-bar {
+    justify-content: start;
+    align-items: center;
+    background-color: gainsboro; /* Fond blanc */
+    padding: 10px 20px;
+    border-bottom: 1px solid #8a7272;
+    gap: 10px;
+}
