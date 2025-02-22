@@ -38,9 +38,27 @@ class HarvestRepository:
             raise ValueError(f"Erreur de conversion GeoJSON -> EWKT : {e}")
 
     def get_one(self, harvest_id):
-        query = db.session.query(THarvest).filter(THarvest.id_harvest == harvest_id)
-        harvest = query.first()
-        return harvest
+        NomenclatureType = aliased(TNomenclatures) 
+        NomenclatureExpo = aliased(TNomenclatures)
+
+        query = (
+            db.session.query(
+                THarvest.id_harvest,
+                THarvest.date_start,
+                Habref.lb_hab_fr.label("cd_hab_label"),
+                NomenclatureType.label_default.label("harvest_type_label"),
+                NomenclatureExpo.label_default.label("exposition_label"),
+                THarvestMaterial
+            )
+            .outerjoin(Habref, THarvest.cd_hab == Habref.cd_hab)
+            .outerjoin(NomenclatureType, THarvest.id_harvest_type == NomenclatureType.id_nomenclature) 
+            .outerjoin(NomenclatureExpo, THarvest.id_exposition == NomenclatureExpo.id_nomenclature)
+            .outerjoin(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
+            .filter(THarvest.id_harvest == harvest_id)
+        )
+
+        return query.all() 
+    
     
     def get_all(self, limit=100, offset=0):
         NomenclatureType = aliased(TNomenclatures) 
