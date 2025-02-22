@@ -3,8 +3,16 @@ import logging
 from flask import Blueprint, request, g
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
-from .repositories import HarvestRepository, SeedRepository
+from .repositories import HarvestRepository, HarvestMaterialRepository
+from .models import THarvestMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver
 from gn_module_conservation_flora_exsitu import MODULE_CODE
+from ref_geo.models import LAreas, BibAreasTypes
+from geonature.utils.env import db
+from sqlalchemy.sql.expression import func, select
+from sqlalchemy.orm import aliased
+from apptax.taxonomie.models import Taxref
+from pypnusershub.db.models import User
+
 
 blueprint = Blueprint("pr_conservation_flora_exsitu", __name__)
 log = logging.getLogger(__name__)
@@ -19,7 +27,7 @@ def create_harvest():
     data["meta_create_by"] = g.current_user.id_role
     harvest_repo = HarvestRepository()
     harvest = harvest_repo.create(data)
-    return {"message": "Harvest created successfully", "id": harvest.id_harvest}, 201
+    return {"message": "Harvest created successfully", "harvest": harvest.to_dic()}, 201
 
 
 

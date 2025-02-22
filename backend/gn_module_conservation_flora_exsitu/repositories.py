@@ -7,7 +7,9 @@ from geoalchemy2.shape import from_shape
 from pypn_habref_api.models import Habref
 from pypnnomenclature.models import TNomenclatures
 from sqlalchemy.orm import aliased
-
+from flask import jsonify
+from ref_geo.models import LAreas, BibAreasTypes
+from apptax.taxonomie.models import Taxref
 
 from .models import(
     THarvest,
@@ -16,7 +18,8 @@ from .models import(
     CorHarvestObserver,
     TSeedStock,
     TSeedStockMouvement,
-    TSeedTablet
+    TSeedTablet,
+    CorMaterialTaxon,
 )
 
 
@@ -50,7 +53,7 @@ class HarvestRepository:
                 Habref.lb_hab_fr.label("cd_hab_label"),
                 NomenclatureType.label_default.label("harvest_type_label"),
                 NomenclatureExpo.label_default.label("exposition_label"),
-                THarvestMaterial.code_material.label('harvest_material')
+                THarvestMaterial
             )
             .outerjoin(Habref, THarvest.cd_hab == Habref.cd_hab)
             .outerjoin(NomenclatureType, THarvest.id_harvest_type == NomenclatureType.id_nomenclature) 
@@ -83,15 +86,24 @@ class HarvestRepository:
             observers_ids = data.pop("observers", [])
             harvest = THarvest(**data)
 
+            db.session.add(harvest)
+            db.session.commit()
+
             if observers_ids:
                 observers = User.query.filter(User.id_role.in_(observers_ids)).all()
-                harvest.observers.extend(observers)
+                
+                for i, observer in enumerate(observers):
+                    is_main = (i == 0)
+                    association = CorHarvestObserver(
+                        id_observer=observer.id_role, 
+                        id_harvest=harvest.id_harvest,
+                        is_main_observer=is_main
+                    )
+                    db.session.add(association)
 
-            db.session.add(harvest)
             db.session.commit()
             return harvest
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-
         
