@@ -21,7 +21,7 @@ CREATE TABLE "t_harvest" (
 	-- Clé étrangère  GN.gn_meta.t_datasets.id_dataset
 	"id_dataset" INTEGER NOT NULL,
 	-- cd_hab: clé étrangère GN.ref_habitats.habref.cd_hab
-	"cd_hab" INTEGER NOT NULL,
+	"cd_hab" INTEGER,
 	-- Type de récolte
 	"id_harvest_type" INTEGER NOT NULL,
 	-- Date de début de récolte
@@ -33,7 +33,7 @@ CREATE TABLE "t_harvest" (
 	-- Commentaire sur la location(lieudit, comm_loc)
 	"place_comment" TEXT,
 	-- Coordonnées GPS
-	"geom" GEOMETRY(POINT, 2154),
+	"geom" GEOMETRY(GEOMETRY, 2154),
 	-- Code de la commune, du département
 	"location_code" INTEGER,
 	-- Type de localisation
@@ -265,7 +265,7 @@ CREATE TABLE "cor_harvest_observer" (
 CREATE TABLE "t_harvest_material" (
 	"id_material" SERIAL NOT NULL UNIQUE,
 	"uuid_material" UUID DEFAULT uuid_generate_v4(),
-	"code_material" VARCHAR(50) NOT NULL,
+	"code_material" VARCHAR(50) NOT NULL UNIQUE,
 	"id_parent" INTEGER,
 	"id_harvest" INTEGER NOT NULL,
 	-- Matériel végétal récolté
