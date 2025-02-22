@@ -7,6 +7,7 @@ from utils_flask_sqla_geo.serializers import geoserializable
 from ref_geo.models import LAreas
 from pypnusershub.db.models import User
 
+
 @serializable
 @geoserializable
 class THarvest(db.Model):
@@ -104,6 +105,13 @@ class THarvest(db.Model):
     )
     materials = db.relationship('THarvestMaterial', backref='harvest')
 
+    def to_dic(self):
+        return {
+            "id_harvest": self.id_harvest,
+            "date_start": self.date_start,
+            "date_end": self.date_end
+        }
+
 @serializable
 class CorHarvestObserver(db.Model):
     __tablename__ = 'cor_harvest_observer'
@@ -135,7 +143,8 @@ class THarvestMaterial(db.Model):
     )
     code_material = db.Column(
         db.String(50),
-        nullable=False
+        nullable=False,
+        unique=True,
     )
     id_parent = db.Column(
         db.Integer,
@@ -199,6 +208,23 @@ class THarvestMaterial(db.Model):
 
     seeds = db.relationship('TSeed', backref='material')
 
+    def to_dic(self):
+        return {
+            "id_material": self.id_material,
+            "code_material": self.code_material,
+            "id_harvest_material": self.id_harvest_material,
+            "id_harvest": self.id_harvest,
+            "sample_foot_nb": self.sample_foot_nb,
+            "id_foot_counting_class": self.id_foot_counting_class,
+            "id_method_sample": self.id_method_sample,
+            "is_soil_sampling": self.is_soil_sampling,
+            "comment": self.comment,
+            "protocole_note": self.protocole_note,
+            "code_cultural_bank": self.code_cultural_bank,
+            "id_phenology_1": self.id_phenology_1,
+            "id_phenology_2": self.id_phenology_2,
+            "id_parent": self.id_parent
+        }
 
 
 @serializable
