@@ -1,0 +1,82 @@
+<h2>Liste des matéreils</h2>
+<div id="matlist-container">
+    <ng-container>
+      <!-- <ng-container *ngFor="let mat_in_progress of materialListService.rec_material_in_progress">
+        <div
+          class="in-progress-panel"
+          [ngClass]="mat_in_progress.state"
+          [matTooltip]="
+            mat_in_progress.state == 'in_progress'
+              ? 'Enregistrement en cours'
+              : 'Une erreur est survenue lors de l\'enregistrement'
+          "
+          matTooltipPosition="left"
+          (click)="inProgressErrorToForm(mat_in_progress)"
+        >
+          <mat-spinner
+            *ngIf="mat_in_progress.state == 'in_progress'"
+            diameter="20"
+            strokeWidth="2"
+          ></mat-spinner>
+          <mat-icon *ngIf="mat_in_progress.state == 'error'">warning</mat-icon>
+          <span [innerHTML]="materialTitle(mat_in_progress.data)"></span>
+          <div
+            *ngIf="mat_in_progress.state == 'error'"
+            style="font-size: 12px"
+          >
+            Erreur : cliquez pour reprendre ce taxon
+          </div>
+        </div>
+      </ng-container> -->
+
+      <div
+        *ngFor="let material of materialListService.materials$ | async; let i = index"
+        selector=".btn-actions"
+      >
+        <mat-accordion [multi]="true">
+          <mat-expansion-panel
+            displayMouseOver
+            selector=".btn-actions"
+          >
+              
+            <mat-expansion-panel-header class="right-aligned-header">
+              <mat-panel-title>
+                <span class="btn-actions d-none">
+                  <button
+                    mat-icon-button
+                    class="btn-edit"
+                    (click)="editOccurrence(material)"
+                  >
+                    <mat-icon matTooltip="Editer le matériel">edit</mat-icon>
+                  </button>
+                  <button
+                    *ngIf="(materialListService.materials$ | async)?.length != 1 || i != 0"
+                    mat-icon-button
+                    class="btn-clear"
+                    (click)="deleteOccurrence(material)"
+                  >
+                    <mat-icon matTooltip="Supprimer le matériel">clear</mat-icon>
+                  </button>
+                </span>
+              </mat-panel-title>
+
+              <mat-panel-description>
+                <span
+                  [innerHTML]="materialTitle(material)"
+                  [matTooltip]="material?.code_material ? removeHtml(material.code_material) : ''"
+                  class="header-title"
+                  [attr.data-qa]="'pnx-occtax-taxon-form-taxa-head-' + i"
+                ></span>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-tab-group>
+              <mat-tab label="Taxons">
+              </mat-tab>
+            </mat-tab-group>
+          </mat-expansion-panel>
+        </mat-accordion>
+      
+      </div>
+      
+    </ng-container>
+</div>

@@ -1,0 +1,19 @@
+.btn-edit {
+    color: #5343da;
+    margin-right: 5px;
+}
+  
+.btn-clear {
+    margin-right: 8px;
+    color: #d40303;
+}
+
+
+#matlist-container {
+    height: 90%;
+    overflow-y: auto;
+    background-color: #95949833;
+    box-shadow:
+      2px 3px 4px 0px rgba(0, 0, 0, 0.2),
+      -2px 3px 4px 0px rgba(0, 0, 0, 0.2);
+}
