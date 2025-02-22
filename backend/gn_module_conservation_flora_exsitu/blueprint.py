@@ -83,3 +83,58 @@ def get_harvest_by_id(harvest_id):
             result["harvest_materials"].append(harvest_material_dict)
 
     return result, 200
+
+
+@blueprint.route("/harvests/<int:id_harvest>/materials", methods=["POST"])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def create_material(id_harvest):
+    """Ajout d'un matériel végétal à une récolte"""
+    data = request.get_json()
+    data['id_harvest'] = id_harvest
+    material_repo = HarvestMaterialRepository()
+    material = material_repo.create(data)
+    return {"message": "Harvest material created successfully", "material": material.to_dic()}, 201
+
+
+@blueprint.route("/harvests/<int:id_harvest>/materials/<int:id_material>", methods=["PUT"])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+@json_resp
+def update_material(id_harvest, id_material):
+    """Mise à jour d'un matériel végétal dans une récolte"""
+    data = request.get_json()
+    material_repo = HarvestMaterialRepository()
+    material = material_repo.update(id_material, data)
+    return {"message": "Harvest material updated successfully", "material": material.to_dic()}, 200
+
+
+@blueprint.route("/materials/<int:id_material>", methods=["DELETE"])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+@json_resp
+def delete_material(id_material):
+    """Suppression d'un matériel végétal d'une récolte"""
+    material_repo = HarvestMaterialRepository()
+    material_repo.delete(id_material)
+    return {"message": "Harvest material deleted successfully"}, 200
+
+
+@blueprint.route("/harvests/<int:id_harvest>/materials", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+@json_resp
+def get_materials_by_id_harvest(id_harvest):
+    material_repo = HarvestMaterialRepository()
+    materials = material_repo.materials_by_id_harvest(id_harvest)
+    
+    return {
+        "message": "Materials loaded successfully",
+        "materials": [tuple_to_dict(material) for material in materials] if materials else []
+    }, 200
+
+
+def tuple_to_dict(material_tuple):
+    columns = [
+        "id_harvest", "code_cultural_bank", "code_material", "protocole_note", "comment",
+        "id_parent", "is_soil_sampling", "id_material", "class_conting",
+        "harvest_material", "sample_method", "phenology_1", "phenology_2"
+    ]
+    return dict(zip(columns, material_tuple))
