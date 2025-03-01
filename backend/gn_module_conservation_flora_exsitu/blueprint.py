@@ -253,3 +253,17 @@ def search_code_material():
     code_list = [result[0] for result in results]
 
     return jsonify(code_list) 
+
+@blueprint.route("/codes_nomenclature", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def get_code_nomenclature_by_id():
+    id_nomenclature = request.args.get('id_nomenclature', type=int)
+    if not id_nomenclature:
+        return jsonify({"error": "id_nomenclature parameter is required"}), 400
+
+    result = db.session.query(TNomenclatures.cd_nomenclature).filter(
+        TNomenclatures.id_nomenclature == id_nomenclature
+    ).first()
+    
+    return jsonify({"code_nomenclature": result[0]})
+
