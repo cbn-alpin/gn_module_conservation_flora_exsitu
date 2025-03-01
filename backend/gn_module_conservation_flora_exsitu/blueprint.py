@@ -12,7 +12,13 @@ from sqlalchemy.sql.expression import func, select
 from sqlalchemy.orm import aliased
 from apptax.taxonomie.models import Taxref
 from pypnusershub.db.models import User
-
+from geojson import Feature, FeatureCollection
+from sqlalchemy import and_
+from flask import request, jsonify
+from pypn_habref_api.models import Habref
+from geoalchemy2.functions import ST_AsGeoJSON
+import json
+from pypnnomenclature.models import TNomenclatures
 
 blueprint = Blueprint("pr_conservation_flora_exsitu", __name__)
 log = logging.getLogger(__name__)
@@ -35,25 +41,139 @@ def create_harvest():
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @json_resp
 def get_all_harvests():
-    """Récupère toutes les récoltes avec labels, date de début et matériaux"""
-    harvest_repo = HarvestRepository()
-    harvests = harvest_repo.get_all()
+    """Récupère toutes les récoltes avec pagination et filtres (taxons, département, commune, observateurs)"""
 
-    results = {}
-    for harvest in harvests:
-        harvest_id = harvest.id_harvest
-        if harvest_id not in results:
-            results[harvest_id] = {
-                "date_start": harvest.date_start.strftime("%Y-%m-%d") if harvest.date_start else None,
-                "cd_hab": harvest.cd_hab_label,
-                "harvest_type": harvest.harvest_type_label,
-                "exposition": harvest.exposition_label,
-                "harvest_materials": []
+    # Récupération des paramètres de la requête (pagination)
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+    offset = (page - 1) * limit
+
+    # Filtres facultatifs
+    cd_nom = request.args.get('cd_nom', type=int)  
+    cd_hab = request.args.get('cd_hab', type=int)  
+    date_start = request.args.get('date_start', type=str) 
+    date_end = request.args.get('date_end', type=str) 
+    observers = request.args.getlist('observers')  
+    municipality = request.args.get('municipality', type=str)  
+    departement = request.args.get('departement', type=str)  
+    id_harvest_type = request.args.get('id_harvest_type', type=int)  
+    code_material = request.args.get('code_material', type=str)  
+
+    # Alias pour les jointures
+    l_areas_dept = aliased(LAreas)
+    l_areas_commune = aliased(LAreas)
+    ObservateurAlias = aliased(User)
+
+
+    # Début de la requête SQLAlchemy
+    query = (
+        db.session.query(
+            THarvest.id_harvest,
+            THarvestMaterial.id_material,
+            THarvest.date_start,
+            THarvestMaterial.code_material,
+            db.func.string_agg(Taxref.lb_nom, ', ').label('taxons'),
+            l_areas_dept.area_code.label('departement_code'),
+            l_areas_dept.area_name.label('departement_name'),
+            l_areas_commune.area_name.label('commune'),
+            func.json_agg(
+                func.json_build_object(
+                    "prenom_role", User.prenom_role,
+                    "nom_role", User.nom_role
+                )
+            ).label("observateurs"),
+            ST_AsGeoJSON(THarvest.geom).label("geom")  # Conversion en GeoJSON
+        )
+        .join(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
+        .outerjoin(CorMaterialTaxon, THarvestMaterial.id_material == CorMaterialTaxon.id_material)
+        .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
+        .outerjoin(l_areas_dept, and_(THarvest.location_code == l_areas_dept.id_area, l_areas_dept.id_type == 26))
+        .outerjoin(l_areas_commune, and_(THarvest.location_code == l_areas_commune.id_area, l_areas_commune.id_type == 25))
+        .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest)
+        .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)
+        .group_by(
+            THarvest.id_harvest,
+            THarvestMaterial.id_material,
+            THarvest.date_start,
+            THarvestMaterial.code_material,
+            l_areas_dept.area_name,
+            l_areas_dept.area_code,
+            l_areas_commune.area_name,
+            THarvest.geom
+        )
+    )
+
+    if cd_nom:
+        query = query.filter(CorMaterialTaxon.cd_nom == cd_nom)
+
+    if cd_hab:
+        query = query.filter(THarvest.cd_hab == cd_hab)
+
+    if date_start:
+        query = query.filter(THarvest.date_start >= date_start)
+
+    if date_end:
+        query = query.filter(THarvest.date_start <= date_end)
+
+    if observers:
+        query = query.filter(User.id_role.in_(observers))
+
+    if municipality:
+        query = query.filter(THarvest.location_code == municipality)
+
+    if departement:
+        query = query.filter(THarvest.location_code == departement)
+
+    if id_harvest_type:
+        query = query.filter(THarvest.id_harvest_type == id_harvest_type)
+
+    if code_material:
+        query = query.filter(THarvestMaterial.code_material.ilike(f"%{code_material}%"))
+
+    query = query.order_by(THarvestMaterial.id_material.desc()).limit(limit).offset(offset)
+
+    results = query.all()
+
+    if not results:
+        return {
+            'page': page,
+            'limit': limit,
+            'total': 0,
+            'total_pages': 0,
+            'items': [],
+            'message': 'Aucun résultat trouvé pour ces filtres.'
+        }, 200
+
+    # Transformation des résultats en GeoJSON
+    features = [
+        Feature(
+            id=result.id_material,
+            geometry=json.loads(result.geom) if result.geom else None,
+            properties={
+                "id_harvest": result.id_harvest,
+                "date_start": result.date_start,
+                "code_material": result.code_material,
+                "taxons": result.taxons,
+                "departement_name": result.departement_name,
+                "departement_code": result.departement_code,
+                "commune": result.commune,
+                "observateurs": result.observateurs
             }
-        if harvest.harvest_material:
-            results[harvest_id]["harvest_materials"].append(harvest.harvest_material)
+        )
+        for result in results
+    ]
 
-    return list(results.values()), 200
+    # Calcul du nombre total d'éléments
+    total = db.session.query(db.func.count(THarvestMaterial.id_material)).scalar()
+    total_pages = (total + limit - 1) // limit
+
+    return {
+        'page': page,
+        'limit': limit,
+        'total': total,
+        'total_pages': total_pages,
+        'items': FeatureCollection(features)
+    }, 200
 
 @blueprint.route("/harvests/<int:harvest_id>", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
@@ -118,23 +238,3 @@ def delete_material(id_material):
     return {"message": "Harvest material deleted successfully"}, 200
 
 
-@blueprint.route("/harvests/<int:id_harvest>/materials", methods=["GET"])
-@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
-@json_resp
-def get_materials_by_id_harvest(id_harvest):
-    material_repo = HarvestMaterialRepository()
-    materials = material_repo.materials_by_id_harvest(id_harvest)
-    
-    return {
-        "message": "Materials loaded successfully",
-        "materials": [tuple_to_dict(material) for material in materials] if materials else []
-    }, 200
-
-
-def tuple_to_dict(material_tuple):
-    columns = [
-        "id_harvest", "code_cultural_bank", "code_material", "protocole_note", "comment",
-        "id_parent", "is_soil_sampling", "id_material", "class_conting",
-        "harvest_material", "sample_method", "phenology_1", "phenology_2"
-    ]
-    return dict(zip(columns, material_tuple))
