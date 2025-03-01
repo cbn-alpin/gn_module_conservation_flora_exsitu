@@ -92,14 +92,32 @@ class HarvestRepository:
 
     def create(self, data):
         try:
-            if "meta_create_date" not in data:
+            if not data.get("meta_create_date"):
                 data["meta_create_date"] = datetime.utcnow()
 
             if data.get("date_end") == "":
-                data["date_end"] = None
+                data["date_end"] = data["date_start"]
             
-            if 'geom' in data:
+            if data.get('geom'):
                 data['geom'] = self._convert_geojson_to_ewkt(data['geom'])
+            
+            if data["location_type"]:
+                if data["location_type"] == 25:  # Commune
+                    data["location_code"] = data.get("location_code_muni", [None])[0]
+                elif data["location_type"] == 26:  # Département
+                    data["location_code"] = data.get("location_code_dept", [None])[0]
+                
+                if data["location_code"]:
+                    area = LAreas.query.filter_by(
+                        id_type=data["location_type"],
+                        area_code=str(data["location_code"])
+                    ).first()
+
+                    if area and area.centroid :
+                        data["geom"] = area.centroid
+
+            data.pop("location_code_muni", None)
+            data.pop("location_code_dept", None)
 
             observers_ids = data.pop("observers", [])
             harvest = THarvest(**data)
@@ -124,7 +142,7 @@ class HarvestRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-    
+                    
 
 class HarvestMaterialRepository:
     def get_one(self, id_material):
