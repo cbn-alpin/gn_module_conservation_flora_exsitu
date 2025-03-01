@@ -238,3 +238,18 @@ def delete_material(id_material):
     return {"message": "Harvest material deleted successfully"}, 200
 
 
+@blueprint.route("/search_code_material", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def search_code_material():
+    search_term = request.args.get('q', '', type=str)
+    
+    if not search_term:
+        return jsonify([])
+    
+    results = db.session.query(THarvestMaterial.code_material).filter(
+        THarvestMaterial.code_material.ilike(f"%{search_term}%")
+    ).limit(10).all()
+
+    code_list = [result[0] for result in results]
+
+    return jsonify(code_list) 
