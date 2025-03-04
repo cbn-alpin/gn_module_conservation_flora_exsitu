@@ -10,6 +10,8 @@ import {
   Validators
 } from '@angular/forms';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
+import { HttpParams } from '@angular/common/http';
+import { CommonService } from '@geonature_common/service/common.service';
 
 interface Material {
     id: number;
@@ -36,7 +38,8 @@ export class MaterialFormService {
   constructor(
     private dataService: DataService,
     private fb: UntypedFormBuilder,
-    private exstiuFormService: ExsituFormService
+    private exstiuFormService: ExsituFormService,
+    private _commonService: CommonService,
   ) {
     this.initForm();
     this.setObservables();
@@ -95,8 +98,8 @@ export class MaterialFormService {
   
   getDefaultValues(): any {
     return {
-      code_material: '2025_0001',
-      code_parent: '2025_0001',
+      code_material: '',
+      code_parent: '',
       id_harvest: null,
       id_harvest_material: null,
       id_foot_counting_class: null,
@@ -193,10 +196,12 @@ export class MaterialFormService {
     public materials$: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
 
     getMaterialsByHarvest(id_harvest: number) {
-      this.dataService.getMaterialsByHarvest(id_harvest).subscribe(
+      let params = new HttpParams()
+          .set('page', 1)
+          .set('limit', 10);
+      this.dataService.getMaterialsByHarvest(id_harvest, params).subscribe(
         (materials)=>{          
           this.materials$.next(materials['materials'])
-          console.log(materials['materials']);
         },
         (error)=>{
           console.log('Erreur lors du chargement des matériels', error);
@@ -233,9 +238,6 @@ export class MaterialFormService {
     }
 
     submitOccurrence(data) {
-      // let formValue = Object.assign({}, this.form.value);
-      // formValue = JSON.parse(JSON.stringify(this.form.value));
-      
   
       let api: Observable<any>;
   
@@ -255,6 +257,7 @@ export class MaterialFormService {
         api = this.dataService.addMaterial(data, this.exstiuFormService.idHarvest).pipe(
           tap((occurrence) => {
             this.exstiuFormService.addOccurrenceData(occurrence);
+            this._commonService.translateToaster('info', 'Matériel ajouté');
           })
         );
       }
@@ -277,6 +280,7 @@ export class MaterialFormService {
       this.dataService.deleteMaterial(occurrence.id_material).subscribe(
         (confirm: boolean) => {
           this.exstiuFormService.removeOccurrenceData(occurrence.id_material);
+          this._commonService.translateToaster('info', 'Matériel supprimé');
         },
         (error) => {
           console.log(error);

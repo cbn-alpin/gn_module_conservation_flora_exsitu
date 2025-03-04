@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
+import { debounceTime, switchMap } from 'rxjs/operators';
 
 
 interface Material {
@@ -34,6 +35,8 @@ export class MaterialFormComponent implements OnInit {
   rec_material_in_progress$: BehaviorSubject<Material[]> = new BehaviorSubject<Material[]>([]);
   idHarvest: number | null = null;
   harvest: any;
+  codeMaterialExists: boolean = false;
+
   
   constructor(
     private formBuilder: FormBuilder,
@@ -45,13 +48,15 @@ export class MaterialFormComponent implements OnInit {
   {}
 
   ngOnInit(): void {
-    // this.idHarvest = Number(this.activatedRoute.snapshot.paramMap.get('id_harvest')); 
     this.idHarvest = this.exsituFormService.idHarvest
-    //this.harvest = history.state.harvest;
     this.loadHarvest(this.idHarvest)
-    this.initializeMaterialForm()
+    this.initializeMaterialForm();
     if(this.exsituFormService.mode !== 'add')
       this.loadMaterials()
+
+    this.materialForm.get('code_material')?.valueChanges.subscribe(value => {
+      this.checkCodeMaterial(value);
+    });
   }
 
   loadHarvest(id_harvest){
@@ -68,77 +73,34 @@ export class MaterialFormComponent implements OnInit {
       this.materialForm = this.materialFormService.form
     }
 
-    /**
-   *  Supprime les balises HTML d'un string
-   **/
-  removeHtml(str: string | undefined): string {
-    return str ? str.replace(/<[^>]*>/g, '') : ''; // Retourne une chaîne vide si str est undefined
-  }
-
-
-  /**
-   *  Return un titre formaté sans balise HTML
-   **/
-  materialTitle(material) {
-    return this.removeHtml(material.code_material);
-  }
 
   editOccurrence(material) {
     this.materialFormService.materials$.next(material);
   }
 
-  inProgressErrorToForm(mat_in_progress) {
-    if (mat_in_progress.state !== 'error') {
-      return;
-    }
-
-    this.editOccurrence(mat_in_progress.data);
-    this.materialFormService.removeMaterialInProgress(mat_in_progress.id);
-  }
 
   submetData(){
     let finalForm = this.formatDataFormHarvest();
     this.materialFormService.submitOccurrence(finalForm);
-    
-    
-    // this.api.addMaterial(finalForm, this.exsituFormService.idHarvest).subscribe((material) => {      
-    //   //this.addMaterial2(material)
-    // });
+
   }
 
   private formatDataFormHarvest() {
     const finalForm = JSON.parse(JSON.stringify(this.materialForm.value));
     finalForm.id_phenology_1 = finalForm.id_phenology_1.id_nomenclature;
-    finalForm.id_phenology_2 = finalForm.id_phenology_2.id_nomenclature;
+    if(finalForm.id_phenology_2)
+      finalForm.id_phenology_2 = finalForm.id_phenology_2.id_nomenclature;
     finalForm.id_harvest_material = finalForm.id_harvest_material.id_nomenclature;
-    finalForm.id_foot_counting_class = finalForm.id_foot_counting_class.id_nomenclature;
-    finalForm.id_method_sample = finalForm.id_method_sample.id_nomenclature;
-    console.log('finalForm: ', finalForm);
+    if(finalForm.id_foot_counting_class)
+      finalForm.id_foot_counting_class = finalForm.id_foot_counting_class.id_nomenclature;
+    if(finalForm.id_method_sample)
+      finalForm.id_method_sample = finalForm.id_method_sample.id_nomenclature;
     
 
     return finalForm;
   }
 
-  addMaterial2(newMaterial) {
-    // const newMaterial = {
-    //   id: Date.now(),
-    //   code_material: this.materialForm.value.code_material,
-    //   code_parent: this.materialForm.value.code_parent,
-    //   id_parent: this.materialForm.value.id_parent,
-    //   id_harvest_material: this.materialForm.value.id_harvest_material.id_nomenclature,
-    //   id_foot_counting_class: this.materialForm.value.id_foot_counting_class.id_nomenclature,
-    //   id_phenology_1: this.materialForm.value.id_phenology_1.id_nomenclature,
-    //   id_phenology_2: this.materialForm.value.id_phenology_2.id_nomenclature,
-    //   comment: this.materialForm.value.comment,
-    //   protocole_note: this.materialForm.value.protocole_note,
-    //   code_cultural_bank: this.materialForm.value.code_cultural_bank,
-    //   sample_foot_nb: this.materialForm.value.sample_foot_nb,
-    //   is_soil_sampling: this.materialForm.value.is_soil_sampling
-    // };    
-
-    this.materialFormService.materials$.next(this.materialFormService.materials$.getValue().concat(newMaterial));
-    this.materialForm.reset();
-  }
+  
 
   editMaterial(material: Material) {
     // Remplir le formulaire avec les valeurs du matériel sélectionné
@@ -157,6 +119,19 @@ export class MaterialFormComponent implements OnInit {
 
   resetOccurrenceForm() {
     this.materialFormService.reset();
+  }
+
+  checkCodeMaterial(codeMaterial: string): void {
+    if (codeMaterial) {
+      this.api.checkCodeMaterial(codeMaterial).subscribe(
+        response => {
+          this.codeMaterialExists = response.exists;  // Mettre à jour l'état en fonction de la réponse
+        },
+        error => {
+          console.error('Erreur lors de la vérification du code material', error);
+        }
+      );
+    }
   }
   
 }

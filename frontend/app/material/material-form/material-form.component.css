@@ -43,3 +43,9 @@
     align-items: center;
     transition: background-color 0.2s ease-out !important;
 }
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}

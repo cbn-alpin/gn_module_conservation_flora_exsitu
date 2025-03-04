@@ -4,15 +4,19 @@
         <!-- <div class="col-xl-6 col-lg-7 col-sm-6"> -->
           <div class="row row-0 mr-3 mt-2">
               <div class="col padding-sm">
-                <label>Code matériel</label>
+                <label>Numéro de récolte *</label>
                 <input
                   class="form-control"
                   type="text"
                   [formControl]="materialForm.controls.code_material"
+                  (blur)="checkCodeMaterial(materialForm.controls.code_material.value)"
                 />
+                <div *ngIf="codeMaterialExists" class="error-message">
+                  Ce code de matériel existe déjà. Veuillez en choisir un autre.
+                </div>
               </div>
               <div class="col-6 padding-sm">
-                  <label>Code parent</label>
+                  <label>Numéro de récolte parent</label>
                 <input
                   class="form-control"
                   type="text"
@@ -23,7 +27,7 @@
 
           <div class="row row-0 mr-3 mt-2">
               <div class="col padding-sm">
-                  <label> Matériel végétal récolté</label>
+                  <label> Matériel végétal récolté *</label>
                   <pnx-nomenclature
                           keyValue="id_nomenclature"
                           [bindAllItem]="true"
@@ -48,7 +52,7 @@
 
           <div class="row row-0 mr-3">
               <div class="col padding-sm">
-                  <label> Phénologie 1</label>
+                  <label> Phénologie 1 *</label>
                   <pnx-nomenclature
                           keyValue="id_nomenclature"
                           [bindAllItem]="true"
@@ -146,6 +150,7 @@
                 mat-raised-button
                 class="button-success uppercase"
                 matTooltip="Enregistrer ce matériel"
+                [disabled]="!materialForm.valid"
                 (click)="submetData()"
               >
                 Ajouter ce material

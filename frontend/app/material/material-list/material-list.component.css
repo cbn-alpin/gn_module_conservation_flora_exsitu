@@ -4,10 +4,16 @@
 }
   
 .btn-clear {
-    margin-right: 8px;
-    color: #d40303;
+    color: red !important;
 }
 
+.btn-edit{
+    color: rgb(42, 42, 164) !important;
+}
+
+.btn-add{
+    color: green !important;
+}
 
 #matlist-container {
     height: 90%;

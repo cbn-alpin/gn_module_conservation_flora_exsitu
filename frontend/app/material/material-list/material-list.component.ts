@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild  } from '@angular/core';
 import { MaterialListService } from './material-list.service';
 import { combineLatest } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -6,7 +6,10 @@ import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { MaterialFormService } from '../material-form/material-form.service';
 import { ConfirmationDialog } from '@geonature_common/others/modal-confirmation/confirmation.dialog';
 import { MatDialog } from '@angular/material/dialog';
-
+import { DataService } from '../../services/data.service';
+import { HttpParams } from '@angular/common/http';
+import { MapListService } from '@geonature_common/map-list/map-list.service';
+import { TaxonModalComponent } from '../../components/modal-taxon/taxon-modal.component';
 
 
 @Component({
@@ -15,37 +18,63 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrls: ['./material-list.component.css'],
 })
 export class MaterialListComponent implements OnInit {
+    paginatedMaterials = [];
+    itemsPerPage = 3;
+    currentPage = 1;
+    totalPages = 1;
+    sortDirection = 1; // 1 = asc, -1 = desc
+    materials: any[] = [];
+    totalMaterials: number = 0;
+    pagination = { offset: 0, limit: 10 };
+    rowPerPage: number;
+
+    isModalOpen = false;  // Pour afficher ou masquer la modale
+    selectedMaterialId: number | null = null;
+    taxonName: string = '';
+
 
     constructor(
         public materialListService: MaterialListService,
         private exsituFormService: ExsituFormService,
         private materialFormService: MaterialFormService,
         public dialog: MatDialog,
+        private api: DataService,
+        public mapListService: MapListService,
+        
     ){
 
     }
 
     ngOnInit(): void {
-        combineLatest(this.exsituFormService.exsituData, this.materialFormService.occurrence)
+        this.calculateNbRow()
+        combineLatest([this.exsituFormService.materials$, this.materialFormService.occurrence])
         .pipe(
-            filter(
-            ([exsituData, occurrence]: any) =>
-                exsituData && exsituData.harvest_materials
-            ),
-            map(([exsituData, occurrence]: any) => {
-            return exsituData.harvest_materials
-                .filter((occ) => {
-                console.log(occ);
-                // Enlève l'occurrence en cours de modification de la liste affichée
-                return occurrence !== null
-                    ? occ.id_material !== occurrence.id_material
-                    : true;
-                });
+            filter(([materials, occurrence]) => !!materials),
+            map(([materials, occurrence]) => {
+              return materials.filter((mat) => occurrence ? mat.id_material !== occurrence.id_material : true);
             })
         )
-        .subscribe((occurrences) => {
-            this.materialListService.materials$.next(occurrences);
-        });        
+        .subscribe((filteredMaterials) => {
+            this.materialListService.materials$.next(filteredMaterials);
+            this.materials = filteredMaterials.slice();
+            this.loadMaterials();
+            this.totalMaterials = filteredMaterials.length;
+            this.calculateTotalPages();
+            this.updatePagination();   
+        });
+        
+    }
+
+    calculateNbRow() {
+      let wH = window.innerHeight;
+      let listHeight = wH - 400;
+      this.rowPerPage = Math.round(listHeight / 70);
+       
+    }
+
+    onChangePage(event) {
+      this.pagination.offset = event.offset;
+      this.loadMaterials();
     }
 
 
@@ -66,7 +95,7 @@ export class MaterialListComponent implements OnInit {
         const dialogRef = this.dialog.open(ConfirmationDialog, {
           width: '350px',
           position: { top: '5%' },
-          data: { message: 'Supprimer?' },
+          data: { message: 'Supprimer le matériel?' },
         });
     
         dialogRef.afterClosed().subscribe((result) => {
@@ -76,4 +105,37 @@ export class MaterialListComponent implements OnInit {
         });
       }
 
+    calculateTotalPages() {
+        this.totalPages = Math.ceil(this.materials.length / this.itemsPerPage);
+    }
+    
+    updatePagination() {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        this.paginatedMaterials = this.materials.slice(startIndex, startIndex + this.itemsPerPage);
+    }
+
+    loadMaterials() {
+        let params = new HttpParams()
+                  .set('page', this.pagination.offset + 1)
+                  .set('limit', this.rowPerPage);        
+        this.api.getMaterialsByHarvest(this.exsituFormService.idHarvest, params).subscribe(response => {
+          console.log(typeof response['materials']);
+          this.materials = response['materials'];
+          this.totalMaterials = response['total'];    
+        });
+    }
+
+    openTaxonModal(materialId: number, code_material: string): void {
+      const dialogRef = this.dialog.open(TaxonModalComponent, {
+        width: '400px',
+        height: '400px',
+        data: { id: materialId, code_material: code_material }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          console.log("Rafraîchir la liste ici...");
+          // TODO: Recharger la liste des taxons
+        }
+      });
+    }
 }
