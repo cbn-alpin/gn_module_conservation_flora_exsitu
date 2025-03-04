@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Ajouter un taxon</h2>
+<div mat-dialog-content>
+  <p>Ajout de taxon pour le matériel numèro : <b>{{ data.code_material }}</b></p>
+  <pnx-taxonomy
+      label="{{ 'Taxon.NomCite' | translate }}"
+      [parentFormControl]="taxonForm.controls.cd_nom"
+      [charNumber]="3"
+      [displayAdvancedFilters]="false"
+      displayedLabel="search_name"
+    ></pnx-taxonomy>
+</div>
+<div class="div-button">
+  <button mat-raised-button (click)="close()">Annuler</button>
+  <button (click)="submetData()" class="button-success uppercase" mat-raised-button color="primary">
+    <span *ngIf="!isLoading">Valider</span>
+    <mat-progress-spinner *ngIf="isLoading" diameter="20" mode="indeterminate"></mat-progress-spinner>
+  </button>
+</div>
