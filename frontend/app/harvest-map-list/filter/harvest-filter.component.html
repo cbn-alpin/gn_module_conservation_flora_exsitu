@@ -25,15 +25,32 @@
             placeholder="Tapez les premières lettres..."
           ></pnx-autocomplete>
 
-          <div class="form-group mt-2">
-            <small>N° de récolte</small>
-            <input type="text" class="form-control form-control-sm" id="num">
-          </div>
+          <small>N° de récolte</small>
+          <input type="text"
+                class="form-control form-control-sm"
+                id="num"
+                placeholder="Tapez les premières lettres"
+                [formControl]="filterForm.controls.code_material" 
+                [matAutocomplete]="auto">
 
-          <div class="form-group">
-            <small>Type de récolte</small>
-            <input type="text" class="form-control form-control-sm" id="type">
-          </div>
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let code of filteredCodes$ | async" [value]="code">
+              {{ code }}
+            </mat-option>
+          </mat-autocomplete>
+
+
+          <small> Type de récolte * :</small>
+          <pnx-nomenclature
+                  keyValue="id_nomenclature"
+                  [bindAllItem]="true"
+                  keyLabel="label_default"
+                  codeNomenclatureType="CFE_HARVEST_TYPE"
+                  [parentFormControl]="filterForm.controls.id_harvest_type"
+                >
+          </pnx-nomenclature>
+            <!-- <small>Type de récolte</small>
+            <input type="text" class="form-control form-control-sm" id="type"> -->
 
       </fieldset>
 
@@ -52,6 +69,10 @@
             [parentFormControl]="filterForm.controls.date_end"
           ></pnx-date>
         </div>
+        <div *ngIf="filterForm.errors?.dateRangeInvalid" class="error">
+            La date max ne peut pas être inférieure à la date min.
+        </div>
+      
       </fieldset>
 
       <!-- Bloc OU -->
@@ -74,14 +95,14 @@
         <pnx-areas
           label="Commune"
           [typeCodes]="['COM']"
-          [parentFormControl]="filterForm.controls.municipality"
+          [parentFormControl]="filterForm.controls.municipalites"
           >
         </pnx-areas>
 
        <pnx-areas
           label="Département"
           [typeCodes]="['DEP']"
-          [parentFormControl]="filterForm.controls.departement"
+          [parentFormControl]="filterForm.controls.departements"
           >
        </pnx-areas>
 
@@ -89,13 +110,20 @@
 
 
       <div class="filter-actions">
-        <button color="warn" type="button" mat-raised-button>
+        <button color="warn" type="button" mat-raised-button (click)="resetFilters()">
           <i
             class="fa fa-refresh"
             aria-hidden="true"
           ></i>
         </button>
-        <button mat-raised-button type="button" class="button-success uppercase">Rechercher</button>
+        <button 
+            (click)="applyFilters()" 
+            mat-raised-button type="button" 
+            class="button-success uppercase"
+            [disabled]="filterForm.invalid"
+          >
+            Rechercher
+          </button>
       </div>
     </form>
 </div>
