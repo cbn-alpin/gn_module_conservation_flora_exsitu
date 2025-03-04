@@ -5,7 +5,6 @@
       <i class="fa fa-plus-circle" aria-hidden="true"> </i>
       Ajouter une récolte</button>
     <button mat-raised-button color="primary">Télécharger</button>
-    <button mat-raised-button color="primary">Importer</button>
   </div>
 
   <div class="row row-0">
@@ -15,7 +14,7 @@
       #navBar
       id="sidebar"
     >
-        <ex-harvest-filter></ex-harvest-filter>
+        <ex-harvest-filter (filtersChanged)="onFiltersChanged($event)"></ex-harvest-filter>
 
     </nav>
 
@@ -44,8 +43,8 @@
 
     <!-- SECTION CARTE -->
     <div class="map-section">
-      <pnx-map height="91vh" [center]="center" [zoom]="zoom">
-        <pnx-geojson> </pnx-geojson>
+      <pnx-map height="86vh" [center]="center" [zoom]="zoom">
+        <pnx-geojson *ngIf="geojson" [geojson]="geojson" [onEachFeature]="onEachFeature.bind(this)"> </pnx-geojson>
       </pnx-map>
     </div>
 
@@ -64,24 +63,13 @@
         [rowClass]="mapListService.getRowClass"
         [loadingIndicator]="mapListService.isLoading"
         [externalPaging]="true"
-        [count]="harvestList.length"
+        [count]="nbMats"
         [offset]="mapListService.page.pageNumber"
-        [limit]="10"
-        (select)="mapListService.onRowSelect($event)"
-        [rows]="harvestList"
-        data-qa="harvest-list-datatable"
-      
+        [limit]="rowPerPage"
+        (select)="onRowSelect($event)"
+        [rows]="harvests"
+        (page)="onChangePage($event)"
       >
-        <ngx-datatable-row-detail #myDetailRow rowHeight="100">
-          <ng-template ngx-datatable-row-detail-template let-row="row">
-            <div><strong>Matéreils récoltés :</strong> {{ row.altitude }}</div>
-            <div><strong>Observateurs :</strong></div>
-            <div style="margin-left: 20px">
-              <div *ngFor="let obs of row.observers">{{ obs }}</div>
-            </div>
-          </ng-template>
-        </ngx-datatable-row-detail>
-      
         <!-- dropdown Menu Button-->
         <ngx-datatable-column 
           [width]="10"
@@ -112,21 +100,12 @@
           </ng-template>
         </ngx-datatable-column>
 
-         <!-- Date de début -->
-        <ngx-datatable-column name="Date">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span matTooltip="{{ row.date_start | date: 'dd-MM-yyyy' }}">
-              {{ row.date_start | date: 'dd-MM-yyyy' }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-
         <!-- N° de Récolte -->
         <ngx-datatable-column name="N° réc" [headerTemplate]="headerNumR">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span matTooltip="{{ row.harvest_type_label }}">
               <span class="badge badge-dark">{{ row.harvest_materials?.length }}</span>
-                {{ row.harvest_type }}
+                {{ row.code_material }}
             </span>
           </ng-template>
         </ngx-datatable-column>
@@ -138,7 +117,7 @@
         <ngx-datatable-column name="Taxon">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span>
-              
+              {{ row.taxon }}
             </span>
           </ng-template>
         </ngx-datatable-column>
@@ -146,8 +125,8 @@
         <!-- code département -->
         <ngx-datatable-column name="Dept" [headerTemplate]="headerDept">
           <ng-template ngx-datatable-cell-template let-row="row">
-            <span title="Code du département: {{ row.dept_code }}">
-              {{ row.dept_code }}
+            <span matTooltip="{{ row.departement_name }}">
+              {{ row.departement_code }}
             </span>
           </ng-template>
         </ngx-datatable-column>
@@ -160,7 +139,7 @@
         <ngx-datatable-column name="Commune">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span>
-              
+              {{ row.commune }}
             </span>
           </ng-template>
         </ngx-datatable-column>
@@ -168,11 +147,26 @@
         <!-- Observateurs -->
         <ngx-datatable-column name="Observateurs">
           <ng-template ngx-datatable-cell-template let-row="row">
-            <span matTooltip="{{ row.cd_hab_label }}">
-              
+            <span 
+              matTooltip="{{ row.observateursTooltip }}" 
+              matTooltipPosition="above">
+              {{ row.observateursDisplay }}
             </span>
           </ng-template>
         </ngx-datatable-column>
+        
+
+         <!-- Date de début -->
+         <ngx-datatable-column name="Date" [headerTemplate]="headerDate">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <span matTooltip="{{ row.date_start | date: 'dd-MM-yyyy' }}">
+              {{ row.date_start | date: 'dd-MM-yyyy' }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+        <ng-template #headerDate>
+          <span matTooltip="Date début de la récolte">Date</span>
+        </ng-template>        
 
 
         <!-- Colonne Action -->
@@ -216,6 +210,7 @@
               <a
                 data-qa="edit-releve"
                 class="btn btn-outline-shadow btn-no-padding btn-ghost"
+                [routerLink]="['form/harvest', row.id_harvest]"
               >
                 <i
                   matTooltip="Editer la récolte"
@@ -259,6 +254,7 @@
           </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
+       
     </div>
   </div>
 </div>

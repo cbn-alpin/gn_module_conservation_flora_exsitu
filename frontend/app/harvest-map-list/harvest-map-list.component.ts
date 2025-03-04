@@ -7,6 +7,9 @@ import { HarvestStoreService } from '../services/store.service';
 import { DataService } from '../services/data.service';
 import { MapListService } from '@geonature_common/map-list/map-list.service';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { HttpParams } from '@angular/common/http';
+import { ObserversService } from '../services/observers.service';
+
 
 @Component({
   selector: 'gn-cs-root',
@@ -15,13 +18,19 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 })
 export class HarvestMapListComponent implements OnInit {
   filterForm: FormGroup;
-  harvestList: any[] = [];
+  harvests: any[] = [];
   @ViewChild('dataTable') dataTable: DatatableComponent;
   public isCollapseSyntheseNavBar = false;
   public searchBarHidden = false;
   public marginButton: number;
   public center;
   public zoom;
+  public geojson:any;
+  public nbMats: number;
+  public totalPages: number = 0;
+  rowPerPage: number;
+  filters: any = {}; 
+  geometryMap = new Map<string, any>();
 
 
   constructor(
@@ -31,23 +40,109 @@ export class HarvestMapListComponent implements OnInit {
     public storeService: HarvestStoreService,
     public api: DataService,
     public mapListService: MapListService,
+    private observersService: ObserversService
   ) {}
 
-  ngOnInit() {
+  ngOnInit() { 
+    this.calculateNbRow() 
     this.initializeZpForm();
-    this.getAllHarvests();
     this.zoom = this.storeService.cfeConfig.zoom
     this.center = this.storeService.cfeConfig.zoom_center
-
-    this.api.getHarvestAll().subscribe({
-      next: (data)=>{
-        console.log(data);
-      }
-    })
+    this.loadData()
   }
 
-  formatter(item) {
-    return item.search_name;
+  calculateNbRow() {
+    let wH = window.innerHeight;
+    let listHeight = wH - 264;
+    this.rowPerPage = Math.round(listHeight / 40);   
+  }
+
+  onRowSelect(event) {
+    const selectedHarvest = event.selected[0];
+    this.mapListService.selectedRow = [selectedHarvest];
+  }
+
+  onChangePage(event) {
+    this.mapListService.page.pageNumber = event.offset;
+    this.loadData();
+  }
+
+  onMapClick(harvest: any) {
+    this.mapListService.selectedRow = [harvest]; // Sélectionne la ligne correspondante
+    
+  }
+
+  onEachFeature(feature, layer) {
+    layer.on('click', () => {
+      this.onMapClick(feature.properties);
+    });
+  }
+
+  loadData(){
+    let params = new HttpParams()
+    .set('page', this.mapListService.page.pageNumber + 1)
+    .set('limit', this.rowPerPage);
+
+    // La création des params du filtre
+    Object.keys(this.filters).forEach(key => {
+      if (this.filters[key]) {
+        if (Array.isArray(this.filters[key])) {
+          this.filters[key].forEach(value => {
+            params = params.append(key, value.toString());
+          });
+        } else {
+          params = params.set(key, this.filters[key].toString());
+        }
+      }
+    });      
+
+    this.api.getHarvestAll(params).subscribe({
+      next: (data) => {
+        this.nbMats = data['total'];
+        this.geojson = data['items'];    
+        console.log(params);
+                  
+    
+        if (this.geojson && 'features' in this.geojson && Array.isArray((this.geojson as any).features)) {
+          this.geojson.features.forEach((feature) => {
+            if (feature.properties && feature.properties.observateurs) {
+              // const formatted = this.formatObservateurs(feature.properties.observateurs);
+              // feature.properties.observateursDisplay = formatted.display;
+              // feature.properties.observateursTooltip = formatted.tooltip;
+
+              const observerService = new ObserversService();
+              observerService.addObservers(feature.properties.observateurs);
+              feature.properties.observateursDisplay = observerService.getObserversAbbr();
+              feature.properties.observateursTooltip = observerService.getObserversFull();
+            }
+            if (feature.properties && feature.geometry) {
+              this.geometryMap.set(feature.properties.code_material, feature.geometry);
+            }
+          });
+        }
+
+        if(data['items']['features']){          
+          this.mapListService.loadTableData(data['items']);
+          this.harvests = this.mapListService.tableData;          
+          this.totalPages = data['total_pages'];
+        }        
+      }
+    });
+
+  }
+
+  formatObservateurs(observateurs: string): { display: string; tooltip: string } {
+    const obsArray = observateurs.split(', ').map(obs => obs.trim());
+  
+    if (obsArray.length === 1) {
+      return { display: obsArray[0], tooltip: obsArray[0] };
+    }
+  
+    const principal = obsArray[0]; // Le premier observateur
+    const rest = obsArray.slice(1).join(', '); // Les autres observateurs
+    const count = obsArray.length - 1; // Nombre d'observateurs restants
+  
+    return { display: `${principal} +${count}`, tooltip: rest };
   }
 
   private initializeZpForm() {
@@ -68,19 +163,14 @@ export class HarvestMapListComponent implements OnInit {
     this.searchBarHidden = !this.searchBarHidden;
   }
 
-  getAllHarvests(){
-    this.api.getAllHarvest().subscribe({
-      next: (data)=>{
-        console.log(data);
-        this.harvestList = data;
-      },error: (err)=>{
-        console.log(err);
-      }
-    })
-  }
 
   toggleExpandRow(row: any): void {    
     this.dataTable.rowDetail.toggleExpandRow(row);
+  }
+
+  onFiltersChanged(newFilters: any) {
+    this.filters = newFilters;
+    this.loadData();
   }
   
 }
