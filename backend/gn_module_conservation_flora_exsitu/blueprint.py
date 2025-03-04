@@ -299,6 +299,32 @@ def check_code_material():
     else:
         return jsonify({"exists": False}), 200
 
+@blueprint.route("/materials/<int:id_material>/add-taxon", methods=["POST"])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+def add_taxon_to_material(id_material):
+    try:
+        data = request.get_json()
+        cd_nom = data.get("cd_nom")
+
+        if not cd_nom:
+            return jsonify({"error": "Le taxon est requis"}), 400
+
+        # Vérifier si la liaison existe déjà
+        existing_entry = CorMaterialTaxon.query.filter_by(id_material=id_material, cd_nom=cd_nom).first()
+        if existing_entry:
+            return jsonify({"message": "Cette liaison existe déjà"}), 409
+
+        new_link = CorMaterialTaxon(id_material=id_material, cd_nom=cd_nom)
+        db.session.add(new_link)
+        db.session.commit()
+
+        return jsonify({"message": "Taxon ajouté avec succès au matériel"}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
 
 @blueprint.route("/search_code_material", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
