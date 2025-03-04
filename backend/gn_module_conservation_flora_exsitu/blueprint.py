@@ -280,6 +280,24 @@ def get_harvest_materials(id_harvest):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+
+@blueprint.route("/check-code-material", methods=["GET"])
+def check_code_material():
+    code_material = request.args.get('code_material')
+
+    if not code_material:
+        return jsonify({"error": "Code material is required"}), 400
+    
+    # Utilisation de EXISTS pour vérifier l'existence sans retourner de données
+    query = db.session.query(exists().where(THarvestMaterial.code_material == code_material)).scalar()
+    #material = THarvestMaterial.query.filter_by(code_material=code_material).first()
+
+    if query:
+        return jsonify({"exists": True}), 200
+    else:
+        return jsonify({"exists": False}), 200
 
 
 @blueprint.route("/search_code_material", methods=["GET"])
