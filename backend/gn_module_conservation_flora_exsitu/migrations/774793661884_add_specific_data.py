@@ -133,6 +133,7 @@ def downgrade():
     delete_nomenclatures("CFE_STOCK_FLOW")
     delete_nomenclatures("CFE_COLOR_TABLET")
     delete_nomenclatures("CFE_DISSEMINATION_UNIT")
+    delete_nomenclatures("CFE_GEOGRAPHICAL_PRECISION")
 
     delete_module(MODULE_CODE)
 

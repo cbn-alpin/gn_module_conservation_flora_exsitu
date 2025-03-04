@@ -60,6 +60,14 @@ class THarvest(db.Model):
             ondelete="NULL"
         ),
     )
+    id_geographical_location  = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
     precision = db.Column(
         db.Integer, 
         default=10

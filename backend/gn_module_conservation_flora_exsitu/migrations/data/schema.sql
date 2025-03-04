@@ -27,7 +27,7 @@ CREATE TABLE "t_harvest" (
 	-- Date de début de récolte
 	"date_start" DATE NOT NULL,
 	-- Date de fin de récolte
-	"date_end" DATE NOT NULL,
+	"date_end" DATE,
 	-- Remarques générales
 	"comment" TEXT,
 	-- Commentaire sur la location(lieudit, comm_loc)
@@ -38,6 +38,7 @@ CREATE TABLE "t_harvest" (
 	"location_code" INTEGER,
 	-- Type de localisation
 	"location_type" INTEGER,
+	"id_geographical_location" INTEGER NOT NULL,
 	-- Résolution de la localisation en mètres
 	"precision" INTEGER DEFAULT 10,
 	-- En m2
@@ -372,9 +373,6 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "cor_harvest_observer"
 ADD FOREIGN KEY("id_observer") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest"
-ADD FOREIGN KEY("location_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_seed_tablet"
 ADD FOREIGN KEY("id_tablet_color") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -422,6 +420,9 @@ ADD FOREIGN KEY("id_harvest_material") REFERENCES ref_nomenclatures.t_nomenclatu
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_exposition") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_harvest"
+ADD FOREIGN KEY("id_geographical_location") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest_material"
 ADD FOREIGN KEY("id_method_sample") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)

@@ -208,6 +208,18 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'CBNA'
 ) ;
 
+-- Create the "CFE_GEOGRAPHICAL_PRECISION" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_GEOGRAPHICAL_PRECISION',
+    'Précision géographique',
+    'Nomenclature des types de précision géographique.',
+    'Précision géographique',
+    'Nomenclature des types de précision géographique.',
+    'CBNA'
+) ;
+
 -- --------------------------------------------------------------------------------
 -- COMMONS
 
