@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { filter, tap, skip, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
+import { filter, tap, skip, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
+import { HttpParams } from '@angular/common/http';
 
 
 @Injectable()
@@ -10,71 +11,72 @@ export class ExsituFormService{
     idHarvest: number = null
     mode:string = 'add'
     harvest: any
+    materials: any
     public exsituData: BehaviorSubject<any> = new BehaviorSubject(null);
+    public materials$: BehaviorSubject<any> = new BehaviorSubject(null);
     public id_harvest: BehaviorSubject<number> = new BehaviorSubject(null);
     public idMaterial: number;
-    public editionModeMaterial: BehaviorSubject<boolean> = new BehaviorSubject(false); // boolean to check if its editionMode
-
+    public editionMode: BehaviorSubject<boolean> = new BehaviorSubject(false); // boolean to check if its editionMode
+    public params = new HttpParams()
+              .set('page', 1)
+              .set('limit', 10);
 
     constructor(
         private dataService: DataService
     ){
         //observation de l'URL et recuperation du material si édition id !== null
-    this.id_harvest
-        .pipe(
-        skip(1), // skip initilization value (null)
-        tap((id) => {
+        this.id_harvest.pipe(
+          skip(1),
+          tap((id) => {
             if (id == null) {
-            this.editionModeMaterial.next(false);
+              this.editionMode.next(false);
             } else {
-            this.editionModeMaterial.next(true);
+              this.editionMode.next(true);
             }
-        }), //reinitialisation du mode edition à faux
-        filter((id) => id !== null),
-        distinctUntilChanged(),
-        switchMap((id) => this.dataService.getHarvestById(id))
+          }),
+          filter((id) => id !== null),
+          distinctUntilChanged(),
+          switchMap((id) => 
+            forkJoin({
+              harvest: this.dataService.getHarvestById(id),
+              materials: this.dataService.getMaterialsByHarvest(id, this.params)
+            })
+          )
         )
         .subscribe(
-        (data) => {          
-            this.exsituData.next(data);
-            this.harvest = data
-            if (data.harvest_materials.id_material) {
-                this.idMaterial = data.harvest_materials.id_material;
-            }
-        },
-        (error) => {
-            console.log('observation de lURL et recuperation du material', error);
-            // this._commonService.translateToaster('error', 'Releve.DoesNotExist');
-            // this._router.navigate(['occtax/form']);
-        }
+          ({ harvest, materials }) => {
+            this.exsituData.next(harvest);
+            this.harvest = harvest;
+            this.materials$.next(materials['materials']);
+            this.materials = materials['materials']
+          },
+          (error) => {
+            console.log('Erreur lors de la récupération de la récolte et des matériels', error);
+          }
         );
+        
+      
     }
 
     addOccurrenceData(occurrence): void {
-        let occtaxData = this.exsituData.getValue();
+        let materials = this.materials$.getValue();
     
-        if (!occtaxData.harvest_materials) {
-          occtaxData.harvest_materials = [];
+        if (!materials) {
+          materials = [];
         }
-        occtaxData.harvest_materials.push(occurrence);
-        this.exsituData.next(occtaxData);
+  
+        materials.push(occurrence);
+        this.materials$.next(materials);        
     }
 
     removeOccurrenceData(id_occurrence): void {
-        let occtaxData = this.exsituData.getValue();
-        if (occtaxData.harvest_materials) {
-          for (let i = 0; i < occtaxData.harvest_materials.length; i++) {
-            if (
-                occtaxData.harvest_materials[i].id_material ===
-              id_occurrence
-            ) {
-                occtaxData.harvest_materials.splice(i, 1);
-              break;
-            }
-          }
-        }
-        this.exsituData.next(occtaxData);
+      let materials = this.materials$.getValue();
+  
+      if (materials) {
+          materials = materials.filter(material => material.id_material !== id_occurrence);
+          this.materials$.next(materials);
       }
+    }
     
       replaceOccurrenceData(occurrence): void {
         this.removeOccurrenceData(occurrence.id_occurrence_occtax);
@@ -82,7 +84,7 @@ export class ExsituFormService{
       }
     
       replaceExsituData(releve): void {
-        let occtaxData = this.exsituData.getValue();
+        let occtaxData = this.materials$.getValue();
         occtaxData.releve = releve;
         this.exsituData.next(occtaxData);
       }

@@ -1,0 +1,8 @@
+.form-group {
+  margin-bottom: 5px !important;
+}
+
+.map-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

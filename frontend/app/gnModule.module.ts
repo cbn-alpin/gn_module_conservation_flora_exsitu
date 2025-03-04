@@ -21,6 +21,10 @@ import { HeaderComponent } from './form/shared/header/header.component';
 import { HarvestFilterComponent } from './harvest-map-list/filter/harvest-filter.component';
 import { HarvestMapComponent } from './harvest-form/harvest-map/harvest-map.component';
 import { HarvestFormService } from './harvest-form/harvest-form.service';
+import { ConstantsService } from './services/constants.service';
+import { HarvestMapService } from './harvest-form/harvest-map/harvest-map.service';
+import { ObserversService } from './services/observers.service';
+import { TaxonModalComponent } from './components/modal-taxon/taxon-modal.component';
 
 
 export const routingConfiguration: ExtraOptions = {
@@ -39,6 +43,7 @@ export const routingConfiguration: ExtraOptions = {
     HeaderComponent,
     HarvestFilterComponent,
     HarvestMapComponent,
+    TaxonModalComponent
   ],
   providers: [
     HarvestStoreService, 
@@ -47,7 +52,10 @@ export const routingConfiguration: ExtraOptions = {
     ExsituFormService,
     MaterialFormService,
     MaterialListService,
-    HarvestFormService
+    HarvestFormService,
+    ConstantsService,
+    HarvestMapService,
+    ObserversService
   ],
   imports: [
     RouterModule.forChild(routes),

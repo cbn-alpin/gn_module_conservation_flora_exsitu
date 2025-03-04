@@ -1,31 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { GeoJSON } from 'leaflet';
+import { Component, OnInit, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
 
 import { leafletDrawOption } from '@geonature_common/map/leaflet-draw.options';
 import { ModuleService } from '@geonature/services/module.service';
-import { HarvestFormService } from '../services/harvest-form-service';
 import { HarvestStoreService } from '../services/store.service';
-import { filter } from 'rxjs/operators';
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ValidatorFn  } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from '../services/data.service';
+import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { HarvestFormService } from './harvest-form.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
 
 
 @Component({
-  selector: 'cs-harvest',
+  selector: 'ex-harvest-form',
   templateUrl: './harvest-form.component.html',
   styleUrls: ['./harvest-form.component.css'],
-  providers: [HarvestFormService],
 })
-export class HarvestFormComponent implements OnInit {
+export class HarvestFormComponent implements OnInit, OnDestroy {
   public leafletDrawOptions = leafletDrawOption;
-  public MAP_FULL_HEIGHT = '87vh';
+  public MAP_FULL_HEIGHT = '86vh';
   public mapHeight = this.MAP_FULL_HEIGHT;
   public markerCoordinates;
   public currentGeoJsonFileLayer;
   harvestForm: FormGroup;
+  public center;
+  public zoom;
+  isChecked:boolean = false;
+  cardContentHeight: any;
+
 
 
   constructor(
@@ -35,6 +40,9 @@ export class HarvestFormComponent implements OnInit {
     private router: Router,
     private dateParser: NgbDateParserFormatter,
     public api: DataService,
+    private exsituFormService: ExsituFormService,
+    public harvertFormService: HarvestFormService,
+    private _commonService: CommonService
   ) {
     
   }
@@ -44,35 +52,29 @@ export class HarvestFormComponent implements OnInit {
     // this.harvestForm.harvestForm = this.harvestForm.initHarvestForm();
     // this.storeService.defaultNomenclature$.pipe(filter((val) => val !== null)).subscribe((val) => {
     //   this.harvestForm.patchDefaultNomenclaureStation(val);
-    // });
-    this.initializeHarvestForm()
-    this.initializeLeafletDrawOptions()
+    // });    
+
+    this.harvestForm = this.harvertFormService.harvestForm;
+    //this.initializeHarvestForm()
+    // this.initializeLeafletDrawOptions()
+    this.zoom = this.storeService.cfeConfig.zoom
+    this.center = this.storeService.cfeConfig.zoom_center
+
+    this.harvestForm.controls['id_geographical_location'].valueChanges.subscribe(value => {      
+      if(value && value.id_nomenclature) {
+        const idNomenclature = value.id_nomenclature
+        this.harvertFormService.getCodesNomenclature(idNomenclature);
+      }
+    });
   }
 
   formatter(item) {
     return item.search_name;
   }
 
-  private initializeHarvestForm() {
-    this.harvestForm = this.formBuilder.group({
-      id_harvest: null,
-      cd_hab: [null, Validators.required],
-      id_harvest_type: [null, Validators.required],
-      date_start: [null, Validators.required],
-      date_end: [null],
-      place_comment: [null],
-      comment: [null],
-      observers: [[], Validators.required],
-      geom: [null, Validators.required],
-      id_dataset: [null, Validators.required],
-      location_type: [null],
-      location_code: [null],
-      surface: [20],
-      altitude: [30],
-      id_exposition: [null],
-      precision: [10]
-    });
-  }
+  onChange($event: MatCheckboxChange){
+    this.isChecked = $event.checked;
+ }
 
   private initializeLeafletDrawOptions() {
     this.leafletDrawOptions.draw.rectangle = false;
@@ -84,44 +86,42 @@ export class HarvestFormComponent implements OnInit {
   }
 
   cancel(){
+    this.harvestForm.reset();    
+    this.harvertFormService.harvestForm.reset()
     this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/`]);
-  }
-
-  addGeoInfo(geojson) {
-    this.harvestForm.patchValue({ geom: geojson.geometry });
-    console.log(geojson);
-    
-    this.harvestForm.markAsDirty();
-  }
-
-  deleteGeoInfo() {
-    this.harvestForm.patchValue({ geom: null });
-    this.harvestForm.markAsDirty();
   }
 
   onSubmit() {
     let finalForm = this.formatDataFormZp();
+    console.log(finalForm);
+    
 
-    this.api.addHarvest(finalForm).subscribe((data) => {
-      this.onFormSaved(data);
+    this.api.addHarvest(finalForm).subscribe((harvest) => {
+      this._commonService.translateToaster('info', 'Récolte enregistrée');
+      this.onFormSaved(harvest.harvest);
     });
     
   }
 
-  private onFormSaved(data) {
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}`]);
+  private onFormSaved(harvest) {
+    this.exsituFormService.currentTab = 'materials'
+    this.exsituFormService.idHarvest = harvest.id_harvest
+    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
   }
 
 
   private formatDataFormZp() {
     const finalForm = JSON.parse(JSON.stringify(this.harvestForm.value));
-    console.log(finalForm);
 
+    
+    if(finalForm.id_harvest_type)
+      finalForm.id_harvest_type = finalForm.id_harvest_type.id_nomenclature;
+    if(finalForm.id_exposition)
+      finalForm.id_exposition = finalForm.id_exposition.id_nomenclature;
+    finalForm.id_geographical_location = finalForm.id_geographical_location.id_nomenclature;
 
-    finalForm.cd_hab = finalForm.cd_hab.cd_hab;
-    finalForm.id_harvest_type = finalForm.id_harvest_type.id_nomenclature;
-    finalForm.id_exposition = finalForm.id_exposition.id_nomenclature;
-
+    if(finalForm.cd_hab)
+      finalForm.cd_hab = finalForm.cd_hab.cd_hab;
     // Date
     finalForm.date_start = this.dateParser.format(finalForm.date_start);
     finalForm.date_end = this.dateParser.format(finalForm.date_end);
@@ -136,5 +136,10 @@ export class HarvestFormComponent implements OnInit {
     }
 
     return finalForm;
+  }
+
+
+  ngOnDestroy(): void {
+    this.harvestForm.reset()
   }
 }
