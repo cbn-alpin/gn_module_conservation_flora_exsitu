@@ -19,6 +19,11 @@ from pypn_habref_api.models import Habref
 from geoalchemy2.functions import ST_AsGeoJSON
 import json
 from pypnnomenclature.models import TNomenclatures
+from geoalchemy2.shape import to_shape
+from sqlalchemy import exists
+from shapely import wkb
+from shapely.geometry import shape
+
 
 blueprint = Blueprint("pr_conservation_flora_exsitu", __name__)
 log = logging.getLogger(__name__)
@@ -54,16 +59,14 @@ def get_all_harvests():
     date_start = request.args.get('date_start', type=str) 
     date_end = request.args.get('date_end', type=str) 
     observers = request.args.getlist('observers')  
-    municipality = request.args.get('municipality', type=str)  
-    departement = request.args.get('departement', type=str)  
+    municipalites = request.args.getlist('municipalites')  
+    departements = request.args.getlist('departements')  
     id_harvest_type = request.args.get('id_harvest_type', type=int)  
     code_material = request.args.get('code_material', type=str)  
 
     # Alias pour les jointures
     l_areas_dept = aliased(LAreas)
     l_areas_commune = aliased(LAreas)
-    ObservateurAlias = aliased(User)
-
 
     # Début de la requête SQLAlchemy
     query = (
@@ -72,7 +75,8 @@ def get_all_harvests():
             THarvestMaterial.id_material,
             THarvest.date_start,
             THarvestMaterial.code_material,
-            db.func.string_agg(Taxref.lb_nom, ', ').label('taxons'),
+            # db.func.string_agg(Taxref.lb_nom, ', ').label('taxons'),
+            Taxref.lb_nom.label('taxon'),
             l_areas_dept.area_code.label('departement_code'),
             l_areas_dept.area_name.label('departement_name'),
             l_areas_commune.area_name.label('commune'),
@@ -82,7 +86,8 @@ def get_all_harvests():
                     "nom_role", User.nom_role
                 )
             ).label("observateurs"),
-            ST_AsGeoJSON(THarvest.geom).label("geom")  # Conversion en GeoJSON
+            func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326)).label("geom")
+            # ST_AsGeoJSON(THarvest.geom).label("geom")  # Conversion en GeoJSON
         )
         .join(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
         .outerjoin(CorMaterialTaxon, THarvestMaterial.id_material == CorMaterialTaxon.id_material)
@@ -96,6 +101,7 @@ def get_all_harvests():
             THarvestMaterial.id_material,
             THarvest.date_start,
             THarvestMaterial.code_material,
+            Taxref.lb_nom,
             l_areas_dept.area_name,
             l_areas_dept.area_code,
             l_areas_commune.area_name,
@@ -118,11 +124,11 @@ def get_all_harvests():
     if observers:
         query = query.filter(User.id_role.in_(observers))
 
-    if municipality:
-        query = query.filter(THarvest.location_code == municipality)
+    if municipalites:
+        query = query.filter(THarvest.location_code.in_(municipalites))
 
-    if departement:
-        query = query.filter(THarvest.location_code == departement)
+    if departements:
+        query = query.filter(THarvest.location_code.in_(departements))
 
     if id_harvest_type:
         query = query.filter(THarvest.id_harvest_type == id_harvest_type)
@@ -153,7 +159,7 @@ def get_all_harvests():
                 "id_harvest": result.id_harvest,
                 "date_start": result.date_start,
                 "code_material": result.code_material,
-                "taxons": result.taxons,
+                "taxon": result.taxon,
                 "departement_name": result.departement_name,
                 "departement_code": result.departement_code,
                 "commune": result.commune,
@@ -179,30 +185,42 @@ def get_all_harvests():
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @json_resp
 def get_harvest_by_id(harvest_id):
-    """Récupère une récolte par son ID avec labels, date de début et matériaux"""
-    harvest_repo = HarvestRepository()
-    harvest = harvest_repo.get_one(harvest_id)
 
+    harvest = db.session.query(THarvest).filter(THarvest.id_harvest == harvest_id).first()
+    
     if not harvest:
-        return {"message": "Harvest not found"}, 404
+        return {"error": "Harvest not found"}, 404
 
-    # Structurer la réponse avec les informations sur la récolte
-    result = {
-        "id_harvest": harvest[0][0],  # ID de la récolte
-        "date_start": harvest[0][1].strftime("%Y-%m-%d") if harvest[0][1] else None,
-        "cd_hab": harvest[0][2],
-        "harvest_type": harvest[0][3],
-        "exposition": harvest[0][4],
-        "harvest_materials": []
+    observers = (
+        db.session.query(CorHarvestObserver.id_observer)
+        .filter(CorHarvestObserver.id_harvest == harvest.id_harvest)
+        .all()
+    )
+    
+    materials_exist = db.session.query(THarvestMaterial).filter(THarvestMaterial.id_harvest == harvest.id_harvest).count() > 0
+    geom_geojson = None
+    if harvest.geom:
+        geom_wgs84 = db.session.query(func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326))).filter(THarvest.id_harvest == harvest.id_harvest).first()
+        if geom_wgs84:
+            geom_geojson = json.loads(geom_wgs84[0]) 
+
+    harvest_data = {
+        "id_harvest": harvest.id_harvest,
+        "id_harvest_type": harvest.id_harvest_type,
+        "id_dataset": harvest.id_dataset,
+        "date_start": harvest.date_start,
+        "date_end": harvest.date_end,
+        "location_type": harvest.location_type,
+        "location_code": harvest.location_code,
+        "geom": geom_geojson,
+        "id_geographical_location": harvest.id_geographical_location,
+        "id_exposition": harvest.id_exposition,
+        "observers": [observer.id_observer for observer in observers], 
+        "harvest_materials": materials_exist
     }
 
-    # Ajouter tous les matériaux associés à la récolte
-    for harvest_material in harvest:
-        if harvest_material[-1]:  # Vérifier que THarvestMaterial existe
-            harvest_material_dict = {c.name: getattr(harvest_material[-1], c.name) for c in THarvestMaterial.__table__.columns}
-            result["harvest_materials"].append(harvest_material_dict)
+    return harvest_data, 200
 
-    return result, 200
 
 
 @blueprint.route("/harvests/<int:id_harvest>/materials", methods=["POST"])
@@ -266,4 +284,5 @@ def get_code_nomenclature_by_id():
     ).first()
     
     return jsonify({"code_nomenclature": result[0]})
+
 

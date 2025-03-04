@@ -10,6 +10,9 @@ from sqlalchemy.orm import aliased
 from flask import jsonify
 from ref_geo.models import LAreas, BibAreasTypes
 from apptax.taxonomie.models import Taxref
+from sqlalchemy import func
+import json
+
 
 from .models import(
     THarvest,
@@ -99,7 +102,13 @@ class HarvestRepository:
                 data["date_end"] = data["date_start"]
             
             if data.get('geom'):
-                data['geom'] = self._convert_geojson_to_ewkt(data['geom'])
+                # Convertir le GeoJSON en chaîne JSON valide
+                geom_json = json.dumps(data['geom'])
+                # Conversion en géométrie avec ST_GeomFromGeoJSON
+                geom = func.ST_GeomFromGeoJSON(geom_json)
+                # Si la géométrie est en WGS84 (SRID 4326), la transformer en Lambert-93 (SRID 2154)
+                geom_transformed = func.ST_Transform(geom, 2154)
+                data['geom'] = geom_transformed
             
             if data["location_type"]:
                 if data["location_type"] == 25:  # Commune
@@ -142,7 +151,7 @@ class HarvestRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-                    
+                        
 
 class HarvestMaterialRepository:
     def get_one(self, id_material):
