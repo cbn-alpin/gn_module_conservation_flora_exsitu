@@ -255,6 +255,32 @@ def delete_material(id_material):
     material_repo.delete(id_material)
     return {"message": "Harvest material deleted successfully"}, 200
 
+@blueprint.route("/harvests/<int:id_harvest>/materials", methods=["GET"])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def get_harvest_materials(id_harvest):
+    try:
+        limit = request.args.get('limit', default=10, type=int) 
+        page = request.args.get('page', default=1, type=int)
+        offset = (page - 1) * limit
+
+        materials = THarvestMaterial.query.filter_by(id_harvest=id_harvest)\
+                                          .limit(limit)\
+                                          .offset(offset)\
+                                          .all()
+        
+        materials_list = [material.to_dic() for material in materials]
+
+        return {
+            'materials': materials_list,
+            'total': THarvestMaterial.query.filter_by(id_harvest=id_harvest).count(),  # Total des matériaux
+            'limit': limit,
+            'offset': offset
+        }, 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @blueprint.route("/search_code_material", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
