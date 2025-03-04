@@ -13,7 +13,6 @@
     "@angular-material-components/moment-adapter": "^15.0.0",
     "Leaflet.Deflate": "^2.1.0",
     "ngx-bootstrap": "^10.3.0",
-    "ngx-toastr": "^16.1.0",
-    "rxjs": "^7.8.1"
+    "ngx-toastr": "^16.1.0"
   }
 }

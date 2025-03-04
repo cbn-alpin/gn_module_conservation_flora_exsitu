@@ -58,7 +58,7 @@ include = ["gn_module_conservation_flora_exsitu*"]
 namespaces = true
 
 [tool.setuptools.package-data]
-"gn_module_monitoring_habitat_station.migrations.data" = ["*.sql", "*.csv"]
+"gn_module_conservation_flora_exsitu.migrations.data" = ["*.sql", "*.csv"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
