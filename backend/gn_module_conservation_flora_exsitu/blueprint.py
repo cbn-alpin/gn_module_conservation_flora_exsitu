@@ -54,7 +54,7 @@ def get_all_harvests():
     offset = (page - 1) * limit
 
     # Filtres facultatifs
-    cd_nom = request.args.get('cd_nom', type=int)  
+    cd_nom_list = request.args.getlist('cd_nom', type=int)  
     cd_hab = request.args.get('cd_hab', type=int)  
     date_start = request.args.get('date_start', type=str) 
     date_end = request.args.get('date_end', type=str) 
@@ -109,8 +109,8 @@ def get_all_harvests():
         )
     )
 
-    if cd_nom:
-        query = query.filter(CorMaterialTaxon.cd_nom == cd_nom)
+    if cd_nom_list:
+        query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
 
     if cd_hab:
         query = query.filter(THarvest.cd_hab == cd_hab)

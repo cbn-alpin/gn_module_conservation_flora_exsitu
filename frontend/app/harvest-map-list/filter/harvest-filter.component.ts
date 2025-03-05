@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { HarvestStoreService } from '../../services/store.service';
 import { DataService } from '../../services/data.service';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
@@ -20,13 +20,13 @@ export class HarvestFilterComponent implements OnInit {
 
     filterForm: FormGroup;
     public municipalities = [];
-    public departments = []
+    public departments = [];
+    selectedTaxons: any[] = [];
 
     
     constructor(
         private formBuilder: FormBuilder,
         public storeService: HarvestStoreService,
-        private api: DataService,
         private dateParser: NgbDateParserFormatter,
         private dataService: DataService
     ){}
@@ -122,7 +122,7 @@ export class HarvestFilterComponent implements OnInit {
     
         return {
             ...rest,
-            cd_nom: cd_nom?.cd_nom ?? null,
+            cd_nom: this.selectedTaxons.length > 0 ? this.selectedTaxons.map(taxon => taxon.cd_nom) : null,
             cd_hab: cd_hab?.cd_hab ?? null,
             id_harvest_type: id_harvest_type?.id_nomenclature ?? null,
             date_start: date_start ? this.dateParser.format(date_start) : null,
@@ -136,9 +136,26 @@ export class HarvestFilterComponent implements OnInit {
     resetFilters() {
         this.filterForm.reset();
         this.filteredCodes$ = of([]); // Vide les suggestions de code_material
+        this.selectedTaxons = [];
         this.applyFilters();
     }
     
+    addTaxon(event: any) {
+        const selectedTaxon = event.item;
+        
+        // Vérifier s'il n'est pas déjà ajouté
+        if (!this.selectedTaxons.find(t => t.cd_nom === selectedTaxon.cd_nom)) {
+            this.selectedTaxons.push(selectedTaxon);
+        }
+        event.preventDefault();
+        this.filterForm.controls.cd_nom.reset();
+    }
+    
+
+    removeTaxon(index: number) {
+        this.selectedTaxons.splice(index, 1);
+        this.applyFilters();
+    }
 
 
 }

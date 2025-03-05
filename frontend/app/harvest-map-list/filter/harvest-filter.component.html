@@ -10,8 +10,24 @@
           [listLength]="20"
           matTooltipPosition="above"
           [parentFormControl]="filterForm.controls.cd_nom"
+          (onChange)="addTaxon($event)"
           >
         </pnx-taxonomy>
+        <!-- Affichage des taxons sélectionnés -->
+        <div *ngIf="selectedTaxons.length > 0" class="alert alert-warning search-alert mt-2">
+          <p class="taxon-list"><b>Taxon(s) sélectionné(s) :</b></p>
+          <ul class="taxon-list">
+            <li *ngFor="let taxon of selectedTaxons; let i = index"
+                class="d-flex justify-content-between align-items-center">
+              {{ taxon.nom_valide }} ({{ taxon.cd_nom }})
+              <i (click)="removeTaxon(i)"
+                class="fa fa-times clickable"
+                matTooltip="Retirer {{ taxon.nom_valide }} des filtres de recherche">
+              </i>
+            </li>
+          </ul>
+        </div>
+
 
         <pnx-autocomplete
             id="habitat"

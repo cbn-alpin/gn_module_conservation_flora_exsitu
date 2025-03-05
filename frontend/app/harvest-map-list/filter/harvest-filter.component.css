@@ -38,3 +38,12 @@ legend {
     justify-content: space-between;
     z-index: 100;
 }
+
+.taxon-list {
+    margin-bottom: 0px;
+    font-size: 12px;
+  }
+  
+  .taxon-list li:hover {
+    background-color: rgba(#fff, 0.5);
+  }
