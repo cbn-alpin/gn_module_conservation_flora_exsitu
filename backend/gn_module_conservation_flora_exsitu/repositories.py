@@ -110,17 +110,14 @@ class HarvestRepository:
                 geom_transformed = func.ST_Transform(geom, 2154)
                 data['geom'] = geom_transformed
             
-            if data["location_type"]:
+            if data["location_type"] and not data.get('geom'):
                 if data["location_type"] == 25:  # Commune
                     data["location_code"] = data.get("location_code_muni", [None])[0]
                 elif data["location_type"] == 26:  # Département
                     data["location_code"] = data.get("location_code_dept", [None])[0]
-                
+    
                 if data["location_code"]:
-                    area = LAreas.query.filter_by(
-                        id_type=data["location_type"],
-                        area_code=str(data["location_code"])
-                    ).first()
+                    area = LAreas.query.get(data["location_code"])
 
                     if area and area.centroid :
                         data["geom"] = area.centroid

@@ -69,8 +69,7 @@ class THarvest(db.Model):
         nullable=False
     )
     precision = db.Column(
-        db.Integer, 
-        default=10
+        db.Integer
     )
     surface = db.Column(db.Integer)
     altitude = db.Column(db.Integer)

@@ -40,7 +40,7 @@ CREATE TABLE "t_harvest" (
 	"location_type" INTEGER,
 	"id_geographical_location" INTEGER NOT NULL,
 	-- Résolution de la localisation en mètres
-	"precision" INTEGER DEFAULT 10,
+	"precision" INTEGER,
 	-- En m2
 	"surface" INTEGER,
 	"altitude" INTEGER,
