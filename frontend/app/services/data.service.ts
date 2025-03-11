@@ -62,4 +62,8 @@ export class DataService {
     return this.api.get<any>(`${this.moduleBaseUrl}/check-code-material?code_material=${codeMaterial}`);
   }
 
+  getHarvestGeometries(params: HttpParams){
+    return this.api.get<any>(`${this.moduleBaseUrl}/harvests/geometries`, {params});
+  }
+
 }

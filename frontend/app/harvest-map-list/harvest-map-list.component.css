@@ -70,14 +70,11 @@
 
 /* SECTION TABLEAU */
 .table-section {
-  width: 50%;
   flex: 2;
   min-width: 350px;
-  padding: 10px;
   border-left: 1px solid #ddd;
   background-color: white; /* Fond blanc */
   overflow-y: auto;
-  max-height: calc(100vh - 50px);
   flex-shrink: 0;
 }
 
@@ -92,4 +89,24 @@
 
 .btn-red i {
   color: red !important;
+}
+
+::ng-deep .mat-icon-button[aria-label="Delete"] {
+  color: red; /* Vous pouvez choisir une autre couleur ici */
+}
+
+.mat-paginator-sticky {
+  bottom: 0;
+  position: sticky;
+  z-index: 10;
+}
+
+.highlighted {
+  background-color: yellow !important;
+}
+
+.mat-table tr:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.2s;
 }

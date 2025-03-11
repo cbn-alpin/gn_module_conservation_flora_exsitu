@@ -1,10 +1,9 @@
 <div class="wrapper">
-  <!-- Bande avec boutons -->
   <div class="header-bar">
     <button (click)="onAddHarvest()" mat-raised-button class="button-success uppercase">
       <i class="fa fa-plus-circle" aria-hidden="true"> </i>
       Ajouter une récolte</button>
-    <button mat-raised-button color="primary">Télécharger</button>
+    <button mat-raised-button color="primary" (click)="go()">Télécharger</button>
   </div>
 
   <div class="row row-0">
@@ -23,7 +22,6 @@
         (click)="isCollapseSyntheseNavBar = !isCollapseSyntheseNavBar"
         [attr.aria-expanded]="!isCollapseSyntheseNavBar"
         #buttonToggle
-        [style.left.px]="marginButton"
         (click)="mooveButton()"
         type="button"
         id="sidebarCollapse"
@@ -44,216 +42,82 @@
     <!-- SECTION CARTE -->
     <div class="map-section">
       <pnx-map height="86vh" [center]="center" [zoom]="zoom">
-        <pnx-geojson *ngIf="geojson" [geojson]="geojson" [onEachFeature]="onEachFeature.bind(this)"> </pnx-geojson>
+        <pnx-geojson 
+          [cluster]="true" 
+          *ngIf="geojson" 
+          [geojson]="geojson" 
+          [onEachFeature]="onEachFeature.bind(this)"        
+        > </pnx-geojson>
       </pnx-map>
     </div>
 
     <!-- SECTION TABLEAU (scrollable) -->
-    <div class="table-section">
-      <ngx-datatable
-        #dataTable
-        class="material striped margin-top-xs table-size expandable"
-        maxWidth="90"
-        [headerHeight]="35"
-        [footerHeight]="40"
-        [rowHeight]="40"
-        [columnMode]="'force'"
-        [selected]="mapListService.selectedRow"
-        [selectionType]="'single'"
-        [rowClass]="mapListService.getRowClass"
-        [loadingIndicator]="mapListService.isLoading"
-        [externalPaging]="true"
-        [count]="nbMats"
-        [offset]="mapListService.page.pageNumber"
-        [limit]="rowPerPage"
-        (select)="onRowSelect($event)"
-        [rows]="harvests"
-        (page)="onChangePage($event)"
-      >
-        <!-- dropdown Menu Button-->
-        <ngx-datatable-column 
-          [width]="10"
-          [resizeable]="false"
-          [sortable]="false"
-          [draggable]="false"
-          [canAutoResize]="false"
-        >
-          <ng-template ngx-datatable-header-template>
-            <i
-              id="dropdownMenuButton"
-              class="fa fa-cog clickable"
-              aria-hidden="true"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-              matTooltip="{{ 'List.Columns' | translate }}"
-            ></i>
-          </ng-template>
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <a
-              href="javascript:void(0)"
-              matTooltip="Ouvrir/fermer le détail"
-              [class.datatable-icon-right]="!expanded"
-              [class.datatable-icon-down]="expanded"
-              (click)="toggleExpandRow(row)"
-            ></a>
-          </ng-template>
-        </ngx-datatable-column>
-
-        <!-- N° de Récolte -->
-        <ngx-datatable-column name="N° réc" [headerTemplate]="headerNumR">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span matTooltip="{{ row.harvest_type_label }}">
-              <span class="badge badge-dark">{{ row.harvest_materials?.length }}</span>
-                {{ row.code_material }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-        <ng-template #headerNumR>
-          <span matTooltip="Numéro de récolte">N° réc</span>
-        </ng-template>
-
-        <!-- Taxon -->
-        <ngx-datatable-column name="Taxon">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span>
-              {{ row.taxon }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-
-        <!-- code département -->
-        <ngx-datatable-column name="Dept" [headerTemplate]="headerDept">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span matTooltip="{{ row.departement_name }}">
-              {{ row.departement_code }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-        <ng-template #headerDept>
-          <span matTooltip="Code du département">Dept</span>
-        </ng-template>
-        
-
-        <!-- Nom de la commune -->
-        <ngx-datatable-column name="Commune">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span>
-              {{ row.commune }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
+    <div class="table-section"  
+      #dataTableContainer
+      [ngStyle]="{ height: dataTableHeight + 'px' }"
       
-        <!-- Observateurs -->
-        <ngx-datatable-column name="Observateurs">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span 
-              matTooltip="{{ row.observateursTooltip }}" 
-              matTooltipPosition="above">
-              {{ row.observateursDisplay }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-        
-
-         <!-- Date de début -->
-         <ngx-datatable-column name="Date" [headerTemplate]="headerDate">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span matTooltip="{{ row.date_start | date: 'dd-MM-yyyy' }}">
-              {{ row.date_start | date: 'dd-MM-yyyy' }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-        <ng-template #headerDate>
-          <span matTooltip="Date début de la récolte">Date</span>
-        </ng-template>        
-
-
-        <!-- Colonne Action -->
-        <ngx-datatable-column maxWidth="10">
-          <ng-template
-            let-row="row"
-            ngx-datatable-cell-template
-          >
-            <ng-container>
-              <a
-                class="btn btn-outline-shadow btn-no-padding btn-ghost"
-              >
-                <i
-                  matTooltip="Informations récolte"
-                  class="fa fa-info-circle"
-                  aria-hidden="true"
-                ></i>
-              </a>
-            </ng-container>
-            <ng-template #disabledInfoBlc>
-              <button
-                class="btn btn-outline-shadow btn-no-padding btn-ghost"
-                disabled="true"
-              >
-                <i
-                  class="fa fa-info-circle disabled"
-                  matTooltip="Informations récolte"
-                  aria-hidden="true"
-                ></i>
-              </button>
-            </ng-template>
-          </ng-template>
-        </ngx-datatable-column>
-
-        <ngx-datatable-column maxWidth="10">
-          <ng-template
-            let-row="row"
-            ngx-datatable-cell-template
-          >
-            <ng-container>
-              <a
-                data-qa="edit-releve"
-                class="btn btn-outline-shadow btn-no-padding btn-ghost"
-                [routerLink]="['form/harvest', row.id_harvest]"
-              >
-                <i
-                  matTooltip="Editer la récolte"
-                  class="fa fa-pencil-square-o"
-                  aria-hidden="true"
-                ></i>
-              </a>
-            </ng-container>
-            <ng-template #disabledEditBlc>
-              <button
-                class="btn btn-outline-shadow btn-no-padding btn-ghost"
-                disabled="true"
-              >
-                <i
-                  class="fa fa-pencil-square-o disabled"
-                  matTooltip="Editer la récolte"
-                  aria-hidden="true"
-                ></i>
-              </button>
-            </ng-template>
-          </ng-template>
-        </ngx-datatable-column>
-
-        <ngx-datatable-column maxWidth="10">
-          <ng-template
-            let-row="row"
-            let-rowIndex="rowIndex"
-            ngx-datatable-cell-template
-          >
-            <button
-              class="btn btn-outline-shadow btn-no-padding btn-ghost btn-red"
-              [disabled]="true"
-            >
-              <i
-                #iElement
-                matTooltip="Supprimer la récolte"
-                class="fa fa-trash-o"
-                aria-hidden="true"
-              ></i>
-            </button>
-          </ng-template>
-        </ngx-datatable-column>
-      </ngx-datatable>
+    >
+        <table mat-table [dataSource]="dataSource" class="mat-table">
+      
+          <!-- N° de Récolte -->
+          <ng-container matColumnDef="code_material">
+            <th mat-header-cell *matHeaderCellDef> N° réc </th>
+            <td mat-cell *matCellDef="let element"> {{ element.code_material }} </td>
+          </ng-container>
+      
+          <!-- Taxon -->
+          <ng-container matColumnDef="taxon">
+            <th mat-header-cell *matHeaderCellDef> Taxon </th>
+            <td mat-cell *matCellDef="let element"> {{ element.taxon }} </td>
+          </ng-container>
+      
+          <!-- Département -->
+          <ng-container matColumnDef="departement">
+            <th mat-header-cell *matHeaderCellDef> Dept </th>
+            <td mat-cell *matCellDef="let element" matTooltip="{{ element.departement_name }}"> {{ element.departement_code }} </td>
+          </ng-container>
+      
+          <!-- Commune -->
+          <ng-container matColumnDef="commune">
+            <th mat-header-cell *matHeaderCellDef> Commune </th>
+            <td mat-cell *matCellDef="let element"> {{ element.commune }} </td>
+          </ng-container>
+      
+          <!-- Observateurs -->
+          <ng-container matColumnDef="observateurs">
+            <th mat-header-cell *matHeaderCellDef> Observateurs </th>
+            <td mat-cell *matCellDef="let element" matTooltip="{{ element.observateursTooltip }}"> {{ element.observateursDisplay }} </td>
+          </ng-container>
+      
+          <!-- Date -->
+          <ng-container matColumnDef="date_start">
+            <th mat-header-cell *matHeaderCellDef> Date </th>
+            <td mat-cell *matCellDef="let element"> {{ element.date_start | date: 'dd-MM-yyyy' }} </td>
+          </ng-container>
+      
+          <!-- Boutons d'action (Fusionner les colonnes Info, Edit, Delete en une seule colonne) -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button aria-label="Edit" matTooltip="Editer la récolte"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button color="warn" aria-label="Delete" matTooltip="Supprimer la récolte"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+      
+          <!-- Lignes de l'en-tête et des données -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row 
+              *matRowDef="let row; columns: displayedColumns;" 
+              [ngClass]="{'highlighted': row.id_harvest === highlightedRowId}"
+              (click)="highlightRow(row.id_harvest)"
+            ></tr>
+        </table>
+      
+        <mat-paginator 
+          [pageSizeOptions]="[10, 15, rowPerPage]" 
+          showFirstLastButtons
+          class="mat-paginator-sticky"
+        ></mat-paginator>
        
     </div>
   </div>
