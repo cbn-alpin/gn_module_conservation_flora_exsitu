@@ -40,6 +40,26 @@ def create_harvest():
     harvest = harvest_repo.create(data)
     return {"message": "Harvest created successfully", "harvest": harvest.to_dic()}, 201
 
+@blueprint.route("/harvests/<int:harvest_id>", methods=["DELETE"])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+@json_resp
+def delete_harvest(harvest_id):
+    """Suppression d'une récolte avec ses associations d'observateurs"""
+    harvest_repo = HarvestRepository()
+    harvest = THarvest.query.get(harvest_id)
+
+    if not harvest:
+        return {"message": "Harvest not found"}, 404
+
+    try:
+        CorHarvestObserver.query.filter_by(id_harvest=harvest.id_harvest).delete()
+
+        harvest_repo.delete(harvest)
+        
+        return {"message": "Harvest and its observer associations deleted successfully"}, 200 
+    except Exception as e:
+        return {"message": "Error deleting harvest", "error": str(e)}, 500
+
 
 
 
