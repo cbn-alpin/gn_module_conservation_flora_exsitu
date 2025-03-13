@@ -252,6 +252,7 @@ class CorMaterialTaxon(db.Model):
         primary_key=True
     )
 
+@serializable
 class TSeed(db.Model):
     __tablename__ = 't_seed'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}

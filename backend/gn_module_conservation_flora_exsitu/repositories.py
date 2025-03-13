@@ -12,6 +12,7 @@ from ref_geo.models import LAreas, BibAreasTypes
 from apptax.taxonomie.models import Taxref
 from sqlalchemy import func
 import json
+from sqlalchemy import and_
 
 
 from .models import(
@@ -85,13 +86,6 @@ class HarvestRepository:
         )
         return query.all()
 
-    
-    def _buildOutput(self, harvest):
-        item = harvest.as_dict()
-        if harvest.date_start is not None:
-            item["date_start"] = harvest.date_start.strftime(self.date_fmt)
-        if harvest.date_end is not None:
-            item["date_end"] = harvest.date_end.strftime(self.date_fmt)
 
     def create(self, data):
         try:
@@ -126,7 +120,12 @@ class HarvestRepository:
             data.pop("location_code_dept", None)
 
             observers_ids = data.pop("observers", [])
-            harvest = THarvest(**data)
+            additional_data = data.pop("additional_data", None)
+        
+            if additional_data:
+                harvest = THarvest(**data, additional_data=additional_data)
+            else:
+                harvest = THarvest(**data)
 
             db.session.add(harvest)
             db.session.commit()
@@ -148,6 +147,97 @@ class HarvestRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+    
+    def build_harvest_query(self, 
+                            cd_nom_list, 
+                            cd_hab, 
+                            date_start, 
+                            date_end, 
+                            observers, 
+                            municipalites, 
+                            departements, 
+                            id_harvest_type, 
+                            code_material,
+                        ):
+        l_areas_dept = aliased(LAreas)
+        l_areas_commune = aliased(LAreas)
+        Taxref_valid = aliased(Taxref)
+
+        query = db.session.query(
+            THarvest.id_harvest,
+            THarvest.date_start,
+            THarvestMaterial.code_material,
+            func.string_agg(Taxref_valid.lb_nom, ', ').label('taxons'),
+            l_areas_dept.area_name.label('departement_name'),
+            l_areas_dept.area_code.label('departement_code'),
+            l_areas_commune.area_name.label('commune'),
+            func.json_agg(
+                func.json_build_object(
+                    "prenom_role", User.prenom_role,
+                    "nom_role", User.nom_role
+                )
+            ).label("observateurs")
+        ).outerjoin(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest) \
+        .outerjoin(CorMaterialTaxon, THarvestMaterial.id_material == CorMaterialTaxon.id_material) \
+        .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
+        .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
+        .outerjoin(l_areas_dept, and_(THarvest.location_code == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
+        .outerjoin(l_areas_commune, and_(THarvest.location_code == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
+        .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
+        .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
+        .group_by(
+            THarvest.id_harvest,
+            THarvestMaterial.id_material,
+            THarvest.date_start,
+            THarvestMaterial.code_material,
+            l_areas_dept.area_name,
+            l_areas_dept.area_code,
+            l_areas_commune.area_name,
+        )
+
+        if cd_nom_list:
+            cd_ref_list = db.session.query(Taxref.cd_ref).filter(Taxref.cd_nom.in_(cd_nom_list)).distinct().all()
+            cd_ref_list = [cd_ref[0] for cd_ref in cd_ref_list]
+            cd_nom_list = db.session.query(Taxref.cd_nom).filter(Taxref.cd_ref.in_(cd_ref_list)).distinct().all()
+            cd_nom_list = [cd_nom[0] for cd_nom in cd_nom_list]
+            query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
+
+        if cd_hab:
+            query = query.filter(THarvest.cd_hab == cd_hab)
+
+        if date_start:
+            query = query.filter(THarvest.date_start >= date_start)
+
+        if date_end:
+            query = query.filter(THarvest.date_start <= date_end)
+
+        if observers:
+            query = query.filter(User.id_role.in_(observers))
+
+        if municipalites:
+            query = query.filter(THarvest.location_code.in_(municipalites))
+
+        if departements:
+            query = query.filter(THarvest.location_code.in_(departements))
+
+        if id_harvest_type:
+            query = query.filter(THarvest.id_harvest_type == id_harvest_type)
+
+        if code_material:
+            query = query.filter(THarvestMaterial.code_material.ilike(f"%{code_material}%"))
+
+        return query
+    
+    def delete(self, harvest):
+        try:
+            db.session.delete(harvest) 
+            db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()  
+            raise e
+
+
+
                         
 
 class HarvestMaterialRepository:
