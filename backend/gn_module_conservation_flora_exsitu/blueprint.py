@@ -19,10 +19,7 @@ from pypn_habref_api.models import Habref
 from geoalchemy2.functions import ST_AsGeoJSON
 import json
 from pypnnomenclature.models import TNomenclatures
-from geoalchemy2.shape import to_shape
 from sqlalchemy import exists
-from shapely import wkb
-from shapely.geometry import shape
 
 
 blueprint = Blueprint("pr_conservation_flora_exsitu", __name__)
@@ -61,6 +58,20 @@ def delete_harvest(harvest_id):
         return {"message": "Error deleting harvest", "error": str(e)}, 500
 
 
+@blueprint.route("/harvests/<int:id_harvest>", methods=["PUT"])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+@json_resp
+def update_harvest(id_harvest):
+    """Mise à jour d'une récolte"""
+    data = request.get_json()
+    data["meta_update_by"] = g.current_user.id_role
+    harvest_repo = HarvestRepository()
+    try:
+        harvest = harvest_repo.update(id_harvest, data)
+        return {"message": "Harvest updated successfully", "harvest": harvest.to_dic()}, 200
+    except Exception as e:
+        return {"message": str(e)}, 400
+    
 
 
 @blueprint.route("/harvests", methods=["GET"])
@@ -207,8 +218,6 @@ def get_harvest_by_id(harvest_id):
     observers = [
         {
             "id_observer": observer.id_role,
-            "prenom_role": observer.prenom_role,
-            "nom_role": observer.nom_role
         }
         for observer in harvest.observers
     ]
@@ -222,6 +231,12 @@ def get_harvest_by_id(harvest_id):
                 "lb_hab_fr": cd_bah_obj.lb_hab_fr,
                 "lb_code": cd_bah_obj.lb_code,
             }
+    
+    geographical_location = db.session.query(TNomenclatures).filter(TNomenclatures.id_nomenclature == harvest.id_geographical_location).first()
+    geographical_location = {
+        "id_nomenclature": geographical_location.id_nomenclature,
+        "label_fr": geographical_location.label_fr
+    }
     
     materials_exist = db.session.query(THarvestMaterial).filter(THarvestMaterial.id_harvest == harvest.id_harvest).count() > 0
     geom_geojson = None
@@ -243,7 +258,7 @@ def get_harvest_by_id(harvest_id):
         "cd_hab": cd_bah_obj,
         "geom": geom_geojson,
         "precision": harvest.precision,
-        "id_geographical_location": harvest.id_geographical_location,
+        "id_geographical_location": geographical_location,
         "id_exposition": harvest.id_exposition,
         "observers": observers, 
         "harvest_materials": materials_exist,

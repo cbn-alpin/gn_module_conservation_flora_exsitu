@@ -121,7 +121,7 @@ class HarvestRepository:
 
             observers_ids = data.pop("observers", [])
             additional_data = data.pop("additional_data", None)
-        
+                     
             if additional_data:
                 harvest = THarvest(**data, additional_data=additional_data)
             else:
@@ -147,6 +147,71 @@ class HarvestRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+    
+    def update(self, id_harvest, data):
+        try:
+            data.pop("id_harvest", None)
+            harvest = THarvest.query.get(id_harvest)
+            if not harvest:
+                raise Exception("Harvest not found")
+
+            if not data.get("meta_update_date"):
+                data["meta_update_date"] = datetime.utcnow()
+
+            if data.get('geom'):
+                geom_json = json.dumps(data['geom'])
+                geom = func.ST_GeomFromGeoJSON(geom_json)
+                geom_transformed = func.ST_Transform(geom, 2154)
+                data['geom'] = geom_transformed
+                harvest.location_code = None
+                harvest.location_type = None
+
+            if data["location_type"] and not data.get('geom'):
+                if data["location_type"] == 25:
+                    data["location_code"] = data.get("location_code_muni", [None])[0]
+                elif data["location_type"] == 26:
+                    data["location_code"] = data.get("location_code_dept", [None])[0]
+
+                if data["location_code"]:
+                    area = LAreas.query.get(data["location_code"])
+                    if area and area.centroid:
+                        data["geom"] = area.centroid
+
+            data.pop("location_code_muni", None)
+            data.pop("location_code_dept", None)
+
+            additional_data = data.pop("additional_data", None)
+            if additional_data:
+                harvest.additional_data = additional_data
+    
+            observers_ids = data.pop("observers", [])
+
+            for key, value in data.items():
+                setattr(harvest, key, value)
+
+            db.session.commit()
+
+            if observers_ids:
+                CorHarvestObserver.query.filter(CorHarvestObserver.id_harvest == harvest.id_harvest).delete()
+
+                observers = User.query.filter(User.id_role.in_(observers_ids)).all()
+                for i, observer in enumerate(observers):
+                    is_main = (i == 0)
+                    association = CorHarvestObserver(
+                        id_observer=observer.id_role, 
+                        id_harvest=harvest.id_harvest,
+                        is_main_observer=is_main
+                    )
+                    db.session.add(association)
+
+            db.session.commit()
+
+            return harvest
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
     
     def build_harvest_query(self, 
                             cd_nom_list, 
