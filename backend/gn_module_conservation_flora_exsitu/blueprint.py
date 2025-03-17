@@ -289,16 +289,30 @@ def create_material(id_harvest):
 
     return {"message": "Harvest material created successfully", "material": material.to_dic()}, 201
 
-
 @blueprint.route("/harvests/<int:id_harvest>/materials/<int:id_material>", methods=["PUT"])
-@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
 def update_material(id_harvest, id_material):
-    """Mise à jour d'un matériel végétal dans une récolte"""
+    """Mise à jour d'un matériel végétal d'une récolte"""
     data = request.get_json()
+
     material_repo = HarvestMaterialRepository()
     material = material_repo.update(id_material, data)
+
+    if material is None:
+        return {"error": "Material not found"}, 404
+
+    taxons = data.pop('taxons', [])
+    if taxons:
+        CorMaterialTaxon.query.filter_by(id_material=id_material).delete()
+        for cd_nom in taxons:
+            new_link = CorMaterialTaxon(id_material=material.id_material, cd_nom=cd_nom)
+            db.session.add(new_link)
+
+    db.session.commit()
+
     return {"message": "Harvest material updated successfully", "material": material.to_dic()}, 200
+
 
 
 @blueprint.route("/materials/<int:id_material>", methods=["DELETE"])
@@ -324,7 +338,27 @@ def get_harvest_materials(id_harvest):
                                           .offset(offset)\
                                           .all()
         
-        materials_list = [material.to_dic() for material in materials]
+        # materials_list = [material.to_dic() for material in materials]
+        materials_list = []
+        for material in materials:
+            taxons = CorMaterialTaxon.query.filter_by(id_material=material.id_material).all()
+            taxon_list = []
+
+            for taxon in taxons:
+                # Récupérer l'objet correspondant au cd_nom dans la table Taxref (ou la table qui contient search_name)
+                taxon_data = db.session.query(Taxref).filter_by(cd_nom=taxon.cd_nom).first()
+                
+                if taxon_data:
+                    taxon_list.append({
+                        "cd_nom": taxon.cd_nom,
+                        "search_name": taxon_data.lb_nom  # Vérifie que cette colonne existe bien !
+                    })
+
+            # Ajouter les taxons au dictionnaire du matériel
+            material_dict = material.to_dic()
+            material_dict["taxons"] = taxon_list
+            materials_list.append(material_dict)
+
 
         return {
             'materials': materials_list,

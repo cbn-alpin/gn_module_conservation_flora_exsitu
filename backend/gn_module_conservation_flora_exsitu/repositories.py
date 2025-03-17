@@ -366,30 +366,28 @@ class HarvestMaterialRepository:
         try:
             material = self.get_one(id_material)
             if not material:
-                return jsonify({"error": "Matériel non trouvé."}), 404
-            
-            # Vérifier si le code_material est mis à jour et s'il existe déjà
-            if "code_material" in data and data["code_material"] != material.code_material:
+                return None
+
+            if "code_material" in data:
                 existing_material = THarvestMaterial.query.filter_by(code_material=data["code_material"]).first()
-                if existing_material:
+                if existing_material and existing_material.id_material != id_material:
                     return jsonify({"error": "Ce code matériel existe déjà."}), 400
-                material.code_material = data["code_material"]
-            
-            # Mettre à jour id_parent depuis code_parent s'il est fourni
-            if "code_parent" in data:
-                code_parent = data.pop("code_parent")  # Supprime et récupère code_parent
+
+            code_parent = data.pop("code_parent", None)
+            if code_parent:
                 parent = THarvestMaterial.query.filter_by(code_material=code_parent).first()
-                material.id_parent = parent.id_material if parent else None
-            
-            # Mettre à jour les autres champs
+                data["id_parent"] = parent.id_material if parent else None
+
             for key, value in data.items():
-                setattr(material, key, value)
-            
+                if hasattr(material, key):
+                    setattr(material, key, value)
+
             db.session.commit()
             return material
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+
     
     def delete(self, id_material):
         try:
