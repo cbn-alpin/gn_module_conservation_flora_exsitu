@@ -27,7 +27,7 @@
     <ngx-datatable-column maxWidth="10">
       <ng-template ngx-datatable-cell-template let-row="row">
         <button class="btn btn-outline-shadow btn-no-padding btn-ghost btn-addt" (click)="openTaxonModal(row.id_material, row.code_material)">
-          <i matTooltip="Ajouter un taxon" class="fa fa-plus-circle" aria-hidden="true"></i>
+          <i matTooltip="Ajouter un taxon" class="fa fa-plus-circle"></i>
         </button>
       </ng-template>
     </ngx-datatable-column>
@@ -36,7 +36,7 @@
     <ngx-datatable-column maxWidth="10">
       <ng-template ngx-datatable-cell-template let-row="row">
         <button class="btn btn-outline-shadow btn-no-padding btn-ghost btn-edit" (click)="editOccurrence(row)">
-          <i matTooltip="Modifier le matériel" class="fa fa-pencil" aria-hidden="true"></i>
+          <i matTooltip="Modifier le matériel" class="fa fa-pencil"></i>
         </button>
       </ng-template>
     </ngx-datatable-column>
@@ -45,7 +45,7 @@
     <ngx-datatable-column maxWidth="10">
       <ng-template ngx-datatable-cell-template let-row="row">
         <button class="btn btn-outline-shadow btn-no-padding btn-ghost btn-clear" (click)="deleteOccurrence(row)">
-          <i matTooltip="Supprimer le matériel" class="fa fa-trash-o" aria-hidden="true"></i>
+          <i matTooltip="Supprimer le matériel" class="fa fa-trash-o"></i>
         </button>
       </ng-template>
     </ngx-datatable-column>

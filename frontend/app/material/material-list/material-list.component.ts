@@ -4,12 +4,12 @@ import { combineLatest } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { MaterialFormService } from '../material-form/material-form.service';
-import { ConfirmationDialog } from '@geonature_common/others/modal-confirmation/confirmation.dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { DataService } from '../../services/data.service';
 import { HttpParams } from '@angular/common/http';
 import { MapListService } from '@geonature_common/map-list/map-list.service';
 import { TaxonModalComponent } from '../../components/modal-taxon/taxon-modal.component';
+import { DialogService } from '../../components/confirm-dialog/confirm-dialog.service';
 
 
 @Component({
@@ -40,6 +40,7 @@ export class MaterialListComponent implements OnInit {
         public dialog: MatDialog,
         private api: DataService,
         public mapListService: MapListService,
+        private dialogService: DialogService
         
     ){
 
@@ -57,7 +58,7 @@ export class MaterialListComponent implements OnInit {
         .subscribe((filteredMaterials) => {
             this.materialListService.materials$.next(filteredMaterials);
             this.materials = filteredMaterials.slice();
-            this.loadMaterials();
+            this.loadMaterials();            
             this.totalMaterials = filteredMaterials.length;
             this.calculateTotalPages();
             this.updatePagination();   
@@ -79,7 +80,7 @@ export class MaterialListComponent implements OnInit {
 
 
     removeHtml(str: string | undefined): string {
-        return str ? str.replace(/<[^>]*>/g, '') : ''; // Retourne une chaîne vide si str est undefined
+        return str ? str.replace(/<[^>]*>/g, '') : '';
     }
     
     materialTitle(material) {
@@ -87,22 +88,29 @@ export class MaterialListComponent implements OnInit {
     }
 
     editOccurrence(occurrence) {
-        this.materialFormService.occurrence.next(occurrence);
+      this.exsituFormService.mode = 'edit'      
+      this.materialFormService.occurrence.next(occurrence);
     }
 
     deleteOccurrence(occurrence) {
-        //const message = `${this.translate.instant('Delete')} ${this.taxonTitle(occurrence)} ?`;
-        const dialogRef = this.dialog.open(ConfirmationDialog, {
-          width: '350px',
-          position: { top: '5%' },
-          data: { message: 'Supprimer le matériel?' },
-        });
-    
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            this.materialFormService.deleteOccurrence(occurrence);
-          }
-        });
+      if (occurrence.taxons && occurrence.taxons.length > 0) {
+          this.dialogService
+          .confirmDialog({ message: 'Ce matériel est lié à un ou plusieurs taxons. Êtes-vous sûr de vouloir le supprimer ?' })
+          .subscribe((yes) => {
+            if (yes) {
+              this.materialFormService.deleteOccurrence(occurrence);
+            }
+          });
+        }else{
+          this.dialogService
+          .confirmDialog({ message: 'Étes vous certain de vouloir supprimer ce matériel ?' })
+          .subscribe((yes) => {
+            if (yes) {
+              this.materialFormService.deleteOccurrence(occurrence);
+            }
+          });
+        }
+        
       }
 
     calculateTotalPages() {
@@ -119,7 +127,6 @@ export class MaterialListComponent implements OnInit {
                   .set('page', this.pagination.offset + 1)
                   .set('limit', this.rowPerPage);        
         this.api.getMaterialsByHarvest(this.exsituFormService.idHarvest, params).subscribe(response => {
-          console.log(typeof response['materials']);
           this.materials = response['materials'];
           this.totalMaterials = response['total'];    
         });
@@ -133,8 +140,7 @@ export class MaterialListComponent implements OnInit {
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          console.log("Rafraîchir la liste ici...");
-          // TODO: Recharger la liste des taxons
+          
         }
       });
     }
