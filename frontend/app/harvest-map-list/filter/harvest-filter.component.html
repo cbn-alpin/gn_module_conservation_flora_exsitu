@@ -70,6 +70,26 @@
 
       </fieldset>
 
+      <!-- Bloc OU -->
+      <fieldset>
+        <legend>Où ?</legend>      
+        
+        <pnx-areas
+          label="Commune"
+          [typeCodes]="['COM']"
+          [parentFormControl]="filterForm.controls.municipalites"
+          >
+        </pnx-areas>
+
+       <pnx-areas
+          label="Département"
+          [typeCodes]="['DEP']"
+          [parentFormControl]="filterForm.controls.departements"
+          >
+       </pnx-areas>
+
+      </fieldset>
+
       <!-- Bloc QUAND -->
       <fieldset>
         <legend>Quand ?</legend>
@@ -104,32 +124,11 @@
         </pnx-observers>
       </fieldset>
 
-      <!-- Bloc OU -->
-      <fieldset>
-        <legend>Où ?</legend>      
-        
-        <pnx-areas
-          label="Commune"
-          [typeCodes]="['COM']"
-          [parentFormControl]="filterForm.controls.municipalites"
-          >
-        </pnx-areas>
-
-       <pnx-areas
-          label="Département"
-          [typeCodes]="['DEP']"
-          [parentFormControl]="filterForm.controls.departements"
-          >
-       </pnx-areas>
-
-      </fieldset>
-
 
       <div class="filter-actions">
         <button color="warn" type="button" mat-raised-button (click)="resetFilters()">
           <i
             class="fa fa-refresh"
-            aria-hidden="true"
           ></i>
         </button>
         <button 

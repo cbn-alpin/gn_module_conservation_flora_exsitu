@@ -117,8 +117,6 @@ export class HarvestFilterComponent implements OnInit {
             observers, 
             ...rest 
         } = this.filterForm.value;        
-        console.log('Filter form values:', this.filterForm.value);
-
     
         return {
             ...rest,
