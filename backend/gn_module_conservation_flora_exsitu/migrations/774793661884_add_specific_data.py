@@ -99,6 +99,7 @@ def upgrade():
                 "label_fr",
                 "definition_fr",
                 "source",
+                "hierarchy",
             ),
             source_cols=(
                 "ref_nomenclatures.get_id_nomenclature_type(type_nomenclature_code)",
@@ -109,6 +110,7 @@ def upgrade():
                 "label_fr",
                 "definition_fr",
                 "source",
+                "hierarchy",
             ),
             header=True,
             encoding="UTF-8",
