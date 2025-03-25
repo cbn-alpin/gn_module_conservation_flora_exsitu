@@ -83,17 +83,16 @@
     </div>
 
     <div *ngIf="exsituFormService.currentTab === 'materials'"
-            [ngStyle]="{ 'height.px': cardContentHeight }"
-            style="overflow-y: scroll"
+        [ngStyle]="{ 'height.px': cardContentHeight - 100 }"
+        class="d-flex"
     >
-        <div class="row row-0">
-            <div class="col-xl-6 col-lg-7 col-sm-6">
-                <cs-material-form></cs-material-form>
-            </div>
-            <div class="col-xl-4 col-lg-5 col-sm-6">
-                <cs-material-list></cs-material-list>
-            </div>
+        <div class="col-xl-6 h-100" style="overflow-y: auto;">
+            <cs-material-form></cs-material-form>
+        </div>
+        <div class="col-4">
+            <cs-material-list></cs-material-list>
         </div>
     </div>
+
      
 </div>

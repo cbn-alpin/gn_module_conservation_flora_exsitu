@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of, forkJoin } from 'rxjs';
 import { filter, tap, skip, distinctUntilChanged, switchMap, map } from 'rxjs/operators';
 import { DataService } from '../../services/data.service';
 import { HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 
 @Injectable()
@@ -79,14 +80,9 @@ export class ExsituFormService{
     }
     
       replaceOccurrenceData(occurrence): void {
-        this.removeOccurrenceData(occurrence.id_occurrence_occtax);
+        this.removeOccurrenceData(occurrence.id_material);
         this.addOccurrenceData(occurrence);
       }
     
-      replaceExsituData(releve): void {
-        let occtaxData = this.materials$.getValue();
-        occtaxData.releve = releve;
-        this.exsituData.next(occtaxData);
-      }
 
 }

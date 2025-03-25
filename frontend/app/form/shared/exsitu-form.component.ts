@@ -42,8 +42,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.updateTabAndIdsFromUrl(this.router.url);
         });
     
-        // Initialisation avec l'URL actuelle (utile au rechargement)
-        this.updateTabAndIdsFromUrl(this.router.url);        
+        // Initialisation avec l'URL actuelle (utile au rechargement)        
         this.harvest = this.exsituFormService.harvest
     }
 
