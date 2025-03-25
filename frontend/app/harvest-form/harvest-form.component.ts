@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy } from '@angular/core';
 
 import { leafletDrawOption } from '@geonature_common/map/leaflet-draw.options';
 import { ModuleService } from '@geonature/services/module.service';
@@ -11,7 +11,7 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { HarvestFormService } from './harvest-form.service';
 import { CommonService } from '@geonature_common/service/common.service';
-
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -19,7 +19,7 @@ import { CommonService } from '@geonature_common/service/common.service';
   templateUrl: './harvest-form.component.html',
   styleUrls: ['./harvest-form.component.css'],
 })
-export class HarvestFormComponent implements OnInit, OnDestroy {
+export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked  {
   public leafletDrawOptions = leafletDrawOption;
   public MAP_FULL_HEIGHT = '86vh';
   public mapHeight = this.MAP_FULL_HEIGHT;
@@ -40,23 +40,20 @@ export class HarvestFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private dateParser: NgbDateParserFormatter,
     public api: DataService,
-    private exsituFormService: ExsituFormService,
+    public exsituFormService: ExsituFormService,
     public harvertFormService: HarvestFormService,
-    private _commonService: CommonService
+    private _commonService: CommonService,
+    private cdr: ChangeDetectorRef,
   ) {
     
   }
 
   ngOnInit() {
-    // this.leafletDrawOptions = leafletDrawOption;
-    // this.harvestForm.harvestForm = this.harvestForm.initHarvestForm();
-    // this.storeService.defaultNomenclature$.pipe(filter((val) => val !== null)).subscribe((val) => {
-    //   this.harvestForm.patchDefaultNomenclaureStation(val);
-    // });    
-
+    this.harvertFormService.hideAllFields()
+    if (this.exsituFormService.editionMode.getValue()) { // Si on est en mode ajout
+      this.harvertFormService.initForm();  // On recrée le formulaire vide
+    }
     this.harvestForm = this.harvertFormService.harvestForm;
-    //this.initializeHarvestForm()
-    // this.initializeLeafletDrawOptions()
     this.zoom = this.storeService.cfeConfig.zoom
     this.center = this.storeService.cfeConfig.zoom_center
 
@@ -76,30 +73,26 @@ export class HarvestFormComponent implements OnInit, OnDestroy {
     this.isChecked = $event.checked;
  }
 
-  private initializeLeafletDrawOptions() {
-    this.leafletDrawOptions.draw.rectangle = false;
-    this.leafletDrawOptions.draw.marker = false;
-    this.leafletDrawOptions.draw.circle = false;
-    this.leafletDrawOptions.draw.circlemarker = false;
-    this.leafletDrawOptions.draw.polyline = false;
-    this.leafletDrawOptions.edit.remove = true;
-  }
-
   cancel(){
-    this.harvestForm.reset();    
-    this.harvertFormService.harvestForm.reset()
     this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/`]);
   }
 
   onSubmit() {
-    let finalForm = this.formatDataFormZp();
-    console.log(finalForm);
-    
-
-    this.api.addHarvest(finalForm).subscribe((harvest) => {
-      this._commonService.translateToaster('info', 'Récolte enregistrée');
-      this.onFormSaved(harvest.harvest);
-    });
+    let finalForm = this.formatDataForm();    
+    if(!this.exsituFormService.editionMode['_value']){
+      this.api.addHarvest(finalForm).subscribe((harvest) => {
+        this._commonService.translateToaster('info', 'Récolte enregistrée');
+        this.onFormSaved(harvest.harvest);
+      });
+      console.log(finalForm);
+    }
+    else{
+      console.log(finalForm);
+      this.api.updateHarvest(this.exsituFormService.idHarvest, finalForm).subscribe(() => {
+        this._commonService.translateToaster('info', 'Récolte modifiée');
+        // this.onFormSaved(harvest.harvest);
+      });
+    }
     
   }
 
@@ -110,14 +103,17 @@ export class HarvestFormComponent implements OnInit, OnDestroy {
   }
 
 
-  private formatDataFormZp() {
+  private formatDataForm() {
     const finalForm = JSON.parse(JSON.stringify(this.harvestForm.value));
 
+    const isAdditionalDataEmpty = !finalForm.additional_data.slope &&
+                                !finalForm.additional_data.weather_comment &&
+                                !finalForm.additional_data.program
+
+    if (isAdditionalDataEmpty) {
+      delete finalForm.additional_data;
+    }  
     
-    if(finalForm.id_harvest_type)
-      finalForm.id_harvest_type = finalForm.id_harvest_type.id_nomenclature;
-    if(finalForm.id_exposition)
-      finalForm.id_exposition = finalForm.id_exposition.id_nomenclature;
     finalForm.id_geographical_location = finalForm.id_geographical_location.id_nomenclature;
 
     if(finalForm.cd_hab)
@@ -140,6 +136,14 @@ export class HarvestFormComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    this.harvestForm.reset()
+    this.harvestForm.reset();
+    this.harvertFormService.harvestForm.reset()
+    this.harvertFormService.initForm();
   }
+
+  ngAfterViewChecked(): void {
+    // Cette méthode sera appelée après chaque détection de changement, ce qui pourrait résoudre votre problème.
+    this.cdr.detectChanges();
+  }
+
 }
