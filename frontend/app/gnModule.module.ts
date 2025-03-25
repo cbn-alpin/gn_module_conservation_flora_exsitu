@@ -25,7 +25,16 @@ import { ConstantsService } from './services/constants.service';
 import { HarvestMapService } from './harvest-form/harvest-map/harvest-map.service';
 import { ObserversService } from './services/observers.service';
 import { TaxonModalComponent } from './components/modal-taxon/taxon-modal.component';
-
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
+import { TestComponent } from './test/test.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatButtonModule } from '@angular/material/button';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { DialogService } from './components/confirm-dialog/confirm-dialog.service';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -43,7 +52,9 @@ export const routingConfiguration: ExtraOptions = {
     HeaderComponent,
     HarvestFilterComponent,
     HarvestMapComponent,
-    TaxonModalComponent
+    TaxonModalComponent,
+    TestComponent,
+    ConfirmDialogComponent
   ],
   providers: [
     HarvestStoreService, 
@@ -55,13 +66,24 @@ export const routingConfiguration: ExtraOptions = {
     HarvestFormService,
     ConstantsService,
     HarvestMapService,
-    ObserversService
+    ObserversService,
+    DialogService
   ],
   imports: [
     RouterModule.forChild(routes),
     GN2CommonModule,
     CommonModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatAutocompleteModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatButtonModule,
+  ],
+  entryComponents: [
+    ConfirmDialogComponent,
   ],
   bootstrap: []
 })
