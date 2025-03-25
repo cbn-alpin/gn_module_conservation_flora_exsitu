@@ -7,33 +7,24 @@ import { Observable, of, forkJoin } from 'rxjs';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
-  Validators
+  Validators,
+  UntypedFormArray,
+  UntypedFormControl,
+  FormArray,
+  FormGroup,
+  FormControl
 } from '@angular/forms';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { HttpParams } from '@angular/common/http';
-import { CommonService } from '@geonature_common/service/common.service';
-
-interface Material {
-    id: number;
-    code_material: string;
-    id_parent?: number;
-    id_harvest_material?: number;
-    id_foot_counting_class?: number;
-    id_phenology_1?: number;
-    id_phenology_2?: number;
-    protocole_note?: string;
-    comment?: string;
-    code_cultural_bank?: number;
-    sample_foot_nb?: number;
-    id_method_sample?: number;
-    is_soil_sampling: boolean;
-  }
-  
+import { CommonService } from '@geonature_common/service/common.service';  
 
 @Injectable()
 export class MaterialFormService {
   public form: UntypedFormGroup;
   public occurrence: BehaviorSubject<any> = new BehaviorSubject(null);
+  // public materials$: BehaviorSubject<Array<any>> = new BehaviorSubject<Material[]>(this.initialMaterials);
+  public materials$: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
+  public code_material;
 
   constructor(
     private dataService: DataService,
@@ -45,23 +36,26 @@ export class MaterialFormService {
     this.setObservables();
   }
 
-  initForm(): void {
-    this.form = this.fb.group({
+    initForm(): void {
+      this.form = this.fb.group({
         code_material: ['', Validators.required],
-        code_parent: [''],
-        id_harvest: [null],
+        code_parent: null,
+        id_harvest: null,
         id_harvest_material: [null, Validators.required],
-        id_foot_counting_class: [null],
+        id_foot_counting_class: null,
         id_phenology_1: [null, Validators.required],
-        id_phenology_2: [null],
-        comment: [''],
-        protocole_note: [''],
-        code_cultural_bank: [],
-        sample_foot_nb: [10],
-        is_soil_sampling: [false],
-        id_method_sample: [null]
-    });
-  }
+        id_phenology_2: null,
+        remarks: null,
+        code_cultural_bank: null,
+        sample_foot_nb: null,
+        is_soil_sampling: false,
+        has_hybridation_risk: false,
+        id_method_sample: null,
+        taxonInput: new UntypedFormControl(null),   // <-- Champ utilisé pour ajouter un taxon
+        taxons: this.fb.array([])  // <-- L'array qui contiendra les taxons ajoutés
+      });
+    }
+  
 
   private setObservables() {
     const $_occurrenceSub = this.occurrence.pipe(
@@ -77,6 +71,9 @@ export class MaterialFormService {
     );
   
     $_occurrenceSub.subscribe((occurrence) => {
+      this.code_material = occurrence.code_material
+      const taxonControls = this.form.get('taxons') as FormArray;
+      taxonControls.clear();
       // Patch le formulaire avec les données de l'occurrence
       this.form.patchValue({
         code_material: occurrence.code_material || '',
@@ -86,13 +83,24 @@ export class MaterialFormService {
         id_foot_counting_class: occurrence.id_foot_counting_class || null,
         id_phenology_1: occurrence.id_phenology_1 || null,
         id_phenology_2: occurrence.id_phenology_2 || null,
-        comment: occurrence.comment || '',
-        protocole_note: occurrence.protocole_note || '',
+        remarks: occurrence.remarks || '',
         code_cultural_bank: occurrence.code_cultural_bank || null,
         sample_foot_nb: occurrence.sample_foot_nb || null,
-        is_soil_sampling: occurrence.is_soil_sampling || false,
-        id_method_sample: occurrence.id_method_sample || null
+        is_soil_sampling: occurrence.is_soil_sampling,
+        id_method_sample: occurrence.id_method_sample || null,
+        has_hybridation_risk: occurrence.has_hybridation_risk
       });
+      const taxons = occurrence.taxons || [];
+      
+      taxons.forEach(taxon => {
+        taxonControls.push(this.createTaxonControl(taxon));
+      });
+    });
+  }
+
+  createTaxonControl(taxon: any): FormGroup {
+    return this.fb.group({
+      parentFormControl: new FormControl(taxon)
     });
   }
   
@@ -105,95 +113,14 @@ export class MaterialFormService {
       id_foot_counting_class: null,
       id_phenology_1: null,
       id_phenology_2: null,
-      comment: '',
-      protocole_note: '',
+      remarks: '',
       code_cultural_bank: null,
-      sample_foot_nb: 10,
+      sample_foot_nb: null,
       is_soil_sampling: false,
-      id_method_sample: null
+      id_method_sample: null,
+      has_hybridation_risk: null
     };
   }
-  
-    initialMaterials: Material[] = [
-        {
-          id: 1,
-          code_material: 'MAT001',
-          id_parent: null,
-          id_harvest_material: 1,
-          id_foot_counting_class: 1,
-          id_phenology_1: 1,
-          id_phenology_2: 1,
-          protocole_note: 'P1',
-          comment: 'Commentaire initial',
-          code_cultural_bank: 1234,
-          sample_foot_nb: 10,
-          id_method_sample: 1,
-          is_soil_sampling: true
-        },
-        {
-          id: 2,
-          code_material: 'MAT002',
-          id_parent: null,
-          id_harvest_material: 1,
-          id_foot_counting_class: 1,
-          id_phenology_1: 1,
-          id_phenology_2: 1,
-          protocole_note: 'P2',
-          comment: 'Commentaire initial2',
-          code_cultural_bank: 1234,
-          sample_foot_nb: 10,
-          id_method_sample: 1,
-          is_soil_sampling: false
-        }
-    ];
-      
-
-    public rec_material_in_progress: Array<{ id: number; data: any; state: string }> = [
-        {
-          id: 1,
-          data: {
-            id_material: 1,
-            uuid_material: '550e8400-e29b-41d4-a716-446655440001',
-            code_material: 'MAT-002',
-            id_parent: null,
-            id_harvest: 102,
-            id_harvest_material: 203,
-            id_foot_counting_class: 304,
-            id_phenology_1: 405,
-            id_phenology_2: 506,
-            protocole_note: 'Utiliser une méthode alternative',
-            comment: 'Observation spéciale requise',
-            code_cultural_bank: 67890,
-            sample_foot_nb: 15,
-            is_soil_sampling: false,
-            id_method_sample: 607,
-          },
-          state: 'in_progress'
-        },
-        {
-          id: 2,
-          data: {
-            id_material: 2,
-            uuid_material: '550e8400-e29b-41d4-a716-446655440000',
-            code_material: 'MAT-001',
-            id_parent: null,
-            id_harvest: 101,
-            id_harvest_material: 202,
-            id_foot_counting_class: 303,
-            id_phenology_1: 404,
-            id_phenology_2: 505,
-            protocole_note: 'Suivre le protocole standard',
-            comment: 'Aucun commentaire',
-            code_cultural_bank: 12345,
-            sample_foot_nb: 20,
-            is_soil_sampling: true,
-            id_method_sample: 606,
-          },
-          state: 'done'
-        }
-    ];
-    // public materials$: BehaviorSubject<Array<any>> = new BehaviorSubject<Material[]>(this.initialMaterials);
-    public materials$: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
 
     getMaterialsByHarvest(id_harvest: number) {
       let params = new HttpParams()
@@ -209,29 +136,6 @@ export class MaterialFormService {
       )
     }
 
-
-    addMaterialInProgress(temp_id, material) {
-        let data = {
-          id: temp_id,
-          data: material,
-          state: 'in_progress',
-        };
-        this.rec_material_in_progress.push(data);
-    }
-    
-    removeMaterialInProgress(temp_id) {
-        for (let i = 0; i < this.rec_material_in_progress.length; i++) {
-          if (this.rec_material_in_progress[i].id === temp_id) {
-            this.rec_material_in_progress.splice(i, 1);
-            break;
-          }
-        }
-    }
-
-    cleanOccurrenceInProgress() {
-        this.rec_material_in_progress = [];
-    }
-
     reset() {
       this.form.reset();
       this.occurrence.next(null);
@@ -242,15 +146,16 @@ export class MaterialFormService {
       let api: Observable<any>;
   
       if (this.occurrence.getValue() && this.occurrence.getValue().id_material) {
-        //update
-        // api = this.dataService
-        //   .updateOccurrence(this.occurrence.getValue().id_occurrence_occtax, this.form.value)
-        //   .pipe(
-        //     retry(3),
-        //     tap((occurrence) => {
-        //       this.exstiuFormService.replaceOccurrenceData(occurrence);
-        //     })
-        //   );
+        
+        // update
+        api = this.dataService
+          .updateMaterial(data, this.occurrence.getValue().id_harvest, this.occurrence.getValue().id_material)
+          .pipe(
+            retry(3),
+            tap((occurrence) => {
+              this.exstiuFormService.replaceOccurrenceData(occurrence);
+            })
+          );
       } else {
         //create
         
@@ -258,13 +163,16 @@ export class MaterialFormService {
           tap((occurrence) => {
             this.exstiuFormService.addOccurrenceData(occurrence);
             this._commonService.translateToaster('info', 'Matériel ajouté');
+            this.form.reset()
+            const taxonsArray = this.form.get('taxons') as UntypedFormArray;
+            taxonsArray.clear();
           })
         );
       }
 
       api.subscribe(
         (occurrence) => {
-          console.log('occ1', occurrence);
+          // console.log('occ1', occurrence);
         },
         (error) => {
           console.log(error);
@@ -286,5 +194,30 @@ export class MaterialFormService {
           console.log(error);
         }
       );
+    }
+
+    addTaxon() {
+      const taxonsArray = this.form.get('taxons') as UntypedFormArray;
+      const taxonValue = this.form.controls.taxonInput.value;
+    
+      if (taxonValue) {
+        const taxonGroup = this.fb.group({
+          parentFormControl: new UntypedFormControl(taxonValue) // Stocke l'objet complet
+        });
+    
+        taxonsArray.push(taxonGroup);
+        this.form.controls.taxonInput.reset(); // Réinitialiser l'input après ajout
+      }
+    }
+    
+    
+    removeTaxon(index: number) {
+      const taxonsArray = this.form.get('taxons') as UntypedFormArray;
+      taxonsArray.removeAt(index);
+    }
+    
+  
+    get taxons() {
+      return this.form.get('taxons') as UntypedFormArray;
     }
 }

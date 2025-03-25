@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray, UntypedFormControl, UntypedFormArray } from '@angular/forms';
 import { MaterialFormService } from './material-form.service';
 import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -17,8 +17,7 @@ interface Material {
   id_foot_counting_class?: string;
   id_phenology_1?: string;
   id_phenology_2?: string;
-  protocole_note?: string;
-  comment?: string;
+  remarks?: string;
   code_cultural_bank?: number;
   sample_foot_nb?: number;
   id_method_sample?: string;
@@ -32,7 +31,6 @@ interface Material {
 })
 export class MaterialFormComponent implements OnInit {
   materialForm: FormGroup;
-  rec_material_in_progress$: BehaviorSubject<Material[]> = new BehaviorSubject<Material[]>([]);
   idHarvest: number | null = null;
   harvest: any;
   codeMaterialExists: boolean = false;
@@ -48,14 +46,18 @@ export class MaterialFormComponent implements OnInit {
   {}
 
   ngOnInit(): void {
-    this.idHarvest = this.exsituFormService.idHarvest
+    this.idHarvest = this.exsituFormService.idHarvest    
     this.loadHarvest(this.idHarvest)
     this.initializeMaterialForm();
     if(this.exsituFormService.mode !== 'add')
       this.loadMaterials()
 
     this.materialForm.get('code_material')?.valueChanges.subscribe(value => {
-      this.checkCodeMaterial(value);
+      if (this.exsituFormService.mode === 'add' || (this.materialFormService.code_material !== null && value !== this.materialFormService.code_material)) {
+        this.checkCodeMaterial(value);
+      } else {
+        this.codeMaterialExists = false;
+      }
     });
   }
 
@@ -65,13 +67,13 @@ export class MaterialFormComponent implements OnInit {
     });
   }
 
-    loadMaterials(){
-      this.materialFormService.getMaterialsByHarvest(this.exsituFormService.idHarvest)
-    }
+  loadMaterials(){
+    this.materialFormService.getMaterialsByHarvest(this.exsituFormService.idHarvest)
+  }
 
-    private initializeMaterialForm() {
-      this.materialForm = this.materialFormService.form
-    }
+  private initializeMaterialForm() {
+    this.materialForm = this.materialFormService.form
+  }
 
 
   editOccurrence(material) {
@@ -80,21 +82,19 @@ export class MaterialFormComponent implements OnInit {
 
 
   submetData(){
-    let finalForm = this.formatDataFormHarvest();
+    let finalForm = this.formatDataFormHarvest();   
+    console.log('final',finalForm);
+     
     this.materialFormService.submitOccurrence(finalForm);
 
   }
 
   private formatDataFormHarvest() {
     const finalForm = JSON.parse(JSON.stringify(this.materialForm.value));
-    finalForm.id_phenology_1 = finalForm.id_phenology_1.id_nomenclature;
-    if(finalForm.id_phenology_2)
-      finalForm.id_phenology_2 = finalForm.id_phenology_2.id_nomenclature;
-    finalForm.id_harvest_material = finalForm.id_harvest_material.id_nomenclature;
-    if(finalForm.id_foot_counting_class)
-      finalForm.id_foot_counting_class = finalForm.id_foot_counting_class.id_nomenclature;
-    if(finalForm.id_method_sample)
-      finalForm.id_method_sample = finalForm.id_method_sample.id_nomenclature;
+    
+    if(finalForm.taxons)
+      finalForm.taxons = finalForm.taxons.map(taxon => taxon.parentFormControl.cd_nom);
+    delete finalForm.taxonInput;
     
 
     return finalForm;
@@ -103,7 +103,6 @@ export class MaterialFormComponent implements OnInit {
   
 
   editMaterial(material: Material) {
-    // Remplir le formulaire avec les valeurs du matériel sélectionné
     this.materialForm.patchValue(material);
   
     // Supprimer ce matériel de la liste
