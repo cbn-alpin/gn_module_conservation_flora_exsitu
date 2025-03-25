@@ -10,11 +10,12 @@ import { ObserversService } from '../services/observers.service';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import { MapService } from '@geonature_common/map/map.service';
-import { Subject } from 'rxjs';
-import { CommonService } from '@geonature_common/service/common.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { PageEvent } from '@angular/material/paginator';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+
 
 @Component({
   selector: 'gn-cs-root',
@@ -31,11 +32,11 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
   @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
   displayedColumns: string[] = [
     'code_material',
-    'taxon',            
+    'taxons',            
     'departement',
     'commune',                
-    'observateurs',
-    'date_start',             
+    'date_start',      
+    'observateurs',       
     'actions'
   ];
   
@@ -52,7 +53,10 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
   filters: any = {}; 
   private markerClusterGroup = L.markerClusterGroup(); // Création du groupe de clusters
   dataTableHeight: number;
-  highlightedRowId: number | null = null; // Ajoutez cette ligne en haut de votre composant
+  highlightedRowId: number | null = null; 
+  highlightedRowIndex: number | null = null; 
+  private previousLayer: L.Layer | null = null;
+  highlightedRowIds: Set<number> = new Set<number>();
 
 
   constructor(
@@ -61,6 +65,7 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
     public api: DataService,
     public mapListService: MapListService,
     private _ms: MapService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit() { 
@@ -108,140 +113,217 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
   onEachFeature(data, layer) {
     layer.on('click', () => {
-      this.onMapClick(data.id);
+      const harvest_ids = data.properties.harvest_ids;      
+      if (harvest_ids && harvest_ids.length > 0) {
+        this.highlightedRowIndex = null
+        this.onMapClick(harvest_ids);
+      }
     });
 
-    if (data.geometry.type === 'Polygon') {
-      layer.setStyle({
-        color: 'blue',
-        weight: 2,
-        fillColor: 'blue',
-        fillOpacity: 0.5
-      });
-    } else if (data.geometry.type === 'Point') {
-      layer.setStyle({
-        radius: 8,
-        fillColor: 'green',
-        color: 'red',
-        weight: 2
-      });
-    }
+    // if (data.geometry.type === 'Polygon') {
+    //   layer.setStyle({
+    //     color: 'blue',
+    //     weight: 2,
+    //     fillColor: 'blue',
+    //     fillOpacity: 0.5
+    //   });
+    // } else if (data.geometry.type === 'Point') {
+    //   layer.setStyle({
+    //     radius: 8,
+    //     fillColor: 'green',
+    //     color: 'blue',
+    //     weight: 2
+    //   });
+    // }
   
     layer.bindPopup(`ID: ${data.properties.id_harvest}`);
   }
 
-  onMapClick(id: number) {    
-    this.highlightedRowId = id;
+  onMapClick(harvest_ids: number[]) {   
+    console.log(this.highlightedRowIds);
+     
+    this.highlightedRowIds = new Set(harvest_ids);
+    this.filters['selected_ids'] = harvest_ids;
+    this.loadData();
 
-    const index = this.dataSource.data.findIndex((item: any) => item.id_harvest === id);
+    // const index = this.dataSource.data.findIndex((item: any) => item.id_harvest === id);
   
-    if (index >= 0) {
-      const data = this.dataSource.data;
-      const selectedItem = data.splice(index, 1)[0];
-      this.dataSource.data = [selectedItem].concat(data);
-      this.paginator.firstPage();
-    }
+    // if (index >= 0) {
+    //   const data = this.dataSource.data;
+    //   const selectedItem = data.splice(index, 1)[0];
+    //   this.dataSource.data = [selectedItem].concat(data);
+    //   this.paginator.firstPage();
+    // }
  }
 
-  highlightRow(id_harvest: number) {
-    this.highlightedRowId = id_harvest;
+ highlightRow(id_harvest: number, rowIndex: number) {  
+    this.highlightedRowIds = new Set<number>();
 
-    const clickedFeature = this.geojson.features.find((item: any) => item.properties.id_harvest === id_harvest);
-    
+    this.highlightedRowId = id_harvest;
+    this.highlightedRowIndex = rowIndex; 
+    const clickedFeature = this.geojson.features.find((item: any) => 
+      item.properties.harvest_ids.includes(id_harvest)
+    );
     if (clickedFeature) {
         const geometry = clickedFeature.geometry;
         
+        // Retirer l'ancienne couche si elle existe
+        if (this.previousLayer && this._ms.map) {
+            this._ms.map.removeLayer(this.previousLayer);
+        }
+
+        // Ajouter la nouvelle couche en rouge
+        this.previousLayer = this.highlightFeature(clickedFeature);
+
         this.centerMapOnGeometry(geometry);
     } else {
         console.warn("Aucune géométrie trouvée pour cet id_harvest :", id_harvest);
     }
   }
+  
 
 
   centerMapOnGeometry(geometry: any) {
-    if (!geometry) return;
-  
-    const coordinates = geometry.coordinates;
-  
-    if (geometry.type === 'Point') {
-      console.log('un point');
-      
-      this.center = [coordinates[1], coordinates[0]];
-      console.log(this.center);
-      
-      this.zoom = 12; 
-    }
-    else if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-      const bounds = this.getPolygonBounds(geometry);
-      this.zoomToBounds(bounds);
-    }
+      if (!geometry) return;
+
+      const map = this._ms.map; // Ton instance Leaflet
+      if (!map) return;
+
+      const coordinates = geometry.coordinates;
+
+      if (geometry.type === 'Point') {
+          const latLng: L.LatLngExpression = [coordinates[1], coordinates[0]];
+          map.setView(latLng, 15); // Zoomer sur le point
+      } 
+      else if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
+          const bounds = this.getPolygonBounds(geometry);
+          map.fitBounds(bounds); // Zoomer sur l'ensemble du polygone
+      }
   }
+
+  highlightFeature(feature: any): L.Layer | null {
+    const map = this._ms.map;
+    if (!map) return null;
+
+    if (feature.geometry.type === 'Point') {
+        const latLng: L.LatLngExpression = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
+        
+        const marker = L.circleMarker(latLng, {
+            radius: 8,
+            color: 'yellow',
+            fillColor: 'yellow',
+            fillOpacity: 0.8
+        }).addTo(map);
+
+        return marker; // On renvoie la couche nouvellement créée
+
+    } else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+        const latLngs = this.getPolygonCoordinates(feature.geometry);
+
+        const polygon = L.polygon(latLngs, {
+            color: 'yellow',
+            fillColor: 'yellow',
+            fillOpacity: 0.3,
+        }).addTo(map);
+
+        return polygon; // On renvoie la couche nouvellement créée
+    }
+    
+    return null;
+  }
+
+
+
+  getPolygonCoordinates(geometry: any): L.LatLngExpression[] {
+    if (geometry.type === 'Polygon') {
+        return geometry.coordinates[0].map((coord: any) => [coord[1], coord[0]]);
+    } else if (geometry.type === 'MultiPolygon') {
+        return geometry.coordinates[0][0].map((coord: any) => [coord[1], coord[0]]);
+    }
+    return [];
+  }
+
+
   
   // Méthode pour calculer les limites d'un polygone
-  getPolygonBounds(geometry: any): any {
-    const coordinates = geometry.type === 'Polygon' ? geometry.coordinates[0] : geometry.coordinates.flat(1);
-    const latLngs = coordinates.map(coord => [coord[1], coord[0]]);
-    return latLngs;
+  getPolygonBounds(geometry: any): L.LatLngBounds {
+      const coordinates = geometry.type === 'Polygon' 
+          ? geometry.coordinates[0] 
+          : geometry.coordinates.flat(1);
+
+      const latLngs = coordinates.map(coord => [coord[1], coord[0]]);
+      return L.latLngBounds(latLngs);
+  }
+
+  onPaginateChange() {
+    this.filters['selected_ids'] = null;
+    this.loadData();
   }
   
-  zoomToBounds(bounds: any) {
-    
-  }
-  
-
-
   loadData() {
+    const pageIndex = this.paginator ? this.paginator.pageIndex + 1 : 1;
+    const pageSize = this.paginator ? this.paginator.pageSize : 10;
     let params = this.prepareParams()
-      .set('page', this.mapListService.page.pageNumber + 1)
-      .set('limit', this.rowPerPage);
-  
-    // La création des params du filtre
-    Object.keys(this.filters).forEach(key => {
-      if (this.filters[key]) {
-        if (Array.isArray(this.filters[key])) {
-          this.filters[key].forEach(value => {
-            params = params.append(key, value.toString());
-          });
-        } else {
-          params = params.set(key, this.filters[key].toString());
-        }
-      }
-    });
+      .set('page', pageIndex) 
+      .set('limit', pageSize);
   
     this.api.getHarvestAll(params).subscribe({
       next: (data) => {
         this.nbMats = data['total'];
         const harvestItems = data['items'];
+        this.totalPages = data['total_pages'];
   
-        // On transforme les données pour ajouter les colonnes manquantes
         const transformedItems = harvestItems.map(item => {
           const observerService = new ObserversService();
           observerService.addObservers(item.observateurs);
-          
+          const taxonResult = this.transformTaxons(item.taxons?.split(', ') || []);
+  
           return {
             ...item,
             observateursDisplay: observerService.getObserversAbbr(),
             observateursTooltip: observerService.getObserversFull(),
+            taxonsDisplay: taxonResult.taxonsDisplay,
+            taxonsTooltip: taxonResult.taxonsTooltip,
           };
         });
   
-        this.dataSource = new MatTableDataSource(transformedItems);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.loadGeometries()
+        this.dataSource.data = transformedItems;    
+            
+        this.loadGeometries();
+        if (this.paginator) {
+          this.paginator.pageIndex = pageIndex - 1;
+          this.paginator.length = this.nbMats;
+        }
       },
       error: (err) => console.error(err)
     });
+  }
+
+  deleteHarvest(id_harvest){
+    this.dialogService
+        .confirmDialog({ message: 'Étes vous certain de vouloir supprimer cette récolte ?' })
+        .subscribe((yes) => {
+          if (yes) {
+            this.api.deleteHarvest(id_harvest).subscribe({
+              next: ()=>{
+                this.loadData()
+              },error: (err)=>{
+                console.log(err);
+              }
+            })
+          }
+    });
+    
   }
   
 
   loadGeometries() {
     let params = this.prepareParams();    
     this.api.getHarvestGeometries(params).subscribe({
-        next: (data) => {
+        next: (data) => {                    
             this.geojson = data['items'];
             setTimeout(() => {
-                this.applyDeflateAndClustering(); // Appliquer la logique sur la carte
+                this.applyDeflateAndClustering();
             }, 100);
         }
     });
@@ -265,26 +347,12 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
     return params;
   }
 
-  formatObservateurs(observateurs: string): { display: string; tooltip: string } {
-    const obsArray = observateurs.split(', ').map(obs => obs.trim());
-  
-    if (obsArray.length === 1) {
-      return { display: obsArray[0], tooltip: obsArray[0] };
-    }
-  
-    const principal = obsArray[0]; // Le premier observateur
-    const rest = obsArray.slice(1).join(', '); // Les autres observateurs
-    const count = obsArray.length - 1; // Nombre d'observateurs restants
-  
-    return { display: `${principal} +${count}`, tooltip: rest };
-  }
-
   onAddHarvest() {
     this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest`]);
   }
 
-  go() {
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/test`]);
+  onEdit(id_harvest: number) {
+    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest`, id_harvest]);
   }
 
   mooveButton() {
@@ -298,32 +366,70 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
 
   private applyDeflateAndClustering(): void {
-      const map = this._ms.map;
-      if (!map) {
+    const map = this._ms.map;
+    if (!map) {
         return;
-      }
-      const deflateLayer = L.deflate({ minSize: 50 }).addTo(map);
-      this.markerClusterGroup.clearLayers(); // Nettoie les anciens clusters
-      map.eachLayer((layer) => {
-        if (layer instanceof L.GeoJSON) {  
-          layer.eachLayer((featureLayer) => {
-            const feature = featureLayer['feature'];
-  
+    }
+
+    const deflateLayer = L.deflate({ minSize: 50 }).addTo(map);
+    this.markerClusterGroup.clearLayers();
+
+    const geoJsonLayer = L.geoJSON(this.geojson, {
+        pointToLayer: (feature, latlng) => {
+            return L.circleMarker(latlng, {
+                radius: 0,
+                opacity: 0,
+            });
+        },
+        onEachFeature: (feature, layer) => {
             if (feature.geometry.type === "Point") {
-              // Si c'est un point, on l'ajoute au clustering
-              const coords = feature.geometry.coordinates;
-              const marker = L.marker([coords[1], coords[0]]);
-              this.markerClusterGroup.addLayer(marker); // Ajoute au groupe de clusters
-            } else {
-              // Si ce n'est pas un point, on l'ajoute au deflate layer
-              deflateLayer.addLayer(featureLayer);
-              this.markerClusterGroup.addLayer(featureLayer);
+                this.markerClusterGroup.addLayer(layer);
+            } 
+            else if (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon") {
+                const polygonLayer = layer as L.Polygon;
+
+                // On ajoute le polygone au groupe de déflation
+                deflateLayer.addLayer(polygonLayer);
+
+                // Vérifie si le polygone est valide et calcule son centre
+                if (polygonLayer.getBounds && polygonLayer.getBounds().isValid()) {
+                    const center = polygonLayer.getBounds().getCenter();
+
+                    // Ajout d'un marqueur au centre du polygone pour participer au clustering
+                    const marker = L.marker(center);
+                    this.markerClusterGroup.addLayer(marker);
+                }
             }
-          });
         }
-      });
+    });
+
+    map.addLayer(this.markerClusterGroup);
+  }
+
+  transformTaxons(taxons: string[]): { taxonsDisplay: string, taxonsTooltip: string } {
+    const MAX_NAMES = 1;
   
-      map.addLayer(this.markerClusterGroup); // Ajoute le groupe de clusters à la carte
+    if (!taxons || taxons.length === 0) {
+      return {
+        taxonsDisplay: '',
+        taxonsTooltip: ''
+      };
+    }
+  
+    const uniqueTaxons = Array.from(new Set(taxons));
+  
+    const taxonsTooltip = uniqueTaxons.join(', ').replace(/, ([^,]+)$/, ' & $1') + '.';
+    let taxonsDisplay = uniqueTaxons.join(', ');
+  
+    if (uniqueTaxons.length > MAX_NAMES) {
+      const firstTaxon = uniqueTaxons.slice(0, MAX_NAMES);
+      taxonsDisplay = `${firstTaxon} (+${uniqueTaxons.length - MAX_NAMES})`;
+    }
+  
+    return {
+      taxonsDisplay,
+      taxonsTooltip
+    };
   }
 
 

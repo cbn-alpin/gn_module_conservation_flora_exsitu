@@ -102,7 +102,7 @@
 }
 
 .highlighted {
-  background-color: yellow !important;
+  background-color: rgb(29, 218, 48) !important;
 }
 
 .mat-table tr:hover {

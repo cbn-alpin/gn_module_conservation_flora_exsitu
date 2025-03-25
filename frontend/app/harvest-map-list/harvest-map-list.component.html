@@ -1,9 +1,9 @@
 <div class="wrapper">
   <div class="header-bar">
     <button (click)="onAddHarvest()" mat-raised-button class="button-success uppercase">
-      <i class="fa fa-plus-circle" aria-hidden="true"> </i>
+      <i class="fa fa-plus-circle"> </i>
       Ajouter une récolte</button>
-    <button mat-raised-button color="primary" (click)="go()">Télécharger</button>
+    <button mat-raised-button color="primary">Télécharger</button>
   </div>
 
   <div class="row row-0">
@@ -43,10 +43,10 @@
     <div class="map-section">
       <pnx-map height="86vh" [center]="center" [zoom]="zoom">
         <pnx-geojson 
-          [cluster]="true" 
           *ngIf="geojson" 
           [geojson]="geojson" 
-          [onEachFeature]="onEachFeature.bind(this)"        
+          [onEachFeature]="onEachFeature.bind(this)" 
+          [asCluster] = "true"       
         > </pnx-geojson>
       </pnx-map>
     </div>
@@ -61,19 +61,21 @@
       
           <!-- N° de Récolte -->
           <ng-container matColumnDef="code_material">
-            <th mat-header-cell *matHeaderCellDef> N° réc </th>
+            <th mat-header-cell *matHeaderCellDef matTooltip="Numéro de récolte"> N° réc </th>
             <td mat-cell *matCellDef="let element"> {{ element.code_material }} </td>
           </ng-container>
       
           <!-- Taxon -->
-          <ng-container matColumnDef="taxon">
-            <th mat-header-cell *matHeaderCellDef> Taxon </th>
-            <td mat-cell *matCellDef="let element"> {{ element.taxon }} </td>
-          </ng-container>
+          <ng-container matColumnDef="taxons">
+            <th mat-header-cell *matHeaderCellDef> Taxons </th>
+            <td mat-cell *matCellDef="let element" matTooltip="{{ element.taxonsTooltip }}"> 
+              {{ element.taxonsDisplay }} 
+            </td>
+          </ng-container>          
       
           <!-- Département -->
           <ng-container matColumnDef="departement">
-            <th mat-header-cell *matHeaderCellDef> Dept </th>
+            <th mat-header-cell *matHeaderCellDef matTooltip="Code du département"> Dept </th>
             <td mat-cell *matCellDef="let element" matTooltip="{{ element.departement_name }}"> {{ element.departement_code }} </td>
           </ng-container>
       
@@ -83,40 +85,56 @@
             <td mat-cell *matCellDef="let element"> {{ element.commune }} </td>
           </ng-container>
       
+          <!-- Date -->
+          <ng-container matColumnDef="date_start">
+            <th mat-header-cell *matHeaderCellDef matTooltip="Date début de la récolte"> Date </th>
+            <td mat-cell *matCellDef="let element"> {{ element.date_start | date: 'dd-MM-yyyy' }} </td>
+          </ng-container>
+
           <!-- Observateurs -->
           <ng-container matColumnDef="observateurs">
             <th mat-header-cell *matHeaderCellDef> Observateurs </th>
             <td mat-cell *matCellDef="let element" matTooltip="{{ element.observateursTooltip }}"> {{ element.observateursDisplay }} </td>
           </ng-container>
       
-          <!-- Date -->
-          <ng-container matColumnDef="date_start">
-            <th mat-header-cell *matHeaderCellDef> Date </th>
-            <td mat-cell *matCellDef="let element"> {{ element.date_start | date: 'dd-MM-yyyy' }} </td>
-          </ng-container>
-      
           <!-- Boutons d'action (Fusionner les colonnes Info, Edit, Delete en une seule colonne) -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef> Actions </th>
             <td mat-cell *matCellDef="let element">
-              <button mat-icon-button aria-label="Edit" matTooltip="Editer la récolte"><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button color="warn" aria-label="Delete" matTooltip="Supprimer la récolte"><mat-icon>delete</mat-icon></button>
+              <button 
+                mat-icon-button 
+                aria-label="Edit" 
+                matTooltip="Editer la récolte"
+                (click)="onEdit(element.id_harvest)"
+              ><mat-icon>edit</mat-icon></button>
+              <button 
+                mat-icon-button 
+                color="warn" 
+                aria-label="Delete" 
+                matTooltip="Supprimer la récolte"
+                [disabled]="element.code_material !== null"
+                (click)="deleteHarvest(element.id_harvest)"
+              ><mat-icon>delete</mat-icon></button>
             </td>
           </ng-container>
       
           <!-- Lignes de l'en-tête et des données -->
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row 
-              *matRowDef="let row; columns: displayedColumns;" 
-              [ngClass]="{'highlighted': row.id_harvest === highlightedRowId}"
-              (click)="highlightRow(row.id_harvest)"
+              *matRowDef="let row; let i = index; columns: displayedColumns;" 
+              [ngClass]="{
+                'highlighted': i === highlightedRowIndex || highlightedRowIds.has(row.id_harvest)
+              }"              
+              (click)="highlightRow(row.id_harvest, i)"
             ></tr>
         </table>
       
-        <mat-paginator 
-          [pageSizeOptions]="[10, 15, rowPerPage]" 
-          showFirstLastButtons
-          class="mat-paginator-sticky"
+        <mat-paginator
+          [length]="nbMats"  
+          [pageSize]="10"    
+          [pageSizeOptions]="[5, 10, 25, 100]"  
+          [showFirstLastButtons]="true" 
+          (page)="onPaginateChange()">
         ></mat-paginator>
        
     </div>
