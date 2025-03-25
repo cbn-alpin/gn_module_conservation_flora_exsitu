@@ -4,7 +4,7 @@ from flask import Blueprint, request, g
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
 from .repositories import HarvestRepository, HarvestMaterialRepository
-from .models import THarvestMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver
+from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 from ref_geo.models import LAreas, BibAreasTypes
 from geonature.utils.env import db
@@ -20,10 +20,27 @@ from geoalchemy2.functions import ST_AsGeoJSON
 import json
 from pypnnomenclature.models import TNomenclatures
 from sqlalchemy import exists
+from collections import defaultdict
 
 
-blueprint = Blueprint("pr_conservation_flora_exsitu", __name__)
+blueprint = Blueprint("conservation_flora_exsitu", __name__)
 log = logging.getLogger(__name__)
+
+
+def group_geometries(results):
+    geom_dict = defaultdict(list)
+    # Groupement des récoltes par géométrie
+    for id_harvest, geom in results:
+        geom_dict[geom].append(id_harvest)
+        
+    # On supprime les doublons dans les listes d'IDs
+    grouped_results = [
+        {"geom": geom, "harvest_ids": list(set(harvest_ids))}  # Enlève les doublons dans les IDs
+        for geom, harvest_ids in geom_dict.items()
+    ]
+
+    return grouped_results
+
 
 
 @blueprint.route("/harvests", methods=["POST"])
@@ -84,6 +101,7 @@ def get_all_harvests():
     limit = request.args.get('limit', default=10, type=int)
     offset = (page - 1) * limit
 
+    selected_ids = request.args.getlist('selected_ids', type=int)
     cd_nom_list = request.args.getlist('cd_nom', type=int)  
     cd_hab = request.args.get('cd_hab', type=int)  
     date_start = request.args.get('date_start', type=str) 
@@ -110,24 +128,52 @@ def get_all_harvests():
 
     total = db.session.query(db.func.count()).select_from(query.subquery()).scalar()
 
-    query = query.order_by(
-        THarvestMaterial.code_material.isnot(None),
-        THarvest.date_start.desc(),
-        THarvest.id_harvest.desc(),
-        THarvestMaterial.code_material.desc()
-    ).limit(limit).offset(offset)
+    if selected_ids:
+        selected_query = query.filter(THarvest.id_harvest.in_(selected_ids))
+        selected_query = selected_query.order_by(
+            TMaterial.code_material.isnot(None),
+            THarvest.date_start.desc(),
+            THarvest.id_harvest.desc(),
+            TMaterial.code_material.desc()
+        )
 
-    results = query.all()
+        # Récupérer les résultats surlignés
+        selected_results = selected_query.all()
 
-    if not results:
-        return {
-            'page': page,
-            'limit': limit,
-            'total': 0,
-            'total_pages': 0,
-            'items': [],
-            'message': 'Aucun résultat trouvé pour ces filtres.'
-        }, 200
+        # Calculer combien d'éléments il nous faut encore pour compléter la page
+        remaining_limit = limit - len(selected_results)
+
+        # Si le nombre restant est supérieur à 0, récupérer les autres résultats pour compléter la page
+        if remaining_limit > 0:
+            # Appliquer la pagination sur les résultats non sélectionnés
+            normal_query = query.filter(~THarvest.id_harvest.in_(selected_ids))
+            normal_query = normal_query.order_by(
+                TMaterial.code_material.isnot(None),
+                THarvest.date_start.desc(),
+                THarvest.id_harvest.desc(),
+                TMaterial.code_material.desc()
+            )
+
+            normal_results = normal_query.offset(offset).limit(remaining_limit).all()
+        else:
+            normal_results = []
+
+        # Combiner les résultats sélectionnés et ceux récupérés pour compléter la page
+        all_results = selected_results + normal_results
+
+        # Calculer le nombre total de résultats
+        total_results = total
+    else:
+        # Si aucun selected_id, appliquer la pagination de manière classique
+        all_results = query.order_by(
+            TMaterial.code_material.isnot(None),
+            THarvest.date_start.desc(),
+            THarvest.id_harvest.desc(),
+            TMaterial.code_material.desc()
+        ).offset(offset).limit(limit).all()
+
+        # Calculer le nombre total de résultats
+        total_results = total
 
     items = [
         {
@@ -138,20 +184,21 @@ def get_all_harvests():
             "departement_name": result.departement_name,
             "departement_code": result.departement_code,
             "commune": result.commune,
-            "observateurs": result.observateurs
+            "observateurs": result.observateurs,
         }
-        for result in results
+        for result in all_results
     ]
 
-    total_pages = (total + limit - 1) // limit
+    total_pages = (total_results + limit - 1) // limit  # Calcul du total de pages
 
     return {
         'page': page,
         'limit': limit,
-        'total': total,
+        'total': total_results,
         'total_pages': total_pages,
         'items': items
     }, 200
+
 
 
 @blueprint.route("/harvests/geometries", methods=["GET"])
@@ -172,7 +219,7 @@ def get_harvest_geometries():
 
     harvest_repo = HarvestRepository()
 
-    query = harvest_repo.build_harvest_query(
+    query = harvest_repo.build_harvest_geometry_query(
         cd_nom_list, 
         cd_hab, 
         date_start, 
@@ -184,20 +231,25 @@ def get_harvest_geometries():
         code_material,
     )
 
-    results = query.add_columns(func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326)).label("geom")).all()
+    results = query.all()
 
     if not results:
         return {
             'items': []
         }, 200
 
+    # Appel du post-traitement pour regrouper les géométries identiques
+    grouped_results = group_geometries(results)
+
     features = [
         Feature(
-            id=result.id_harvest,
-            geometry=json.loads(result.geom) if result.geom else None,
-            properties={"id_harvest": result.id_harvest}
+            id=None,  # ID non nécessaire puisque ce sont des groupes
+            geometry=json.loads(result["geom"]) if result["geom"] else None,
+            properties={
+                "harvest_ids": result["harvest_ids"]  # Liste des IDs des récoltes ayant cette géométrie
+            }
         )
-        for result in results
+        for result in grouped_results
     ]
 
     return {
@@ -238,7 +290,7 @@ def get_harvest_by_id(harvest_id):
         "label_fr": geographical_location.label_fr
     }
     
-    materials_exist = db.session.query(THarvestMaterial).filter(THarvestMaterial.id_harvest == harvest.id_harvest).count() > 0
+    materials_exist = db.session.query(TMaterial).filter(TMaterial.id_harvest == harvest.id_harvest).count() > 0
     geom_geojson = None
     if harvest.geom:
         geom_wgs84 = db.session.query(func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326))).filter(THarvest.id_harvest == harvest.id_harvest).first()
@@ -327,13 +379,13 @@ def delete_material(id_material):
 @blueprint.route("/harvests/<int:id_harvest>/materials", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
-def get_harvest_materials(id_harvest):
+def get_materials(id_harvest):
     try:
         limit = request.args.get('limit', default=10, type=int) 
         page = request.args.get('page', default=1, type=int)
         offset = (page - 1) * limit
 
-        materials = THarvestMaterial.query.filter_by(id_harvest=id_harvest)\
+        materials = TMaterial.query.filter_by(id_harvest=id_harvest)\
                                           .limit(limit)\
                                           .offset(offset)\
                                           .all()
@@ -362,7 +414,7 @@ def get_harvest_materials(id_harvest):
 
         return {
             'materials': materials_list,
-            'total': THarvestMaterial.query.filter_by(id_harvest=id_harvest).count(),  # Total des matériaux
+            'total': TMaterial.query.filter_by(id_harvest=id_harvest).count(),  # Total des matériaux
             'limit': limit,
             'offset': offset
         }, 200
@@ -380,8 +432,8 @@ def check_code_material():
         return jsonify({"error": "Code material is required"}), 400
     
     # Utilisation de EXISTS pour vérifier l'existence sans retourner de données
-    query = db.session.query(exists().where(THarvestMaterial.code_material == code_material)).scalar()
-    #material = THarvestMaterial.query.filter_by(code_material=code_material).first()
+    query = db.session.query(exists().where(TMaterial.code_material == code_material)).scalar()
+    #material = TMaterial.query.filter_by(code_material=code_material).first()
 
     if query:
         return jsonify({"exists": True}), 200
@@ -423,8 +475,8 @@ def search_code_material():
     if not search_term:
         return jsonify([])
     
-    results = db.session.query(THarvestMaterial.code_material).filter(
-        THarvestMaterial.code_material.ilike(f"%{search_term}%")
+    results = db.session.query(TMaterial.code_material).filter(
+        TMaterial.code_material.ilike(f"%{search_term}%")
     ).limit(10).all()
 
     code_list = [result[0] for result in results]

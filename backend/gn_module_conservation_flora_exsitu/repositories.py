@@ -18,7 +18,7 @@ from sqlalchemy import and_
 from .models import(
     THarvest,
     TSeed,
-    THarvestMaterial,
+    TMaterial,
     CorHarvestObserver,
     TSeedStock,
     TSeedStockMouvement,
@@ -52,12 +52,12 @@ class HarvestRepository:
                 Habref.lb_hab_fr.label("cd_hab_label"),
                 NomenclatureType.label_default.label("harvest_type_label"),
                 NomenclatureExpo.label_default.label("exposition_label"),
-                THarvestMaterial
+                TMaterial
             )
             .outerjoin(Habref, THarvest.cd_hab == Habref.cd_hab)
             .outerjoin(NomenclatureType, THarvest.id_harvest_type == NomenclatureType.id_nomenclature) 
             .outerjoin(NomenclatureExpo, THarvest.id_exposition == NomenclatureExpo.id_nomenclature)
-            .outerjoin(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
+            .outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
             .filter(THarvest.id_harvest == harvest_id)
         )
 
@@ -75,12 +75,12 @@ class HarvestRepository:
                 Habref.lb_hab_fr.label("cd_hab_label"),
                 NomenclatureType.label_default.label("harvest_type_label"),
                 NomenclatureExpo.label_default.label("exposition_label"),
-                THarvestMaterial
+                TMaterial
             )
             .outerjoin(Habref, THarvest.cd_hab == Habref.cd_hab)
             .outerjoin(NomenclatureType, THarvest.id_harvest_type == NomenclatureType.id_nomenclature) 
             .outerjoin(NomenclatureExpo, THarvest.id_exposition == NomenclatureExpo.id_nomenclature)
-            .outerjoin(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
+            .outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
             .limit(limit)
             .offset(offset)
         )
@@ -212,6 +212,71 @@ class HarvestRepository:
             db.session.rollback()
             raise e
 
+
+    def build_harvest_geometry_query(self, 
+                            cd_nom_list, 
+                            cd_hab, 
+                            date_start, 
+                            date_end, 
+                            observers, 
+                            municipalites, 
+                            departements, 
+                            id_harvest_type, 
+                            code_material,
+                        ):
+        l_areas_dept = aliased(LAreas)
+        l_areas_commune = aliased(LAreas)
+        Taxref_valid = aliased(Taxref)
+
+        query = db.session.query(
+            THarvest.id_harvest,
+            func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326)).label("geom"),
+        ).outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest) \
+        .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
+        .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
+        .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
+        .outerjoin(l_areas_dept, and_(THarvest.location_code == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
+        .outerjoin(l_areas_commune, and_(THarvest.location_code == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
+        .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
+        .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
+        .group_by(
+            THarvest.id_harvest, THarvest.geom
+        )
+
+
+        if cd_nom_list:
+            cd_ref_list = db.session.query(Taxref.cd_ref).filter(Taxref.cd_nom.in_(cd_nom_list)).distinct().all()
+            cd_ref_list = [cd_ref[0] for cd_ref in cd_ref_list]
+            cd_nom_list = db.session.query(Taxref.cd_nom).filter(Taxref.cd_ref.in_(cd_ref_list)).distinct().all()
+            cd_nom_list = [cd_nom[0] for cd_nom in cd_nom_list]
+            query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
+
+        if cd_hab:
+            query = query.filter(THarvest.cd_hab == cd_hab)
+
+        if date_start:
+            query = query.filter(THarvest.date_start >= date_start)
+
+        if date_end:
+            query = query.filter(THarvest.date_start <= date_end)
+
+        if observers:
+            query = query.filter(User.id_role.in_(observers))
+
+        if municipalites:
+            query = query.filter(THarvest.location_code.in_(municipalites))
+
+        if departements:
+            query = query.filter(THarvest.location_code.in_(departements))
+
+        if id_harvest_type:
+            query = query.filter(THarvest.id_harvest_type == id_harvest_type)
+
+        if code_material:
+            query = query.filter(TMaterial.code_material.ilike(f"%{code_material}%"))
+
+        return query
+
     
     def build_harvest_query(self, 
                             cd_nom_list, 
@@ -231,7 +296,7 @@ class HarvestRepository:
         query = db.session.query(
             THarvest.id_harvest,
             THarvest.date_start,
-            THarvestMaterial.code_material,
+            TMaterial.code_material,
             func.string_agg(Taxref_valid.lb_nom, ', ').label('taxons'),
             l_areas_dept.area_name.label('departement_name'),
             l_areas_dept.area_code.label('departement_code'),
@@ -242,8 +307,8 @@ class HarvestRepository:
                     "nom_role", User.nom_role
                 )
             ).label("observateurs")
-        ).outerjoin(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest) \
-        .outerjoin(CorMaterialTaxon, THarvestMaterial.id_material == CorMaterialTaxon.id_material) \
+        ).outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest) \
+        .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
         .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
         .outerjoin(l_areas_dept, and_(THarvest.location_code == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
@@ -252,9 +317,9 @@ class HarvestRepository:
         .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
         .group_by(
             THarvest.id_harvest,
-            THarvestMaterial.id_material,
+            TMaterial.id_material,
             THarvest.date_start,
-            THarvestMaterial.code_material,
+            TMaterial.code_material,
             l_areas_dept.area_name,
             l_areas_dept.area_code,
             l_areas_commune.area_name,
@@ -289,7 +354,7 @@ class HarvestRepository:
             query = query.filter(THarvest.id_harvest_type == id_harvest_type)
 
         if code_material:
-            query = query.filter(THarvestMaterial.code_material.ilike(f"%{code_material}%"))
+            query = query.filter(TMaterial.code_material.ilike(f"%{code_material}%"))
 
         return query
     
@@ -307,23 +372,23 @@ class HarvestRepository:
 
 class HarvestMaterialRepository:
     def get_one(self, id_material):
-        # query = db.session.query(THarvestMaterial).filter(THarvestMaterial.id_material == id_material)
-        material = THarvestMaterial.query.get(id_material)
+        # query = db.session.query(TMaterial).filter(TMaterial.id_material == id_material)
+        material = TMaterial.query.get(id_material)
         return material
     
     def create(self, data):
         try:
-            existing_material = THarvestMaterial.query.filter_by(code_material=data["code_material"]).first()
+            existing_material = TMaterial.query.filter_by(code_material=data["code_material"]).first()
             if existing_material:
                 return jsonify({"error": "Ce code matériel existe déjà."}), 400
             
             # Récupérer id_parent depuis code_parent s'il est présent
             code_parent = data.pop("code_parent", None)  # Supprime et récupère code_parent
             if code_parent:
-                parent = THarvestMaterial.query.filter_by(code_material=code_parent).first()
+                parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_parent"] = parent.id_material if parent else None  # Assigner l'id du parent
 
-            material = THarvestMaterial(**data)
+            material = TMaterial(**data)
             db.session.add(material)
             db.session.commit()
             return material
@@ -339,26 +404,25 @@ class HarvestMaterialRepository:
         NomenclaturePhenology2 = aliased(TNomenclatures)
         query = (
             db.session.query(
-                THarvestMaterial.id_harvest,
-                THarvestMaterial.code_cultural_bank,
-                THarvestMaterial.code_material,
-                THarvestMaterial.protocole_note,
-                THarvestMaterial.comment,
-                THarvestMaterial.id_parent,
-                THarvestMaterial.is_soil_sampling,
-                THarvestMaterial.id_material,
+                TMaterial.id_harvest,
+                TMaterial.code_cultural_bank,
+                TMaterial.code_material,
+                TMaterial.remarks,
+                TMaterial.id_parent,
+                TMaterial.is_soil_sampling,
+                TMaterial.id_material,
                 NomenclatureClassCouting.label_default.label("class_conting"),
                 NomenclatureHarvestMateriel.label_default.label("harvest_material"),
                 NomenclatureSampleMethod.label_default.label('sample_method'),
                 NomenclaturePhenology1.label_default.label('phenology_1'),
                 NomenclaturePhenology2.label_default.label('phenology_2')
             )
-            .outerjoin(NomenclatureClassCouting, THarvestMaterial.id_foot_counting_class == NomenclatureClassCouting.id_nomenclature) 
-            .outerjoin(NomenclatureHarvestMateriel, THarvestMaterial.id_harvest_material == NomenclatureHarvestMateriel.id_nomenclature)
-            .outerjoin(NomenclatureSampleMethod, THarvestMaterial.id_method_sample == NomenclatureSampleMethod.id_nomenclature)
-            .outerjoin(NomenclaturePhenology1, THarvestMaterial.id_phenology_1 == NomenclaturePhenology1.id_nomenclature)
-            .outerjoin(NomenclaturePhenology2, THarvestMaterial.id_phenology_2 == NomenclaturePhenology2.id_nomenclature)
-            .filter(THarvestMaterial.id_harvest == id_harvest)
+            .outerjoin(NomenclatureClassCouting, TMaterial.id_foot_counting_class == NomenclatureClassCouting.id_nomenclature) 
+            .outerjoin(NomenclatureHarvestMateriel, TMaterial.id_harvest_material == NomenclatureHarvestMateriel.id_nomenclature)
+            .outerjoin(NomenclatureSampleMethod, TMaterial.id_method_sample == NomenclatureSampleMethod.id_nomenclature)
+            .outerjoin(NomenclaturePhenology1, TMaterial.id_phenology_1 == NomenclaturePhenology1.id_nomenclature)
+            .outerjoin(NomenclaturePhenology2, TMaterial.id_phenology_2 == NomenclaturePhenology2.id_nomenclature)
+            .filter(TMaterial.id_harvest == id_harvest)
         )
         return query.all()
         
@@ -369,13 +433,13 @@ class HarvestMaterialRepository:
                 return None
 
             if "code_material" in data:
-                existing_material = THarvestMaterial.query.filter_by(code_material=data["code_material"]).first()
+                existing_material = TMaterial.query.filter_by(code_material=data["code_material"]).first()
                 if existing_material and existing_material.id_material != id_material:
                     return jsonify({"error": "Ce code matériel existe déjà."}), 400
 
             code_parent = data.pop("code_parent", None)
             if code_parent:
-                parent = THarvestMaterial.query.filter_by(code_material=code_parent).first()
+                parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_parent"] = parent.id_material if parent else None
 
             for key, value in data.items():
@@ -394,6 +458,7 @@ class HarvestMaterialRepository:
             material = self.get_one(id_material)
             if not material:
                 return jsonify({"error": "Matériel non trouvé."}), 404
+            db.session.query(CorMaterialTaxon).filter_by(id_material=id_material).delete()
             db.session.delete(material)
             db.session.commit()
             return jsonify({"message": "Matériel supprimé avec succès."}), 200
@@ -415,14 +480,14 @@ class HarvestMaterialRepository:
         query = (
             db.session.query(
                 THarvest.date_start,
-                THarvestMaterial.num_recolte,
+                TMaterial.num_recolte,
                 db.func.group_concat(Taxref.lb_nom).label('taxons'),
                 l_areas_dept.lb_area.label('departement'),
                 l_areas_commune.lb_area.label('commune'),
                 db.func.group_concat(CorHarvestObserver.observer_name).label('observateurs')
             )
-            .join(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
-            .outerjoin(CorMaterialTaxon, THarvestMaterial.id_harvest_material == CorMaterialTaxon.id_harvest_material)
+            .join(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
+            .outerjoin(CorMaterialTaxon, TMaterial.id_harvest_material == CorMaterialTaxon.id_harvest_material)
             .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
             .outerjoin(l_areas_dept, THarvest.location_code == l_areas_dept.code_area)
             .outerjoin(l_areas_commune, THarvest.location_code == l_areas_commune.code_area)
@@ -440,8 +505,8 @@ class HarvestMaterialRepository:
         # Pour connaître le nombre total de récoltes disponibles sans la pagination
         total = (
             db.session.query(db.func.count(THarvest.id_harvest))
-            .join(THarvestMaterial, THarvest.id_harvest == THarvestMaterial.id_harvest)
-            .outerjoin(CorMaterialTaxon, THarvestMaterial.id_harvest_material == CorMaterialTaxon.id_harvest_material)
+            .join(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
+            .outerjoin(CorMaterialTaxon, TMaterial.id_harvest_material == CorMaterialTaxon.id_harvest_material)
             .outerjoin(Taxref, CorMaterialTaxon.id_taxon == Taxref.id_taxon)
             .outerjoin(l_areas_dept, THarvest.location_code == l_areas_dept.code_area)
             .outerjoin(l_areas_commune, THarvest.location_code == l_areas_commune.code_area)
