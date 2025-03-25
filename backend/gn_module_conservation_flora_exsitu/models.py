@@ -43,8 +43,8 @@ class THarvest(db.Model):
         server_default = sa.func.now(),
     )
     date_end = db.Column(db.DateTime)
-    place_comment = db.Column(db.Text)
-    comment = db.Column(db.Text)
+    place_remarks = db.Column(db.Text)
+    remarks = db.Column(db.Text)
     geom = db.Column(Geometry("GEOMETRY", 2154))
     location_type = db.Column(
         db.Integer,
@@ -110,7 +110,7 @@ class THarvest(db.Model):
         backref=db.backref('harvests', lazy='select'),
         lazy='select'
     )
-    materials = db.relationship('THarvestMaterial', backref='harvest')
+    materials = db.relationship('TMaterial', backref='harvest')
 
     def to_dic(self):
         return {
@@ -136,8 +136,8 @@ class CorHarvestObserver(db.Model):
     is_main_observer = db.Column(db.Boolean, default=False)
 
 @serializable
-class THarvestMaterial(db.Model):
-    __tablename__ = 't_harvest_material'
+class TMaterial(db.Model):
+    __tablename__ = 't_material'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
     id_material = db.Column(
         db.Integer,
@@ -156,7 +156,7 @@ class THarvestMaterial(db.Model):
     id_parent = db.Column(
         db.Integer,
         db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_harvest_material.id_material",
+            "pr_conservation_flora_exsitu.t_material.id_material",
             ondelete="NULL"
         ),
     )
@@ -202,16 +202,16 @@ class THarvestMaterial(db.Model):
             ondelete="NULL"
         ),
     )
-    protocole_note = db.Column(db.Text)
+    remarks = db.Column(db.Text)
     code_cultural_bank = db.Column(
-        db.String(20),
+        db.Integer,
     )
     sample_foot_nb = db.Column(db.Integer)
     is_soil_sampling = db.Column(
         db.Boolean,
         default=False
     )
-    comment = db.Column(db.Text)
+    has_hybridation_risk = db.Column(db.Boolean)
 
     seeds = db.relationship('TSeed', backref='material')
 
@@ -225,12 +225,12 @@ class THarvestMaterial(db.Model):
             "id_foot_counting_class": self.id_foot_counting_class,
             "id_method_sample": self.id_method_sample,
             "is_soil_sampling": self.is_soil_sampling,
-            "comment": self.comment,
-            "protocole_note": self.protocole_note,
+            "remarks": self.remarks,
             "code_cultural_bank": self.code_cultural_bank,
             "id_phenology_1": self.id_phenology_1,
             "id_phenology_2": self.id_phenology_2,
-            "id_parent": self.id_parent
+            "id_parent": self.id_parent,
+            "has_hybridation_risk": self.has_hybridation_risk
         }
 
 
@@ -240,7 +240,7 @@ class CorMaterialTaxon(db.Model):
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
     id_material  = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_harvest_material.id_material"),
+        db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material"),
         primary_key=True
     )
     cd_nom  = db.Column(
@@ -267,7 +267,7 @@ class TSeed(db.Model):
     id_material = db.Column(
         db.Integer,
         db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_harvest_material.id_material",
+            "pr_conservation_flora_exsitu.t_material.id_material",
         ),
         nullable=False
     )
@@ -475,7 +475,7 @@ class TSeedTablet(db.Model):
         db.Integer,
         primary_key=True
     )
-    uuid_tablet = db.Column(
+    uuid_humidity = db.Column(
         UUID(as_uuid=True),
         server_default=sa.text("uuid_generate_v4()"),
     )
@@ -487,7 +487,7 @@ class TSeedTablet(db.Model):
         nullable=False
     )
     evaluation_date = db.Column(db.DateTime)
-    id_tablet_color = db.Column(
+    id_color = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",

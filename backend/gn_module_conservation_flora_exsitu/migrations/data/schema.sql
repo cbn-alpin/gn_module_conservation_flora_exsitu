@@ -29,9 +29,9 @@ CREATE TABLE "t_harvest" (
 	-- Date de fin de récolte
 	"date_end" DATE,
 	-- Remarques générales
-	"comment" TEXT,
+	"remarks" TEXT,
 	-- Commentaire sur la location(lieudit, comm_loc)
-	"place_comment" TEXT,
+	"place_remarks" TEXT,
 	-- Coordonnées GPS
 	"geom" GEOMETRY(GEOMETRY, 2154),
 	-- Code de la commune, du département
@@ -59,20 +59,20 @@ COMMENT ON COLUMN t_harvest.cd_hab IS 'cd_hab: clé étrangère GN.ref_habitats.
 COMMENT ON COLUMN t_harvest.id_harvest_type IS 'Type de récolte';
 COMMENT ON COLUMN t_harvest.date_start IS 'Date de début de récolte';
 COMMENT ON COLUMN t_harvest.date_end IS 'Date de fin de récolte';
-COMMENT ON COLUMN t_harvest.place_comment IS 'Commentaire sur la location(lieudit, comm_loc)';
+COMMENT ON COLUMN t_harvest.place_remarks IS 'Commentaire sur la location(lieudit, comm_loc)';
 COMMENT ON COLUMN t_harvest.geom IS 'Coordonnées GPS';
 COMMENT ON COLUMN t_harvest.location_code IS 'Code de la commune, du département';
 COMMENT ON COLUMN t_harvest.location_type IS 'Type de localisation';
 COMMENT ON COLUMN t_harvest.precision IS 'Résolution de la localisation en mètres';
 COMMENT ON COLUMN t_harvest.surface IS 'En m2';
-COMMENT ON COLUMN t_harvest.comment IS 'Remarques générales';
+COMMENT ON COLUMN t_harvest.remarks IS 'Remarques générales';
 
 -- Table `t_seed`
 CREATE TABLE "t_seed" (
 	"id_seed" SERIAL NOT NULL UNIQUE,
 	"uuid_seed" UUID DEFAULT uuid_generate_v4() UNIQUE,
-	"num_seed" VARCHAR(10) NOT NULL,
-	-- Clé étrangère ES.exsitu.t_harvest_material
+	"code_seed" VARCHAR(10) NOT NULL,
+	-- Clé étrangère ES.exsitu.t_material
 	"id_material" INTEGER,
 	"remarks" TEXT,
 	"id_form1" INTEGER,
@@ -155,7 +155,7 @@ CREATE TABLE "t_seed" (
 	"meta_update_date" TIMESTAMP,
 	PRIMARY KEY("id_seed")
 );
-COMMENT ON COLUMN t_seed.id_material IS 'Clé étrangère ES.exsitu.t_harvest_material';
+COMMENT ON COLUMN t_seed.id_material IS 'Clé étrangère ES.exsitu.t_material';
 COMMENT ON COLUMN t_seed.length IS 'Longueur moyenne (mm)';
 COMMENT ON COLUMN t_seed.width IS 'Largeur moyenne (mm)';
 COMMENT ON COLUMN t_seed.thickness IS 'Epaisseur moyenne (mm)';
@@ -239,22 +239,22 @@ COMMENT ON COLUMN t_seed_stock_mouvement.id_stock_flow IS 'Type de sortie';
 COMMENT ON COLUMN t_seed_stock_mouvement.quantity IS 'Quantité';
 
 
-CREATE TABLE "t_seed_tablet" (
-	"id_seed_tablet" SERIAL NOT NULL UNIQUE,
-	"uuid_tablet" UUID DEFAULT uuid_generate_v4(),
+CREATE TABLE "t_seed_humidity" (
+	"id_seed_humidity" SERIAL NOT NULL UNIQUE,
+	"uuid_humidity" UUID DEFAULT uuid_generate_v4(),
 	"id_stock" INTEGER NOT NULL,
 	-- Date de l’évaluation
 	"evaluation_date" DATE NOT NULL,
 	-- Evaluation de la couleur des pastilles
-	"id_tablet_color" INTEGER NOT NULL,
+	"id_color" INTEGER NOT NULL,
 	-- Date de changement des pastilles
 	"tablet_change_date" DATE,
 	"remaks" TEXT,
-	PRIMARY KEY("id_seed_tablet")
+	PRIMARY KEY("id_seed_humidity")
 );
-COMMENT ON COLUMN t_seed_tablet.evaluation_date IS 'Date de l’évaluation';
-COMMENT ON COLUMN t_seed_tablet.id_tablet_color IS 'Evaluation de la couleur des pastilles';
-COMMENT ON COLUMN t_seed_tablet.tablet_change_date IS 'Date de changement des pastilles';
+COMMENT ON COLUMN t_seed_humidity.evaluation_date IS 'Date de l’évaluation';
+COMMENT ON COLUMN t_seed_humidity.id_color IS 'Evaluation de la couleur des pastilles';
+COMMENT ON COLUMN t_seed_humidity.tablet_change_date IS 'Date de changement des pastilles';
 
 CREATE TABLE "cor_harvest_observer" (
 	"id_observer" INTEGER NOT NULL,
@@ -263,7 +263,7 @@ CREATE TABLE "cor_harvest_observer" (
 	PRIMARY KEY("id_observer", "id_harvest")
 );
 
-CREATE TABLE "t_harvest_material" (
+CREATE TABLE "t_material" (
 	"id_material" SERIAL NOT NULL UNIQUE,
 	"uuid_material" UUID DEFAULT uuid_generate_v4(),
 	"code_material" VARCHAR(50) NOT NULL UNIQUE,
@@ -278,9 +278,8 @@ CREATE TABLE "t_harvest_material" (
 	-- Phénologie
 	"id_phenology_2" INTEGER,
 	-- Protocoles et astuces
-	"protocole_note" TEXT,
+	"remarks" TEXT,
 	-- Remarques générales
-	"comment" TEXT,
 	"code_cultural_bank" INTEGER,
 	-- Nombre de pieds échantillonnés
 	"sample_foot_nb" INTEGER,
@@ -288,17 +287,20 @@ CREATE TABLE "t_harvest_material" (
 	"is_soil_sampling" BOOLEAN,
 	-- Mode d’échantillonnage
 	"id_method_sample" INTEGER,
+	-- Risque d'hybridation
+	"has_hybridation_risk" BOOLEAN,
 	PRIMARY KEY("id_material")
 );
-COMMENT ON COLUMN t_harvest_material.id_harvest_material IS 'Matériel végétal récolté';
-COMMENT ON COLUMN t_harvest_material.id_foot_counting_class IS 'Classes d’individus';
-COMMENT ON COLUMN t_harvest_material.id_phenology_1 IS 'Phénologie';
-COMMENT ON COLUMN t_harvest_material.id_phenology_2 IS 'Phénologie';
-COMMENT ON COLUMN t_harvest_material.comment IS 'Remarques générales';
-COMMENT ON COLUMN t_harvest_material.sample_foot_nb IS 'Nombre de pieds échantillonnés';
-COMMENT ON COLUMN t_harvest_material.is_soil_sampling IS 'Prélèvement de terre';
-COMMENT ON COLUMN t_harvest_material.id_method_sample IS 'Mode d’échantillonnage';
-COMMENT ON COLUMN t_harvest_material.protocole_note IS 'Protocoles et astuces';
+COMMENT ON COLUMN t_material.id_harvest_material IS 'Matériel végétal récolté';
+COMMENT ON COLUMN t_material.id_foot_counting_class IS 'Classes d’individus';
+COMMENT ON COLUMN t_material.id_phenology_1 IS 'Phénologie';
+COMMENT ON COLUMN t_material.id_phenology_2 IS 'Phénologie';
+COMMENT ON COLUMN t_material.remarks IS 'Commentaire + Protocoles et astuces';
+COMMENT ON COLUMN t_material.sample_foot_nb IS 'Nombre de pieds échantillonnés';
+COMMENT ON COLUMN t_material.is_soil_sampling IS 'Prélèvement de terre';
+COMMENT ON COLUMN t_material.id_method_sample IS 'Mode d’échantillonnage';
+COMMENT ON COLUMN t_material.has_hybridation_risk IS 'Risque dhybridation';
+
 
 
 CREATE TABLE "cor_material_taxon" (
@@ -373,8 +375,8 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "cor_harvest_observer"
 ADD FOREIGN KEY("id_observer") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_seed_tablet"
-ADD FOREIGN KEY("id_tablet_color") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ALTER TABLE "t_seed_humidity"
+ADD FOREIGN KEY("id_color") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_seed_stock_mouvement"
 ADD FOREIGN KEY("id_stock") REFERENCES "t_seed_stock"("id_stock")
@@ -388,34 +390,34 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_seed"
 ADD FOREIGN KEY("id_bib_table_location") REFERENCES gn_commons.bib_tables_location(id_table_location)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_seed_tablet"
+ALTER TABLE "t_seed_humidity"
 ADD FOREIGN KEY("id_stock") REFERENCES "t_seed_stock"("id_stock")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
+ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_harvest") REFERENCES "t_harvest"("id_harvest")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
-ADD FOREIGN KEY("id_parent") REFERENCES "t_harvest_material"("id_material")
+ALTER TABLE "t_material"
+ADD FOREIGN KEY("id_parent") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
+ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_foot_counting_class") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
+ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_phenology_1") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
+ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_phenology_2") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_seed"
-ADD FOREIGN KEY("id_material") REFERENCES "t_harvest_material"("id_material")
+ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "cor_material_taxon"
 ADD FOREIGN KEY("cd_nom") REFERENCES taxonomie.taxref(cd_nom)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "cor_material_taxon"
-ADD FOREIGN KEY("id_material") REFERENCES "t_harvest_material"("id_material")
+ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
+ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_harvest_material") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
@@ -424,7 +426,7 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_geographical_location") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_harvest_material"
+ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_method_sample") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
