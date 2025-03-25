@@ -4,7 +4,8 @@ import { HarvestStoreService } from '../../services/store.service';
 import { HarvestFormService } from '../harvest-form.service';
 import { HarvestMapService } from './harvest-map.service';
 import { Subscription } from 'rxjs';
-
+import { DataFormService } from '@geonature_common/form/data-form.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
 @Component({
   selector: 'ex-harvest-map',
@@ -25,8 +26,9 @@ export class HarvestMapComponent implements OnInit, OnDestroy {
     constructor(
         public storeService: HarvestStoreService,
         public harvertFormService: HarvestFormService,
-        private mapStateService: HarvestMapService
-        
+        private mapStateService: HarvestMapService,
+        private dataFormService: DataFormService, 
+        private commonService: CommonService,       
     ){
 
     }
@@ -61,6 +63,35 @@ export class HarvestMapComponent implements OnInit, OnDestroy {
     }
 
     addGeoInfo(geojson) {
+        if (geojson.geometry.type == 'Point') {
+            this.harvertFormService.harvestForm.controls['surface'].disable();
+            this.harvertFormService.harvestForm.patchValue({
+                surface: null,
+            });
+        } else {
+            this.dataFormService.getAreaSize(geojson).subscribe((areaSize) => {
+                this.harvertFormService.harvestForm.patchValue({
+                    surface: Math.round(areaSize),
+                });
+            });
+        }
+
+        this.dataFormService.getGeoInfo(geojson).subscribe((res) => {
+            if (res.altitude.altitude_min && res.altitude.altitude_max) {
+              this.harvertFormService.harvestForm.patchValue({
+                altitude: res.altitude.altitude_min,
+              });
+              console.log(res);
+              
+            } else {
+              this.commonService.regularToaster(
+                'warning',
+                'Les altitudes minimum et maximum de la nouvelle aire de présence ' +
+                  "n'ont pu être mis à jour automatiquement. Vérifier votre DEM !"
+              );
+            }
+          });
+        
         this.harvertFormService.harvestForm.patchValue({ geom: geojson.geometry });        
         this.harvertFormService.harvestForm.markAsDirty();
     }

@@ -25,6 +25,6 @@
         [style]="{ color: 'green' }"
       ></pnx-leaflet-filelayer>
 
-      <pnx-gps></pnx-gps>
+      <pnx-gps (markerChanged)="addGeoInfo($event)"></pnx-gps>
 
 </pnx-map>
