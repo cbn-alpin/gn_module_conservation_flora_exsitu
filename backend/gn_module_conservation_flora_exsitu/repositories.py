@@ -13,6 +13,7 @@ from apptax.taxonomie.models import Taxref
 from sqlalchemy import func
 import json
 from sqlalchemy import and_
+from sqlalchemy.sql import text
 
 
 from .models import(
@@ -105,9 +106,11 @@ class HarvestRepository:
                 data['geom'] = geom_transformed
             
             if data["location_type"] and not data.get('geom'):
-                if data["location_type"] == 25:  # Commune
+                commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
+                departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+                if data["location_type"] == commune_id:  # Commune
                     data["location_code"] = data.get("location_code_muni", [None])[0]
-                elif data["location_type"] == 26:  # Département
+                elif data["location_type"] == departement_id:  # Département
                     data["location_code"] = data.get("location_code_dept", [None])[0]
     
                 if data["location_code"]:
@@ -167,9 +170,11 @@ class HarvestRepository:
                 harvest.location_type = None
 
             if data["location_type"] and not data.get('geom'):
-                if data["location_type"] == 25:
+                commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
+                departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+                if data["location_type"] == commune_id:
                     data["location_code"] = data.get("location_code_muni", [None])[0]
-                elif data["location_type"] == 26:
+                elif data["location_type"] == departement_id:
                     data["location_code"] = data.get("location_code_dept", [None])[0]
 
                 if data["location_code"]:
