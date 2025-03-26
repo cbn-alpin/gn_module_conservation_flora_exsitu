@@ -390,31 +390,35 @@ def get_materials(id_harvest):
                                           .offset(offset)\
                                           .all()
         
-        # materials_list = [material.to_dic() for material in materials]
         materials_list = []
         for material in materials:
             taxons = CorMaterialTaxon.query.filter_by(id_material=material.id_material).all()
             taxon_list = []
 
             for taxon in taxons:
-                # Récupérer l'objet correspondant au cd_nom dans la table Taxref (ou la table qui contient search_name)
+                # Récupérer l'objet correspondant au cd_nom dans la table Taxref
                 taxon_data = db.session.query(Taxref).filter_by(cd_nom=taxon.cd_nom).first()
                 
                 if taxon_data:
                     taxon_list.append({
                         "cd_nom": taxon.cd_nom,
-                        "search_name": taxon_data.lb_nom  # Vérifie que cette colonne existe bien !
+                        "search_name": taxon_data.lb_nom
                     })
 
-            # Ajouter les taxons au dictionnaire du matériel
+            # Récupérer le label_default de l'id_harvest_material depuis TNomenclatures
+            nomenclature_label = db.session.query(TNomenclatures.label_default)\
+                                           .filter_by(id_nomenclature=material.id_harvest_material)\
+                                           .scalar()
+
             material_dict = material.to_dic()
             material_dict["taxons"] = taxon_list
-            materials_list.append(material_dict)
+            material_dict["harvest_material_label"] = nomenclature_label
 
+            materials_list.append(material_dict)
 
         return {
             'materials': materials_list,
-            'total': TMaterial.query.filter_by(id_harvest=id_harvest).count(),  # Total des matériaux
+            'total': TMaterial.query.filter_by(id_harvest=id_harvest).count(),
             'limit': limit,
             'offset': offset
         }, 200
