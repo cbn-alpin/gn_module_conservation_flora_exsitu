@@ -8,7 +8,7 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { HttpParams } from '@angular/common/http';
 import { ObserversService } from '../services/observers.service';
 import * as L from 'leaflet';
-import 'leaflet.markercluster';
+import 'Leaflet.Deflate';
 import { MapService } from '@geonature_common/map/map.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -57,6 +57,7 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
   highlightedRowIndex: number | null = null; 
   private previousLayer: L.Layer | null = null;
   highlightedRowIds: Set<number> = new Set<number>();
+  onClickMap: boolean = false;
 
 
   constructor(
@@ -141,6 +142,7 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
   onMapClick(harvest_ids: number[]) {   
     console.log(this.highlightedRowIds);
+    this.onClickMap = true
      
     this.highlightedRowIds = new Set(harvest_ids);
     this.filters['selected_ids'] = harvest_ids;
@@ -287,9 +289,9 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
           };
         });
   
-        this.dataSource.data = transformedItems;    
-            
-        this.loadGeometries();
+        this.dataSource.data = transformedItems;   
+        if(!this.onClickMap) 
+          this.loadGeometries();
         if (this.paginator) {
           this.paginator.pageIndex = pageIndex - 1;
           this.paginator.length = this.nbMats;
