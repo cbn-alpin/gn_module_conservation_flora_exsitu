@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild  } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener  } from '@angular/core';
 import { MaterialListService } from './material-list.service';
 import { combineLatest } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -10,7 +10,10 @@ import { HttpParams } from '@angular/common/http';
 import { MapListService } from '@geonature_common/map-list/map-list.service';
 import { TaxonModalComponent } from '../../components/modal-taxon/taxon-modal.component';
 import { DialogService } from '../../components/confirm-dialog/confirm-dialog.service';
-
+import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
     selector: 'cs-material-list',
@@ -24,18 +27,29 @@ export class MaterialListComponent implements OnInit {
     totalPages = 1;
     sortDirection = 1; // 1 = asc, -1 = desc
     materials: any[] = [];
-    totalMaterials: number = 0;
+    public totalMaterials: number;
     pagination = { offset: 0, limit: 10 };
     rowPerPage: number;
 
     isModalOpen = false;  // Pour afficher ou masquer la modale
     selectedMaterialId: number | null = null;
     taxonName: string = '';
+    @ViewChild('dataTable') dataTable: DatatableComponent;
+    dataSource = new MatTableDataSource<any>();  
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+    @ViewChild(MatSort) sort: MatSort;
+    @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
+    displayedColumns: string[] = [
+      'code_material',        
+      'harvest_material', 
+      'taxons',     
+      'actions'
+    ];
 
 
     constructor(
         public materialListService: MaterialListService,
-        private exsituFormService: ExsituFormService,
+        public exsituFormService: ExsituFormService,
         private materialFormService: MaterialFormService,
         public dialog: MatDialog,
         private api: DataService,
@@ -56,12 +70,18 @@ export class MaterialListComponent implements OnInit {
             })
         )
         .subscribe((filteredMaterials) => {
+            const transformedMaterials = filteredMaterials.map(material => {
+              const { taxonsDisplay, taxonsTooltip } = this.transformTaxons(material.taxons);
+              return {
+                ...material,
+                taxonsDisplay,
+                taxonsTooltip
+              };
+            });
             this.materialListService.materials$.next(filteredMaterials);
-            this.materials = filteredMaterials.slice();
             this.loadMaterials();            
             this.totalMaterials = filteredMaterials.length;
-            this.calculateTotalPages();
-            this.updatePagination();   
+            this.dataSource.data = transformedMaterials
         });
         
     }
@@ -116,21 +136,63 @@ export class MaterialListComponent implements OnInit {
     calculateTotalPages() {
         this.totalPages = Math.ceil(this.materials.length / this.itemsPerPage);
     }
-    
-    updatePagination() {
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        this.paginatedMaterials = this.materials.slice(startIndex, startIndex + this.itemsPerPage);
+
+    onPaginateChange(){
+      this.loadMaterials();
     }
 
     loadMaterials() {
+        const pageIndex = this.paginator ? this.paginator.pageIndex + 1 : 1;
+        const pageSize = this.paginator ? this.paginator.pageSize : 10;
         let params = new HttpParams()
-                  .set('page', this.pagination.offset + 1)
-                  .set('limit', this.rowPerPage);        
+                  .set('page', pageIndex)
+                  .set('limit', pageSize);        
         this.api.getMaterialsByHarvest(this.exsituFormService.idHarvest, params).subscribe(response => {
-          this.materials = response['materials'];
-          this.totalMaterials = response['total'];    
+          this.totalMaterials = response['total'];  
+          this.dataSource.data = [];
+          const transformedMaterials = response['materials'].map(material => {
+            const { taxonsDisplay, taxonsTooltip } = this.transformTaxons(material.taxons);
+            return {
+              ...material,
+              taxonsDisplay,
+              taxonsTooltip
+            };
+          });
+          this.dataSource.data = transformedMaterials; 
         });
     }
+
+    transformTaxons(taxons: { cd_nom: number; search_name: string }[]): { 
+      taxonsDisplay: string, 
+      taxonsTooltip: string 
+    } {
+      const MAX_NAMES = 1;
+    
+      if (!taxons || taxons.length === 0) {
+        return {
+          taxonsDisplay: '',
+          taxonsTooltip: ''
+        };
+      }
+    
+      // Extraire uniquement les `search_name`
+      const uniqueTaxons = Array.from(new Set(taxons.map(t => t.search_name)));
+    
+      // Construire l'affichage des taxons
+      const taxonsTooltip = uniqueTaxons.join(', ').replace(/, ([^,]+)$/, ' & $1') + '.';
+      let taxonsDisplay = uniqueTaxons.join(', ');
+    
+      if (uniqueTaxons.length > MAX_NAMES) {
+        const firstTaxon = uniqueTaxons.slice(0, MAX_NAMES);
+        taxonsDisplay = `${firstTaxon} (+${uniqueTaxons.length - MAX_NAMES})`;
+      }
+    
+      return {
+        taxonsDisplay,
+        taxonsTooltip
+      };
+    }
+    
 
     openTaxonModal(materialId: number, code_material: string): void {
       const dialogRef = this.dialog.open(TaxonModalComponent, {

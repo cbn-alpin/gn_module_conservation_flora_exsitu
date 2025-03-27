@@ -1,54 +1,55 @@
 <h2>Liste des matériels</h2>
 <div id="matlist-container">
-  <div class="mt-2">
-    <ngx-datatable
-    class="material striped margin-top-xs table-size expandable"
-    [headerHeight]="35"
-    [footerHeight]="40"
-    [rowHeight]="40"
-    [columnMode]="'force'"
-    [selected]="mapListService.selectedRow"
-    [loadingIndicator]="mapListService.isLoading"
-    [externalPaging]="true"
-    [count]="totalMaterials"
-    [offset]="pagination.offset"
-    [limit]="rowPerPage"
-    [rows]="materials"
-    (page)="onChangePage($event)"
+  <div class="mt-2" 
+    #dataTableContainer
   >
-    <!-- Code matériel -->
-    <ngx-datatable-column name="Code Matériel">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <span matTooltip="{{ row.code_material }}">{{ row.code_material }}</span>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Bouton Ajouter taxon -->
-    <ngx-datatable-column maxWidth="10">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <button class="btn btn-outline-shadow btn-no-padding btn-ghost btn-addt" (click)="openTaxonModal(row.id_material, row.code_material)">
-          <i matTooltip="Ajouter un taxon" class="fa fa-plus-circle"></i>
-        </button>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Bouton Éditer -->
-    <ngx-datatable-column maxWidth="10">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <button class="btn btn-outline-shadow btn-no-padding btn-ghost btn-edit" (click)="editOccurrence(row)">
-          <i matTooltip="Modifier le matériel" class="fa fa-pencil"></i>
-        </button>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Bouton Supprimer -->
-    <ngx-datatable-column maxWidth="10">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <button class="btn btn-outline-shadow btn-no-padding btn-ghost btn-clear" (click)="deleteOccurrence(row)">
-          <i matTooltip="Supprimer le matériel" class="fa fa-trash-o"></i>
-        </button>
-      </ng-template>
-    </ngx-datatable-column>
-  </ngx-datatable>
+    <table mat-table [dataSource]="dataSource" class="mat-table">
+      <!-- N° de Récolte -->
+      <ng-container matColumnDef="code_material">
+        <th mat-header-cell *matHeaderCellDef > N° réc </th>
+        <td mat-cell *matCellDef="let element"> {{ element.code_material }} </td>
+      </ng-container>
+      <!-- Matériel végétal -->
+      <ng-container matColumnDef="harvest_material">
+        <th mat-header-cell *matHeaderCellDef> Matériel végétal </th>
+        <td mat-cell *matCellDef="let element"> {{ element.harvest_material_label }} </td>
+      </ng-container>
+      <!-- Matériel végétal -->
+      <ng-container matColumnDef="taxons">
+        <th mat-header-cell *matHeaderCellDef> Taxons </th>
+        <td mat-cell *matCellDef="let element" matTooltip="{{ element.taxonsTooltip }}"> 
+          {{ element.taxonsDisplay }} 
+        </td>
+      </ng-container>
+      <!-- Boutons d'action (Fusionner les colonnes Info, Edit, Delete en une seule colonne) -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element">
+          <button 
+            mat-icon-button 
+            aria-label="Edit" 
+            matTooltip="Modifier le matériel"
+            (click)="editOccurrence(element)"
+          ><mat-icon>edit</mat-icon></button>
+          <button 
+            mat-icon-button 
+            color="warn" 
+            aria-label="Delete" 
+            matTooltip="Supprimer le matériel"
+            (click)="deleteOccurrence(element)"
+          ><mat-icon>delete</mat-icon></button>
+        </td>
+      </ng-container>
+      <!-- Lignes de l'en-tête et des données -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator
+          [length]="totalMaterials"
+          [pageSize]="rowPerPage"    
+          [pageSizeOptions]="[5, 10, 25, 100]"  
+          [showFirstLastButtons]="true" 
+          (page)="onPaginateChange()"
+        ></mat-paginator>
   </div>
 </div>
