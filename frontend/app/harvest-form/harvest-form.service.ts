@@ -18,6 +18,7 @@ import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { FormService } from '@geonature_common/form/form.service';
 import { DataFormService } from '@geonature_common/form/data-form.service';
 import { HarvestStoreService } from '../services/store.service';
+import { ConfigService } from '@geonature/services/config.service';
 
 @Injectable()
 export class HarvestFormService {
@@ -38,7 +39,8 @@ export class HarvestFormService {
         private dateParser: NgbDateParserFormatter,
         private coreFormService: FormService,
         private _dfService: DataFormService,
-        public storeService: HarvestStoreService
+        public storeService: HarvestStoreService,
+        private cfg: ConfigService
     ){
         this.initForm();
         this.setObservables();
@@ -53,7 +55,7 @@ export class HarvestFormService {
           filter(([isEditing, data]) => isEditing === true && !!data),
           debounceTime(0)
         )
-        .subscribe(([_, data]) => this.patchForm(data));  // On exécute patchForm ici
+        .subscribe(([_, data]) => this.patchForm(data));
     }
     
 
@@ -68,7 +70,7 @@ export class HarvestFormService {
             remarks: null,
             observers: [[], Validators.required],
             geom: null,
-            id_dataset: [null, Validators.required],
+            id_dataset: [this.cfg.CONSERVATION_FLORA_EXSITU.default_dataset, Validators.required],
             location_type: [null],
             location_code_muni: [null],
             location_code_dept: [null],
@@ -77,11 +79,7 @@ export class HarvestFormService {
             id_exposition: null,
             precision: null,
             id_geographical_location: [null, Validators.required],
-            additional_data: this.fb.group({
-              slope: null,
-              weather_comment: null,
-              program: null
-            })
+            additional_data: this.fb.group({})
         });
         // this.harvestForm.reset();
         // this.setupValueChangeListeners();

@@ -3,16 +3,15 @@ import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy } from '@
 import { leafletDrawOption } from '@geonature_common/map/leaflet-draw.options';
 import { ModuleService } from '@geonature/services/module.service';
 import { HarvestStoreService } from '../services/store.service';
-import { FormGroup, FormBuilder, Validators, ValidatorFn  } from '@angular/forms';
+import { FormGroup, UntypedFormGroup  } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from '../services/data.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { HarvestFormService } from './harvest-form.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { ConfigService } from '@geonature/services/config.service';
 
 @Component({
   selector: 'ex-harvest-form',
@@ -21,22 +20,18 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked  {
   public leafletDrawOptions = leafletDrawOption;
-  public MAP_FULL_HEIGHT = '86vh';
-  public mapHeight = this.MAP_FULL_HEIGHT;
-  public markerCoordinates;
-  public currentGeoJsonFileLayer;
   harvestForm: FormGroup;
-  public center;
-  public zoom;
+  additionalDataForm: UntypedFormGroup
   isChecked:boolean = false;
   cardContentHeight: any;
 
+  myFormGroup: UntypedFormGroup;
+  formsDefinition
 
 
   constructor(
     public moduleService: ModuleService,
     public storeService: HarvestStoreService,
-    private formBuilder: FormBuilder,
     private router: Router,
     private dateParser: NgbDateParserFormatter,
     public api: DataService,
@@ -44,18 +39,20 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
     public harvertFormService: HarvestFormService,
     private _commonService: CommonService,
     private cdr: ChangeDetectorRef,
+    public cfg: ConfigService
   ) {
     
   }
 
   ngOnInit() {
+    this.formsDefinition = this.cfg.CONSERVATION_FLORA_EXSITU.harvest_form.additional_data;    
+    this.myFormGroup = new UntypedFormGroup({});
     this.harvertFormService.hideAllFields()
-    if (this.exsituFormService.editionMode.getValue()) { // Si on est en mode ajout
-      this.harvertFormService.initForm();  // On recrée le formulaire vide
+    if (this.exsituFormService.editionMode.getValue()) {
+      this.harvertFormService.initForm();
     }
     this.harvestForm = this.harvertFormService.harvestForm;
-    this.zoom = this.storeService.cfeConfig.zoom
-    this.center = this.storeService.cfeConfig.zoom_center
+    this.additionalDataForm = this.harvestForm.get('additional_data') as UntypedFormGroup;
 
     this.harvestForm.controls['id_geographical_location'].valueChanges.subscribe(value => {      
       if(value && value.id_nomenclature) {
@@ -64,14 +61,10 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
       }
     });
   }
-
+  
   formatter(item) {
     return item.search_name;
   }
-
-  onChange($event: MatCheckboxChange){
-    this.isChecked = $event.checked;
- }
 
   cancel(){
     this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/`]);
@@ -118,11 +111,10 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
 
     if(finalForm.cd_hab)
       finalForm.cd_hab = finalForm.cd_hab.cd_hab;
-    // Date
+    
     finalForm.date_start = this.dateParser.format(finalForm.date_start);
     finalForm.date_end = this.dateParser.format(finalForm.date_end);
 
-    // Observers
     if (finalForm['observers']) {
       finalForm['observers'] = finalForm['observers'].map((obs) => {
         return obs.id_role;
@@ -142,7 +134,6 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngAfterViewChecked(): void {
-    // Cette méthode sera appelée après chaque détection de changement, ce qui pourrait résoudre votre problème.
     this.cdr.detectChanges();
   }
 
