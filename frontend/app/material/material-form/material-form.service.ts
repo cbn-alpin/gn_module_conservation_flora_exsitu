@@ -51,8 +51,8 @@ export class MaterialFormService {
         is_soil_sampling: false,
         has_hybridation_risk: false,
         id_method_sample: null,
-        taxonInput: new UntypedFormControl(null),   // <-- Champ utilisé pour ajouter un taxon
-        taxons: this.fb.array([])  // <-- L'array qui contiendra les taxons ajoutés
+        taxonInput: new UntypedFormControl(null),
+        taxons: this.fb.array([]) 
       });
     }
   
