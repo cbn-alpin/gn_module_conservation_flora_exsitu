@@ -387,11 +387,14 @@ class HarvestMaterialRepository:
             if existing_material:
                 return jsonify({"error": "Ce code matériel existe déjà."}), 400
             
-            # Récupérer id_parent depuis code_parent s'il est présent
-            code_parent = data.pop("code_parent", None)  # Supprime et récupère code_parent
+            code_parent = data.pop("code_parent", None)
+            code_cultural_bank = data.pop("code_cultural_bank", None)
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
-                data["id_parent"] = parent.id_material if parent else None  # Assigner l'id du parent
+                data["id_parent"] = parent.id_material if parent else None
+            if code_cultural_bank:
+                parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
+                data["code_cultural_bank"] = parent.id_material if parent else None
 
             material = TMaterial(**data)
             db.session.add(material)
@@ -443,9 +446,13 @@ class HarvestMaterialRepository:
                     return jsonify({"error": "Ce code matériel existe déjà."}), 400
 
             code_parent = data.pop("code_parent", None)
+            code_cultural_bank = data.pop("code_cultural_bank", None)
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_parent"] = parent.id_material if parent else None
+            if code_cultural_bank:
+                parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
+                data["code_cultural_bank"] = parent.id_material if parent else None
 
             for key, value in data.items():
                 if hasattr(material, key):
@@ -507,7 +514,6 @@ class HarvestMaterialRepository:
         
         results = query.all()
 
-        # Pour connaître le nombre total de récoltes disponibles sans la pagination
         total = (
             db.session.query(db.func.count(THarvest.id_harvest))
             .join(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
@@ -520,7 +526,6 @@ class HarvestMaterialRepository:
             .filter(l_areas_commune.id_type == 25)  # Commune
         ).scalar()
 
-        # Calcul du nombre total de pages
         total_pages = (total + per_page - 1) // per_page
 
         return {

@@ -226,10 +226,8 @@ class TMaterial(db.Model):
             "id_method_sample": self.id_method_sample,
             "is_soil_sampling": self.is_soil_sampling,
             "remarks": self.remarks,
-            "code_cultural_bank": self.code_cultural_bank,
             "id_phenology_1": self.id_phenology_1,
             "id_phenology_2": self.id_phenology_2,
-            "id_parent": self.id_parent,
             "has_hybridation_risk": self.has_hybridation_risk
         }
 
