@@ -1,0 +1,27 @@
+# Fichier listant les paramètres du module et leurs valeurs par défaut
+# Code du module utilisé dans les URL et les commandes GeoNature
+module_code = "CONSERVATION_FLORA_EXSITU"
+# Titre du module utilisé pour l'affichage
+module_title = "Exsitu"
+# Code du module Flore Exsitu
+module_code_pf = "FLORA_EXSITU"
+
+observers_list_code = "OFS"
+
+zoom_center = [44.982667966765845, 6.062455200884894]
+zoom = 10
+default_dataset = 1
+
+[HARVEST_FORM]
+    [[HARVEST_FORM.ADDITIONAL_DATA]]
+        type_widget = "number"
+        attribut_label = "Pente"
+        attribut_name = "slope"
+    [[HARVEST_FORM.ADDITIONAL_DATA]]
+        type_widget = "text"
+        attribut_label = "Commentaire météo"
+        attribut_name = "weather_comment"
+    [[HARVEST_FORM.ADDITIONAL_DATA]]
+        type_widget = "text"
+        attribut_label = "Programme"
+        attribut_name = "program"
