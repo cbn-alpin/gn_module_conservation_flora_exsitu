@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, request, g
+from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
 from .repositories import HarvestRepository, HarvestMaterialRepository
@@ -11,16 +11,17 @@ from geonature.utils.env import db
 from sqlalchemy.sql.expression import func, select
 from sqlalchemy.orm import aliased
 from apptax.taxonomie.models import Taxref
-from pypnusershub.db.models import User
+from pypnusershub.db.models import User, Organisme
 from geojson import Feature, FeatureCollection
-from sqlalchemy import and_
+from sqlalchemy import and_, exists, Text
 from flask import request, jsonify
 from pypn_habref_api.models import Habref
 from geoalchemy2.functions import ST_AsGeoJSON
 import json
 from pypnnomenclature.models import TNomenclatures
-from sqlalchemy import exists
 from collections import defaultdict
+from io import StringIO
+import csv
 
 
 blueprint = Blueprint("conservation_flora_exsitu", __name__)
@@ -409,10 +410,23 @@ def get_materials(id_harvest):
             nomenclature_label = db.session.query(TNomenclatures.label_default)\
                                            .filter_by(id_nomenclature=material.id_harvest_material)\
                                            .scalar()
+            
+            code_parent_material = None
+            code_cultural_bank_material = None
+
+            if material.id_parent:
+                parent_material = TMaterial.query.get(material.id_parent)
+                code_parent_material = parent_material.code_material if parent_material else None
+
+            if material.code_cultural_bank:
+                cultural_bank_material = TMaterial.query.get(material.code_cultural_bank)
+                code_cultural_bank_material = cultural_bank_material.code_material if cultural_bank_material else None
 
             material_dict = material.to_dic()
             material_dict["taxons"] = taxon_list
             material_dict["harvest_material_label"] = nomenclature_label
+            material_dict["code_parent"] = code_parent_material
+            material_dict["code_cultural_bank"] = code_cultural_bank_material
 
             materials_list.append(material_dict)
 
