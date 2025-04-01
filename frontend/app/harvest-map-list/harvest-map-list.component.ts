@@ -4,7 +4,6 @@ import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@ang
 import { HarvestStoreService } from '../services/store.service';
 import { DataService } from '../services/data.service';
 import { MapListService } from '@geonature_common/map-list/map-list.service';
-import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { HttpParams } from '@angular/common/http';
 import { ObserversService } from '../services/observers.service';
 import * as L from 'leaflet';
@@ -13,8 +12,8 @@ import { MapService } from '@geonature_common/map/map.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { PageEvent } from '@angular/material/paginator';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { ConfigService } from '../services/config.service';
 
 
 @Component({
@@ -25,7 +24,6 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
 export class HarvestMapListComponent implements OnInit, AfterViewInit {
   filterForm: FormGroup;
   harvests: any[] = [];
-  @ViewChild('dataTable') dataTable: DatatableComponent;
   dataSource = new MatTableDataSource<any>();  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -66,7 +64,8 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
     public api: DataService,
     public mapListService: MapListService,
     private _ms: MapService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    public cfg: ConfigService
   ) {}
 
   ngOnInit() { 
@@ -137,11 +136,10 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
     //   });
     // }
   
-    layer.bindPopup(`ID: ${data.properties.id_harvest}`);
+    // layer.bindPopup(`ID: ${data.properties.id_harvest}`);
   }
 
   onMapClick(harvest_ids: number[]) {   
-    console.log(this.highlightedRowIds);
     this.onClickMap = true
      
     this.highlightedRowIds = new Set(harvest_ids);
@@ -169,12 +167,10 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
     if (clickedFeature) {
         const geometry = clickedFeature.geometry;
         
-        // Retirer l'ancienne couche si elle existe
         if (this.previousLayer && this._ms.map) {
             this._ms.map.removeLayer(this.previousLayer);
         }
 
-        // Ajouter la nouvelle couche en rouge
         this.previousLayer = this.highlightFeature(clickedFeature);
 
         this.centerMapOnGeometry(geometry);
@@ -188,18 +184,18 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
   centerMapOnGeometry(geometry: any) {
       if (!geometry) return;
 
-      const map = this._ms.map; // Ton instance Leaflet
+      const map = this._ms.map;
       if (!map) return;
 
       const coordinates = geometry.coordinates;
 
       if (geometry.type === 'Point') {
           const latLng: L.LatLngExpression = [coordinates[1], coordinates[0]];
-          map.setView(latLng, 15); // Zoomer sur le point
+          map.setView(latLng, 15); 
       } 
       else if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
           const bounds = this.getPolygonBounds(geometry);
-          map.fitBounds(bounds); // Zoomer sur l'ensemble du polygone
+          map.fitBounds(bounds);
       }
   }
 
@@ -217,7 +213,7 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
             fillOpacity: 0.8
         }).addTo(map);
 
-        return marker; // On renvoie la couche nouvellement créée
+        return marker;
 
     } else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
         const latLngs = this.getPolygonCoordinates(feature.geometry);
@@ -228,7 +224,7 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
             fillOpacity: 0.3,
         }).addTo(map);
 
-        return polygon; // On renvoie la couche nouvellement créée
+        return polygon;
     }
     
     return null;
@@ -368,12 +364,24 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
 
   private applyDeflateAndClustering(): void {
+    L.Polygon.addInitHook(function() {
+        if (this.getBounds().isValid()) {
+            this._latlng = this.getBounds().getCenter();
+        }
+    });
+    
+    L.Polygon.include({
+        getLatLng: function() {
+            return this._latlng;
+        },
+        setLatLng: function() {}
+    });
     const map = this._ms.map;
     if (!map) {
         return;
     }
 
-    const deflateLayer = L.deflate({ minSize: 50 }).addTo(map);
+    // const deflateLayer = L.deflate({ minSize: 50 }).addTo(map);
     this.markerClusterGroup.clearLayers();
 
     const geoJsonLayer = L.geoJSON(this.geojson, {
@@ -389,18 +397,18 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
             } 
             else if (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon") {
                 const polygonLayer = layer as L.Polygon;
-
+                this.markerClusterGroup.addLayer(polygonLayer);
                 // On ajoute le polygone au groupe de déflation
-                deflateLayer.addLayer(polygonLayer);
+                // deflateLayer.addLayer(polygonLayer);
 
                 // Vérifie si le polygone est valide et calcule son centre
-                if (polygonLayer.getBounds && polygonLayer.getBounds().isValid()) {
-                    const center = polygonLayer.getBounds().getCenter();
+                // if (polygonLayer.getBounds && polygonLayer.getBounds().isValid()) {
+                    // const center = polygonLayer.getBounds().getCenter();
 
                     // Ajout d'un marqueur au centre du polygone pour participer au clustering
-                    const marker = L.marker(center);
-                    this.markerClusterGroup.addLayer(marker);
-                }
+                    // const marker = L.marker(center);
+                    // this.markerClusterGroup.addLayer(polygonLayer);
+                // }
             }
         }
     });
