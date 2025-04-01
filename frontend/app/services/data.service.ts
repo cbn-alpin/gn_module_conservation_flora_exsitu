@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-
-import { ConfigService } from '@geonature/services/config.service';
+import { ConfigService } from './config.service';
 import { Observable, of } from 'rxjs';
 
 
@@ -11,8 +10,8 @@ export class DataService {
 
   constructor(
     private api: HttpClient, 
-    private cfg: ConfigService) {
-    this.moduleBaseUrl = `${this.cfg.API_ENDPOINT}${this.cfg.CONSERVATION_FLORA_EXSITU.MODULE_URL}`;
+    private cfg: ConfigService,) {
+    this.moduleBaseUrl = this.cfg.getModuleBackendUrl();
   }
 
   addHarvest(data: any) {

@@ -1,8 +1,5 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked, OnDestroy } from '@angular/core';
-
-import { leafletDrawOption } from '@geonature_common/map/leaflet-draw.options';
+import { Component, OnInit, AfterViewChecked, OnDestroy } from '@angular/core';
 import { ModuleService } from '@geonature/services/module.service';
-import { HarvestStoreService } from '../services/store.service';
 import { FormGroup, UntypedFormGroup  } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
@@ -11,7 +8,7 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { HarvestFormService } from './harvest-form.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { ConfigService } from '@geonature/services/config.service';
+import { ConfigService } from '../services/config.service';
 
 @Component({
   selector: 'ex-harvest-form',
@@ -19,19 +16,18 @@ import { ConfigService } from '@geonature/services/config.service';
   styleUrls: ['./harvest-form.component.css'],
 })
 export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked  {
-  public leafletDrawOptions = leafletDrawOption;
   harvestForm: FormGroup;
   additionalDataForm: UntypedFormGroup
-  isChecked:boolean = false;
   cardContentHeight: any;
 
   myFormGroup: UntypedFormGroup;
   formsDefinition
+  public habref_url
+  public observers_list_code;
 
 
   constructor(
     public moduleService: ModuleService,
-    public storeService: HarvestStoreService,
     private router: Router,
     private dateParser: NgbDateParserFormatter,
     public api: DataService,
@@ -44,8 +40,10 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
     
   }
 
-  ngOnInit() {
-    this.formsDefinition = this.cfg.CONSERVATION_FLORA_EXSITU.harvest_form.additional_data;    
+  ngOnInit() { 
+    this.habref_url = this.cfg.getBackendUrl() + '/habref/habitats/autocomplete'
+    this.observers_list_code = this.cfg.getObsCode()
+    this.formsDefinition = this.cfg.getModuleConfigExsitu()['harvest_form']['additional_data'];    
     this.myFormGroup = new UntypedFormGroup({});
     this.harvertFormService.hideAllFields()
     if (this.exsituFormService.editionMode.getValue()) {
@@ -67,7 +65,7 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   cancel(){
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/`]);
+    this.router.navigate([`${this.cfg.getModuleUrl()}/`]);
   }
 
   onSubmit() {
@@ -92,7 +90,7 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
   private onFormSaved(harvest) {
     this.exsituFormService.currentTab = 'materials'
     this.exsituFormService.idHarvest = harvest.id_harvest
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
+    this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
   }
 
 

@@ -17,7 +17,7 @@
           <pnx-observers
             [bindAllItem]="true"
             [parentFormControl]="harvestForm.controls.observers"
-            [codeList]="storeService.cfeConfig.observers_list_code"
+            [codeList]="observers_list_code"
             matTooltipPosition="above"
             [multiSelect]="true"
           >
@@ -134,7 +134,7 @@
           <div class="col-6">
             <div class="form-group">
               <pnx-autocomplete
-                  apiEndPoint="{{ storeService.config.API_ENDPOINT }}/habref/habitats/autocomplete"
+                  apiEndPoint="{{ habref_url }}"
                   [searchAsParameter]="false"
                   queryParamSearch="search_name"
                   [parentFormControl]="harvestForm.controls.cd_hab"
@@ -167,7 +167,7 @@
       </div>
     </div>
   
-    <mat-card appearance="outlined" class="mt-3" *ngIf="cfg.CONSERVATION_FLORA_EXSITU.harvest_form">
+    <mat-card appearance="outlined" class="mt-3" *ngIf="formsDefinition">
       <mat-card-header>
         <mat-card-title>Données supplémentaires</mat-card-title>
       </mat-card-header>

@@ -9,8 +9,6 @@ import { CommonModule } from '@angular/common';
 import { MaterialFormComponent } from './material/material-form/material-form.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { MaterialFormService } from './material/material-form/material-form.service';
-// import { RootComponent } from './root/root.component';
-// import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { ExsituFormComponent } from './form/shared/exsitu-form.component';
 import { ExsituFormService } from './form/shared/exsitu-form.service';
 import { MaterialListComponent } from './material/material-list/material-list.component';
@@ -28,13 +26,13 @@ import { TaxonModalComponent } from './components/modal-taxon/taxon-modal.compon
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
-// import { TestComponent } from './test/test.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { DialogService } from './components/confirm-dialog/confirm-dialog.service';
+import { ConfigService } from './services/config.service';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -44,8 +42,6 @@ export const routingConfiguration: ExtraOptions = {
   declarations: [
     MaterialFormComponent,
     MaterialListComponent,
-    // RootComponent,
-    // BreadcrumbsComponent,
     ExsituFormComponent,
     HarvestFormComponent,
     HarvestMapListComponent,
@@ -53,7 +49,6 @@ export const routingConfiguration: ExtraOptions = {
     HarvestFilterComponent,
     HarvestMapComponent,
     TaxonModalComponent,
-    // TestComponent,
     ConfirmDialogComponent
   ],
   providers: [
@@ -67,7 +62,8 @@ export const routingConfiguration: ExtraOptions = {
     ConstantsService,
     HarvestMapService,
     ObserversService,
-    DialogService
+    DialogService,
+    ConfigService
   ],
   imports: [
     RouterModule.forChild(routes),
