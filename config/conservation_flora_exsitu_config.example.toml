@@ -8,20 +8,20 @@ module_code_pf = "FLORA_EXSITU"
 
 observers_list_code = "OFS"
 
-zoom_center = [44.982667966765845, 6.062455200884894]
+zoom_center = [44.98266, 6.06245]
 zoom = 10
 default_dataset = 1
 
-[HARVEST_FORM]
-    [[HARVEST_FORM.ADDITIONAL_DATA]]
+[harvest_form]
+    [[harvest_form.additional_data]]
         type_widget = "number"
         attribut_label = "Pente"
         attribut_name = "slope"
-    [[HARVEST_FORM.ADDITIONAL_DATA]]
+    [[harvest_form.additional_data]]
         type_widget = "text"
-        attribut_label = "Commentaire météo"
+        attribut_label = "Commentaire météo test"
         attribut_name = "weather_comment"
-    [[HARVEST_FORM.ADDITIONAL_DATA]]
+    [[harvest_form.additional_data]]
         type_widget = "text"
         attribut_label = "Programme"
         attribut_name = "program"
