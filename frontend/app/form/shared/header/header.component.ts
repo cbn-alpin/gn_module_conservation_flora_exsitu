@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit {
     }
 
     loadHarvest(id_harvest){
-      this.api.getHarvestById(id_harvest).subscribe((harvest) => {
+      this.api.getHarvestInfos(id_harvest).subscribe((harvest) => {
         this.harvest = harvest
       });
     }

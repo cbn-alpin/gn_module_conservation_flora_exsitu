@@ -1,12 +1,12 @@
 <div class="header-bar" *ngIf="exsituFormService.harvest">
     <div class="row row-0">
       <div class="col-5" style="display: flex;flex-direction: column;">
-        <span><b>Exposition:</b> {{ harvest?.exposition }}</span>
         <span><b>Type de Récolte:</b> {{ harvest?.harvest_type }}</span>
+        <span><b>{{ harvest?.location_type }}:</b> {{ harvest?.location_name }}</span>
       </div>
       <div class="col" style="display: flex;flex-direction: column;">
-        <span><b>Code Habitat:</b> {{ harvest?.cd_hab }}</span>
-        <span><b>Date de début:</b> {{ harvest?.date_start }}</span>
+        <span><b>Date:</b> {{ harvest?.date_start }}</span>
+        <span><b>Observateur:</b> {{ harvest?.observateur }}</span>
       </div>
     </div>
 </div>

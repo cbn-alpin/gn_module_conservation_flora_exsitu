@@ -23,6 +23,10 @@ export class DataService {
     return this.api.get<any>(`${this.moduleBaseUrl}/harvests/${id_harvest}`);
   }
 
+  getHarvestInfos(id_harvest) {
+    return this.api.get<any>(`${this.moduleBaseUrl}/harvests/infos/${id_harvest}`);
+  }
+
   deleteHarvest(id_harvest: number) {
     return this.api.delete(`${this.moduleBaseUrl}/harvests/${id_harvest}`);
   }
