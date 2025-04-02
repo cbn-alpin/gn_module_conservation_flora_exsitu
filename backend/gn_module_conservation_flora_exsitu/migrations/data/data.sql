@@ -329,6 +329,68 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'CBNA'
 ) ;
 
+-- Create the "CFE_WATERING_METHOD" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_WATERING_METHOD',
+    'Méthode arrosage',
+    'Nomenclature des méthodes arrosage.',
+    'Méthode arrosage',
+    'Nomenclature des méthodes arrosage.',
+    'conservation_flora_exsitu'
+) ;
+
+-- Create the "CFE_SOWING_METHOD" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SOWING_METHOD',
+    'Méthode de semis',
+    'Nomenclature des méthodes de semis.',
+    'Méthode de semis',
+    'Nomenclature des méthodes de semis.',
+    'conservation_flora_exsitu'
+) ;
+
+-- Create the "CFE_SUBSTRATE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SUBSTRATE',
+    'Type de substrat',
+    'Nomenclature des types de substrat.',
+    'Type de substrat',
+    'Nomenclature des types de substrat.',
+    'conservation_flora_exsitu'
+) ;
+
+-- Create the "CFE_LIQUID" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_LIQUID',
+    'Type de liquide',
+    'Nomenclature des types de liquide.',
+    'Type de liquide',
+    'Nomenclature des types de liquide.',
+    'conservation_flora_exsitu'
+) ;
+
+-- Create the "CFE_SUPPORT" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SUPPORT',
+    'Type de support',
+    'Nomenclature des types de support.',
+    'Type de support',
+    'Nomenclature des types de support.',
+    'conservation_flora_exsitu'
+) ;
+
+
+
 -- --------------------------------------------------------------------------------
 -- COMMONS
 

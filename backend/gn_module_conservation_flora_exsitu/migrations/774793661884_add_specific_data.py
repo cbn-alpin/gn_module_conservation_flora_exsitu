@@ -159,7 +159,12 @@ def downgrade():
 
     delete_taxhub_attribute_theme("Semence")
     delete_table_location("pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed")
-
+    
+    delete_nomenclatures("CFE_WATERING_METHOD")
+    delete_nomenclatures("CFE_SUBSTRATE")
+    delete_nomenclatures("CFE_SOWING_METHOD")
+    delete_nomenclatures("CFE_LIQUID")
+    delete_nomenclatures("CFE_SUPPORT")
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
