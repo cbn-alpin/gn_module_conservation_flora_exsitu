@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, Input, AfterViewInit, ElementRef, HostListener  } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
-import { HarvestStoreService } from '../services/store.service';
 import { DataService } from '../services/data.service';
 import { MapListService } from '@geonature_common/map-list/map-list.service';
 import { HttpParams } from '@angular/common/http';
@@ -60,7 +59,6 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
   constructor(
     public router: Router,
-    public storeService: HarvestStoreService,
     public api: DataService,
     public mapListService: MapListService,
     private _ms: MapService,
@@ -70,8 +68,8 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() { 
     this.calculateNbRow() 
-    this.zoom = this.storeService.cfeConfig.zoom
-    this.center = this.storeService.cfeConfig.zoom_center
+    this.zoom = this.cfg.getZoom()
+    this.center = this.cfg.getZoomCenter()    
     this.loadData();
   }  
 
@@ -346,11 +344,11 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
   }
 
   onAddHarvest() {
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest`]);
+    this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest`]);
   }
 
   onEdit(id_harvest: number) {
-    this.router.navigate([`${this.storeService.config['CONSERVATION_FLORA_EXSITU']['MODULE_URL']}/form/harvest`, id_harvest]);
+    this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest`, id_harvest]);
   }
 
   mooveButton() {

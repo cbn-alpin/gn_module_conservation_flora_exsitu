@@ -14,6 +14,14 @@ export class ConfigService {
         return this.config.CONSERVATION_FLORA_EXSITU;
     }
 
+    getZoom() {
+        return this.config.CONSERVATION_FLORA_EXSITU.zoom;
+    }
+
+    getZoomCenter() {
+        return this.config.CONSERVATION_FLORA_EXSITU.zoom_center;
+    }
+
     getObsCode() {
         return this.config.CONSERVATION_FLORA_EXSITU.observers_list_code;
     }
