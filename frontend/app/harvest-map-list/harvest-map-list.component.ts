@@ -7,7 +7,7 @@ import { MapListService } from '@geonature_common/map-list/map-list.service';
 import { HttpParams } from '@angular/common/http';
 import { ObserversService } from '../services/observers.service';
 import * as L from 'leaflet';
-import 'Leaflet.Deflate';
+// import 'Leaflet.Deflate';
 import { MapService } from '@geonature_common/map/map.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
