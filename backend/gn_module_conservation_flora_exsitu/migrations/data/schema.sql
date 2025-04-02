@@ -45,6 +45,8 @@ CREATE TABLE "t_harvest" (
 	"surface" INTEGER,
 	"altitude" INTEGER,
 	"id_exposition" INTEGER,
+	-- Pente
+	"slope" INTEGER,
 	"additional_data" JSONB,
 	"meta_create_by" INTEGER NOT NULL,
 	"meta_create_date" TIMESTAMP NOT NULL,
@@ -66,6 +68,7 @@ COMMENT ON COLUMN t_harvest.location_type IS 'Type de localisation';
 COMMENT ON COLUMN t_harvest.precision IS 'Résolution de la localisation en mètres';
 COMMENT ON COLUMN t_harvest.surface IS 'En m2';
 COMMENT ON COLUMN t_harvest.remarks IS 'Remarques générales';
+COMMENT ON COLUMN t_harvest.slope IS 'Pente';
 
 -- Table `t_seed`
 CREATE TABLE "t_seed" (

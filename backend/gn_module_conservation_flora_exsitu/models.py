@@ -80,6 +80,9 @@ class THarvest(db.Model):
             ondelete="NULL"
         ),
     )
+    slope = db.Column(
+        db.Integer
+    )
     additional_data = db.Column(JSONB)
     meta_create_by = db.Column(
         db.Integer,
