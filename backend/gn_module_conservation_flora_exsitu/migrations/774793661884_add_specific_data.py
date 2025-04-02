@@ -145,6 +145,11 @@ def downgrade():
     delete_nomenclatures("CFE_HUMIDITY_DEVICE")
     delete_nomenclatures("CFE_ACTION_TYPE")
     
+    delete_nomenclatures("CFE_WATERING_METHOD")
+    delete_nomenclatures("CFE_SUBSTRATE")
+    delete_nomenclatures("CFE_SOWING_METHOD")
+    delete_nomenclatures("CFE_LIQUID")
+    delete_nomenclatures("CFE_SUPPORT")
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
