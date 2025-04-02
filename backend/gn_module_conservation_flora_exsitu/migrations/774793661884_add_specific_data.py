@@ -85,7 +85,7 @@ def upgrade():
     with importlib.resources.open_text(
         "gn_module_conservation_flora_exsitu.migrations.data", "nomenclatures.csv"
     ) as csvfile:
-        logger.info("Inserting Conservation Strategy nomenclatures…")
+        logger.info("Inserting Conservation Flora Exsitu nomenclatures…")
         copy_from_csv(
             csvfile,
             "ref_nomenclatures",
