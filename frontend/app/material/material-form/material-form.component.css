@@ -57,3 +57,9 @@
   width: 50%;
   text-align: right;
 }
+
+.taxon-list-container {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 5px;
+}

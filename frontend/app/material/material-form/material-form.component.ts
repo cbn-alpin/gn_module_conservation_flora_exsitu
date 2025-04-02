@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, UntypedFormControl, UntypedFormArray } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { MaterialFormService } from './material-form.service';
-import { BehaviorSubject } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
-import { debounceTime, switchMap } from 'rxjs/operators';
 
 
 interface Material {
@@ -37,9 +34,7 @@ export class MaterialFormComponent implements OnInit {
 
   
   constructor(
-    private formBuilder: FormBuilder,
     public materialFormService: MaterialFormService,
-    private activatedRoute: ActivatedRoute,
     public api: DataService,
     public exsituFormService: ExsituFormService
   ) 

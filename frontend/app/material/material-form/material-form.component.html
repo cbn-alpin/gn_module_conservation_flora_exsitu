@@ -35,16 +35,35 @@
                   </pnx-nomenclature>
               </div>
               <div class="col-6 padding-sm">
-                  <label> Mode d’échantillonnage</label>
-                  <pnx-nomenclature
-                          keyValue="id_nomenclature"
-                          [bindAllItem]="false"
-                          keyLabel="label_default"
-                          codeNomenclatureType="CFE_METHOD_SAMPLE"
-                          [parentFormControl]="materialForm.controls.id_method_sample"
-                        >
-                  </pnx-nomenclature>
+                  <label>N° Banque culturale</label>
+                  <input
+                    class="form-control"
+                    type="text"
+                    [formControl]="materialForm.controls.code_cultural_bank"
+                  />
               </div>
+          </div>
+
+          <div class="row row-0 mr-3 mt-2">
+            <div class="col padding-sm">
+              <label> Mode d’échantillonnage</label>
+              <pnx-nomenclature
+                    keyValue="id_nomenclature"
+                    [bindAllItem]="false"
+                    keyLabel="label_default"
+                    codeNomenclatureType="CFE_METHOD_SAMPLE"
+                    [parentFormControl]="materialForm.controls.id_method_sample"
+                  >
+              </pnx-nomenclature>
+            </div>
+            <div class="col-6 padding-sm">
+              <label>Nombre de pieds échantillonnés</label>
+              <input
+                class="form-control"
+                type="number"
+                [formControl]="materialForm.controls.sample_foot_nb"
+              />
+            </div>
           </div>
 
           <div class="row row-0 mr-3">
@@ -59,25 +78,6 @@
                 >
               </pnx-nomenclature>
             </div>
-          </div>
-
-          <div class="row row-0 mr-3 mt-2">
-              <div class="col padding-sm">
-                <label>N° Banque culturale</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [formControl]="materialForm.controls.code_cultural_bank"
-                />
-              </div>
-              <div class="col-6 padding-sm">
-                  <label>Nombre de pieds échantillonnés</label>
-                <input
-                  class="form-control"
-                  type="number"
-                  [formControl]="materialForm.controls.sample_foot_nb"
-                />
-              </div>
           </div>
 
           <div class="row row-0 mr-3">
@@ -135,10 +135,8 @@
               </div>
           </div>
           
-          <!-- Encadrement de tout le formulaire -->
           <div [formGroup]="materialForm" class="mb-5">
             
-            <!-- Champ de saisie du taxon -->
             <div class="row row-0">
               <div class="col-4 padding-sm">
                 <pnx-taxonomy
@@ -162,31 +160,31 @@
             </div>
 
             <!-- FormArray des taxons -->
-            <div formArrayName="taxons">
-              <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-2">
+            <div class="taxon-list-container">
+              <div formArrayName="taxons">
+                <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-1 taxon-item">
 
-                <!-- Affichage du nom du taxon -->
-                <div class="col-4 padding-sm">
-                  <input 
-                    class="form-control" 
-                    [value]="taxon.get('parentFormControl').value?.search_name || 'Taxon ajouté'"
-                    readonly
-                  />
+                  <div class="col-4 padding-sm">
+                    <input 
+                      class="form-control" 
+                      [value]="taxon.get('parentFormControl').value?.search_name || 'Taxon ajouté'"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="col-4">
+                    <button 
+                      mat-icon-button 
+                      aria-label="Delete" 
+                      matTooltip="Supprimer"
+                      color="warn"
+                      (click)="materialFormService.removeTaxon(i)"
+                    >
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+
                 </div>
-
-                <!-- Bouton de suppression du taxon -->
-                <div class="col-4">
-                  <button 
-                    mat-icon-button 
-                    aria-label="Delete" 
-                    matTooltip="Supprimer"
-                    color="warn"
-                    (click)="materialFormService.removeTaxon(i)"
-                  >
-                    <mat-icon>clear</mat-icon>
-                  </button>
-                </div>
-
               </div>
             </div>
           </div>
