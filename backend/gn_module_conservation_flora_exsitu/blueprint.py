@@ -22,6 +22,9 @@ from pypnnomenclature.models import TNomenclatures
 from collections import defaultdict
 from io import StringIO
 import csv
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import text
 
 
 blueprint = Blueprint("conservation_flora_exsitu", __name__)
@@ -320,6 +323,81 @@ def get_harvest_by_id(harvest_id):
 
     return harvest_data, 200
 
+
+@blueprint.route("/harvests/infos/<int:harvest_id>", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def get_harvest_details(harvest_id):
+    try:
+        harvest = (
+            db.session.query(THarvest)
+            .options(
+                joinedload(THarvest.materials),
+                joinedload(THarvest.observers),
+            )
+            .filter(THarvest.id_harvest == harvest_id)
+            .first()
+        )
+
+        if not harvest:
+            return jsonify({"error": "Récolte non trouvée"}), 404
+
+        # Récupération du type de récolte
+        harvest_type = (
+            db.session.query(TNomenclatures.label_default)
+            .filter(TNomenclatures.id_nomenclature == harvest.id_harvest_type)
+            .scalar()
+        )
+
+        commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
+        departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+
+        location_name = "Localisation inconnue"
+        location_type = None
+
+        # Vérification si on a une localisation
+        if harvest.location_code:
+            area = db.session.query(LAreas.area_name, LAreas.id_type).filter(LAreas.id_area == harvest.location_code).first()
+
+            if area:
+                if area.id_type == commune_id:
+                    location_name = area.area_name
+                    location_type = "Commune"
+                elif area.id_type == departement_id:
+                    location_name = area.area_name
+                    location_type = "Département"
+
+        # Vérification si une géométrie existe (et qu'on n'a pas déjà une commune ou département)
+        if not harvest.location_code and harvest.geom:
+            location_name = "Précise"
+            location_type = "Localisation"
+
+        # Récupération de l'observateur principal
+        main_observer = (
+            db.session.query(User.nom_role, User.prenom_role)
+            .join(CorHarvestObserver, User.id_role == CorHarvestObserver.id_observer)
+            .filter(CorHarvestObserver.id_harvest == harvest.id_harvest)
+            .filter(CorHarvestObserver.is_main_observer == True)
+            .first()
+        )
+
+        observer_name = (
+            f"{main_observer.nom_role} {main_observer.prenom_role}"
+            if main_observer
+            else "N/A"
+        )
+
+        return jsonify(
+            {
+                "harvest_type": harvest_type,
+                "location_name": location_name,
+                "location_type": location_type,
+                "date_start": harvest.date_start.isoformat(),
+                "observateur": observer_name,
+            }
+        )
+
+    except SQLAlchemyError as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @blueprint.route("/harvests/<int:id_harvest>/materials", methods=["POST"])
