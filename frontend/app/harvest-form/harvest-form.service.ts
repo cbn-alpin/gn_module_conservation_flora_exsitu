@@ -77,6 +77,7 @@ export class HarvestFormService {
             surface: null,
             altitude: null,
             id_exposition: null,
+            slope: null,
             precision: null,
             id_geographical_location: [null, Validators.required],
             additional_data: this.fb.group({})
@@ -158,8 +159,8 @@ export class HarvestFormService {
         id_harvest_type: harvest.id_harvest_type,
         date_start:  dateStart,
         date_end: dateEnd,
-        place_remarks: harvest.place_remarks,
-        remarks: harvest.remarks,
+        place_remarks: harvest.place_remarks || null,
+        remarks: harvest.remarks || null,
         // observers: harvest.observers ? harvest.observers.map(observer => `${observer.prenom_role} ${observer.nom_role}`) : [],
         geom: harvest.geom,
         id_dataset: harvest.id_dataset,
@@ -169,6 +170,7 @@ export class HarvestFormService {
         surface: harvest.surface,
         altitude: harvest.altitude,
         id_exposition: harvest.id_exposition,
+        slope: harvest.slope,
         precision: harvest.precision,
         id_geographical_location: harvest.id_geographical_location
       });
@@ -181,8 +183,6 @@ export class HarvestFormService {
 
       if (harvest.additional_data) {
         this.harvestForm.get('additional_data')?.patchValue({
-          slope: harvest.additional_data.slope || null,
-          weather_comment: harvest.additional_data.weather_comment || '',
           program: harvest.additional_data.program || ''
         });
       }
