@@ -313,6 +313,7 @@ def get_harvest_by_id(harvest_id):
         "location_code": harvest.location_code,
         "cd_hab": cd_bah_obj,
         "geom": geom_geojson,
+        "slope": harvest.slope,
         "precision": harvest.precision,
         "id_geographical_location": geographical_location,
         "id_exposition": harvest.id_exposition,
