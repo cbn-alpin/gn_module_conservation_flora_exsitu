@@ -157,3 +157,8 @@ speed-measure-plugin*.json
 # System Files
 .DS_Store
 Thumbs.db
+
+
+config/conservation_flora_exsitu_config.toml
+venv
+frontend/package-lock copy.json
