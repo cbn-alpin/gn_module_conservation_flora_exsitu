@@ -1,0 +1,23 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: white;
+}
+  
+.check-section {
+    margin: 12px 0;  
+}
+  
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+  
+.bloc-button {
+    position: fixed;
+    bottom: 20px;
+    width: 50%;
+    text-align: right;
+}

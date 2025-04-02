@@ -1,0 +1,237 @@
+
+<h1 mat-dialog-title>Ajouter matériel</h1>
+<mat-dialog-content class="wrapper">
+    <div class="row row-0 mr-3 mt-2">
+        <div class="col padding-sm">
+          <label>Numéro de récolte *</label>
+          <input
+            class="form-control"
+            type="text"
+            [formControl]="materialForm.controls.code_material"
+            (blur)="checkCodeMaterial(materialForm.controls.code_material.value)"
+          />
+          <div *ngIf="codeMaterialExists" class="error-message">
+            Ce code de matériel existe déjà. Veuillez en choisir un autre.
+          </div>
+        </div>
+        <div class="col-6 padding-sm">
+            <label>Numéro de récolte parent</label>
+          <input
+            class="form-control"
+            type="text"
+            [formControl]="materialForm.controls.code_parent"
+          />
+        </div>
+    </div>
+
+    <div class="row row-0 mr-3 mt-2">
+        <div class="col padding-sm">
+            <label> Matériel végétal récolté *</label>
+            <pnx-nomenclature
+                    keyValue="id_nomenclature"
+                    [bindAllItem]="false"
+                    keyLabel="label_default"
+                    codeNomenclatureType="CFE_HARVEST_MATERIAL"
+                    [parentFormControl]="materialForm.controls.id_harvest_material"
+                  >
+            </pnx-nomenclature>
+        </div>
+        <div class="col-6 padding-sm">
+            <label> Mode d’échantillonnage</label>
+            <pnx-nomenclature
+                    keyValue="id_nomenclature"
+                    [bindAllItem]="false"
+                    keyLabel="label_default"
+                    codeNomenclatureType="CFE_METHOD_SAMPLE"
+                    [parentFormControl]="materialForm.controls.id_method_sample"
+                  >
+            </pnx-nomenclature>
+        </div>
+    </div>
+
+    <div class="row row-0 mr-3">
+      <div class="col-6 padding-sm">
+        <label> Classes d’individus</label>
+        <pnx-nomenclature
+            keyValue="id_nomenclature"
+            [bindAllItem]="false"
+            keyLabel="label_default"
+            codeNomenclatureType="CFE_FOOT_COUNTING_CLASS"
+            [parentFormControl]="materialForm.controls.id_foot_counting_class"
+          >
+        </pnx-nomenclature>
+      </div>
+    </div>
+
+    <div class="row row-0 mr-3 mt-2">
+        <div class="col padding-sm">
+          <label>N° Banque culturale</label>
+          <input
+            class="form-control"
+            type="text"
+            [formControl]="materialForm.controls.code_cultural_bank"
+          />
+        </div>
+        <div class="col-6 padding-sm">
+            <label>Nombre de pieds échantillonnés</label>
+          <input
+            class="form-control"
+            type="number"
+            [formControl]="materialForm.controls.sample_foot_nb"
+          />
+        </div>
+    </div>
+
+    <div class="row row-0 mr-3">
+      <div class="col-6 padding-sm">
+          <label> Phénologie 1 *</label>
+          <pnx-nomenclature
+                  keyValue="id_nomenclature"
+                  [bindAllItem]="false"
+                  keyLabel="label_default"
+                  codeNomenclatureType="CFE_PHENOLOGY"
+                  [parentFormControl]="materialForm.controls.id_phenology_1"
+                >
+          </pnx-nomenclature>
+      </div>
+      <div class="col-6 padding-sm">
+          <label> Phénologie 2</label>
+          <pnx-nomenclature
+                  keyValue="id_nomenclature"
+                  [bindAllItem]="false"
+                  keyLabel="label_default"
+                  codeNomenclatureType="CFE_PHENOLOGY"
+                  [parentFormControl]="materialForm.controls.id_phenology_2"
+                >
+          </pnx-nomenclature>
+      </div>
+    </div>
+
+    <div class="row row-0 mt-3 mr-3">
+      <div class="col padding-sm">
+        <textarea
+            class="form-control form-control-sm"
+            placeholder="Commentaire + Protocoles et astuces"
+            [formControl]="materialForm.controls.remarks"
+          ></textarea>
+      </div>
+    </div>
+
+
+    <div class="row row-0 mr-3 mt-2">
+        <div class="col-6 padding-sm">
+          <section class="check-section">
+            <mat-checkbox
+                [formControl]="materialForm.controls.has_hybridation_risk">
+                Risque d'hybridation
+            </mat-checkbox>
+          </section>
+        </div>
+        <div class="col-6 padding-sm">
+          <section class="check-section">
+              <mat-checkbox
+                  [formControl]="materialForm.controls.is_soil_sampling">
+                  Prélèvement de terre
+              </mat-checkbox>
+          </section>
+        </div>
+    </div>
+    
+    <!-- Encadrement de tout le formulaire -->
+    <div [formGroup]="materialForm" class="mb-5">
+      
+      <!-- Champ de saisie du taxon -->
+      <div class="row row-0">
+        <div class="col-4 padding-sm">
+          <pnx-taxonomy
+            label="Taxon (nom cité)"
+            [parentFormControl]="materialForm.controls.taxonInput"
+            [charNumber]="3"
+            [displayAdvancedFilters]="false"
+            displayedLabel="search_name">
+          </pnx-taxonomy>
+        </div>
+        <div class="col-4 mt-4">
+          <button 
+            color="primary" 
+            mat-raised-button 
+            (click)="materialFormService.addTaxon()" 
+            [disabled]="!materialForm.controls.taxonInput.value"
+          >
+            Ajouter taxon
+          </button>
+        </div>
+      </div>
+
+      <!-- FormArray des taxons -->
+      <div formArrayName="taxons">
+        <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-2">
+
+          <!-- Affichage du nom du taxon -->
+          <div class="col-4 padding-sm">
+            <input 
+              class="form-control" 
+              [value]="taxon.get('parentFormControl').value?.search_name || 'Taxon ajouté'"
+              readonly
+            />
+          </div>
+
+          <!-- Bouton de suppression du taxon -->
+          <div class="col-4">
+            <button 
+              mat-icon-button 
+              aria-label="Delete" 
+              matTooltip="Supprimer"
+              color="warn"
+              (click)="materialFormService.removeTaxon(i)"
+            >
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <div class="mr-3">
+        <ng-container *ngIf="!(materialFormService.occurrence | async); else modifButton">
+            <button
+                style="margin-right: 20px"
+                color="warn"
+                mat-raised-button
+                (click)="close()"
+              >
+                Retour
+            </button>
+          <button
+            mat-button [mat-dialog-close]="true"
+            matTooltip="Enregistrer ce matériel"
+            [disabled]="!materialForm.valid"
+            class="button-success"
+            (click)="submetData()"
+          >
+            Ajouter ce material
+            <mat-icon style="vertical-align: middle">save</mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #modifButton>
+          <button
+            style="margin-right: 20px"
+            color="warn"
+            mat-raised-button
+            (click)="close()"
+          >
+            Annuler
+          </button>
+          <button
+            mat-button [mat-dialog-close]="true"
+            matTooltip="Modifier et enregistrer ce matériel"
+            (click)="submetData()"
+          >
+            Modifier ce matériel
+            <mat-icon style="vertical-align: middle">save</mat-icon>
+          </button>
+        </ng-template>
+    </div>
+</mat-dialog-actions>

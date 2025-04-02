@@ -14,6 +14,7 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MaterialModalComponent } from '../../components/material-modal/material-modal.component';
 import { ConstantsService } from '../../services/constants.service';
 import { SeddDescriptionComponent } from '../../components/seed-description/seed-description.component';
 import { Router } from '@angular/router';
@@ -201,12 +202,11 @@ export class MaterialListComponent implements OnInit {
       };
     }
     
-
-    openTaxonModal(materialId: number, code_material: string): void {
-      const dialogRef = this.dialog.open(TaxonModalComponent, {
-        width: '400px',
-        height: '400px',
-        data: { id: materialId, code_material: code_material }
+    addModalMaterial(): void {
+      const dialogRef = this.dialog.open(MaterialModalComponent, {
+        width: '100%',
+        height: '90%',
+        // data: { id: materialId, code_material: code_material }
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
