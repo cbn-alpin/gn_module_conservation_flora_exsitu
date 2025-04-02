@@ -14,14 +14,6 @@ default_dataset = 1
 
 [harvest_form]
     [[harvest_form.additional_data]]
-        type_widget = "number"
-        attribut_label = "Pente"
-        attribut_name = "slope"
-    [[harvest_form.additional_data]]
-        type_widget = "text"
-        attribut_label = "Commentaire météo test"
-        attribut_name = "weather_comment"
-    [[harvest_form.additional_data]]
         type_widget = "text"
         attribut_label = "Programme"
         attribut_name = "program"
