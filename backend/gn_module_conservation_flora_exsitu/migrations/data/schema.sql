@@ -130,6 +130,522 @@ CREATE TABLE "cor_material_taxon" (
 );
 COMMENT ON COLUMN cor_material_taxon.cd_nom IS 'Clé étrangère GN.taxonomie.taxonomie.taxref.cd_nom';
 
+-- Table des semis
+CREATE TABLE "t_sowing" (
+	"id_sowing" SERIAL NOT NULL UNIQUE,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"sowing_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"seed_preparation" TEXT,
+	"packaging" INTEGER NOT NULL,
+	"substrate" INTEGER NOT NULL,
+	"id_watering_method" INTEGER NOT NULL,
+	"id_sowing_method" INTEGER,
+	"sowing_depth_mm" VARCHAR(255),
+	"date_start" DATE,
+	"date_end" DATE,
+	"sowing_treatment" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de semis
+CREATE TABLE "t_sowing_replicates" (
+	"id_sowing_replicates" SERIAL PRIMARY KEY,
+	"id_sowing" INTEGER NOT NULL,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"num_seeds_sown" INTEGER,
+	"num_replicates" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER
+);
+
+-- Détails des réplicats de semis
+CREATE TABLE "t_sowing_replicate_details" (
+	"id_sowing_replicate_details" SERIAL PRIMARY KEY,
+	"id_sowing_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER
+);
+
+-- Test de germination
+CREATE TABLE "t_germination_test" (
+	"id_germination_test" SERIAL PRIMARY KEY,
+	"contract" VARCHAR(255),
+	"initial_test" BOOLEAN,
+	"id_stock" INTEGER NOT NULL,
+	"test_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"sterilization" TEXT,
+	"id_support" INTEGER,
+	"id_substrate" INTEGER,
+	"id_liquid" INTEGER,
+	"remarks" TEXT,
+	"scarification" TEXT,
+	"num_replicates" VARCHAR(255)
+);
+
+-- Réplicats de germination
+CREATE TABLE "t_germination_replicates" (
+	"id_germination_replicates" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER,
+	"T50" INTEGER
+);
+
+-- Détail réplicats de germination
+CREATE TABLE "t_germination_replicate_details" (
+	"id_germination_replicate_details" SERIAL PRIMARY KEY,
+	"id_germination_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seeds_germinated" INTEGER,
+	"num_seeds_dead" INTEGER,
+	"num_seeds_ungerminated" INTEGER
+);
+
+-- Prétraitements germination
+CREATE TABLE "t_germination_test_pre_treatments" (
+	"id_germination_test_pre_treatments" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"pre_treatment" BOOLEAN,
+	"date_start" DATE,
+	"date_end" DATE,
+	"id_photo_thermo" INTEGER NOT NULL,
+	"chemical_products" TEXT,
+	"duration_days" INTEGER
+);
+
+-- Tests de viabilité
+CREATE TABLE "t_viability_test" (
+	"id_viability_test" SERIAL PRIMARY KEY,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"viability_rate" REAL,
+	"sterilization" TEXT,
+	"scarification" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de viabilité
+CREATE TABLE "t_viability_test_replicates" (
+	"id_viability_replicates" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"num_seeds" INTEGER,
+	"num_seeds_viable" INTEGER,
+	"num_seeds_non_viable" INTEGER,
+	"viability_rate" REAL
+);
+
+-- Traitements tests viabilité
+CREATE TABLE "t_viability_test_treatments" (
+	"id_viability_test_treatments" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"datetime_start" DATE,
+	"datetime_end" DATE,
+	"id_thermo" INTEGER NOT NULL,
+	"concentration_ttc" TEXT,
+	"duration_hours" INTEGER
+);
+
+-- Table des semis
+CREATE TABLE "t_sowing" (
+	"id_sowing" SERIAL NOT NULL UNIQUE,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"sowing_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"seed_preparation" TEXT,
+	"packaging" INTEGER NOT NULL,
+	"substrate" INTEGER NOT NULL,
+	"id_watering_method" INTEGER NOT NULL,
+	"id_sowing_method" INTEGER,
+	"sowing_depth_mm" VARCHAR(255),
+	"date_start" DATE,
+	"date_end" DATE,
+	"sowing_treatment" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de semis
+CREATE TABLE "t_sowing_replicates" (
+	"id_sowing_replicates" SERIAL PRIMARY KEY,
+	"id_sowing" INTEGER NOT NULL,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"num_seeds_sown" INTEGER,
+	"num_replicates" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER
+);
+
+-- Détails des réplicats de semis
+CREATE TABLE "t_sowing_replicate_details" (
+	"id_sowing_replicate_details" SERIAL PRIMARY KEY,
+	"id_sowing_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER
+);
+
+-- Test de germination
+CREATE TABLE "t_germination_test" (
+	"id_germination_test" SERIAL PRIMARY KEY,
+	"contract" VARCHAR(255),
+	"initial_test" BOOLEAN,
+	"id_stock" INTEGER NOT NULL,
+	"test_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"sterilization" TEXT,
+	"id_support" INTEGER,
+	"id_substrate" INTEGER,
+	"id_liquid" INTEGER,
+	"remarks" TEXT,
+	"scarification" TEXT,
+	"num_replicates" VARCHAR(255)
+);
+
+-- Réplicats de germination
+CREATE TABLE "t_germination_replicates" (
+	"id_germination_replicates" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER,
+	"T50" INTEGER
+);
+
+-- Détail réplicats de germination
+CREATE TABLE "t_germination_replicate_details" (
+	"id_germination_replicate_details" SERIAL PRIMARY KEY,
+	"id_germination_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seeds_germinated" INTEGER,
+	"num_seeds_dead" INTEGER,
+	"num_seeds_ungerminated" INTEGER
+);
+
+-- Prétraitements germination
+CREATE TABLE "t_germination_test_pre_treatments" (
+	"id_germination_test_pre_treatments" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"pre_treatment" BOOLEAN,
+	"date_start" DATE,
+	"date_end" DATE,
+	"id_photo_thermo" INTEGER NOT NULL,
+	"chemical_products" TEXT,
+	"duration_days" INTEGER
+);
+
+-- Tests de viabilité
+CREATE TABLE "t_viability_test" (
+	"id_viability_test" SERIAL PRIMARY KEY,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"viability_rate" REAL,
+	"sterilization" TEXT,
+	"scarification" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de viabilité
+CREATE TABLE "t_viability_test_replicates" (
+	"id_viability_replicates" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"num_seeds" INTEGER,
+	"num_seeds_viable" INTEGER,
+	"num_seeds_non_viable" INTEGER,
+	"viability_rate" REAL
+);
+
+-- Traitements tests viabilité
+CREATE TABLE "t_viability_test_treatments" (
+	"id_viability_test_treatments" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"datetime_start" DATE,
+	"datetime_end" DATE,
+	"id_thermo" INTEGER NOT NULL,
+	"concentration_ttc" TEXT,
+	"duration_hours" INTEGER
+);
+
+-- Table des semis
+CREATE TABLE "t_sowing" (
+	"id_sowing" SERIAL NOT NULL UNIQUE,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"sowing_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"seed_preparation" TEXT,
+	"packaging" INTEGER NOT NULL,
+	"substrate" INTEGER NOT NULL,
+	"id_watering_method" INTEGER NOT NULL,
+	"id_sowing_method" INTEGER,
+	"sowing_depth_mm" VARCHAR(255),
+	"date_start" DATE,
+	"date_end" DATE,
+	"sowing_treatment" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de semis
+CREATE TABLE "t_sowing_replicates" (
+	"id_sowing_replicates" SERIAL PRIMARY KEY,
+	"id_sowing" INTEGER NOT NULL,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"num_seeds_sown" INTEGER,
+	"num_replicates" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER
+);
+
+-- Détails des réplicats de semis
+CREATE TABLE "t_sowing_replicate_details" (
+	"id_sowing_replicate_details" SERIAL PRIMARY KEY,
+	"id_sowing_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER
+);
+
+-- Test de germination
+CREATE TABLE "t_germination_test" (
+	"id_germination_test" SERIAL PRIMARY KEY,
+	"contract" VARCHAR(255),
+	"initial_test" BOOLEAN,
+	"id_stock" INTEGER NOT NULL,
+	"test_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"sterilization" TEXT,
+	"id_support" INTEGER,
+	"id_substrate" INTEGER,
+	"id_liquid" INTEGER,
+	"remarks" TEXT,
+	"scarification" TEXT,
+	"num_replicates" VARCHAR(255)
+);
+
+-- Réplicats de germination
+CREATE TABLE "t_germination_replicates" (
+	"id_germination_replicates" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER,
+	"T50" INTEGER
+);
+
+-- Détail réplicats de germination
+CREATE TABLE "t_germination_replicate_details" (
+	"id_germination_replicate_details" SERIAL PRIMARY KEY,
+	"id_germination_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seeds_germinated" INTEGER,
+	"num_seeds_dead" INTEGER,
+	"num_seeds_ungerminated" INTEGER
+);
+
+-- Prétraitements germination
+CREATE TABLE "t_germination_test_pre_treatments" (
+	"id_germination_test_pre_treatments" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"pre_treatment" BOOLEAN,
+	"date_start" DATE,
+	"date_end" DATE,
+	"id_photo_thermo" INTEGER NOT NULL,
+	"chemical_products" TEXT,
+	"duration_days" INTEGER
+);
+
+-- Tests de viabilité
+CREATE TABLE "t_viability_test" (
+	"id_viability_test" SERIAL PRIMARY KEY,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"viability_rate" REAL,
+	"sterilization" TEXT,
+	"scarification" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de viabilité
+CREATE TABLE "t_viability_test_replicates" (
+	"id_viability_replicates" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"num_seeds" INTEGER,
+	"num_seeds_viable" INTEGER,
+	"num_seeds_non_viable" INTEGER,
+	"viability_rate" REAL
+);
+
+-- Traitements tests viabilité
+CREATE TABLE "t_viability_test_treatments" (
+	"id_viability_test_treatments" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"datetime_start" DATE,
+	"datetime_end" DATE,
+	"id_thermo" INTEGER NOT NULL,
+	"concentration_ttc" TEXT,
+	"duration_hours" INTEGER
+);
+
+-- Table des semis
+CREATE TABLE "t_sowing" (
+	"id_sowing" SERIAL NOT NULL UNIQUE,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"sowing_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"seed_preparation" TEXT,
+	"packaging" INTEGER NOT NULL,
+	"substrate" INTEGER NOT NULL,
+	"id_watering_method" INTEGER NOT NULL,
+	"id_sowing_method" INTEGER,
+	"sowing_depth_mm" VARCHAR(255),
+	"date_start" DATE,
+	"date_end" DATE,
+	"sowing_treatment" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de semis
+CREATE TABLE "t_sowing_replicates" (
+	"id_sowing_replicates" SERIAL PRIMARY KEY,
+	"id_sowing" INTEGER NOT NULL,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"num_seeds_sown" INTEGER,
+	"num_replicates" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER
+);
+
+-- Détails des réplicats de semis
+CREATE TABLE "t_sowing_replicate_details" (
+	"id_sowing_replicate_details" SERIAL PRIMARY KEY,
+	"id_sowing_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER
+);
+
+-- Test de germination
+CREATE TABLE "t_germination_test" (
+	"id_germination_test" SERIAL PRIMARY KEY,
+	"contract" VARCHAR(255),
+	"initial_test" BOOLEAN,
+	"id_stock" INTEGER NOT NULL,
+	"test_number" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"sterilization" TEXT,
+	"id_support" INTEGER,
+	"id_substrate" INTEGER,
+	"id_liquid" INTEGER,
+	"remarks" TEXT,
+	"scarification" TEXT,
+	"num_replicates" VARCHAR(255)
+);
+
+-- Réplicats de germination
+CREATE TABLE "t_germination_replicates" (
+	"id_germination_replicates" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seedlings_emerged" INTEGER,
+	"num_seedlings_dead" INTEGER,
+	"num_seedlings_transplanted" INTEGER,
+	"germination_rate" REAL,
+	"germination_delay" INTEGER,
+	"germination_period" INTEGER,
+	"T50" INTEGER
+);
+
+-- Détail réplicats de germination
+CREATE TABLE "t_germination_replicate_details" (
+	"id_germination_replicate_details" SERIAL PRIMARY KEY,
+	"id_germination_replicate" INTEGER NOT NULL,
+	"date" DATE,
+	"num_seeds_germinated" INTEGER,
+	"num_seeds_dead" INTEGER,
+	"num_seeds_ungerminated" INTEGER
+);
+
+-- Prétraitements germination
+CREATE TABLE "t_germination_test_pre_treatments" (
+	"id_germination_test_pre_treatments" SERIAL PRIMARY KEY,
+	"id_germination_test" INTEGER NOT NULL,
+	"pre_treatment" BOOLEAN,
+	"date_start" DATE,
+	"date_end" DATE,
+	"id_photo_thermo" INTEGER NOT NULL,
+	"chemical_products" TEXT,
+	"duration_days" INTEGER
+);
+
+-- Tests de viabilité
+CREATE TABLE "t_viability_test" (
+	"id_viability_test" SERIAL PRIMARY KEY,
+	"id_stock" INTEGER NOT NULL,
+	"contract" VARCHAR(255),
+	"seed_number" VARCHAR(255),
+	"viability_rate" REAL,
+	"sterilization" TEXT,
+	"scarification" TEXT,
+	"remarks" TEXT
+);
+
+-- Réplicats de viabilité
+CREATE TABLE "t_viability_test_replicates" (
+	"id_viability_replicates" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"num_seeds" INTEGER,
+	"num_seeds_viable" INTEGER,
+	"num_seeds_non_viable" INTEGER,
+	"viability_rate" REAL
+);
+
+-- Traitements tests viabilité
+CREATE TABLE "t_viability_test_treatments" (
+	"id_viability_test_treatments" SERIAL PRIMARY KEY,
+	"id_viability_test" INTEGER NOT NULL,
+	"datetime_start" DATE,
+	"datetime_end" DATE,
+	"id_thermo" INTEGER NOT NULL,
+	"concentration_ttc" TEXT,
+	"duration_hours" INTEGER
+);
+
 -------------------------------------------------------------------
 
 
@@ -326,4 +842,49 @@ ADD FOREIGN KEY("id_humidity_device") REFERENCES ref_nomenclatures.t_nomenclatur
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_dry_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing" 
+ADD FOREIGN KEY("id_stock") REFERENCES t_seed_stock(id_stock)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing" 
+ADD FOREIGN KEY("id_sowing_method") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing" 
+ADD FOREIGN KEY("id_watering_method") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing_replicates" 
+ADD FOREIGN KEY("id_sowing") REFERENCES t_sowing(id_sowing) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing_replicate_details" 
+ADD FOREIGN KEY("id_sowing_replicate") REFERENCES t_sowing_replicates(id_sowing_replicates) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_test" 
+ADD FOREIGN KEY("id_stock") REFERENCES t_seed_stock(id_stock) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_test" 
+ADD FOREIGN KEY("id_support") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_test" 
+ADD FOREIGN KEY("id_substrate") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_test" 
+ADD FOREIGN KEY("id_liquid") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_replicates" 
+ADD FOREIGN KEY("id_germination_test") REFERENCES t_germination_test(id_germination_test) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_replicate_details" 
+ADD FOREIGN KEY("id_germination_replicate") REFERENCES t_germination_replicates(id_germination_replicates) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_germination_test_pre_treatments" 
+ADD FOREIGN KEY("id_germination_test") REFERENCES t_germination_test(id_germination_test) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_viability_test" 
+ADD FOREIGN KEY("id_stock") REFERENCES t_seed_stock(id_stock) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_viability_test_replicates" 
+ADD FOREIGN KEY("id_viability_test") REFERENCES t_viability_test(id_viability_test) 
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_viability_test_treatments" 
+ADD FOREIGN KEY("id_viability_test") REFERENCES t_viability_test(id_viability_test) 
 ON UPDATE NO ACTION ON DELETE NO ACTION;
