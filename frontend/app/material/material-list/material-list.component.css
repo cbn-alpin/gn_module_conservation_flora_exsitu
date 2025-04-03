@@ -23,3 +23,12 @@
       2px 3px 4px 0px rgba(0, 0, 0, 0.2),
       -2px 3px 4px 0px rgba(0, 0, 0, 0.2);
 }
+
+/* 
+    Correction : les dropdown des ng-select ont un z-index de 1050,  
+    le cdk-overlay-container de 2000. Résultat, les valeurs de ng-select ne s'affichent pas quand on
+    utilise les modals
+*/
+::ng-deep .cdk-overlay-container {
+    z-index: 1000 !important;
+}
