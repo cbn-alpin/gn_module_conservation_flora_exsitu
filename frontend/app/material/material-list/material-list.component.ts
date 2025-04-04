@@ -27,19 +27,9 @@ import { ConfigService } from '../../services/config.service';
     styleUrls: ['./material-list.component.css'],
 })
 export class MaterialListComponent implements OnInit {
-    paginatedMaterials = [];
-    itemsPerPage = 3;
-    currentPage = 1;
-    totalPages = 1;
-    sortDirection = 1; // 1 = asc, -1 = desc
-    materials: any[] = [];
     public totalMaterials: number;
     pagination = { offset: 0, limit: 10 };
     rowPerPage: number;
-
-    isModalOpen = false;  // Pour afficher ou masquer la modale
-    selectedMaterialId: number | null = null;
-    taxonName: string = '';
     @ViewChild('dataTable') dataTable: DatatableComponent;
     dataSource = new MatTableDataSource<any>();  
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -119,6 +109,7 @@ export class MaterialListComponent implements OnInit {
     editOccurrence(occurrence) {
       this.exsituFormService.mode = 'edit'      
       this.materialFormService.occurrence.next(occurrence);
+      this.addModalMaterial();
     }
 
     deleteOccurrence(occurrence) {
@@ -140,10 +131,6 @@ export class MaterialListComponent implements OnInit {
           });
         }
         
-      }
-
-    calculateTotalPages() {
-        this.totalPages = Math.ceil(this.materials.length / this.itemsPerPage);
     }
 
     onPaginateChange(){
@@ -206,7 +193,6 @@ export class MaterialListComponent implements OnInit {
       const dialogRef = this.dialog.open(MaterialModalComponent, {
         width: '100%',
         height: '90%',
-        // data: { id: materialId, code_material: code_material }
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {

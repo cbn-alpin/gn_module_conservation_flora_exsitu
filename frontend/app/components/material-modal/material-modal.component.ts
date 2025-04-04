@@ -13,8 +13,6 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 })
 export class MaterialModalComponent implements OnInit {
     materialForm: FormGroup;
-    idHarvest: number | null = null;
-    harvest: any;
     codeMaterialExists: boolean = false;
 
     constructor(
@@ -27,10 +25,10 @@ export class MaterialModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.initializeMaterialForm();
+        this.initializeMaterialForm();      
         this.materialForm.get('code_material')?.valueChanges.subscribe(value => {
             if (this.exsituFormService.mode === 'add' || (this.materialFormService.code_material !== null && value !== this.materialFormService.code_material)) {
-                this.checkCodeMaterial(value);
+                this.checkCodeMaterial(value);        
             } else {
                 this.codeMaterialExists = false;
             }
