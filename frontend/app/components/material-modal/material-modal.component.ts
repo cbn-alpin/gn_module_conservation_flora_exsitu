@@ -39,24 +39,7 @@ export class MaterialModalComponent implements OnInit {
     }
 
     private initializeMaterialForm() {
-        // this.materialForm = this.materialFormService.form
-        this.materialForm = this.fb.group({
-                code_material: ['', Validators.required],
-                code_parent: null,
-                id_harvest: null,
-                id_harvest_material: [null, Validators.required],
-                id_foot_counting_class: null,
-                id_phenology_1: [null, Validators.required],
-                id_phenology_2: null,
-                remarks: null,
-                code_cultural_bank: null,
-                sample_foot_nb: null,
-                is_soil_sampling: false,
-                has_hybridation_risk: false,
-                id_method_sample: null,
-                taxonInput: new FormControl(null),
-                taxons: this.fb.array([]) 
-        });
+        this.materialForm = this.materialFormService.form
     }
 
     checkCodeMaterial(codeMaterial: string): void {
@@ -74,5 +57,24 @@ export class MaterialModalComponent implements OnInit {
 
     close(): void {
         this.dialogRef.close();
+    }
+
+    submetData(){
+        let finalForm = this.formatDataFormHarvest();   
+        console.log('final',finalForm);
+         
+        this.materialFormService.submitOccurrence(finalForm);
+        this.close()
+    }
+
+    private formatDataFormHarvest() {
+        const finalForm = JSON.parse(JSON.stringify(this.materialForm.value));
+        
+        if(finalForm.taxons)
+          finalForm.taxons = finalForm.taxons.map(taxon => taxon.parentFormControl.cd_nom);
+        delete finalForm.taxonInput;
+        
+    
+        return finalForm;
     }
 }
