@@ -22,7 +22,6 @@ export class MaterialModalComponent implements OnInit {
         public exsituFormService: ExsituFormService,
         public api: DataService,
         public materialFormService: MaterialFormService,
-        private fb: FormBuilder
     ){
 
     }
@@ -56,6 +55,7 @@ export class MaterialModalComponent implements OnInit {
     }
 
     close(): void {
+        this.materialFormService.occurrence.next(null);
         this.dialogRef.close();
     }
 
