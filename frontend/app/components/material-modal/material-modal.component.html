@@ -1,5 +1,6 @@
 
-<h1 mat-dialog-title>Ajouter matériel</h1>
+<h1 mat-dialog-title *ngIf="!(materialFormService.occurrence | async)">Ajouter matériel</h1>
+<h1 mat-dialog-title *ngIf="(materialFormService.occurrence | async)">Modifier matériel</h1>
 <mat-dialog-content class="wrapper">
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
