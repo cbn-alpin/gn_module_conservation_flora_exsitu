@@ -441,6 +441,19 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
     };
   }
 
+  downloadCsv() {
+    const params = this.prepareParams();
+  
+    this.api.exportHarvestCsv(params).subscribe(blob => {
+      const a = document.createElement('a');
+      const objectUrl = URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = `harvest_${new Date().toISOString()}.csv`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    });
+  }  
+
 
   ngAfterViewInit() {
     Promise.resolve(null).then(() => this.recalculateDataTableSize());

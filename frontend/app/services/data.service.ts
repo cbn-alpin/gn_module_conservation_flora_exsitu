@@ -78,5 +78,8 @@ export class DataService {
     return this.api.get<any>(`${this.moduleBaseUrl}/check-code-material?code_material=${codeMaterial}`);
   }
 
+  exportHarvestCsv(params?: HttpParams) {
+    return this.api.get(`${this.moduleBaseUrl}/harvest/export?format=csv`, { params, responseType: 'blob' });
+  }
 
 }
