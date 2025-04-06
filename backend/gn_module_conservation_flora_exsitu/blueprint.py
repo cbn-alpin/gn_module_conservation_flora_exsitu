@@ -25,6 +25,8 @@ import csv
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import text
+import sqlalchemy as sa
+from sqlalchemy import case, cast, String
 
 
 blueprint = Blueprint("conservation_flora_exsitu", __name__)
@@ -593,4 +595,189 @@ def get_code_nomenclature_by_id():
     
     return jsonify({"code_nomenclature": result[0]})
 
+@blueprint.route("/harvest/export", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def export_harvests():
 
+    cd_nom_list = request.args.getlist('cd_nom', type=int)
+    cd_hab = request.args.get('cd_hab', type=int)
+    date_start = request.args.get('date_start', type=str)
+    date_end = request.args.get('date_end', type=str)
+    observers = request.args.getlist('observers')
+    municipalites = request.args.getlist('municipalites')
+    departements = request.args.getlist('departements')
+    id_harvest_type = request.args.get('id_harvest_type', type=int)
+    code_material = request.args.get('code_material', type=str)
+
+    harvest_repo = HarvestRepository()
+    base_query = harvest_repo.build_harvest_query(
+        cd_nom_list,
+        cd_hab,
+        date_start,
+        date_end,
+        observers,
+        municipalites,
+        departements,
+        id_harvest_type,
+        code_material
+    )
+    harvest_ids = [row.id_harvest for row in base_query.all()]
+    if not harvest_ids:
+        return Response("Aucune donnée à exporter selon les filtres.", status=204)
+
+    # Préparer les alias
+    HarvestType = aliased(TNomenclatures)
+    HarvestMaterial = aliased(TNomenclatures)
+    Exposition = aliased(TNomenclatures)
+    FootCountingClass = aliased(TNomenclatures)
+    Phenology1 = aliased(TNomenclatures)
+    Phenology2 = aliased(TNomenclatures)
+    MethodSample = aliased(TNomenclatures)
+    Taxref_valid = aliased(Taxref)
+
+    main_observer_subquery = (
+        db.session.query(
+            CorHarvestObserver.id_harvest,
+            User.nom_role,
+            User.prenom_role,
+            Organisme.nom_organisme
+        )
+        .join(User, CorHarvestObserver.id_observer == User.id_role)
+        .outerjoin(Organisme, User.id_organisme == Organisme.id_organisme)
+        .filter(CorHarvestObserver.is_main_observer == True)
+        .subquery()
+    )
+
+    commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
+    departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+
+    harvests = (
+        db.session.query(
+            THarvest.id_harvest,
+            THarvest.date_start,
+            THarvest.date_end,
+            THarvest.precision,
+            THarvest.surface,
+            THarvest.altitude,
+            THarvest.slope,
+            THarvest.remarks,
+            THarvest.cd_hab,
+            HarvestType.label_default.label("harvest_type"),
+            Exposition.label_default.label("exposition"),
+            func.string_agg(func.distinct(User.nom_role + ' ' + User.prenom_role), ', ').label("observers_list"),
+            main_observer_subquery.c.nom_organisme.label("organisme"),
+            TMaterial.code_material.label("code_material"),
+            FootCountingClass.label_default.label("classe_individus"),
+            HarvestMaterial.label_default.label("harvest_material"),
+            Phenology1.label_default.label("phenologie_1"),
+            Phenology2.label_default.label("phenologie_2"),
+            MethodSample.label_default.label("mode_echantillonnage"),
+            func.ST_Y(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("latitude"),
+            func.ST_X(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("longitude"),
+            case([(THarvest.location_type == commune_id, LAreas.area_name)], else_=None).label("commune"),
+            case([(THarvest.location_type == departement_id, LAreas.area_name)], else_=None).label("departement"),
+            TMaterial.sample_foot_nb.label("nombre_pieds_echantillonnes"),
+            case([
+                (TMaterial.is_soil_sampling == True, 'Oui'),
+                (TMaterial.is_soil_sampling == False, 'Non')
+            ], else_='Non').label("prelevement_terre"),
+            case([
+                (TMaterial.has_hybridation_risk == True, 'Oui'),
+                (TMaterial.has_hybridation_risk == False, 'Non')
+            ], else_='Non').label("risque_hybridation"),
+            TMaterial.remarks.label("protocoles_astuces"),
+            func.string_agg(func.distinct(cast(CorMaterialTaxon.cd_nom, String)), ', ').label("cd_noms"),
+            func.string_agg(func.distinct(Taxref_valid.lb_nom), ', ').label("noms_valides"),
+        )
+        .outerjoin(HarvestType, THarvest.id_harvest_type == HarvestType.id_nomenclature)
+        .outerjoin(Exposition, THarvest.id_exposition == Exposition.id_nomenclature)
+        .outerjoin(CorHarvestObserver, CorHarvestObserver.id_harvest == THarvest.id_harvest)
+        .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)
+        .outerjoin(main_observer_subquery, main_observer_subquery.c.id_harvest == THarvest.id_harvest)
+        .outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
+        .outerjoin(FootCountingClass, TMaterial.id_foot_counting_class == FootCountingClass.id_nomenclature)
+        .outerjoin(HarvestMaterial, TMaterial.id_harvest_material == HarvestMaterial.id_nomenclature)
+        .outerjoin(Phenology1, TMaterial.id_phenology_1 == Phenology1.id_nomenclature)
+        .outerjoin(Phenology2, TMaterial.id_phenology_2 == Phenology2.id_nomenclature)
+        .outerjoin(MethodSample, TMaterial.id_method_sample == MethodSample.id_nomenclature)
+        .outerjoin(LAreas, THarvest.location_code == LAreas.id_area)
+        .outerjoin(CorMaterialTaxon, CorMaterialTaxon.id_material == TMaterial.id_material)
+        .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
+        .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom)
+        .filter(THarvest.id_harvest.in_(harvest_ids))  # <-- le filtrage principal ici
+        .group_by(
+            THarvest.id_harvest,
+            THarvest.date_start,
+            THarvest.date_end,
+            THarvest.precision,
+            THarvest.surface,
+            THarvest.altitude,
+            THarvest.slope,
+            THarvest.remarks,
+            THarvest.cd_hab,
+            HarvestType.label_default,
+            Exposition.label_default,
+            main_observer_subquery.c.nom_organisme,
+            TMaterial.code_material,
+            FootCountingClass.label_default,
+            HarvestMaterial.label_default,
+            Phenology1.label_default,
+            Phenology2.label_default,
+            MethodSample.label_default,
+            LAreas.area_name,
+            THarvest.location_type,
+            TMaterial.sample_foot_nb,
+            TMaterial.is_soil_sampling,
+            TMaterial.has_hybridation_risk,
+            TMaterial.remarks
+        )
+        .all()
+    )
+
+    # Création CSV
+    si = StringIO()
+    fieldnames = [
+        "Numéro de Récolte", "Nom taxref (nom valide)", "ID taxref (cd_nom)", "Id hab", 
+        "Type Récolte", "Matériel végétal", "Date Début", "Date Fin", "Liste des Observateurs",
+        "Organisme", "Commune", "Département", "Coordonnées", "Résolution", "Surface", "Altitude", 
+        "Exposition", "Pente", "Remarques/Météo", "Classe d'individus", "Phénologie 1", "Phénologie 2", 
+        "Mode d'échantillonnage", "Nombre de pieds échantillonnés", 
+        "Prélèvement de terre", "Risque d'hybridation", "Protocoles et astuces"
+    ]
+    csv_writer = csv.DictWriter(si, fieldnames=fieldnames)
+    csv_writer.writeheader()
+
+    for h in harvests:
+        csv_writer.writerow({
+            "Numéro de Récolte": h.code_material,
+            "Nom taxref (nom valide)": h.noms_valides,
+            "ID taxref (cd_nom)": h.cd_noms,
+            "Id hab": h.cd_hab,
+            "Type Récolte": h.harvest_type,
+            "Matériel végétal": h.harvest_material,
+            "Date Début": h.date_start,
+            "Date Fin": h.date_end,
+            "Liste des Observateurs": h.observers_list,
+            "Organisme": h.organisme,
+            "Commune": h.commune,
+            "Département": h.departement,
+            "Coordonnées": f"{h.latitude:.6f}, {h.longitude:.6f}" if h.latitude and h.longitude else "",
+            "Résolution": h.precision,
+            "Surface": h.surface,
+            "Altitude": h.altitude,
+            "Exposition": h.exposition,
+            "Pente": h.slope,
+            "Remarques/Météo": h.remarks,
+            "Classe d'individus": h.classe_individus,
+            "Phénologie 1": h.phenologie_1,
+            "Phénologie 2": h.phenologie_2,
+            "Mode d'échantillonnage": h.mode_echantillonnage,
+            "Nombre de pieds échantillonnés": h.nombre_pieds_echantillonnes,
+            "Prélèvement de terre": h.prelevement_terre or "Non",
+            "Risque d'hybridation": h.risque_hybridation or "Non",
+            "Protocoles et astuces": h.protocoles_astuces
+        })
+
+    output = Response(si.getvalue(), content_type="text/csv")
+    output.headers["Content-Disposition"] = "attachment; filename=harvest.csv"
+    return output
