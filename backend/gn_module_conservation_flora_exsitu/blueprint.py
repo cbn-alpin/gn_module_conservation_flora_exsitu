@@ -468,6 +468,7 @@ def get_materials(id_harvest):
         offset = (page - 1) * limit
 
         materials = TMaterial.query.filter_by(id_harvest=id_harvest)\
+                                          .order_by(TMaterial.code_material.desc())\
                                           .limit(limit)\
                                           .offset(offset)\
                                           .all()
