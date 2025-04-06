@@ -356,6 +356,7 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
   }
 
   onFiltersChanged(newFilters: any) {
+    this.paginator.pageIndex = 0;
     this.onClickMap = false
     this.filters = newFilters;
     this.loadData();
