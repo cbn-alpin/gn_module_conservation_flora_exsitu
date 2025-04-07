@@ -41,11 +41,7 @@ export class MaterialFormComponent implements OnInit {
   {}
 
   ngOnInit(): void {
-    this.idHarvest = this.exsituFormService.idHarvest    
-    this.loadHarvest(this.idHarvest)
     this.initializeMaterialForm();
-    if(this.exsituFormService.mode !== 'add')
-      this.loadMaterials()
 
     this.materialForm.get('code_material')?.valueChanges.subscribe(value => {
       if (this.exsituFormService.mode === 'add' || (this.materialFormService.code_material !== null && value !== this.materialFormService.code_material)) {
@@ -54,16 +50,6 @@ export class MaterialFormComponent implements OnInit {
         this.codeMaterialExists = false;
       }
     });
-  }
-
-  loadHarvest(id_harvest){
-    this.api.getHarvestById(id_harvest).subscribe((harvest) => {
-      this.harvest = harvest
-    });
-  }
-
-  loadMaterials(){
-    this.materialFormService.getMaterialsByHarvest(this.exsituFormService.idHarvest)
   }
 
   private initializeMaterialForm() {

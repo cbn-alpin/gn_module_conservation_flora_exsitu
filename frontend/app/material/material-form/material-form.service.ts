@@ -12,11 +12,13 @@ import {
   UntypedFormControl,
   FormArray,
   FormGroup,
-  FormControl
+  FormControl,
+  AbstractControl
 } from '@angular/forms';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { HttpParams } from '@angular/common/http';
 import { CommonService } from '@geonature_common/service/common.service';  
+import { DialogService } from '../../components/confirm-dialog/confirm-dialog.service';
 
 @Injectable()
 export class MaterialFormService {
@@ -31,6 +33,7 @@ export class MaterialFormService {
     private fb: UntypedFormBuilder,
     private exstiuFormService: ExsituFormService,
     private _commonService: CommonService,
+    private dialogService: DialogService
   ) {
     this.initForm();
     this.setObservables();
@@ -210,10 +213,40 @@ export class MaterialFormService {
       }
     }
     
-    
-    removeTaxon(index: number) {
+
+    removeTaxon(index: number, taxon: AbstractControl) {
+      
       const taxonsArray = this.form.get('taxons') as UntypedFormArray;
-      taxonsArray.removeAt(index);
+      const value = taxon.get('parentFormControl')?.value;
+    
+      const id_material = this.occurrence.getValue()?.id_material;
+      const cd_nom = value?.cd_nom;
+    
+      const existingTaxons = this.occurrence.getValue()?.taxons || [];
+    
+      const isAlreadySaved = existingTaxons.some(t => t.cd_nom === cd_nom);
+      this.dialogService
+          .confirmDialog({ message: `Supprimer le taxon "${value.search_name}" ?` })
+          .subscribe((yes) => {
+            if (yes) {
+              if (id_material && cd_nom && isAlreadySaved) {
+                // Appel API car ce taxon est déjà en BDD
+                this.dataService.deleteTaxonAssociation(id_material, cd_nom).subscribe({
+                  next: () => {
+                    this._commonService.translateToaster('info', 'Taxon supprimé');
+                    taxonsArray.removeAt(index);
+                  },
+                  error: (err) => {
+                    console.error('Erreur lors de la suppression du taxon', err);
+                    this._commonService.translateToaster('error', 'Erreur lors de la suppression');
+                  }
+                });
+              } else {
+                // Taxon pas encore en base → suppression locale
+                taxonsArray.removeAt(index);
+              }
+            }
+          });
     }
     
   

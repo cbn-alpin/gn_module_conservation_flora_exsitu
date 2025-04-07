@@ -74,6 +74,10 @@ export class DataService {
     return this.api.post(`${this.moduleBaseUrl}/materials/${id_material}/add-taxon`, { cd_nom });
   }
 
+  deleteTaxonAssociation(id_material: number, cd_nom: number): Observable<any> {
+    return this.api.delete(`${this.moduleBaseUrl}/materials/${id_material}/taxons/${cd_nom}`);
+  }
+
   checkCodeMaterial(codeMaterial: string): Observable<any> {
     return this.api.get<any>(`${this.moduleBaseUrl}/check-code-material?code_material=${codeMaterial}`);
   }
