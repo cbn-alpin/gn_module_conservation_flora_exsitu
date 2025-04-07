@@ -564,6 +564,24 @@ def add_taxon_to_material(id_material):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+    
+@blueprint.route("/materials/<int:id_material>/taxons/<int:cd_nom>", methods=["DELETE"])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+def delete_material_taxon(id_material, cd_nom):
+    try:
+        assoc = CorMaterialTaxon.query.filter_by(id_material=id_material, cd_nom=cd_nom).first()
+
+        if not assoc:
+            return jsonify({"message": "Association non trouvée"}), 404
+
+        db.session.delete(assoc)
+        db.session.commit()
+
+        return jsonify({"message": "Taxon supprimé avec succès"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 
 
