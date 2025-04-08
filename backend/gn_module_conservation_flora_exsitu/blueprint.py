@@ -374,6 +374,10 @@ def get_harvest_details(harvest_id):
             location_name = "Précise"
             location_type = "Localisation"
 
+        if not harvest.geom:
+            location_name = "Inconnue"
+            location_type = "Localisation"
+
         # Récupération de l'observateur principal
         main_observer = (
             db.session.query(User.nom_role, User.prenom_role)
