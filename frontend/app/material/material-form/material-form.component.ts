@@ -4,23 +4,6 @@ import { MaterialFormService } from './material-form.service';
 import { DataService } from '../../services/data.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 
-
-interface Material {
-  id: number;
-  code_material: string;
-  code_parent?: string;
-  id_parent: number,
-  id_harvest_material?: string;
-  id_foot_counting_class?: string;
-  id_phenology_1?: string;
-  id_phenology_2?: string;
-  remarks?: string;
-  code_cultural_bank?: number;
-  sample_foot_nb?: number;
-  id_method_sample?: string;
-  is_soil_sampling: boolean;
-}
-
 @Component({
   selector: 'cs-material-form',
   templateUrl: './material-form.component.html',
@@ -56,18 +39,9 @@ export class MaterialFormComponent implements OnInit {
     this.materialForm = this.materialFormService.form
   }
 
-
-  editOccurrence(material) {
-    this.materialFormService.materials$.next(material);
-  }
-
-
   submetData(){
-    let finalForm = this.formatDataFormHarvest();   
-    console.log('final',finalForm);
-     
+    let finalForm = this.formatDataFormHarvest();        
     this.materialFormService.submitOccurrence(finalForm);
-
   }
 
   private formatDataFormHarvest() {
@@ -81,22 +55,6 @@ export class MaterialFormComponent implements OnInit {
     return finalForm;
   }
 
-  
-
-  editMaterial(material: Material) {
-    this.materialForm.patchValue(material);
-  
-    // Supprimer ce matériel de la liste
-    const updatedMaterials = this.materialFormService.materials$.getValue().filter(m => m.id !== material.id);
-    this.materialFormService.materials$.next(updatedMaterials);
-  }
-  
-
-  deleteMaterial(material: Material) {
-    const updatedList = this.materialFormService.materials$.getValue().filter(m => m.id !== material.id);
-    this.materialFormService.materials$.next(updatedList);
-  }
-
   resetOccurrenceForm() {
     this.materialFormService.reset();
   }
@@ -105,7 +63,7 @@ export class MaterialFormComponent implements OnInit {
     if (codeMaterial) {
       this.api.checkCodeMaterial(codeMaterial).subscribe(
         response => {
-          this.codeMaterialExists = response.exists;  // Mettre à jour l'état en fonction de la réponse
+          this.codeMaterialExists = response.exists;
         },
         error => {
           console.error('Erreur lors de la vérification du code material', error);

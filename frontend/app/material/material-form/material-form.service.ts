@@ -204,14 +204,26 @@ export class MaterialFormService {
       const taxonValue = this.form.controls.taxonInput.value;
     
       if (taxonValue) {
+        const isDuplicate = taxonsArray.controls.some(control => {
+          const existingTaxon = control.get('parentFormControl')?.value;
+          return existingTaxon?.cd_nom === taxonValue.cd_nom;
+        });
+    
+        if (isDuplicate) {
+          this._commonService.translateToaster('warning', 'Ce taxon est déjà dans la liste');
+          this.form.controls.taxonInput.reset();
+          return;
+        }
+    
         const taxonGroup = this.fb.group({
-          parentFormControl: new UntypedFormControl(taxonValue) // Stocke l'objet complet
+          parentFormControl: new UntypedFormControl(taxonValue)
         });
     
         taxonsArray.push(taxonGroup);
-        this.form.controls.taxonInput.reset(); // Réinitialiser l'input après ajout
+        this.form.controls.taxonInput.reset();
       }
     }
+    
     
 
     removeTaxon(index: number, taxon: AbstractControl) {
