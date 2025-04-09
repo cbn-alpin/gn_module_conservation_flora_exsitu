@@ -123,10 +123,10 @@ CFE_EMBRYO_TYPE;feuil;feuille;Feuillé;"L'embryon est feuillé, droit avec des c
 CFE_EMBRYO_TYPE;min;miniature;Miniature;L'embryon est axial, de taille variable en fonction des semences, de très petite taille ou allant jusqu'a la totalité de l'espace de la graine. Le terme est utilisé pour les graines de petites tailles faisant de 0 à 2mm de long.;Miniature;L'embryon est axial, de taille variable en fonction des semences, de très petite taille ou allant jusqu'a la totalité de l'espace de la graine. Le terme est utilisé pour les graines de petites tailles faisant de 0 à 2mm de long.;conservation_flora_exsitu;.004
 CFE_EMBRYO_TYPE;per;peripherique;Périphérique;L'embryon est pressé sur le coté du tégument;Périphérique;L'embryon est pressé sur le coté du tégument;conservation_flora_exsitu;.005
 CFE_EMBRYO_TYPE;spi;spirale;Spiralé;L'embryon forme une spirale;Spiralé;L'embryon forme une spirale;conservation_flora_exsitu;.006
-CFE_STOCK_LOCATION;cong;congElateur;Congélateur;Appareil utilisé pour le stockage et la conservation des semences au froid négatif;Congélateur;Appareil utilisé pour le stockage et la conservation des semences au froid négatif;conservation_flora_exsitu;.003
-CFE_STOCK_LOCATION;cf;chambreFroide;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;conservation_flora_exsitu;.002
-CFE_STOCK_LOCATION;lyo;lyophilisation;Lyophilisation;Semences lyophilisées, la lyophilisation est un procédé de séchage à basse température permettant de retirer l'eau contenue dans les semences.;Lyophilisation;Semences lyophilisées, la lyophilisation est un procédé de séchage à basse température permettant de retirer l'eau contenue dans les semences.;conservation_flora_exsitu;.004
-CFE_STOCK_LOCATION;grf;graineFraîche;Graines fraîches;Graines qui viennent tout juste d’être récoltées, encore pleines de vie et de potentiel;Graines fraîches;Graines qui viennent tout juste d’être récoltées, encore pleines de vie et de potentiel;conservation_flora_exsitu;.001
+CFE_PLACE;cong;congElateur;Congélateur;Appareil utilisé pour le stockage et la conservation des semences au froid négatif;Congélateur;Appareil utilisé pour le stockage et la conservation des semences au froid négatif;conservation_flora_exsitu;.003
+CFE_PLACE;cf;chambreFroide;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;conservation_flora_exsitu;.002
+CFE_PLACE;sdps;salleDePre-sechage;Salle de pré-séchage;Salle de pré-séchage;Salle de pré-séchage;Salle de pré-séchage;conservation_flora_exsitu;.004
+CFE_PLACE;sds;salleDeSechage;Salle de séchage;Salle de séchage;Salle de séchage;Salle de séchage;conservation_flora_exsitu;.001
 CFE_COLOR_TABLET;ob;orangeBleu;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité ;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité ;conservation_flora_exsitu;.001
 CFE_COLOR_TABLET;ci;couleurIntermediaire;Couleur intermédiaire;Couleur du gel de silice indicant un taux d'humidité moyen;Couleur intermédiaire;Couleur du gel de silice indicant un taux d'humidité moyen;conservation_flora_exsitu;.002
 CFE_COLOR_TABLET;br;blancRose;Blanc/Rose;Couleur du gel de silice indicant un fort taux d'humidité;Blanc/Rose;Couleur du gel de silice indicant un fort taux d'humidité;conservation_flora_exsitu;.003
@@ -138,3 +138,32 @@ CFE_GEOGRAPHICAL_PRECISION;dept;departement;Département;Indique que l’emplace
 CFE_GEOGRAPHICAL_PRECISION;nl;nonLocalisable;Non localisable;L’emplacement de la récolte ne peut pas être déterminé;Non localisable;L’emplacement de la récolte ne peut pas être déterminé;conservation_flora_exsitu;.005
 CFE_GEOGRAPHICAL_PRECISION;ptp;pointagePrecis;Pointage précis;La localisation de la récolte est connue avec exactitude;Pointage précis;La localisation de la récolte est connue avec exactitude;conservation_flora_exsitu;.001
 CFE_GEOGRAPHICAL_PRECISION;ptapp;pointageApproximatif;Pointage approximatif;L’emplacement est estimé mais pas parfaitement exact;Pointage approximatif;L’emplacement est estimé mais pas parfaitement exact;conservation_flora_exsitu;.002
+CFE_DRY_TYPE;ss;sechageSalle;Séchage salle;Séchage salle;Séchage salle;Séchage salle;conservation_flora_exsitu;.001
+CFE_DRY_TYPE;see;sechageEnEnceinte;Séchage en enceinte;Séchage en enceinte;Séchage en enceinte;Séchage en enceinte;conservation_flora_exsitu;.002
+CFE_DRY_TYPE;lyo;lyophilisation;Lyophilisation;Semences lyophilisées, la lyophilisation est un procédé de séchage à basse température permettant de retirer l'eau contenue dans les semences..;Lyophilisation;Semences lyophilisées, la lyophilisation est un procédé de séchage à basse température permettant de retirer l'eau contenue dans les semences..;conservation_flora_exsitu;.003
+CFE_HUMIDITY_LEVEL;sec;sec;Sec;Sec;Sec;Sec;conservation_flora_exsitu;.001
+CFE_HUMIDITY_LEVEL;mh;moyennementHumide;Moyennement humide;Moyennement humide;Moyennement humide;Moyennement humide;conservation_flora_exsitu;.002
+CFE_HUMIDITY_LEVEL;hum;humide;Humide;Humide;Humide;Humide;conservation_flora_exsitu;.003
+CFE_HUMIDITY_DEVICE;test;test;test;test;test;test;conservation_flora_exsitu;.001
+CFE_DESTOCK;part;partiel;Partiel;Partiel;Partiel;Partiel;conservation_flora_exsitu;.001
+CFE_DESTOCK;total;total;Total;Total;Total;Total;conservation_flora_exsitu;.002
+CFE_DESTINATION;tdg;testDeGermination;Test de germination;Test de germination;Test de germination;Test de germination;conservation_flora_exsitu;.001
+CFE_DESTINATION;sem;semis;Semis;Semis;Semis;Semis;conservation_flora_exsitu;.002
+CFE_DESTINATION;cult;culture;Culture;Culture;Culture;Culture;conservation_flora_exsitu;.003
+CFE_DESTINATION;carp;carpotheque;Carpothèque;Carpothèque;Carpothèque;Carpothèque;conservation_flora_exsitu;.004
+CFE_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.005
+CFE_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.006
+CFE_INTERNAL_DESTINATION;tdg;testDeGermination;Test de germination;Test de germination;Test de germination;Test de germination;conservation_flora_exsitu;.001
+CFE_INTERNAL_DESTINATION;sem;semis;Semis;Semis;Semis;Semis;conservation_flora_exsitu;.002
+CFE_INTERNAL_DESTINATION;cult;culture;Culture;Culture;Culture;Culture;conservation_flora_exsitu;.003
+CFE_INTERNAL_DESTINATION;carp;carpotheque;Carpothèque;Carpothèque;Carpothèque;Carpothèque;conservation_flora_exsitu;.004
+CFE_INTERNAL_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.005
+CFE_INTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.006
+CFE_EXTERNAL_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.001
+CFE_EXTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.002
+CFE_ACTION_TYPE;sti;stockageInitial;Stockage initial;Stockage initial;Stockage initial;Stockage initial;conservation_flora_exsitu;.001
+CFE_ACTION_TYPE;acth;ajoutChangementTemoinHumidite;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;conservation_flora_exsitu;.002
+CFE_ACTION_TYPE;evu;evaluationHumidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;conservation_flora_exsitu;.003
+CFE_ACTION_TYPE;mhp;mesureHumiditePrecise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;conservation_flora_exsitu;.004
+CFE_ACTION_TYPE;dest;destockage ;Déstockage ;Déstockage ;Déstockage ;Déstockage ;conservation_flora_exsitu;.005
+CFE_ACTION_TYPE;depl;deplacement;Déplacement ;Déplacement ;Déplacement ;Déplacement ;conservation_flora_exsitu;.006
