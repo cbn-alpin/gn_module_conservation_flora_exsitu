@@ -52,7 +52,7 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
     this.harvestForm = this.harvertFormService.harvestForm;
     this.additionalDataForm = this.harvestForm.get('additional_data') as UntypedFormGroup;
 
-    this.harvestForm.controls['id_geographical_location'].valueChanges.subscribe(value => {      
+    this.harvestForm.controls['id_geographical_precision'].valueChanges.subscribe(value => {      
       if(value && value.id_nomenclature) {
         const idNomenclature = value.id_nomenclature
         this.harvertFormService.getCodesNomenclature(idNomenclature);
@@ -105,7 +105,7 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
       delete finalForm.additional_data;
     }  
     
-    finalForm.id_geographical_location = finalForm.id_geographical_location.id_nomenclature;
+    finalForm.id_geographical_precision = finalForm.id_geographical_precision.id_nomenclature;
 
     if(finalForm.cd_hab)
       finalForm.cd_hab = finalForm.cd_hab.cd_hab;

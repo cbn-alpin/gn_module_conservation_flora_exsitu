@@ -79,7 +79,7 @@ export class HarvestFormService {
             id_exposition: null,
             slope: null,
             precision: null,
-            id_geographical_location: [null, Validators.required],
+            id_geographical_precision: [null, Validators.required],
             additional_data: this.fb.group({})
         });
         // this.harvestForm.reset();
@@ -91,7 +91,7 @@ export class HarvestFormService {
           ),
         ]);
 
-        this.harvestForm.controls['id_geographical_location'].valueChanges.subscribe(value => {
+        this.harvestForm.controls['id_geographical_precision'].valueChanges.subscribe(value => {
           if (value && value.id_nomenclature) {
             const idNomenclature = value.id_nomenclature;
             this.getCodesNomenclature(idNomenclature);
@@ -172,7 +172,7 @@ export class HarvestFormService {
         id_exposition: harvest.id_exposition,
         slope: harvest.slope,
         precision: harvest.precision,
-        id_geographical_location: harvest.id_geographical_location
+        id_geographical_precision: harvest.id_geographical_precision
       });
 
       if (harvest.observers && harvest.observers.length > 0) {
@@ -193,8 +193,8 @@ export class HarvestFormService {
         this.harvestForm.get('cd_hab')?.setValue(habitatFormValue); 
       }
 
-      if (harvest.id_geographical_location) {        
-        this.getCodesNomenclature(harvest.id_geographical_location.id_nomenclature);
+      if (harvest.id_geographical_precision) {        
+        this.getCodesNomenclature(harvest.id_geographical_precision.id_nomenclature);
       }
       if (harvest.geom) {
         this.mapService.updateGeoJsonFileLayer(harvest.geom);
