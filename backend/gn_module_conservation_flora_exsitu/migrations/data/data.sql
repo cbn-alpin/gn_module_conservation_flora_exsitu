@@ -157,11 +157,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 ) ;
 
 
--- Create the "CFE_STOCK_LOCATION" nomenclature type
+-- Create the "CFE_PLACE" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
-    'CFE_STOCK_LOCATION',
+    'CFE_PLACE',
     'Type de stock localisation',
     'Nomenclature des types de stock de localisation.',
     'Type de stock localisation',
@@ -217,6 +217,103 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'Nomenclature des types de précision géographique.',
     'Précision géographique',
     'Nomenclature des types de précision géographique.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_DRY_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_DRY_TYPE',
+    'Type de séchage',
+    'Nomenclature des types de séchage.',
+    'Type de séchage',
+    'Nomenclature des types de séchage.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_HUMIDITY_LEVEL" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_HUMIDITY_LEVEL',
+    'Type de level humidité',
+    'Nomenclature des types de level humidité.',
+    'Type de level humidité',
+    'Nomenclature des types de level humidité.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_DESTOCK" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_DESTOCK',
+    'Type de déstockage',
+    'Nomenclature des types de déstockage.',
+    'Type de déstockage',
+    'Nomenclature des types de déstockage.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_DESTINATION" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_DESTINATION',
+    'Type de destination',
+    'Nomenclature des types de destination.',
+    'Type de destination',
+    'Nomenclature des types de destination.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_INTERNAL_DESTINATION" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_INTERNAL_DESTINATION',
+    'Type de destination intérieure',
+    'Nomenclature des types de destination intérieure.',
+    'Type de destination intérieure',
+    'Nomenclature des types de destination intérieure.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_EXTERNAL_DESTINATION" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_EXTERNAL_DESTINATION',
+    'Type de destination extérieure',
+    'Nomenclature des types de destination extérieure.',
+    'Type de destination extérieure',
+    'Nomenclature des types de destination extérieure.',
+    'CBNA'
+) ;
+
+-- Create the "CFE_HUMIDITY_DEVICE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_HUMIDITY_DEVICE',
+    'Type de testeur humidité',
+    'Nomenclature des types de testeur humidité.',
+    'Type de testeur humidité',
+    'Nomenclature des types de testeur humidité.',
+    'CBNA'
+) ;
+
+
+-- Create the "CFE_ACTION_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_ACTION_TYPE',
+    'Type action',
+    'Nomenclature des types action.',
+    'Type action',
+    'Nomenclature des types action.',
     'CBNA'
 ) ;
 
