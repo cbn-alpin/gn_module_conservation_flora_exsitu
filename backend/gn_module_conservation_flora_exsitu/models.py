@@ -46,7 +46,7 @@ class THarvest(db.Model):
     place_remarks = db.Column(db.Text)
     remarks = db.Column(db.Text)
     geom = db.Column(Geometry("GEOMETRY", 2154))
-    location_type = db.Column(
+    id_area_type = db.Column(
         db.Integer,
         db.ForeignKey(
            "ref_geo.bib_areas_types.id_type",

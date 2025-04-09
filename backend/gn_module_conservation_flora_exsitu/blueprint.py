@@ -311,7 +311,7 @@ def get_harvest_by_id(harvest_id):
         "id_dataset": harvest.id_dataset,
         "date_start": harvest.date_start,
         "date_end": harvest.date_end,
-        "location_type": harvest.location_type,
+        "id_area_type": harvest.id_area_type,
         "id_area": harvest.id_area,
         "cd_hab": cd_bah_obj,
         "geom": geom_geojson,
@@ -355,7 +355,7 @@ def get_harvest_details(harvest_id):
         departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
 
         location_name = "Localisation inconnue"
-        location_type = None
+        id_area_type = None
 
         # Vérification si on a une localisation
         if harvest.id_area:
@@ -364,19 +364,19 @@ def get_harvest_details(harvest_id):
             if area:
                 if area.id_type == commune_id:
                     location_name = area.area_name
-                    location_type = "Commune"
+                    id_area_type = "Commune"
                 elif area.id_type == departement_id:
                     location_name = area.area_name
-                    location_type = "Département"
+                    id_area_type = "Département"
 
         # Vérification si une géométrie existe (et qu'on n'a pas déjà une commune ou département)
         if not harvest.id_area and harvest.geom:
             location_name = "Précise"
-            location_type = "Localisation"
+            id_area_type = "Localisation"
 
         if not harvest.geom:
             location_name = "Inconnue"
-            location_type = "Localisation"
+            id_area_type = "Localisation"
 
         # Récupération de l'observateur principal
         main_observer = (
@@ -397,7 +397,7 @@ def get_harvest_details(harvest_id):
             {
                 "harvest_type": harvest_type,
                 "location_name": location_name,
-                "location_type": location_type,
+                "id_area_type": id_area_type,
                 "date_start": harvest.date_start.isoformat(),
                 "observateur": observer_name,
             }
@@ -697,8 +697,8 @@ def export_harvests():
             MethodSample.label_default.label("mode_echantillonnage"),
             func.ST_Y(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("latitude"),
             func.ST_X(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("longitude"),
-            case([(THarvest.location_type == commune_id, LAreas.area_name)], else_=None).label("commune"),
-            case([(THarvest.location_type == departement_id, LAreas.area_name)], else_=None).label("departement"),
+            case([(THarvest.id_area_type == commune_id, LAreas.area_name)], else_=None).label("commune"),
+            case([(THarvest.id_area_type == departement_id, LAreas.area_name)], else_=None).label("departement"),
             TMaterial.sample_foot_nb.label("nombre_pieds_echantillonnes"),
             case([
                 (TMaterial.is_soil_sampling == True, 'Oui'),
@@ -748,7 +748,7 @@ def export_harvests():
             Phenology2.label_default,
             MethodSample.label_default,
             LAreas.area_name,
-            THarvest.location_type,
+            THarvest.id_area_type,
             TMaterial.sample_foot_nb,
             TMaterial.is_soil_sampling,
             TMaterial.has_hybridation_risk,

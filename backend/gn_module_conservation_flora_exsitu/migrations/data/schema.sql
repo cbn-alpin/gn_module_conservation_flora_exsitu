@@ -37,7 +37,7 @@ CREATE TABLE "t_harvest" (
 	-- Code de la commune, du département
 	"id_area" INTEGER,
 	-- Type de localisation
-	"location_type" INTEGER,
+	"id_area_type" INTEGER,
 	"id_geographical_precision" INTEGER NOT NULL,
 	-- Résolution de la localisation en mètres
 	"precision" INTEGER,
@@ -64,7 +64,7 @@ COMMENT ON COLUMN t_harvest.date_end IS 'Date de fin de récolte';
 COMMENT ON COLUMN t_harvest.place_remarks IS 'Commentaire sur la location(lieudit, comm_loc)';
 COMMENT ON COLUMN t_harvest.geom IS 'Coordonnées GPS';
 COMMENT ON COLUMN t_harvest.id_area IS 'Code de la commune, du département';
-COMMENT ON COLUMN t_harvest.location_type IS 'Type de localisation';
+COMMENT ON COLUMN t_harvest.id_area_type IS 'Type de localisation';
 COMMENT ON COLUMN t_harvest.precision IS 'Résolution de la localisation en mètres';
 COMMENT ON COLUMN t_harvest.surface IS 'En m2';
 COMMENT ON COLUMN t_harvest.remarks IS 'Remarques générales';
@@ -436,5 +436,5 @@ ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_area") REFERENCES ref_geo.l_areas(id_area)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
-ADD FOREIGN KEY("location_type") REFERENCES ref_geo.bib_areas_types(id_type)
+ADD FOREIGN KEY("id_area_type") REFERENCES ref_geo.bib_areas_types(id_type)
 ON UPDATE NO ACTION ON DELETE NO ACTION;

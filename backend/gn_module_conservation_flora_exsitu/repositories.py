@@ -60,12 +60,12 @@ class HarvestRepository:
                 geom_transformed = func.ST_Transform(geom, 2154)
                 data['geom'] = geom_transformed
             
-            if data["location_type"] and not data.get('geom'):
+            if data["id_area_type"] and not data.get('geom'):
                 commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
                 departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
-                if data["location_type"] == commune_id:  # Commune
+                if data["id_area_type"] == commune_id:  # Commune
                     data["id_area"] = data.get("id_area_muni", [None])[0]
-                elif data["location_type"] == departement_id:  # Département
+                elif data["id_area_type"] == departement_id:  # Département
                     data["id_area"] = data.get("id_area_dept", [None])[0]
     
                 if data["id_area"]:
@@ -122,14 +122,14 @@ class HarvestRepository:
                 geom_transformed = func.ST_Transform(geom, 2154)
                 data['geom'] = geom_transformed
                 harvest.id_area = None
-                harvest.location_type = None
+                harvest.id_area_type = None
 
-            if data["location_type"] and not data.get('geom'):
+            if data["id_area_type"] and not data.get('geom'):
                 commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
                 departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
-                if data["location_type"] == commune_id:
+                if data["id_area_type"] == commune_id:
                     data["id_area"] = data.get("id_area_muni", [None])[0]
-                elif data["location_type"] == departement_id:
+                elif data["id_area_type"] == departement_id:
                     data["id_area"] = data.get("id_area_dept", [None])[0]
 
                 if data["id_area"]:
