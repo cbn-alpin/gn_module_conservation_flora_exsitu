@@ -72,8 +72,8 @@ export class HarvestFormService {
             geom: null,
             id_dataset: [this.cfg.CONSERVATION_FLORA_EXSITU.default_dataset, Validators.required],
             location_type: [null],
-            location_code_muni: [null],
-            location_code_dept: [null],
+            id_area_muni: [null],
+            id_area_dept: [null],
             surface: null,
             altitude: null,
             id_exposition: null,
@@ -165,8 +165,8 @@ export class HarvestFormService {
         geom: harvest.geom,
         id_dataset: harvest.id_dataset,
         location_type: harvest.location_type,
-        location_code_muni: (harvest.location_code && harvest.location_type === 25) ? [harvest.location_code] : null,
-        location_code_dept: (harvest.location_code && harvest.location_type === 26) ? [harvest.location_code] : null,
+        id_area_muni: (harvest.id_area && harvest.location_type === 25) ? [harvest.id_area] : null,
+        id_area_dept: (harvest.id_area && harvest.location_type === 26) ? [harvest.id_area] : null,
         surface: harvest.surface,
         altitude: harvest.altitude,
         id_exposition: harvest.id_exposition,
@@ -247,9 +247,9 @@ export class HarvestFormService {
     if (config) {
       // Ajouter des validateurs conditionnels
       if (code_nomenclature === this.constants.LOCATION_CODES.COMMUNE) {
-        this.harvestForm.controls['location_code_muni'].setValidators([Validators.required]);
+        this.harvestForm.controls['id_area_muni'].setValidators([Validators.required]);
       } else if (code_nomenclature === this.constants.LOCATION_CODES.DEPARTMENT) {
-        this.harvestForm.controls['location_code_dept'].setValidators([Validators.required]);
+        this.harvestForm.controls['id_area_dept'].setValidators([Validators.required]);
       } else if (code_nomenclature === this.constants.LOCATION_CODES.PTP) {
         this.harvestForm.controls['geom'].setValidators([Validators.required]);
       } else if (code_nomenclature === this.constants.LOCATION_CODES.PTAPP) {
@@ -265,17 +265,17 @@ export class HarvestFormService {
     const isEditing = this.exsituService.editionMode.getValue();
   
     if (!isEditing) {
-      this.harvestForm.controls['location_code_muni'].setValue(null);
-      this.harvestForm.controls['location_code_dept'].setValue(null);
+      this.harvestForm.controls['id_area_muni'].setValue(null);
+      this.harvestForm.controls['id_area_dept'].setValue(null);
       this.harvestForm.controls['geom'].setValue(null);
       this.harvestForm.controls['precision'].setValue(null);
     } else {
       if (code_nomenclature !== this.constants.LOCATION_CODES.COMMUNE) {
-        this.harvestForm.controls['location_code_muni'].setValue(null);
+        this.harvestForm.controls['id_area_muni'].setValue(null);
       }
   
       if (code_nomenclature !== this.constants.LOCATION_CODES.DEPARTMENT) {        
-        this.harvestForm.controls['location_code_dept'].setValue(null);
+        this.harvestForm.controls['id_area_dept'].setValue(null);
       }
   
       if (code_nomenclature !== this.constants.LOCATION_CODES.PTP &&
@@ -289,8 +289,8 @@ export class HarvestFormService {
     }
   
     // Supprimer les validateurs
-    this.harvestForm.controls['location_code_muni'].clearValidators();
-    this.harvestForm.controls['location_code_dept'].clearValidators();
+    this.harvestForm.controls['id_area_muni'].clearValidators();
+    this.harvestForm.controls['id_area_dept'].clearValidators();
     this.harvestForm.controls['geom'].clearValidators();
     this.harvestForm.controls['precision'].clearValidators();
     this.harvestForm.updateValueAndValidity();
