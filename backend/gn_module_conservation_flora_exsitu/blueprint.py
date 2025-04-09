@@ -312,7 +312,7 @@ def get_harvest_by_id(harvest_id):
         "date_start": harvest.date_start,
         "date_end": harvest.date_end,
         "location_type": harvest.location_type,
-        "location_code": harvest.location_code,
+        "id_area": harvest.id_area,
         "cd_hab": cd_bah_obj,
         "geom": geom_geojson,
         "slope": harvest.slope,
@@ -358,8 +358,8 @@ def get_harvest_details(harvest_id):
         location_type = None
 
         # Vérification si on a une localisation
-        if harvest.location_code:
-            area = db.session.query(LAreas.area_name, LAreas.id_type).filter(LAreas.id_area == harvest.location_code).first()
+        if harvest.id_area:
+            area = db.session.query(LAreas.area_name, LAreas.id_type).filter(LAreas.id_area == harvest.id_area).first()
 
             if area:
                 if area.id_type == commune_id:
@@ -370,7 +370,7 @@ def get_harvest_details(harvest_id):
                     location_type = "Département"
 
         # Vérification si une géométrie existe (et qu'on n'a pas déjà une commune ou département)
-        if not harvest.location_code and harvest.geom:
+        if not harvest.id_area and harvest.geom:
             location_name = "Précise"
             location_type = "Localisation"
 
@@ -723,7 +723,7 @@ def export_harvests():
         .outerjoin(Phenology1, TMaterial.id_phenology_1 == Phenology1.id_nomenclature)
         .outerjoin(Phenology2, TMaterial.id_phenology_2 == Phenology2.id_nomenclature)
         .outerjoin(MethodSample, TMaterial.id_method_sample == MethodSample.id_nomenclature)
-        .outerjoin(LAreas, THarvest.location_code == LAreas.id_area)
+        .outerjoin(LAreas, THarvest.id_area == LAreas.id_area)
         .outerjoin(CorMaterialTaxon, CorMaterialTaxon.id_material == TMaterial.id_material)
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
         .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom)

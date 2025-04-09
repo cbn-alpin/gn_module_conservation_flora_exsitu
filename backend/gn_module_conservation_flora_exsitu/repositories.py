@@ -64,18 +64,18 @@ class HarvestRepository:
                 commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
                 departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
                 if data["location_type"] == commune_id:  # Commune
-                    data["location_code"] = data.get("location_code_muni", [None])[0]
+                    data["id_area"] = data.get("id_area_muni", [None])[0]
                 elif data["location_type"] == departement_id:  # Département
-                    data["location_code"] = data.get("location_code_dept", [None])[0]
+                    data["id_area"] = data.get("id_area_dept", [None])[0]
     
-                if data["location_code"]:
-                    area = LAreas.query.get(data["location_code"])
+                if data["id_area"]:
+                    area = LAreas.query.get(data["id_area"])
 
                     if area and area.centroid :
                         data["geom"] = area.centroid
 
-            data.pop("location_code_muni", None)
-            data.pop("location_code_dept", None)
+            data.pop("id_area_muni", None)
+            data.pop("id_area_dept", None)
 
             observers_ids = data.pop("observers", [])
             additional_data = data.pop("additional_data", None)
@@ -121,24 +121,24 @@ class HarvestRepository:
                 geom = func.ST_GeomFromGeoJSON(geom_json)
                 geom_transformed = func.ST_Transform(geom, 2154)
                 data['geom'] = geom_transformed
-                harvest.location_code = None
+                harvest.id_area = None
                 harvest.location_type = None
 
             if data["location_type"] and not data.get('geom'):
                 commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
                 departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
                 if data["location_type"] == commune_id:
-                    data["location_code"] = data.get("location_code_muni", [None])[0]
+                    data["id_area"] = data.get("id_area_muni", [None])[0]
                 elif data["location_type"] == departement_id:
-                    data["location_code"] = data.get("location_code_dept", [None])[0]
+                    data["id_area"] = data.get("id_area_dept", [None])[0]
 
-                if data["location_code"]:
-                    area = LAreas.query.get(data["location_code"])
+                if data["id_area"]:
+                    area = LAreas.query.get(data["id_area"])
                     if area and area.centroid:
                         data["geom"] = area.centroid
 
-            data.pop("location_code_muni", None)
-            data.pop("location_code_dept", None)
+            data.pop("id_area_muni", None)
+            data.pop("id_area_dept", None)
 
             additional_data = data.pop("additional_data", None)
             if additional_data:
@@ -195,8 +195,8 @@ class HarvestRepository:
         .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
         .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
-        .outerjoin(l_areas_dept, and_(THarvest.location_code == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
-        .outerjoin(l_areas_commune, and_(THarvest.location_code == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
+        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
+        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
         .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
         .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
         .group_by(
@@ -224,10 +224,10 @@ class HarvestRepository:
             query = query.filter(User.id_role.in_(observers))
 
         if municipalites:
-            query = query.filter(THarvest.location_code.in_(municipalites))
+            query = query.filter(THarvest.id_area.in_(municipalites))
 
         if departements:
-            query = query.filter(THarvest.location_code.in_(departements))
+            query = query.filter(THarvest.id_area.in_(departements))
 
         if id_harvest_type:
             query = query.filter(THarvest.id_harvest_type == id_harvest_type)
@@ -271,8 +271,8 @@ class HarvestRepository:
         .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
         .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
-        .outerjoin(l_areas_dept, and_(THarvest.location_code == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
-        .outerjoin(l_areas_commune, and_(THarvest.location_code == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
+        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
+        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
         .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
         .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
         .group_by(
@@ -305,10 +305,10 @@ class HarvestRepository:
             query = query.filter(User.id_role.in_(observers))
 
         if municipalites:
-            query = query.filter(THarvest.location_code.in_(municipalites))
+            query = query.filter(THarvest.id_area.in_(municipalites))
 
         if departements:
-            query = query.filter(THarvest.location_code.in_(departements))
+            query = query.filter(THarvest.id_area.in_(departements))
 
         if id_harvest_type:
             query = query.filter(THarvest.id_harvest_type == id_harvest_type)

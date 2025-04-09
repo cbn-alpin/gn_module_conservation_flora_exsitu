@@ -53,7 +53,7 @@ class THarvest(db.Model):
             ondelete="NULL"
         ),
     )
-    location_code = db.Column(
+    id_area = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_geo.l_areas.id_area",

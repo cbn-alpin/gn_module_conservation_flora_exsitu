@@ -35,7 +35,7 @@ CREATE TABLE "t_harvest" (
 	-- Coordonnées GPS
 	"geom" GEOMETRY(GEOMETRY, 2154),
 	-- Code de la commune, du département
-	"location_code" INTEGER,
+	"id_area" INTEGER,
 	-- Type de localisation
 	"location_type" INTEGER,
 	"id_geographical_precision" INTEGER NOT NULL,
@@ -63,7 +63,7 @@ COMMENT ON COLUMN t_harvest.date_start IS 'Date de début de récolte';
 COMMENT ON COLUMN t_harvest.date_end IS 'Date de fin de récolte';
 COMMENT ON COLUMN t_harvest.place_remarks IS 'Commentaire sur la location(lieudit, comm_loc)';
 COMMENT ON COLUMN t_harvest.geom IS 'Coordonnées GPS';
-COMMENT ON COLUMN t_harvest.location_code IS 'Code de la commune, du département';
+COMMENT ON COLUMN t_harvest.id_area IS 'Code de la commune, du département';
 COMMENT ON COLUMN t_harvest.location_type IS 'Type de localisation';
 COMMENT ON COLUMN t_harvest.precision IS 'Résolution de la localisation en mètres';
 COMMENT ON COLUMN t_harvest.surface IS 'En m2';
@@ -433,7 +433,7 @@ ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_method_sample") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
-ADD FOREIGN KEY("location_code") REFERENCES ref_geo.l_areas(id_area)
+ADD FOREIGN KEY("id_area") REFERENCES ref_geo.l_areas(id_area)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("location_type") REFERENCES ref_geo.bib_areas_types(id_type)
