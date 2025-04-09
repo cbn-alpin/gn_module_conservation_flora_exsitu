@@ -71,7 +71,7 @@ export class HarvestFormService {
             observers: [[], Validators.required],
             geom: null,
             id_dataset: [this.cfg.CONSERVATION_FLORA_EXSITU.default_dataset, Validators.required],
-            location_type: [null],
+            id_area_type: [null],
             id_area_muni: [null],
             id_area_dept: [null],
             surface: null,
@@ -105,7 +105,7 @@ export class HarvestFormService {
       const config = this.constants.FIELD_CONFIGS.get(code_nomenclature);      
   
       if (config) {
-        this.harvestForm.controls['location_type'].setValue(config.locationType || null);
+        this.harvestForm.controls['id_area_type'].setValue(config.locationType || null);
         
         // Gestion de l'affichage des champs
         this.showCommuneField = !!config.showCommune;
@@ -164,9 +164,9 @@ export class HarvestFormService {
         // observers: harvest.observers ? harvest.observers.map(observer => `${observer.prenom_role} ${observer.nom_role}`) : [],
         geom: harvest.geom,
         id_dataset: harvest.id_dataset,
-        location_type: harvest.location_type,
-        id_area_muni: (harvest.id_area && harvest.location_type === 25) ? [harvest.id_area] : null,
-        id_area_dept: (harvest.id_area && harvest.location_type === 26) ? [harvest.id_area] : null,
+        id_area_type: harvest.id_area_type,
+        id_area_muni: (harvest.id_area && harvest.id_area_type === 25) ? [harvest.id_area] : null,
+        id_area_dept: (harvest.id_area && harvest.id_area_type === 26) ? [harvest.id_area] : null,
         surface: harvest.surface,
         altitude: harvest.altitude,
         id_exposition: harvest.id_exposition,
