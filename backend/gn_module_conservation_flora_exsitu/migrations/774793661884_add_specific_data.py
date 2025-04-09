@@ -131,12 +131,20 @@ def downgrade():
     delete_nomenclatures("CFE_DECORATION")
     delete_nomenclatures("CFE_EMBRYO_TYPE")
     delete_nomenclatures("CFE_UNIT")
-    delete_nomenclatures("CFE_STOCK_LOCATION")
+    delete_nomenclatures("CFE_PLACE")
     delete_nomenclatures("CFE_STOCK_FLOW")
     delete_nomenclatures("CFE_COLOR_TABLET")
     delete_nomenclatures("CFE_DISSEMINATION_UNIT")
     delete_nomenclatures("CFE_GEOGRAPHICAL_PRECISION")
-
+    delete_nomenclatures("CFE_DRY_TYPE")
+    delete_nomenclatures("CFE_HUMIDITY_LEVEL")
+    delete_nomenclatures("CFE_DESTOCK")
+    delete_nomenclatures("CFE_DESTINATION")
+    delete_nomenclatures("CFE_INTERNAL_DESTINATION")
+    delete_nomenclatures("CFE_EXTERNAL_DESTINATION")
+    delete_nomenclatures("CFE_HUMIDITY_DEVICE")
+    delete_nomenclatures("CFE_ACTION_TYPE")
+    
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
