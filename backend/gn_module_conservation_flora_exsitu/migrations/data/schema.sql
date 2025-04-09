@@ -378,6 +378,9 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "cor_harvest_observer"
 ADD FOREIGN KEY("id_observer") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
+CREATE UNIQUE INDEX unique_main_observer_per_harvest
+ON cor_harvest_observer(id_harvest)
+WHERE is_main_observer = true;
 ALTER TABLE "t_seed_humidity"
 ADD FOREIGN KEY("id_color") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
