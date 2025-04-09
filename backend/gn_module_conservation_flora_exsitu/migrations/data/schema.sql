@@ -38,7 +38,7 @@ CREATE TABLE "t_harvest" (
 	"location_code" INTEGER,
 	-- Type de localisation
 	"location_type" INTEGER,
-	"id_geographical_location" INTEGER NOT NULL,
+	"id_geographical_precision" INTEGER NOT NULL,
 	-- Résolution de la localisation en mètres
 	"precision" INTEGER,
 	-- En m2
@@ -427,7 +427,7 @@ ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_exposition") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
-ADD FOREIGN KEY("id_geographical_location") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ADD FOREIGN KEY("id_geographical_precision") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_method_sample") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)

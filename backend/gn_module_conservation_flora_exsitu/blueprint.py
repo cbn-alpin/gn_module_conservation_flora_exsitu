@@ -290,7 +290,7 @@ def get_harvest_by_id(harvest_id):
                 "lb_code": cd_bah_obj.lb_code,
             }
     
-    geographical_location = db.session.query(TNomenclatures).filter(TNomenclatures.id_nomenclature == harvest.id_geographical_location).first()
+    geographical_location = db.session.query(TNomenclatures).filter(TNomenclatures.id_nomenclature == harvest.id_geographical_precision).first()
     geographical_location = {
         "id_nomenclature": geographical_location.id_nomenclature,
         "label_fr": geographical_location.label_fr
@@ -317,7 +317,7 @@ def get_harvest_by_id(harvest_id):
         "geom": geom_geojson,
         "slope": harvest.slope,
         "precision": harvest.precision,
-        "id_geographical_location": geographical_location,
+        "id_geographical_precision": geographical_location,
         "id_exposition": harvest.id_exposition,
         "observers": observers, 
         "harvest_materials": materials_exist,
