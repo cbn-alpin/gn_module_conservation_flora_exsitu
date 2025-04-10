@@ -219,17 +219,17 @@ export class HarvestFormService {
     // Gestion des choix de l'affichage en fonction de la précision géographique choisi
   getCodesNomenclature(idNomenclature: number): void {    
     this.api.getCodesNomenclature(idNomenclature).subscribe({
-      next: (response) => {
-        if (response && response['code_nomenclature']) {          
-          this.updateFormFields(response['code_nomenclature']);
-          this.updateValidators(response['code_nomenclature']);
+      next: (codeNomenclature: string) => {
+        if (codeNomenclature) {
+          this.updateFormFields(codeNomenclature);
+          this.updateValidators(codeNomenclature);
         }
       },
       error: (error) => {
         console.log(error);
       }
     });
-  }
+  } 
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);

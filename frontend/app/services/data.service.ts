@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ConfigService } from './config.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -64,11 +65,18 @@ export class DataService {
     return this.api.get<string[]>(`${this.moduleBaseUrl}/search_code_material?q=${query}`);
   }
 
-  getCodesNomenclature(idNomenclature): Observable<string[]> {
+  getCodesNomenclature(idNomenclature: number): Observable<string> {
     const params = new HttpParams()
-    .set('id_nomenclature', idNomenclature.toString())
-    return this.api.get<string[]>(`${this.moduleBaseUrl}/codes_nomenclature`, {params});
+      .set('id_nomenclature', idNomenclature.toString());
+  
+    return this.api.get<{ code_nomenclature: string }>(
+      `${this.moduleBaseUrl}/codes_nomenclature`, 
+      { params }
+    ).pipe(
+      map(response => response.code_nomenclature)
+    );
   }
+  
 
   addTaxonToMaterial(id_material: number, cd_nom: number): Observable<any> {
     return this.api.post(`${this.moduleBaseUrl}/materials/${id_material}/add-taxon`, { cd_nom });
