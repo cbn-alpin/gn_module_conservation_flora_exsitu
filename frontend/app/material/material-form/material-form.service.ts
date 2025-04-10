@@ -199,29 +199,34 @@ export class MaterialFormService {
       );
     }
 
-    addTaxon() {
+    addTaxon(allowMultiple: boolean = true) {
       const taxonsArray = this.form.get('taxons') as UntypedFormArray;
       const taxonValue = this.form.controls.taxonInput.value;
     
-      if (taxonValue) {
-        const isDuplicate = taxonsArray.controls.some(control => {
-          const existingTaxon = control.get('parentFormControl')?.value;
-          return existingTaxon?.cd_nom === taxonValue.cd_nom;
-        });
+      if (!taxonValue) return;
     
-        if (isDuplicate) {
-          this._commonService.translateToaster('warning', 'Ce taxon est déjà dans la liste');
-          this.form.controls.taxonInput.reset();
-          return;
-        }
+      const isDuplicate = taxonsArray.controls.some(control => {
+        const existingTaxon = control.get('parentFormControl')?.value;
+        return existingTaxon?.cd_nom === taxonValue.cd_nom;
+      });
     
-        const taxonGroup = this.fb.group({
-          parentFormControl: new UntypedFormControl(taxonValue)
-        });
-    
-        taxonsArray.push(taxonGroup);
+      if (isDuplicate) {
+        this._commonService.translateToaster('warning', 'Ce taxon est déjà dans la liste');
         this.form.controls.taxonInput.reset();
+        return;
       }
+    
+      if (!allowMultiple && taxonsArray.length >= 1) {
+        this._commonService.translateToaster('warning', 'Un seul taxon est autorisé pour ce type de matériel');
+        return;
+      }
+    
+      const taxonGroup = this.fb.group({
+        parentFormControl: new UntypedFormControl(taxonValue)
+      });
+    
+      taxonsArray.push(taxonGroup);
+      this.form.controls.taxonInput.reset();
     }
     
     
