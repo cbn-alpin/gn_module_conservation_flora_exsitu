@@ -23,5 +23,17 @@ export class ConstantsService {
     [this.LOCATION_CODES.PTAPP, { showMap: true, showResolution: true, showCommune: false, showDepartment: false }]
   ]);
 
+  // Codes de nomenclature pour les matériaux
+  public readonly HARVEST_MATERIAL_CODES = {
+    TAXON_MIX: 'mdg',
+    SOIL_SAMPLING: 'prs'
+  };
+
+  // Liste des codes permettant plusieurs taxons
+  public readonly MULTIPLE_TAXON_CODES = [
+    this.HARVEST_MATERIAL_CODES.TAXON_MIX,
+    this.HARVEST_MATERIAL_CODES.SOIL_SAMPLING
+  ];
+
   constructor() {}
 }
