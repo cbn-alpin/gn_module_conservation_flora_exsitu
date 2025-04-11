@@ -492,11 +492,13 @@ def get_materials(id_harvest):
                         "search_name": taxon_data.lb_nom
                     })
 
-            # Récupérer le label_default de l'id_harvest_material depuis TNomenclatures
-            nomenclature_label = db.session.query(TNomenclatures.label_default)\
-                                           .filter_by(id_nomenclature=material.id_harvest_material)\
-                                           .scalar()
-            
+            nomenclature_material = db.session.query(
+                TNomenclatures.label_default,
+                TNomenclatures.cd_nomenclature
+            ).filter_by(id_nomenclature=material.id_harvest_material).first()
+            harvest_material_label = nomenclature_material.label_default if nomenclature_material else None
+            harvest_material_code = nomenclature_material.cd_nomenclature if nomenclature_material else None
+
             code_parent_material = None
             code_cultural_bank_material = None
 
@@ -510,7 +512,8 @@ def get_materials(id_harvest):
 
             material_dict = material.to_dic()
             material_dict["taxons"] = taxon_list
-            material_dict["harvest_material_label"] = nomenclature_label
+            material_dict["harvest_material_label"] = harvest_material_label
+            material_dict["harvest_material_code"] = harvest_material_code
             material_dict["code_parent"] = code_parent_material
             material_dict["code_cultural_bank"] = code_cultural_bank_material
 
