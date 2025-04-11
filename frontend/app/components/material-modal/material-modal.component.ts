@@ -4,6 +4,7 @@ import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { DataService } from '../../services/data.service';
 import { MaterialFormService } from '../../material/material-form/material-form.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { ConstantsService } from '../../services/constants.service';
 
 
 @Component({
@@ -14,12 +15,14 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 export class MaterialModalComponent implements OnInit {
     materialForm: FormGroup;
     codeMaterialExists: boolean = false;
+    allowMultipleTaxons: boolean = false;
 
     constructor(
         public dialogRef: MatDialogRef<MaterialModalComponent>,
         public exsituFormService: ExsituFormService,
         public api: DataService,
         public materialFormService: MaterialFormService,
+        private constants: ConstantsService
     ){
 
     }
@@ -31,6 +34,21 @@ export class MaterialModalComponent implements OnInit {
                 this.checkCodeMaterial(value);        
             } else {
                 this.codeMaterialExists = false;
+            }
+        });
+        this.materialForm.controls['id_harvest_material'].valueChanges.subscribe(value => {   
+            if(value) {
+              this.api.getCodesNomenclature(value).subscribe({
+                next: (code: string) => {
+                  this.allowMultipleTaxons = this.constants.MULTIPLE_TAXON_CODES.includes(code);
+                  if (!this.allowMultipleTaxons && this.materialFormService.taxons.length > 1) {
+                    this.materialFormService.taxons.clear();
+                  }
+                },
+                error: (error) => {
+                  console.log(error);
+                }
+              });
             }
         });
     }
