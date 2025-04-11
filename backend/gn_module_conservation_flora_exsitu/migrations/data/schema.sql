@@ -170,7 +170,7 @@ CREATE TABLE "t_action" (
     -- - moyennement humide
     -- - humide
     "id_humidity_level" INTEGER,
-    "humidity_rate " float,
+    "humidity_rate " decimal,
     -- obligatoire si type_action = placement du témoin humidité
     "id_humidity_device" INTEGER,
     "remarks" text,
@@ -192,18 +192,19 @@ COMMENT ON COLUMN "t_action"."id_humidity_device" IS 'obligatoire si type_action
 
 CREATE TABLE "t_material_seed" (
     "id_seed" SERIAL NOT NULL UNIQUE,
-    "uuid_seed" UUID DEFAULT uuid_generate_v4(),
-    "code_seed" varchar,
     "id_material" INTEGER,
     -- Longueur moyenne (mm)
     "length" decimal,
     -- Largeur moyenne (mm)
     "width" decimal,
     "thickness" decimal,
-    "unit_mass_avg" decimal,
-    "nb_seeds_avg" INTEGER,
+	"total_count" INTEGER,
+	"total_mass" decimal,
+	"sample_count" decimal,
+	"sample_mass" decimal,
     "has_photo" BOOLEAN DEFAULT FALSE,
     "remarks" text,
+	"additional_data" JSONB,
     "meta_create_by" INTEGER NOT NULL,
     "meta_create_date" TIMESTAMP NOT NULL,
     "meta_update_by" INTEGER,

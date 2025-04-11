@@ -268,13 +268,13 @@ class TMaterielSeed(db.Model):
         ),
         nullable=False
     )
-    length = db.Column(db.Float)
-    width = db.Column(db.Float)
-    thickness = db.Column(db.Float)
+    length = db.Column(db.Numeric)
+    width = db.Column(db.Numeric)
+    thickness = db.Column(db.Numeric)
     total_count = db.Column(db.Integer)
-    total_mass = db.Column(db.Float)
-    sample_count = db.Column(db.Float)
-    sample_mass = db.Column(db.Float)
+    total_mass = db.Column(db.Numeric)
+    sample_count = db.Column(db.Numeric)
+    sample_mass = db.Column(db.Numeric)
     has_photo = db.Column(db.Boolean, default=False)
     remarks = db.Column(db.Text)
     additional_data = db.Column(JSONB)
@@ -422,7 +422,7 @@ class TAction(db.Model):
         ),
         nullable=False
     )
-    humidity_rate = db.Column(db.Float)
+    humidity_rate = db.Column(db.Numeric)
     id_humidity_device = db.Column(
         db.Integer,
         db.ForeignKey(
