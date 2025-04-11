@@ -216,7 +216,7 @@ class TMaterial(db.Model):
     )
     has_hybridation_risk = db.Column(db.Boolean)
 
-    seeds = db.relationship('TSeed', backref='material')
+    seeds = db.relationship('TMaterielSeed', backref='material')
 
     def to_dic(self):
         return {
@@ -254,16 +254,12 @@ class CorMaterialTaxon(db.Model):
     )
 
 @serializable
-class TSeed(db.Model):
-    __tablename__ = 't_seed'
+class TMaterielSeed(db.Model):
+    __tablename__ = 't_material_seed'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
     id_seed = db.Column(
         db.Integer,
         primary_key=True
-    )
-    uuid_seed = db.Column(
-        UUID(as_uuid=True),
-        server_default=sa.text("uuid_generate_v4()"),
     )
     id_material = db.Column(
         db.Integer,
@@ -272,111 +268,15 @@ class TSeed(db.Model):
         ),
         nullable=False
     )
-    remarks = db.Column(db.Text)
-    id_form1 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_form2 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_type_atwater = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_seed_quality = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
     length = db.Column(db.Float)
     width = db.Column(db.Float)
     thickness = db.Column(db.Float)
-    total_mass_g = db.Column(db.Float)
-    sample_weight = db.Column(db.Float)
-    sample_mass_g = db.Column(db.Float)
-    avg_num_seeds = db.Column(db.Float)
-    avg_unit_mass = db.Column(db.Float)
-    initial_quantity = db.Column(db.Integer)
-    current_quantity = db.Column(db.Integer)
-    is_photo_observed = db.Column(db.Boolean, default=False)
-    pre_dry_start = db.Column(db.DateTime)
-    pre_dry_end = db.Column(db.DateTime)
-    pre_dry_duration = db.Column(db.Integer)
-    is_pre_dry_sorted = db.Column(db.Boolean, default=False)
-    pre_dry_tips = db.Column(db.Text)
-    dry_start = db.Column(db.DateTime)
-    dry_end = db.Column(db.DateTime)
-    dry_duration = db.Column(db.Integer)
-    is_freeze_dried = db.Column(db.Boolean, default=False)
-    packaging_date = db.Column(db.DateTime)
-    is_lot_active = db.Column(db.Boolean, default=False)
-    lot_status_date = db.Column(db.DateTime)
-    id_growth1 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_growth2 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_decoration1 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_decoration2 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_embryo_type1 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    id_embryo_type2 = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
-    dimension_shape_comment = db.Column(db.Text)
-    '''
-    A revoir: id_bib_table_location
-    '''
-    id_bib_table_location = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "gn_commons.bib_tables_location.id_table_location",
-            ondelete="NULL"
-        ),
-    )
+    total_count = db.Column(db.Integer)
+    total_mass = db.Column(db.Float)
+    sample_count = db.Column(db.Float)
+    sample_mass = db.Column(db.Float)
+    has_photo = db.Column(db.Boolean, default=False)
+    remarks = db.Column(db.Text)
     additional_data = db.Column(JSONB)
     meta_create_by = db.Column(
         db.Integer,
@@ -401,29 +301,31 @@ class TSeed(db.Model):
         onupdate=sa.func.now(),
     )
 
-    stocks = db.relationship('TSeedStock', backref='seed')
-
 
 @serializable
-class TSeedStock(db.Model):
-    __tablename__ = 't_seed_stock'
+class TStorage(db.Model):
+    __tablename__ = 't_storage'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_stock = db.Column(
+    id_storage = db.Column(
         db.Integer,
         primary_key=True
     )
-    uuid_stock = db.Column(
-        UUID(as_uuid=True),
-        server_default=sa.text("uuid_generate_v4()"),
-    )
-    id_seed = db.Column(
+    id_material = db.Column(
         db.Integer,
         db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_seed.id_seed",
+            "pr_conservation_flora_exsitu.t_material.id_material",
         ),
         nullable=False
     )
-    id_stock_location = db.Column(
+    id_place = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    id_dry_type = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",
@@ -433,62 +335,61 @@ class TSeedStock(db.Model):
     )
     initial_quantity = db.Column(db.Integer)
     current_quantity = db.Column(db.Integer)
-    stock_date = db.Column(db.DateTime)
-    stock_mvts = db.relationship('TSeedStockMouvement', backref='stock')
-    seed_tablets = db.relationship('TSeedTablet', backref='stock')
+    remarks = db.Column(db.Text)
+    additional_data = db.Column(JSONB)
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
+        ),
+    )
+    meta_create_date = db.Column(
+        db.DateTime,
+        server_default=sa.func.now(),
+    )
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
+        ),
+    )
+    meta_update_date = db.Column(
+        db.DateTime,
+        onupdate=sa.func.now(),
+    )
+    
 
 @serializable
-class TSeedStockMouvement(db.Model):
-    __tablename__ = 't_seed_stock_mouvement'
+class TAction(db.Model):
+    __tablename__ = 't_action'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_stock_mvt = db.Column(
+    id_action = db.Column(
         db.Integer,
         primary_key=True
     )
-    uuid_stock_mvt = db.Column(
-        UUID(as_uuid=True),
-        server_default=sa.text("uuid_generate_v4()"),
-    )
-    id_stock = db.Column(
+    id_storage = db.Column(
         db.Integer,
         db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_seed_stock.id_stock"
+            "pr_conservation_flora_exsitu.t_storage.id_storage",
         ),
         nullable=False
     )
-    stock_mvt_date = db.Column(db.DateTime)
-    id_stock_flow = db.Column(
+    date_start = db.Column(
+        db.DateTime,
+        nullable = False,
+        server_default = sa.func.now(),
+    )
+    date_end = db.Column(db.DateTime)
+    id_actor = db.Column(
         db.Integer,
         db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature"
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
         ),
-        nullable=False
     )
-    quantity = db.Column(db.Integer)
-    mvt_comment = db.Column(db.Text)
-    role_mvmt =  db.Column(db.String(5))
-
-@serializable
-class TSeedTablet(db.Model):
-    __tablename__ = 't_seed_tablet'
-    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_seed_tablet = db.Column(
-        db.Integer,
-        primary_key=True
-    )
-    uuid_humidity = db.Column(
-        UUID(as_uuid=True),
-        server_default=sa.text("uuid_generate_v4()"),
-    )
-    id_stock = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_seed_stock.id_stock"
-        ),
-        nullable=False
-    )
-    evaluation_date = db.Column(db.DateTime)
-    id_color = db.Column(
+    id_action_type = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",
@@ -496,5 +397,61 @@ class TSeedTablet(db.Model):
         ),
         nullable=False
     )
-    tablet_change_date = db.Column(db.DateTime)
-    remaks = db.Column(db.Text)
+    quantity = db.Column(db.Integer)
+    id_destock = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    id_destination = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    id_humidity_level = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    humidity_rate = db.Column(db.Float)
+    id_humidity_device = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    remarks = db.Column(db.Text)
+    additional_data = db.Column(JSONB)
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
+        ),
+    )
+    meta_create_date = db.Column(
+        db.DateTime,
+        server_default=sa.func.now(),
+    )
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
+        ),
+    )
+    meta_update_date = db.Column(
+        db.DateTime,
+        onupdate=sa.func.now(),
+    )

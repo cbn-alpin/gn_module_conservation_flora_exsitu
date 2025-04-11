@@ -18,12 +18,8 @@ from sqlalchemy.sql import text
 
 from .models import(
     THarvest,
-    TSeed,
     TMaterial,
     CorHarvestObserver,
-    TSeedStock,
-    TSeedStockMouvement,
-    TSeedTablet,
     CorMaterialTaxon,
 )
 
