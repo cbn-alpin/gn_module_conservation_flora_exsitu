@@ -25,14 +25,28 @@ export class ConstantsService {
 
   // Codes de nomenclature pour les matériaux
   public readonly HARVEST_MATERIAL_CODES = {
-    TAXON_MIX: 'mdg',
-    SOIL_SAMPLING: 'prs'
+    SEED_MIX: 'mdg',
+    SEED: 'gr',
+    SOIL_SAMPLING: 'prs',
+    WHOLE_PLANT: 'pe',
+    RHIZOME: 'rh',
+    BULB: 'bul',
+    BULBIL: 'bb',
+    ROOT_SPLIT: 'es',
+    CUTTING: 'bout',
+    NO_INFORMATION: 'ai',
+    SPORE: 'sp'
   };
 
   // Liste des codes permettant plusieurs taxons
   public readonly MULTIPLE_TAXON_CODES = [
-    this.HARVEST_MATERIAL_CODES.TAXON_MIX,
+    this.HARVEST_MATERIAL_CODES.SEED_MIX,
     this.HARVEST_MATERIAL_CODES.SOIL_SAMPLING
+  ];
+
+  public readonly SEED_DESCRIPTION_CODES = [
+    this.HARVEST_MATERIAL_CODES.SEED_MIX,
+    this.HARVEST_MATERIAL_CODES.SEED,
   ];
 
   constructor() {}
