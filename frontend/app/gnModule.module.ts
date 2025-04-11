@@ -33,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { DialogService } from './components/confirm-dialog/confirm-dialog.service';
 import { ConfigService } from './services/config.service';
+import { SeddDescriptionComponent } from './components/seed-description/seed-description.component';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -49,7 +50,8 @@ export const routingConfiguration: ExtraOptions = {
     HarvestFilterComponent,
     HarvestMapComponent,
     TaxonModalComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    SeddDescriptionComponent
   ],
   providers: [
     HarvestStoreService, 

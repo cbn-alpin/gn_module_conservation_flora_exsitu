@@ -1,0 +1,128 @@
+
+<h1 mat-dialog-title>Ajouter une description</h1>
+<mat-dialog-content class="wrapper">
+  <div class="row row-0 mr-3 mt-2">
+      <div class="col padding-sm">
+        <label>Longueur moyenne</label>
+        <input
+          class="form-control"
+          type="number"
+          [formControl]="seddForm.controls.length"
+        />
+      </div>
+      <div class="col-6 padding-sm">
+        <label>Largeur moyenne</label>
+        <input
+          class="form-control"
+          type="number"
+          [formControl]="seddForm.controls.width"
+        />
+      </div>
+  </div>
+
+  <div class="row row-0 mr-3 mt-2">
+      <div class="col padding-sm">
+        <label>Épaisseur moyenne</label>
+        <input
+          class="form-control"
+          type="number"
+          [formControl]="seddForm.controls.thickness"
+        />
+      </div>
+      <div class="col-6 padding-sm">
+          <label>Nombre total de graines calculé</label>
+          <input
+            class="form-control"
+            type="number"
+            [formControl]="seddForm.controls.total_count"
+          />
+      </div>
+  </div>
+
+  <div class="row row-0 mr-3 mt-2">
+    <div class="col-6 padding-sm">
+        <label>Masse totale</label>
+        <input
+          class="form-control"
+          type="number"
+          [formControl]="seddForm.controls.total_mass"
+        />
+      </div>
+    <div class="col-6 padding-sm">
+      <label>Nombre de graines échantillonnées</label>
+      <input
+        class="form-control"
+        type="number"
+        [formControl]="seddForm.controls.sample_count"
+      />
+    </div>
+  </div>
+  <div class="row row-0 mr-3 mt-2">
+    <div class="col-6 padding-sm">
+        <label>Masse des graines échantillonnées</label>
+        <input
+          class="form-control"
+          type="number"
+          [formControl]="seddForm.controls.sample_mass"
+        />
+      </div>
+    <div class="col-6 padding-sm mt-4">
+        <section class="check-section">
+            <mat-checkbox [formControl]="seddForm.controls.has_photo">
+                Photo
+            </mat-checkbox>
+          </section>
+    </div>
+  </div>
+
+  <div class="row row-0 mt-3 mr-3">
+    <div class="col padding-sm">
+      <textarea
+          class="form-control form-control-sm"
+          placeholder="Remarques générales sur la semence"
+          [formControl]="seddForm.controls.remarks"
+        ></textarea>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <div class="mr-3">
+        <ng-container *ngIf="!edit; else modifButton">
+            <button
+                style="margin-right: 20px"
+                color="warn"
+                mat-raised-button
+                (click)="close()"
+              >
+                Retour
+            </button>
+          <button
+            mat-button [mat-dialog-close]="true"
+            matTooltip="Enregistrer ce matériel"
+            class="button-success"
+            (click)="submetData()"
+          >
+            Ajouter la description
+            <mat-icon style="vertical-align: middle">save</mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #modifButton>
+          <button
+            style="margin-right: 20px"
+            color="warn"
+            mat-raised-button
+            (click)="close()"
+          >
+            Annuler
+          </button>
+          <button
+            class="button-success uppercase"
+            mat-button [mat-dialog-close]="true"
+            matTooltip="Modifier et enregistrer ce matériel"
+          >
+            Modifier cette description
+            <mat-icon style="vertical-align: middle">save</mat-icon>
+          </button>
+        </ng-template>
+    </div>
+</mat-dialog-actions>

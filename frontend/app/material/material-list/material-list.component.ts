@@ -14,6 +14,8 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ConstantsService } from '../../services/constants.service';
+import { SeddDescriptionComponent } from '../../components/seed-description/seed-description.component';
 
 @Component({
     selector: 'cs-material-list',
@@ -54,7 +56,8 @@ export class MaterialListComponent implements OnInit {
         public dialog: MatDialog,
         private api: DataService,
         public mapListService: MapListService,
-        private dialogService: DialogService
+        private dialogService: DialogService,
+        public constants: ConstantsService
         
     ){
 
@@ -204,6 +207,14 @@ export class MaterialListComponent implements OnInit {
         if (result) {
           
         }
+      });
+    }
+
+    openDescriptionSeddModal(id_material): void {
+      this.dialog.open(SeddDescriptionComponent, {
+        width: '100%',
+        height: '80%',
+        data: { id: id_material }
       });
     }
 }

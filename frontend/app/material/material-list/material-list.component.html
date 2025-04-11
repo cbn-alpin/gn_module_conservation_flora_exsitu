@@ -38,6 +38,15 @@
             matTooltip="Supprimer le matériel"
             (click)="deleteOccurrence(element)"
           ><mat-icon>delete</mat-icon></button>
+          <button 
+            mat-icon-button 
+            color="primary"
+            matTooltip="Description des graines"
+            *ngIf="constants.SEED_DESCRIPTION_CODES.includes(element.harvest_material_code)"
+            (click)="openDescriptionSeddModal(element.id_material)"
+          >
+            <mat-icon>description</mat-icon>
+          </button>
         </td>
       </ng-container>
       <!-- Lignes de l'en-tête et des données -->
