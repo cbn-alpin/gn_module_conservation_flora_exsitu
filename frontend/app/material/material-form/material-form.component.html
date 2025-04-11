@@ -220,6 +220,7 @@
                 mat-raised-button
                 matTooltip="Modifier et enregistrer ce matériel"
                 (click)="submetData()"
+                [disabled]="!materialForm.valid"
               >
                 Modifier ce matériel
                 <mat-icon style="vertical-align: middle">save</mat-icon>
