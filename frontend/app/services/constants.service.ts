@@ -45,7 +45,6 @@ export class ConstantsService {
   ];
 
   public readonly SEED_DESCRIPTION_CODES = [
-    this.HARVEST_MATERIAL_CODES.SEED_MIX,
     this.HARVEST_MATERIAL_CODES.SEED,
   ];
 
