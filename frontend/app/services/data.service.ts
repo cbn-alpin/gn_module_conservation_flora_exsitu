@@ -98,6 +98,10 @@ export class DataService {
     return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/seeds`, seedData);
   }
 
+  deleteSeed(id_seed: number) {
+    return this.api.delete(`${this.moduleBaseUrl}/materials/seeds/${id_seed}`);
+  }  
+
   getSeedByMaterial(id_material: number): Observable<any> {
     return this.api.get<any>(`${this.moduleBaseUrl}/materials/${id_material}/seeds`);
   }

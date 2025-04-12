@@ -8,6 +8,7 @@ import {
   } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 
 @Component({
     selector: 'cfe-seed-description',
@@ -22,6 +23,7 @@ export class SeddDescriptionComponent implements OnInit {
         private _commonService: CommonService,
         public dialogRef: MatDialogRef<SeddDescriptionComponent>,
         private fb: FormBuilder,
+        private dialogService: DialogService,
         @Inject(MAT_DIALOG_DATA) public data: { id: number, mode: string, seedData: any }
     ){
 
@@ -77,6 +79,25 @@ export class SeddDescriptionComponent implements OnInit {
 
     close(): void {
         this.dialogRef.close();
+    }
+
+    deleteDescription(){
+        this.dialogService
+          .confirmDialog({ message: 'Voulez-vous vraiment supprimer cette description de semence ?' })
+          .subscribe((yes) => {
+            if (yes) {
+                this.dataService.deleteSeed(this.data.seedData.id_seed).subscribe({
+                    next: () => {
+                      this._commonService.translateToaster('info', 'Description supprimée avec succès');
+                      this.seedForm.reset()
+                      this.edit = false
+                    },
+                    error: () => {
+                      this._commonService.translateToaster('warning', 'Erreur lors de la suppression');
+                    }
+                  });
+            }
+          });
     }
 
 }

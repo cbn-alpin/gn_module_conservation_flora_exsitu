@@ -1,5 +1,6 @@
 
-<h1 mat-dialog-title>Ajouter une description</h1>
+<h1 mat-dialog-title *ngIf="!edit">Ajouter une description</h1>
+<h1 mat-dialog-title *ngIf="edit">Modifier la description</h1>
 <mat-dialog-content class="wrapper" *ngIf="seedForm">
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
@@ -85,44 +86,54 @@
     </div>
   </div>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-    <div class="mr-3">
-        <ng-container *ngIf="!edit; else modifButton">
-            <button
-                style="margin-right: 20px"
-                color="warn"
-                mat-raised-button
-                (click)="close()"
-              >
-                Retour
-            </button>
-          <button
-            mat-button [mat-dialog-close]="true"
-            matTooltip="Enregistrer ce matériel"
-            class="button-success"
-            (click)="submetData()"
-          >
-            Ajouter la description
-            <mat-icon style="vertical-align: middle">save</mat-icon>
-          </button>
-        </ng-container>
-        <ng-template #modifButton>
-          <button
+<mat-dialog-actions style="display: flex; justify-content: space-between; align-items: center;" class="ml-3 mr-4">
+  <div>
+    <button *ngIf="edit"
+        color="warn"
+        mat-raised-button
+        (click)="deleteDescription()"
+        matTooltip="Supprimer cette description">
+          Supprimer la description
+          <mat-icon style="vertical-align: middle">delete</mat-icon>
+    </button>
+  </div>
+  <div>
+    <ng-container *ngIf="!edit; else modifButton">
+        <button
             style="margin-right: 20px"
             color="warn"
             mat-raised-button
             (click)="close()"
           >
-            Annuler
-          </button>
-          <button
-            class="button-success uppercase"
-            mat-button [mat-dialog-close]="true"
-            matTooltip="Modifier et enregistrer ce matériel"
-          >
-            Modifier cette description
-            <mat-icon style="vertical-align: middle">save</mat-icon>
-          </button>
-        </ng-template>
-    </div>
+            Retour
+        </button>
+      <button
+        mat-button [mat-dialog-close]="true"
+        matTooltip="Enregistrer ce matériel"
+        class="button-success"
+        (click)="submetData()"
+      >
+        Ajouter la description
+        <mat-icon style="vertical-align: middle">save</mat-icon>
+      </button>
+    </ng-container>
+    <ng-template #modifButton>
+      <button
+        style="margin-right: 20px"
+        color="warn"
+        mat-raised-button
+        (click)="close()"
+      >
+        Annuler
+      </button>
+      <button
+        class="button-success uppercase"
+        mat-button [mat-dialog-close]="true"
+        matTooltip="Modifier et enregistrer ce description"
+      >
+        Modifier cette description
+        <mat-icon style="vertical-align: middle">save</mat-icon>
+      </button>
+    </ng-template>
+  </div>
 </mat-dialog-actions>
