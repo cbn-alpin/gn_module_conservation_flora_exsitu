@@ -415,3 +415,19 @@ class TMaterielSeedRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+    
+    def update(self, id_seed, data):
+        seed = TMaterielSeed.query.get(id_seed)
+        if not seed:
+            return None
+
+        try:
+            for key, value in data.items():
+                if hasattr(seed, key):
+                    setattr(seed, key, value)
+
+            db.session.commit()
+            return seed
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e

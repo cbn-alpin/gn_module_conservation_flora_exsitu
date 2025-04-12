@@ -850,3 +850,20 @@ def delete_seed(id_seed):
     except SQLAlchemyError as e:
         db.session.rollback()
         return {"error": "Erreur lors de la suppression de la semence"}, 500
+
+
+@blueprint.route('/materials/seeds/<int:id_seed>', methods=['PUT'])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+@json_resp
+def update_seed(id_seed):
+    """Mise à jour d'une description de semence"""
+    data = request.get_json()
+    data["meta_update_by"] = g.current_user.id_role
+
+    seed_repo = TMaterielSeedRepository()
+    updated = seed_repo.update(id_seed, data)
+
+    if not updated:
+        return {"error": "Description non trouvée"}, 404
+
+    return {"message": "Seed updated successfully"}, 200
