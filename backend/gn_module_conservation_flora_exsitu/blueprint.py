@@ -444,7 +444,7 @@ def create_material(id_harvest):
     }, 201
 
 
-@blueprint.route("/harvests/<int:id_harvest>/materials/<int:id_material>", methods=["PUT"])
+@blueprint.route("/harvests/<int:id_harvest>/materials/<int:id_material>", methods=["PUT"]) 
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
 def update_material(id_harvest, id_material):
@@ -452,10 +452,14 @@ def update_material(id_harvest, id_material):
     data = request.get_json()
 
     material_repo = HarvestMaterialRepository()
-    material = material_repo.update(id_material, data)
+    result = material_repo.update(id_material, data)
 
-    if material is None:
-        return {"error": "Material not found"}, 404
+    if result is None:
+        return {"error": "Ce matériel n'existe pas"}, 404
+    if result is False:
+        return {"error": "Ce code matériel existe déjà."}, 400
+
+    material = result
 
     taxons = data.pop('taxons', [])
     if taxons:
@@ -466,7 +470,8 @@ def update_material(id_harvest, id_material):
 
     db.session.commit()
 
-    return {"message": "Harvest material updated successfully", "material": material.to_dic()}, 200
+    return {"message": "Matériel modifié", "material": material.to_dic()}, 200
+
 
 
 

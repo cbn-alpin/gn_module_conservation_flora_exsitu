@@ -361,7 +361,6 @@ class HarvestMaterialRepository:
             db.session.rollback()
             raise e
 
-        
     def update(self, id_material, data):
         try:
             material = self.get_one(id_material)
@@ -371,7 +370,7 @@ class HarvestMaterialRepository:
             if "code_material" in data:
                 existing_material = TMaterial.query.filter_by(code_material=data["code_material"]).first()
                 if existing_material and existing_material.id_material != id_material:
-                    return jsonify({"error": "Ce code matériel existe déjà."}), 400
+                    return False
 
             code_parent = data.pop("code_parent", None)
             code_cultural_bank = data.pop("code_cultural_bank", None)
@@ -388,6 +387,7 @@ class HarvestMaterialRepository:
 
             db.session.commit()
             return material
+
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
