@@ -1,13 +1,13 @@
 
 <h1 mat-dialog-title>Ajouter une description</h1>
-<mat-dialog-content class="wrapper">
+<mat-dialog-content class="wrapper" *ngIf="seedForm">
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
         <label>Longueur moyenne</label>
         <input
           class="form-control"
           type="number"
-          [formControl]="seddForm.controls.length"
+          [formControl]="seedForm.controls.length"
         />
       </div>
       <div class="col-6 padding-sm">
@@ -15,7 +15,7 @@
         <input
           class="form-control"
           type="number"
-          [formControl]="seddForm.controls.width"
+          [formControl]="seedForm.controls.width"
         />
       </div>
   </div>
@@ -26,7 +26,7 @@
         <input
           class="form-control"
           type="number"
-          [formControl]="seddForm.controls.thickness"
+          [formControl]="seedForm.controls.thickness"
         />
       </div>
       <div class="col-6 padding-sm">
@@ -34,7 +34,7 @@
           <input
             class="form-control"
             type="number"
-            [formControl]="seddForm.controls.total_count"
+            [formControl]="seedForm.controls.total_count"
           />
       </div>
   </div>
@@ -45,7 +45,7 @@
         <input
           class="form-control"
           type="number"
-          [formControl]="seddForm.controls.total_mass"
+          [formControl]="seedForm.controls.total_mass"
         />
       </div>
     <div class="col-6 padding-sm">
@@ -53,7 +53,7 @@
       <input
         class="form-control"
         type="number"
-        [formControl]="seddForm.controls.sample_count"
+        [formControl]="seedForm.controls.sample_count"
       />
     </div>
   </div>
@@ -63,12 +63,12 @@
         <input
           class="form-control"
           type="number"
-          [formControl]="seddForm.controls.sample_mass"
+          [formControl]="seedForm.controls.sample_mass"
         />
       </div>
     <div class="col-6 padding-sm mt-4">
         <section class="check-section">
-            <mat-checkbox [formControl]="seddForm.controls.has_photo">
+            <mat-checkbox [formControl]="seedForm.controls.has_photo">
                 Photo
             </mat-checkbox>
           </section>
@@ -80,7 +80,7 @@
       <textarea
           class="form-control form-control-sm"
           placeholder="Remarques générales sur la semence"
-          [formControl]="seddForm.controls.remarks"
+          [formControl]="seedForm.controls.remarks"
         ></textarea>
     </div>
   </div>

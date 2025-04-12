@@ -210,11 +210,32 @@ export class MaterialListComponent implements OnInit {
       });
     }
 
-    openDescriptionSeddModal(id_material): void {
+
+    onAddOrEditSeed(materialId: number): void {
+      this.api.getSeedByMaterial(materialId).subscribe({
+        next: seed => {
+          // Cas où on a une seed renvoyée (HTTP 200)
+          if (seed && seed.seed) {
+            this.openDescriptionSeddModal(materialId, 'edit', seed.seed);
+          } else {
+            this.openDescriptionSeddModal(materialId, 'create', null);
+          }
+        },
+        error: err => {
+          if (err.status === 204) {
+            this.openDescriptionSeddModal(materialId, 'create', null);
+          } else {
+            console.error('Erreur lors de la récupération de la seed:', err);
+          }
+        }
+      });
+    }    
+
+    openDescriptionSeddModal(id_material, mode, data): void {      
       this.dialog.open(SeddDescriptionComponent, {
         width: '100%',
         height: '80%',
-        data: { id: id_material }
+        data: { id: id_material, mode: mode, seedData: data }
       });
     }
 }

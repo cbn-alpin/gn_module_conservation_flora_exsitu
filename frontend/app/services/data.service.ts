@@ -94,4 +94,12 @@ export class DataService {
     return this.api.get(`${this.moduleBaseUrl}/harvest/export?format=csv`, { params, responseType: 'blob' });
   }
 
+  addSeedToMaterial(idMaterial: number, seedData: any): Observable<any> {
+    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/seeds`, seedData);
+  }
+
+  getSeedByMaterial(id_material: number): Observable<any> {
+    return this.api.get<any>(`${this.moduleBaseUrl}/materials/${id_material}/seeds`);
+  }
+
 }

@@ -43,7 +43,7 @@
             color="primary"
             matTooltip="Description des graines"
             *ngIf="constants.SEED_DESCRIPTION_CODES.includes(element.harvest_material_code) && element.taxons && element.taxons.length > 0"
-            (click)="openDescriptionSeddModal(element.id_material)"
+            (click)="onAddOrEditSeed(element.id_material)"
           >
             <mat-icon>description</mat-icon>
           </button>
