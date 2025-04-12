@@ -832,3 +832,21 @@ def get_seed_of_material(id_material):
         return {"seed": seed.to_dic()}, 200
     else:
         return {}, 204 
+
+
+@blueprint.route('/materials/seeds/<int:id_seed>', methods=['DELETE'])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+@json_resp
+def delete_seed(id_seed):
+    """Suppression d'une description de semence"""
+    seed = TMaterielSeed.query.get(id_seed)
+    if not seed:
+        return {"error": "Semence non trouvée"}, 404
+
+    try:
+        db.session.delete(seed)
+        db.session.commit()
+        return {"message": "Semence supprimée avec succès"}, 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"error": "Erreur lors de la suppression de la semence"}, 500
