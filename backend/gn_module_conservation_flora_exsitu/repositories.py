@@ -329,32 +329,38 @@ class HarvestRepository:
 
 class HarvestMaterialRepository:
     def get_one(self, id_material):
-        # query = db.session.query(TMaterial).filter(TMaterial.id_material == id_material)
         material = TMaterial.query.get(id_material)
         return material
     
     def create(self, data):
         try:
-            existing_material = TMaterial.query.filter_by(code_material=data["code_material"]).first()
+            existing_material = TMaterial.query.filter_by(
+                code_material=data["code_material"]
+            ).first()
+
             if existing_material:
-                return jsonify({"error": "Ce code matériel existe déjà."}), 400
-            
+                return False, "Ce code matériel existe déjà."
+
             code_parent = data.pop("code_parent", None)
             code_cultural_bank = data.pop("code_cultural_bank", None)
+
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_parent"] = parent.id_material if parent else None
+
             if code_cultural_bank:
-                parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
-                data["code_cultural_bank"] = parent.id_material if parent else None
+                bank = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
+                data["code_cultural_bank"] = bank.id_material if bank else None
 
             material = TMaterial(**data)
             db.session.add(material)
             db.session.commit()
-            return material
+            return True, material
+
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+
         
     def update(self, id_material, data):
         try:

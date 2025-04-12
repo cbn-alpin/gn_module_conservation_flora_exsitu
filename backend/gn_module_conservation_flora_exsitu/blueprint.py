@@ -416,16 +416,33 @@ def create_material(id_harvest):
     data['id_harvest'] = id_harvest
     taxons = data.pop('taxons', [])
     material_repo = HarvestMaterialRepository()
-    material = material_repo.create(data)
+    
+    created, result = material_repo.create(data)
+
+    if not created:
+        return {"error": result}, 400
+
+    material = result
+
     if taxons:
         for cd_nom in taxons:
-            existing_entry = CorMaterialTaxon.query.filter_by(id_material=material.id_material, cd_nom=cd_nom).first()
+            existing_entry = CorMaterialTaxon.query.filter_by(
+                id_material=material.id_material,
+                cd_nom=cd_nom
+            ).first()
             if not existing_entry:
-                new_link = CorMaterialTaxon(id_material=material.id_material, cd_nom=cd_nom)
+                new_link = CorMaterialTaxon(
+                    id_material=material.id_material,
+                    cd_nom=cd_nom
+                )
                 db.session.add(new_link)
         db.session.commit()
 
-    return {"message": "Harvest material created successfully", "material": material.to_dic()}, 201
+    return {
+        "message": "Matériel ajouté",
+        "material": material.to_dic()
+    }, 201
+
 
 @blueprint.route("/harvests/<int:id_harvest>/materials/<int:id_material>", methods=["PUT"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
