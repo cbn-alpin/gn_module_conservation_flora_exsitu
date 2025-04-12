@@ -216,7 +216,7 @@ class TMaterial(db.Model):
     )
     has_hybridation_risk = db.Column(db.Boolean)
 
-    seeds = db.relationship('TMaterielSeed', backref='material')
+    seeds = db.relationship('TMaterielSeed', uselist=False, backref='material')
 
     def to_dic(self):
         return {
@@ -256,7 +256,10 @@ class CorMaterialTaxon(db.Model):
 @serializable
 class TMaterielSeed(db.Model):
     __tablename__ = 't_material_seed'
-    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+    __table_args__ = (
+        sa.UniqueConstraint('id_material'),
+        {"schema": "pr_conservation_flora_exsitu"}
+    )
     id_seed = db.Column(
         db.Integer,
         primary_key=True
@@ -266,7 +269,8 @@ class TMaterielSeed(db.Model):
         db.ForeignKey(
             "pr_conservation_flora_exsitu.t_material.id_material",
         ),
-        nullable=False
+        nullable=False,
+        unique=True
     )
     length = db.Column(db.Numeric)
     width = db.Column(db.Numeric)

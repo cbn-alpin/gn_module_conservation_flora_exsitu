@@ -192,7 +192,7 @@ COMMENT ON COLUMN "t_action"."id_humidity_device" IS 'obligatoire si type_action
 
 CREATE TABLE "t_material_seed" (
     "id_seed" SERIAL NOT NULL UNIQUE,
-    "id_material" INTEGER,
+    "id_material" INTEGER UNIQUE,
     -- Longueur moyenne (mm)
     "length" decimal,
     -- Largeur moyenne (mm)
