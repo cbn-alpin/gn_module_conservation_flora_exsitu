@@ -305,6 +305,21 @@ class TMaterielSeed(db.Model):
         onupdate=sa.func.now(),
     )
 
+    def to_dic(self):
+        return {
+            "id_seed": self.id_seed,
+            "id_material": self.id_material,
+            "length": self.length,
+            "width": self.width,
+            "thickness": self.thickness,
+            "total_count": self.total_count,
+            "total_mass": self.total_mass,
+            "sample_count": self.sample_count,
+            "sample_mass": self.sample_mass,
+            "has_photo": self.has_photo,
+            "remarks": self.remarks,
+        }
+
 
 @serializable
 class TStorage(db.Model):
