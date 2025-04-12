@@ -822,3 +822,13 @@ def add_seed_to_material(id_material):
     seed = seed_repo.create(data)
     return {"message": "Seed created successfully", "id_seed": seed.id_seed}, 201
 
+
+@blueprint.route('/materials/<int:id_material>/seeds', methods=['GET'])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+@json_resp
+def get_seed_of_material(id_material):
+    seed = TMaterielSeed.query.filter_by(id_material=id_material).first()
+    if seed:
+        return {"seed": seed.to_dic()}, 200
+    else:
+        return {}, 204 
