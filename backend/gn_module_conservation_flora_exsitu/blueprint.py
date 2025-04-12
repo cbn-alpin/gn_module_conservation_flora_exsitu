@@ -459,8 +459,13 @@ def update_material(id_harvest, id_material):
 def delete_material(id_material):
     """Suppression d'un matériel végétal d'une récolte"""
     material_repo = HarvestMaterialRepository()
-    material_repo.delete(id_material)
-    return {"message": "Harvest material deleted successfully"}, 200
+    deleted = material_repo.delete(id_material)
+    
+    if not deleted:
+        return {"error": "Matériel non trouvé."}, 404
+
+    return {"message": "Matériel supprimé"}, 200
+
 
 @blueprint.route("/harvests/<int:id_harvest>/materials", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)

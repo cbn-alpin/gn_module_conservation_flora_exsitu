@@ -386,16 +386,18 @@ class HarvestMaterialRepository:
             db.session.rollback()
             raise e
 
-    
+
     def delete(self, id_material):
         try:
             material = self.get_one(id_material)
             if not material:
-                return jsonify({"error": "Matériel non trouvé."}), 404
+                return False
+
             db.session.query(CorMaterialTaxon).filter_by(id_material=id_material).delete()
             db.session.delete(material)
             db.session.commit()
-            return jsonify({"message": "Matériel supprimé avec succès."}), 200
+            return True
+
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
