@@ -21,6 +21,7 @@ from .models import(
     TMaterial,
     CorHarvestObserver,
     CorMaterialTaxon,
+    TMaterielSeed
 )
 
 
@@ -400,3 +401,17 @@ class HarvestMaterialRepository:
             raise e
     
 
+class TMaterielSeedRepository:
+    def create(self, data):
+        try:
+            if not data.get("meta_create_date"):
+                data["meta_create_date"] = datetime.utcnow()
+
+            seed = TMaterielSeed(**data)
+            db.session.add(seed)
+            db.session.commit()
+            return seed 
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e

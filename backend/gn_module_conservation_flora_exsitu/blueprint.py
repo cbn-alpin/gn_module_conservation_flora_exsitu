@@ -3,8 +3,8 @@ import logging
 from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
-from .repositories import HarvestRepository, HarvestMaterialRepository
-from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver
+from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository
+from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 from ref_geo.models import LAreas, BibAreasTypes
 from geonature.utils.env import db
@@ -807,3 +807,18 @@ def export_harvests():
     output = Response(si.getvalue(), content_type="text/csv")
     output.headers["Content-Disposition"] = "attachment; filename=harvest.csv"
     return output
+
+@blueprint.route('/materials/<int:id_material>/seeds', methods=['POST'])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def add_seed_to_material(id_material):
+    """Ajout d'une description à une graine(taxon)"""
+    data = request.get_json()
+    material = TMaterial.query.get(id_material)
+    if not material:
+        return jsonify({'error': 'Matériel non trouvé'}), 404
+    data["meta_create_by"] = g.current_user.id_role
+    seed_repo = TMaterielSeedRepository()
+    seed = seed_repo.create(data)
+    return {"message": "Seed created successfully", "id_seed": seed.id_seed}, 201
+
