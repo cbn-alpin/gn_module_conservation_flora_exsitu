@@ -64,16 +64,27 @@ export class SeddDescriptionComponent implements OnInit {
 
     submetData(){
         const formData = this.seedForm.value;
-        this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
-            (response)=>{
-                console.log(response);
-                this._commonService.translateToaster('info', 'Semence ajoutée avec succès');
-                this.close()
-            },
-            (error) => {
-                this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de la semence');
-            }
-        )
+        if(!this.edit){
+            this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
+                (response)=>{
+                    this._commonService.translateToaster('info', 'Semence ajoutée avec succès');
+                    this.close()
+                },
+                (error) => {
+                    this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de la semence');
+                }
+            )
+        }else{
+            this.dataService.updateSeed(this.data.seedData.id_seed, this.seedForm.value).subscribe(
+                ()=>{
+                    this._commonService.translateToaster('info', 'Semence modifiée avec succès');
+                    this.close()
+                },
+                (error) => {
+                    this._commonService.translateToaster('warning', 'Erreur lors de la modification de la semence');
+                }
+            )
+        }
         
     }
 
@@ -95,7 +106,7 @@ export class SeddDescriptionComponent implements OnInit {
                     error: () => {
                       this._commonService.translateToaster('warning', 'Erreur lors de la suppression');
                     }
-                  });
+                });
             }
           });
     }

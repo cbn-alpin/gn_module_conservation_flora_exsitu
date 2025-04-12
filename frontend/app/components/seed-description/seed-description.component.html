@@ -130,6 +130,7 @@
         class="button-success uppercase"
         mat-button [mat-dialog-close]="true"
         matTooltip="Modifier et enregistrer ce description"
+        (click)="submetData()"
       >
         Modifier cette description
         <mat-icon style="vertical-align: middle">save</mat-icon>

@@ -106,4 +106,8 @@ export class DataService {
     return this.api.get<any>(`${this.moduleBaseUrl}/materials/${id_material}/seeds`);
   }
 
+  updateSeed(id_seed: number, data: any) {
+    return this.api.put<any>(`${this.moduleBaseUrl}/materials/seeds/${id_seed}`, data);
+  }
+
 }
