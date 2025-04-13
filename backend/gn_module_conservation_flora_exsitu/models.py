@@ -327,6 +327,8 @@ class TMaterielSeed(db.Model):
     )
     meta_create_date = db.Column(
         db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
         server_default=sa.func.now(),
     )
     meta_update_by = db.Column(
