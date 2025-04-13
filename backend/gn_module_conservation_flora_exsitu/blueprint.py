@@ -522,7 +522,7 @@ def get_materials(id_harvest):
             nomenclature_material = db.session.query(
                 TNomenclatures.label_default,
                 TNomenclatures.cd_nomenclature
-            ).filter_by(id_nomenclature=material.id_harvest_material).first()
+            ).filter_by(id_nomenclature=material.id_material_type).first()
             harvest_material_label = nomenclature_material.label_default if nomenclature_material else None
             harvest_material_code = nomenclature_material.cd_nomenclature if nomenclature_material else None
 
@@ -751,7 +751,7 @@ def export_harvests():
         .outerjoin(main_observer_subquery, main_observer_subquery.c.id_harvest == THarvest.id_harvest)
         .outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
         .outerjoin(FootCountingClass, TMaterial.id_foot_counting_class == FootCountingClass.id_nomenclature)
-        .outerjoin(HarvestMaterial, TMaterial.id_harvest_material == HarvestMaterial.id_nomenclature)
+        .outerjoin(HarvestMaterial, TMaterial.id_material_type == HarvestMaterial.id_nomenclature)
         .outerjoin(Phenology1, TMaterial.id_phenology_1 == Phenology1.id_nomenclature)
         .outerjoin(Phenology2, TMaterial.id_phenology_2 == Phenology2.id_nomenclature)
         .outerjoin(MethodSample, TMaterial.id_method_sample == MethodSample.id_nomenclature)

@@ -170,7 +170,7 @@ class TMaterial(db.Model):
             ondelete="NULL"
         ),
     )
-    id_harvest_material = db.Column(
+    id_material_type = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",
@@ -222,7 +222,7 @@ class TMaterial(db.Model):
         return {
             "id_material": self.id_material,
             "code_material": self.code_material,
-            "id_harvest_material": self.id_harvest_material,
+            "id_material_type": self.id_material_type,
             "id_harvest": self.id_harvest,
             "sample_foot_nb": self.sample_foot_nb,
             "id_foot_counting_class": self.id_foot_counting_class,

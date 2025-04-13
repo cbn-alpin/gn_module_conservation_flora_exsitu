@@ -84,7 +84,7 @@ CREATE TABLE "t_material" (
 	"id_parent" INTEGER,
 	"id_harvest" INTEGER NOT NULL,
 	-- Matériel végétal récolté
-	"id_harvest_material" INTEGER NOT NULL,
+	"id_material_type" INTEGER NOT NULL,
 	-- Classes d’individus
 	"id_foot_counting_class" INTEGER,
 	-- Phénologie
@@ -105,7 +105,7 @@ CREATE TABLE "t_material" (
 	"has_hybridation_risk" BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY("id_material")
 );
-COMMENT ON COLUMN t_material.id_harvest_material IS 'Matériel végétal récolté';
+COMMENT ON COLUMN t_material.id_material_type IS 'Matériel végétal récolté';
 COMMENT ON COLUMN t_material.id_foot_counting_class IS 'Classes d’individus';
 COMMENT ON COLUMN t_material.id_phenology_1 IS 'Phénologie';
 COMMENT ON COLUMN t_material.id_phenology_2 IS 'Phénologie';
@@ -261,7 +261,7 @@ ALTER TABLE "cor_material_taxon"
 ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
-ADD FOREIGN KEY("id_harvest_material") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ADD FOREIGN KEY("id_material_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_exposition") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
