@@ -36,7 +36,7 @@ export class MaterialModalComponent implements OnInit {
                 this.codeMaterialExists = false;
             }
         });
-        this.materialForm.controls['id_harvest_material'].valueChanges.subscribe(value => {   
+        this.materialForm.controls['id_material_type'].valueChanges.subscribe(value => {   
             if(value) {
               this.api.getCodesNomenclature(value).subscribe({
                 next: (code: string) => {
