@@ -685,6 +685,7 @@ def export_harvests():
     HarvestMaterial = aliased(TNomenclatures)
     Exposition = aliased(TNomenclatures)
     FootCountingClass = aliased(TNomenclatures)
+    MaterialQuality = aliased(TNomenclatures)
     Phenology1 = aliased(TNomenclatures)
     Phenology2 = aliased(TNomenclatures)
     MethodSample = aliased(TNomenclatures)
@@ -727,6 +728,7 @@ def export_harvests():
             Phenology1.label_default.label("phenologie_1"),
             Phenology2.label_default.label("phenologie_2"),
             MethodSample.label_default.label("mode_echantillonnage"),
+            MaterialQuality.label_default.label("material_quality"),
             func.ST_Y(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("latitude"),
             func.ST_X(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("longitude"),
             case([(THarvest.id_area_type == commune_id, LAreas.area_name)], else_=None).label("commune"),
@@ -755,6 +757,7 @@ def export_harvests():
         .outerjoin(Phenology1, TMaterial.id_phenology_1 == Phenology1.id_nomenclature)
         .outerjoin(Phenology2, TMaterial.id_phenology_2 == Phenology2.id_nomenclature)
         .outerjoin(MethodSample, TMaterial.id_method_sample == MethodSample.id_nomenclature)
+        .outerjoin(MaterialQuality, TMaterial.id_material_quality == MaterialQuality.id_nomenclature)
         .outerjoin(LAreas, THarvest.id_area == LAreas.id_area)
         .outerjoin(CorMaterialTaxon, CorMaterialTaxon.id_material == TMaterial.id_material)
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
@@ -779,6 +782,7 @@ def export_harvests():
             Phenology1.label_default,
             Phenology2.label_default,
             MethodSample.label_default,
+            MaterialQuality.label_default,
             LAreas.area_name,
             THarvest.id_area_type,
             TMaterial.sample_foot_nb,
@@ -796,7 +800,7 @@ def export_harvests():
         "Type Récolte", "Matériel végétal", "Date Début", "Date Fin", "Liste des Observateurs",
         "Organisme", "Commune", "Département", "Coordonnées", "Résolution", "Surface", "Altitude", 
         "Exposition", "Pente", "Remarques/Météo", "Classe d'individus", "Phénologie 1", "Phénologie 2", 
-        "Mode d'échantillonnage", "Nombre de pieds échantillonnés", 
+        "Mode d'échantillonnage", "État du lot", "Nombre de pieds échantillonnés", 
         "Prélèvement de terre", "Risque d'hybridation", "Protocoles et astuces"
     ]
     csv_writer = csv.DictWriter(si, fieldnames=fieldnames)
@@ -827,6 +831,7 @@ def export_harvests():
             "Phénologie 1": h.phenologie_1,
             "Phénologie 2": h.phenologie_2,
             "Mode d'échantillonnage": h.mode_echantillonnage,
+            "État du lot": h.material_quality,
             "Nombre de pieds échantillonnés": h.nombre_pieds_echantillonnes,
             "Prélèvement de terre": h.prelevement_terre or "Non",
             "Risque d'hybridation": h.risque_hybridation or "Non",
