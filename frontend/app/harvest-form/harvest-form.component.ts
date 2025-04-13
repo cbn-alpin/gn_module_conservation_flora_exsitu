@@ -97,13 +97,26 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
   private formatDataForm() {
     const finalForm = JSON.parse(JSON.stringify(this.harvestForm.value));
 
-    const isAdditionalDataEmpty = !finalForm.additional_data.slope &&
-                                !finalForm.additional_data.weather_comment &&
-                                !finalForm.additional_data.program
+    const additionalFields = this.formsDefinition || [];
 
-    if (isAdditionalDataEmpty) {
-      delete finalForm.additional_data;
-    }  
+    if (finalForm.additional_data) {
+      const cleanedAdditionalData = {};
+    
+      additionalFields.forEach(field => {
+        const key = field.attribut_name;
+        const value = finalForm.additional_data[key];
+        if (value !== null && value !== undefined && value !== '') {
+          cleanedAdditionalData[key] = value;
+        }
+      });
+    
+      if (Object.keys(cleanedAdditionalData).length > 0) {
+        finalForm.additional_data = cleanedAdditionalData;
+      } else {
+        delete finalForm.additional_data;
+      }
+    }
+      
     
     finalForm.id_geographical_precision = finalForm.id_geographical_precision.id_nomenclature;
 
