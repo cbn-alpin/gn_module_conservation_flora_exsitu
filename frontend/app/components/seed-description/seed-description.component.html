@@ -112,6 +112,7 @@
         matTooltip="Enregistrer ce matériel"
         class="button-success"
         (click)="submetData()"
+        [disabled]="!seedForm.valid"
       >
         Ajouter la description
         <mat-icon style="vertical-align: middle">save</mat-icon>
@@ -131,6 +132,7 @@
         mat-button [mat-dialog-close]="true"
         matTooltip="Modifier et enregistrer ce description"
         (click)="submetData()"
+        [disabled]="!seedForm.valid"
       >
         Modifier cette description
         <mat-icon style="vertical-align: middle">save</mat-icon>

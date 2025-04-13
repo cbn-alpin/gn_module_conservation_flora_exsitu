@@ -4,7 +4,9 @@ import {
     FormBuilder,
     FormGroup,
     Validators,
-    FormControl,
+    AbstractControl,
+    ValidationErrors, 
+    ValidatorFn
   } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';
@@ -48,18 +50,45 @@ export class SeddDescriptionComponent implements OnInit {
           remarks: seedData.remarks ?? ''
         };
     
-        this.seedForm = this.fb.group({
-          id_material: [defaultValues.id_material, Validators.required],
-          length: [defaultValues.length],
-          width: [defaultValues.width],
-          thickness: [defaultValues.thickness],
-          total_count: [defaultValues.total_count],
-          total_mass: [defaultValues.total_mass],
-          sample_count: [defaultValues.sample_count],
-          sample_mass: [defaultValues.sample_mass],
-          has_photo: [defaultValues.has_photo],
-          remarks: [defaultValues.remarks]
-        });
+        this.seedForm = this.fb.group(
+            {
+                id_material: [defaultValues.id_material, Validators.required],
+                length: [defaultValues.length],
+                width: [defaultValues.width],
+                thickness: [defaultValues.thickness],
+                total_count: [defaultValues.total_count],
+                total_mass: [defaultValues.total_mass],
+                sample_count: [defaultValues.sample_count],
+                sample_mass: [defaultValues.sample_mass],
+                has_photo: [defaultValues.has_photo],
+                remarks: [defaultValues.remarks]
+            },
+            {
+                validators: this.atLeastOneFieldRequired([
+                    'length', 
+                    'width', 
+                    'thickness', 
+                    'total_count', 
+                    'total_mass', 
+                    'sample_count', 
+                    'sample_mass',
+                    'has_photo',
+                    'remarks'
+                ])
+            }
+        );
+    }
+
+    atLeastOneFieldRequired(fields: string[]): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+          const formGroup = control as any;
+          for (const field of fields) {
+            if (formGroup.controls[field].value) {
+              return null; // Si au moins un champ est rempli, la validation est réussie.
+            }
+          }
+          return { atLeastOneRequired: true }; // Aucun champ n'est rempli.
+        };
     }
 
     submetData(){
