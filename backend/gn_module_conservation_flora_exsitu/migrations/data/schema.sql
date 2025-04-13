@@ -105,6 +105,11 @@ CREATE TABLE "t_material" (
 	"id_method_sample" INTEGER,
 	-- Risque d'hybridation
 	"has_hybridation_risk" BOOLEAN DEFAULT FALSE,
+	"additional_data" JSONB,
+    "meta_create_by" INTEGER NOT NULL,
+    "meta_create_date" TIMESTAMP NOT NULL,
+    "meta_update_by" INTEGER,
+    "meta_update_date" TIMESTAMP,
 	PRIMARY KEY("id_material")
 );
 COMMENT ON COLUMN t_material.id_material_type IS 'Matériel végétal récolté';
@@ -268,6 +273,12 @@ ADD FOREIGN KEY("id_material_type") REFERENCES ref_nomenclatures.t_nomenclatures
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_material_quality") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_material"
+ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_material"
+ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_exposition") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)

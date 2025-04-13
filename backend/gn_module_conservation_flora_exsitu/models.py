@@ -222,6 +222,29 @@ class TMaterial(db.Model):
         default=False
     )
     has_hybridation_risk = db.Column(db.Boolean)
+    additional_data = db.Column(JSONB)
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
+        ),
+    )
+    meta_create_date = db.Column(
+        db.DateTime,
+        server_default=sa.func.now(),
+    )
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="NULL",
+        ),
+    )
+    meta_update_date = db.Column(
+        db.DateTime,
+        onupdate=sa.func.now(),
+    )
 
     seeds = db.relationship('TMaterielSeed', uselist=False, backref='material')
 
