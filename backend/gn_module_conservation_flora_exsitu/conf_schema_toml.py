@@ -12,7 +12,7 @@ class AdditionalDataSchema(Schema):
     attribut_label = fields.String(required=True)
     attribut_name = fields.String(required=True)
 
-class HarvestFormSchema(Schema):
+class FormAdditionalConfigSchema(Schema):
     additional_data = fields.List(fields.Nested(AdditionalDataSchema), load_default=[])
 
 
@@ -23,5 +23,8 @@ class GnModuleSchemaConf(Schema):
     observers_list_code = fields.String(load_default="OFS")
     zoom_center = fields.List(fields.Float(), load_default=[44.98266, 6.06245])
     zoom = fields.Integer(load_default=10)
-    harvest_form = fields.Nested(HarvestFormSchema, load_default=HarvestFormSchema().load({}))
+    harvest_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
+    material_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
+    seed_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
+    stock_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
     default_dataset = fields.Integer(load_default=1)
