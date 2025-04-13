@@ -414,6 +414,7 @@ def create_material(id_harvest):
     """Ajout d'un matériel végétal à une récolte"""
     data = request.get_json()
     data['id_harvest'] = id_harvest
+    data["meta_create_by"] = g.current_user.id_role
     taxons = data.pop('taxons', [])
     material_repo = HarvestMaterialRepository()
     
@@ -450,6 +451,7 @@ def create_material(id_harvest):
 def update_material(id_harvest, id_material):
     """Mise à jour d'un matériel végétal d'une récolte"""
     data = request.get_json()
+    data["meta_update_by"] = g.current_user.id_role
 
     material_repo = HarvestMaterialRepository()
     result = material_repo.update(id_material, data)

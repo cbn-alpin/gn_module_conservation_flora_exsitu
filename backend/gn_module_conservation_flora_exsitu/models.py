@@ -6,6 +6,7 @@ from utils_flask_sqla.serializers import serializable
 from utils_flask_sqla_geo.serializers import geoserializable
 from ref_geo.models import LAreas
 from pypnusershub.db.models import User
+from datetime import datetime
 
 
 @serializable
@@ -232,6 +233,8 @@ class TMaterial(db.Model):
     )
     meta_create_date = db.Column(
         db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
         server_default=sa.func.now(),
     )
     meta_update_by = db.Column(
