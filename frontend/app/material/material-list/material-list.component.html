@@ -40,8 +40,10 @@
           ><mat-icon>delete</mat-icon></button>
           <button 
             mat-icon-button 
-            color="primary"
-            matTooltip="Description des graines"
+            [ngStyle]="{
+              color: element.has_seed_description ? 'green' : '#FFA726'
+            }"
+            matTooltip="Description de graine"
             *ngIf="constants.SEED_DESCRIPTION_CODES.includes(element.harvest_material_code) && element.taxons && element.taxons.length > 0"
             (click)="onAddOrEditSeed(element.id_material)"
           >
