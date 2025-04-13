@@ -42,9 +42,6 @@ class HarvestRepository:
 
     def create(self, data):
         try:
-            if not data.get("meta_create_date"):
-                data["meta_create_date"] = datetime.utcnow()
-
             if data.get("date_end") == "":
                 data["date_end"] = data["date_start"]
             
