@@ -232,10 +232,13 @@ export class MaterialListComponent implements OnInit {
     }    
 
     openDescriptionSeddModal(id_material, mode, data): void {      
-      this.dialog.open(SeddDescriptionComponent, {
+      const dialogRef = this.dialog.open(SeddDescriptionComponent, {
         width: '100%',
         height: '80%',
         data: { id: id_material, mode: mode, seedData: data }
+      });
+      dialogRef.afterClosed().subscribe(() => {
+        this.loadMaterials()
       });
     }
 }
