@@ -66,7 +66,7 @@
             </div>
           </div>
 
-          <div class="row row-0 mr-3">
+          <div class="row row-0 mr-3 mt-2">
             <div class="col-6 padding-sm">
               <label> Classes d’individus</label>
               <pnx-nomenclature
@@ -78,9 +78,20 @@
                 >
               </pnx-nomenclature>
             </div>
+            <div class="col-6 padding-sm">
+              <label>État du lot</label>
+              <pnx-nomenclature
+                      keyValue="id_nomenclature"
+                      [bindAllItem]="false"
+                      keyLabel="label_default"
+                      codeNomenclatureType="CFE_MATERIAL_QUALITY"
+                      [parentFormControl]="materialForm.controls.id_material_quality"
+                    >
+              </pnx-nomenclature>
+            </div>
           </div>
 
-          <div class="row row-0 mr-3">
+          <div class="row row-0 mr-3 mt-2">
             <div class="col-6 padding-sm">
                 <label> Phénologie 1 *</label>
                 <pnx-nomenclature
