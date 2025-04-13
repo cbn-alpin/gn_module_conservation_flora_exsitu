@@ -75,10 +75,10 @@ CFE_ATWATER_TYPE;peris;perisperme;Périsperme;Se dit d'une  graine pourvue d'un 
 CFE_ATWATER_TYPE;albu;albuminee;Albuminée;Se dit d'une graine pourvue d' albumen, réserve alimentaire conteue dans la graine et formée lors de la seconde fécondation chez les Angiospermes;Albuminée;Se dit d'une graine pourvue d' albumen, réserve alimentaire conteue dans la graine et formée lors de la seconde fécondation chez les Angiospermes;conservation_flora_exsitu;.001
 CFE_ATWATER_TYPE;exal;exalbuminee;Exalbuminée;Se dit d'une graine dépourvue d' albumen, soit par absence de réserves, soit par absorption de celles-ci par les cotylédons.;Exalbuminée;Se dit d'une graine dépourvue d' albumen, soit par absence de réserves, soit par absorption de celles-ci par les cotylédons.;conservation_flora_exsitu;.002
 CFE_ATWATER_TYPE;ai;absenceInformation;Absence d'information;L'information n'est pas renseignée;Absence d'information;L'information n'est pas renseignée;conservation_flora_exsitu;.004
-CFE_SEED_QUALITY;tbe;tresBonEtat;Trés bon état;Lot en un trés bon état;Trés bon état (TBE);Lot en un trés bon état;conservation_flora_exsitu;.001
-CFE_SEED_QUALITY;be;bonEtat;Bon état;Lot en bon état;Bon état (BE);Lot en bon état;conservation_flora_exsitu;.002
-CFE_SEED_QUALITY;moy;moyen;Moyen;Lot en état moyen;Moyen;Lot en état moyen;conservation_flora_exsitu;.003
-CFE_SEED_QUALITY;mauv;mauvais;Mauvais;Lot en mauvais état;Mauvais;Lot en mauvais état;conservation_flora_exsitu;.004
+CFE_MATERIAL_QUALITY;tbe;tresBonEtat;Trés bon état;Lot en un trés bon état;Trés bon état (TBE);Lot en un trés bon état;conservation_flora_exsitu;.001
+CFE_MATERIAL_QUALITY;be;bonEtat;Bon état;Lot en bon état;Bon état (BE);Lot en bon état;conservation_flora_exsitu;.002
+CFE_MATERIAL_QUALITY;moy;moyen;Moyen;Lot en état moyen;Moyen;Lot en état moyen;conservation_flora_exsitu;.003
+CFE_MATERIAL_QUALITY;mauv;mauvais;Mauvais;Lot en mauvais état;Mauvais;Lot en mauvais état;conservation_flora_exsitu;.004
 CFE_GROWTH;ail;aile;Aile;Une aile est un appendice étalé en bordure d'organe;Aile;Une aile est un appendice étalé en bordure d'organe;conservation_flora_exsitu;.001
 CFE_GROWTH;ari;arille;Arille;Un arille est une excroissance charnue et parfois velue se formant à partir du hile ou du funicule d'une graine.;Arille;Un arille est une excroissance charnue et parfois velue se formant à partir du hile ou du funicule d'une graine.;conservation_flora_exsitu;.003
 CFE_GROWTH;auc;aucune;Aucune;Absence d'excroissance;Aucune;Absence d'excroissance;conservation_flora_exsitu;.004

@@ -92,11 +92,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 ) ;
 
 
--- Create the "CFE_SEED_QUALITY" nomenclature type
+-- Create the "CFE_MATERIAL_QUALITY" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
-    'CFE_SEED_QUALITY',
+    'CFE_MATERIAL_QUALITY',
     'Type de qualité de semence',
     'Nomenclature des types de qualité de semence.',
     'Type de qualité de semence',

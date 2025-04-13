@@ -126,7 +126,7 @@ def downgrade():
     delete_nomenclatures("CFE_PHENOLOGY")
     delete_nomenclatures("CFE_FORM")
     delete_nomenclatures("CFE_ATWATER_TYPE")
-    delete_nomenclatures("CFE_SEED_QUALITY")
+    delete_nomenclatures("CFE_MATERIAL_QUALITY")
     delete_nomenclatures("CFE_GROWTH")
     delete_nomenclatures("CFE_DECORATION")
     delete_nomenclatures("CFE_EMBRYO_TYPE")
