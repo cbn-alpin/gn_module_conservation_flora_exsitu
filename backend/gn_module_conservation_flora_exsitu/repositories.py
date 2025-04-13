@@ -346,7 +346,7 @@ class HarvestMaterialRepository:
 
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
-                data["id_parent"] = parent.id_material if parent else None
+                data["id_material_parent"] = parent.id_material if parent else None
 
             if code_cultural_bank:
                 bank = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
@@ -376,7 +376,7 @@ class HarvestMaterialRepository:
             code_cultural_bank = data.pop("code_cultural_bank", None)
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
-                data["id_parent"] = parent.id_material if parent else None
+                data["id_material_parent"] = parent.id_material if parent else None
             if code_cultural_bank:
                 parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
                 data["code_cultural_bank"] = parent.id_material if parent else None

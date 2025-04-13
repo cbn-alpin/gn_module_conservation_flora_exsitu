@@ -156,7 +156,7 @@ class TMaterial(db.Model):
         nullable=False,
         unique=True,
     )
-    id_parent = db.Column(
+    id_material_parent = db.Column(
         db.Integer,
         db.ForeignKey(
             "pr_conservation_flora_exsitu.t_material.id_material",

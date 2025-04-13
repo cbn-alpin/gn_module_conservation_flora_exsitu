@@ -81,7 +81,7 @@ CREATE TABLE "t_material" (
 	"id_material" SERIAL NOT NULL UNIQUE,
 	"uuid_material" UUID DEFAULT uuid_generate_v4(),
 	"code_material" VARCHAR(50) NOT NULL UNIQUE,
-	"id_parent" INTEGER,
+	"id_material_parent" INTEGER,
 	"id_harvest" INTEGER NOT NULL,
 	-- Matériel végétal récolté
 	"id_material_type" INTEGER NOT NULL,
@@ -243,7 +243,7 @@ ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_harvest") REFERENCES "t_harvest"("id_harvest")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
-ADD FOREIGN KEY("id_parent") REFERENCES "t_material"("id_material")
+ADD FOREIGN KEY("id_material_parent") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_foot_counting_class") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)

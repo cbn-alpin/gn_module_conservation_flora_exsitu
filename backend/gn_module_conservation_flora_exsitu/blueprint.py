@@ -529,8 +529,8 @@ def get_materials(id_harvest):
             code_parent_material = None
             code_cultural_bank_material = None
 
-            if material.id_parent:
-                parent_material = TMaterial.query.get(material.id_parent)
+            if material.id_material_parent:
+                parent_material = TMaterial.query.get(material.id_material_parent)
                 code_parent_material = parent_material.code_material if parent_material else None
 
             if material.code_cultural_bank:
