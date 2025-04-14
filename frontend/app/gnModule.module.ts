@@ -34,6 +34,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { DialogService } from './components/confirm-dialog/confirm-dialog.service';
 import { ConfigService } from './services/config.service';
 import { SeddDescriptionComponent } from './components/seed-description/seed-description.component';
+import { StockManagementComponent } from './stock-management/stock-management.component';
+import { ActionsStockComponent } from './stock-management/actions-stock/actions-stock.component';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -51,7 +53,9 @@ export const routingConfiguration: ExtraOptions = {
     HarvestMapComponent,
     TaxonModalComponent,
     ConfirmDialogComponent,
-    SeddDescriptionComponent
+    SeddDescriptionComponent,
+    StockManagementComponent,
+    ActionsStockComponent,
   ],
   providers: [
     HarvestStoreService, 
