@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener, AfterViewInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ModuleService } from '@geonature/services/module.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { HarvestStoreService } from '../../services/store.service';
 import { ExsituFormService } from './exsitu-form.service';
 import { MapService } from '@geonature_common/map/map.service';
@@ -14,8 +14,8 @@ import { CommonService } from '@geonature_common/service/common.service';
   styleUrls: ['./exsitu-form.component.css'],
 })
 export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
-    idHarvest: string | null = null;
-    idMaterial: string | null = null;
+    idHarvest: number | null = null;
+    idMaterial: number | null = null;
     public currentModulePath: string
     cardContentHeight: any;
     public urlSub: Subscription;
@@ -23,7 +23,6 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         public router: Router,
-        private route: ActivatedRoute,
         public storeService: HarvestStoreService,
         public moduleService: ModuleService,
         public exsituFormService: ExsituFormService,
@@ -43,7 +42,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     
         // Initialisation avec l'URL actuelle (utile au rechargement)        
-        this.harvest = this.exsituFormService.harvest
+        // this.harvest = this.exsituFormService.harvest
     }
 
     goToTab(tab: string) {
@@ -51,10 +50,14 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
         } else if (tab === 'harvest' && this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}`]);
+        }else if (tab === 'stock' && this.exsituFormService.idHarvest && this.idMaterial) {
+          this.router.navigate([
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/stock`
+          ]);
         }
     }
 
-    updateTabAndIdsFromUrl(url: string) {
+    updateTabAndIdsFromUrl(url: string) {      
       let urlSegments = url.split('/');
       
   
@@ -84,19 +87,19 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate([`${this.currentModulePath}/form/harvest`]);// Redirection si l'ID de récolte est absent
         }
       }
-  
-      // Vérifie si l'URL contient "seed-form"
-      if (urlSegments.includes('seed-form')) {
-        this.exsituFormService.currentTab = 'seeds';
-  
-        let index = urlSegments.indexOf('material') + 1;
-  
-        // Vérifie si un ID de matériel est présent après "material"
-        if (index < urlSegments.length && !isNaN(Number(urlSegments[index]))) {
-          this.exsituFormService.idHarvest = Number(urlSegments[index]);
-        } else {
-          this.exsituFormService.idHarvest = null ;
-          this.router.navigate([`${this.currentModulePath}/form/harvest`]);// Redirection si l'ID de récolte est absent
+
+      if (urlSegments.includes('stock')) {
+        this.exsituFormService.currentTab = 'stock';
+      
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+      
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(urlSegments[harvestIndex]);
+        }
+      
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(urlSegments[materialIndex]);
         }
       }
     }

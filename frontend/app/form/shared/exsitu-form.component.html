@@ -22,19 +22,19 @@
                 Matériels récoltés
             </a>
 
-            <!-- Semences (Activé après ajout de matériel) -->
+            <!-- Stockage (Activé après avoir choisi un matériel) -->
             <a 
                 class="tablinks" 
                 [class.disabled]="!idMaterial"
-                (click)="idMaterial ? goToTab('seeds') : null">
+                [ngClass]="{ active: exsituFormService.currentTab === 'stock' }"
+                (click)="idMaterial ? goToTab('stock') : null">
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
-                Semences
+                Stockage
             </a>
 
             <!-- Test de germination -->
             <a 
-                class="tablinks" 
-                [class.disabled]="!idMaterial"
+                class="tablinks disabled" 
                 (click)="idMaterial ? goToTab('seeds') : null">
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
                 Test de germination
@@ -93,6 +93,13 @@
             <cs-material-list></cs-material-list>
         </div>
     </div>
+
+    <!-- Onglet Stockage -->
+    <div *ngIf="exsituFormService.currentTab === 'stock'"
+        [ngStyle]="{ 'height.px': cardContentHeight - 50 }">
+        <cfe-stock-management></cfe-stock-management>
+    </div>
+
 
      
 </div>
