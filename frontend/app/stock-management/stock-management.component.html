@@ -1,0 +1,82 @@
+<div>
+    <!-- Table des stocks -->
+    <div class="container">
+        <h2>Gestion des Stocks</h2>
+        <button mat-raised-button class="button-success uppercase">Ajouter un stockage</button>
+        <div class="card mt-2">
+            <table mat-table [dataSource]="dataSource" class="mat-table">
+                <!-- Lieu -->
+                <ng-container matColumnDef="place">
+                  <th mat-header-cell *matHeaderCellDef > Lieu </th>
+                  <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+                <!-- Quantité de semence initiale -->
+                <ng-container matColumnDef="initial_quantity">
+                  <th mat-header-cell *matHeaderCellDef> Quantité initiale </th>
+                  <td mat-cell *matCellDef="let element">  </td>
+                </ng-container>
+                <!-- Quantité actuellement -->
+                <ng-container matColumnDef="current_quantity">
+                  <th mat-header-cell *matHeaderCellDef> Quantité actuellement </th>
+                  <td mat-cell *matCellDef="let element"> 
+                    
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="dry_type">
+                    <th mat-header-cell *matHeaderCellDef> Type de séchage </th>
+                    <td mat-cell *matCellDef="let element"> 
+                      
+                    </td>
+                </ng-container>
+        
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef> Actions </th>
+                  <td mat-cell *matCellDef="let element">
+                    <button 
+                      mat-icon-button 
+                      aria-label="Edit" 
+                      matTooltip="Modifier le stock"
+                    ><mat-icon>edit</mat-icon></button>
+                    <button 
+                      mat-icon-button 
+                      color="warn" 
+                      aria-label="Delete" 
+                      matTooltip="Supprimer le stock"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+                <!-- Lignes de l'en-tête et des données -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"></tr>
+              </table>
+              <mat-paginator
+                    [length]="10"
+                    [pageSize]="4"    
+               ></mat-paginator>
+        </div>
+    </div>
+    
+  
+    <!-- Grille des actions -->
+    <div class="mt-4">
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <cfe-actions-stock [title]="'Salle de pré-séchage'" [placeId]="1"></cfe-actions-stock>
+          </div>
+          <div class="col-md-6 mb-4">
+            <cfe-actions-stock [title]="'Salle de séchage'" [placeId]="2"></cfe-actions-stock>
+          </div>
+          <div class="col-md-6 mb-4">
+            <cfe-actions-stock [title]="'Chambre froide'" [placeId]="3"></cfe-actions-stock>
+          </div>
+          <div class="col-md-6 mb-4">
+            <cfe-actions-stock [title]="'Congélateur'" [placeId]="4"></cfe-actions-stock>
+          </div>
+        </div>
+    </div>
+      
+      
+</div>
+  

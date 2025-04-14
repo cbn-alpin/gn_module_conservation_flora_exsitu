@@ -1,0 +1,74 @@
+<div class="card">
+    <h3>{{ title }}</h3>
+    <table mat-table [dataSource]="dataSource" class="mat-table">
+        <!-- Date de début  -->
+        <ng-container matColumnDef="date_start">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let element">  </td>
+        </ng-container>
+        <!-- Auteur -->
+        <ng-container matColumnDef="actor">
+          <th mat-header-cell *matHeaderCellDef> Auteur </th>
+          <td mat-cell *matCellDef="let element"> 
+            
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="action_type">
+            <th mat-header-cell *matHeaderCellDef> Type d'action </th>
+            <td mat-cell *matCellDef="let element"> 
+              
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef> Quantité </th>
+            <td mat-cell *matCellDef="let element"> 
+              
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="id_humidity_level">
+            <th mat-header-cell *matHeaderCellDef> Taux d'humidité </th>
+            <td mat-cell *matCellDef="let element"> 
+              
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="humidity_rate">
+            <th mat-header-cell *matHeaderCellDef> Mesure humidité </th>
+            <td mat-cell *matCellDef= "let element"> 
+              
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="id_humidity_device">
+            <th mat-header-cell *matHeaderCellDef> Appareil d'humidité </th>
+            <td mat-cell *matCellDef="let element"> 
+              
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button 
+              mat-icon-button 
+              aria-label="Edit" 
+              matTooltip="Modifier le stock"
+            ><mat-icon>edit</mat-icon></button>
+            <button 
+              mat-icon-button 
+              color="warn" 
+              aria-label="Delete" 
+              matTooltip="Supprimer le stock"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <!-- Lignes de l'en-tête et des données -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator
+            [length]="10"
+            [pageSize]="4"    
+       ></mat-paginator>
+</div>
+  
