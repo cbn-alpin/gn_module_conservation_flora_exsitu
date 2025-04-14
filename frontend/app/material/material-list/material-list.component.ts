@@ -16,6 +16,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ConstantsService } from '../../services/constants.service';
 import { SeddDescriptionComponent } from '../../components/seed-description/seed-description.component';
+import { Router } from '@angular/router';
+import { ConfigService } from '../../services/config.service';
+
 
 @Component({
     selector: 'cs-material-list',
@@ -57,7 +60,9 @@ export class MaterialListComponent implements OnInit {
         private api: DataService,
         public mapListService: MapListService,
         private dialogService: DialogService,
-        public constants: ConstantsService
+        public constants: ConstantsService,
+        public router: Router,
+        public cfg: ConfigService
         
     ){
 
@@ -241,4 +246,9 @@ export class MaterialListComponent implements OnInit {
         this.loadMaterials()
       });
     }
+
+    goToStock(idMaterial: number) {
+      this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/stock`]);
+    }
+    
 }
