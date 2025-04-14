@@ -4,6 +4,7 @@ import { MaterialFormComponent } from './material/material-form/material-form.co
 import { ExsituFormComponent } from './form/shared/exsitu-form.component';
 import { HarvestMapListComponent } from './harvest-map-list/harvest-map-list.component';
 import { HarvestFormComponent } from './harvest-form/harvest-form.component';
+import { StockManagementComponent } from './stock-management/stock-management.component';
 
 export const routes: Routes = [
     {
@@ -25,6 +26,10 @@ export const routes: Routes = [
             {
                 path: 'harvest/:id_harvest/material-form',
                 component: MaterialFormComponent
+            },
+            {
+                path: 'harvest/:idHarvest/material/:idMaterial/stock',
+                component: StockManagementComponent
             }
         ]
     }
