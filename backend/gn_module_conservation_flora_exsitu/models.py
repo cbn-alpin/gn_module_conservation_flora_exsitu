@@ -7,6 +7,7 @@ from utils_flask_sqla_geo.serializers import geoserializable
 from ref_geo.models import LAreas
 from pypnusershub.db.models import User
 from datetime import datetime
+from pypnnomenclature.models import TNomenclatures
 
 
 @serializable
@@ -418,6 +419,9 @@ class TStorage(db.Model):
         db.DateTime,
         onupdate=sa.func.now(),
     )
+
+    place = db.relationship("TNomenclatures", foreign_keys=[id_place])
+    dry_type = db.relationship("TNomenclatures", foreign_keys=[id_dry_type])
     
 
 @serializable
