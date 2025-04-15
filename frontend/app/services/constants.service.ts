@@ -53,5 +53,20 @@ export class ConstantsService {
     this.HARVEST_MATERIAL_CODES.SPORE
   ]
 
+  public readonly PLACE_CODES = {
+    PRE_DRYING_ROOM: 'sdps',
+    DRYING_ROOM: 'sds',
+    COLD_ROOM: 'cf',
+    FREEZER: 'cong'
+  };
+
+  private readonly _DRY_TYPE_CODES = [
+    this.PLACE_CODES.DRYING_ROOM
+  ];
+
+  public get DRY_TYPE_CODES(): string[] {
+    return this._DRY_TYPE_CODES.slice();
+  }
+
   constructor() {}
 }
