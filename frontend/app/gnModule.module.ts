@@ -37,6 +37,7 @@ import { SeddDescriptionComponent } from './components/seed-description/seed-des
 import { StockManagementComponent } from './stock-management/stock-management.component';
 import { ActionsStockComponent } from './stock-management/actions-stock/actions-stock.component';
 import { StockModalComponent } from './components/stock-modal/stock-modal.component';
+import { ActionModalComponent } from './components/action-modal/action-modal.component';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -57,7 +58,8 @@ export const routingConfiguration: ExtraOptions = {
     SeddDescriptionComponent,
     StockManagementComponent,
     ActionsStockComponent,
-    StockModalComponent
+    StockModalComponent,
+    ActionModalComponent
   ],
   providers: [
     HarvestStoreService, 
