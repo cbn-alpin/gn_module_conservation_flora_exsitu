@@ -138,7 +138,7 @@ CREATE TABLE "t_storage" (
     "id_storage" SERIAL NOT NULL UNIQUE,
     "id_material" INTEGER NOT NULL,
     "id_place" INTEGER NOT NULL,
-    "id_type_dry" INTEGER,
+    "id_dry_type" INTEGER,
     "initial_quantity" INTEGER NOT NULL,
     "current_quantity" INTEGER NOT NULL,
     "remarks" text,
@@ -306,7 +306,7 @@ ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_place") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_storage"
-ADD FOREIGN KEY("id_type_dry") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ADD FOREIGN KEY("id_dry_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
