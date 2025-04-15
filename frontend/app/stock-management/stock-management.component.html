@@ -5,31 +5,35 @@
         <button 
           mat-raised-button
           class="button-success uppercase"
-          (click)="openStockModal(1)"
+          (click)="openStockModal()"
           >Ajouter un stockage</button>
         <div class="card mt-2">
             <table mat-table [dataSource]="dataSource" class="mat-table">
                 <!-- Lieu -->
                 <ng-container matColumnDef="place">
                   <th mat-header-cell *matHeaderCellDef > Lieu </th>
-                  <td mat-cell *matCellDef="let element"> </td>
+                  <td mat-cell *matCellDef="let element"> 
+                    {{ element.place }}
+                  </td>
                 </ng-container>
                 <!-- Quantité de semence initiale -->
                 <ng-container matColumnDef="initial_quantity">
                   <th mat-header-cell *matHeaderCellDef> Quantité initiale </th>
-                  <td mat-cell *matCellDef="let element">  </td>
+                  <td mat-cell *matCellDef="let element"> 
+                    {{ element.initial_quantity }}
+                  </td>
                 </ng-container>
                 <!-- Quantité actuellement -->
                 <ng-container matColumnDef="current_quantity">
                   <th mat-header-cell *matHeaderCellDef> Quantité actuellement </th>
                   <td mat-cell *matCellDef="let element"> 
-                    
+                    {{ element.current_quantity }}
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="dry_type">
                     <th mat-header-cell *matHeaderCellDef> Type de séchage </th>
                     <td mat-cell *matCellDef="let element"> 
-                      
+                      {{ element.dry_type }}
                     </td>
                 </ng-container>
         
@@ -48,6 +52,14 @@
                       matTooltip="Supprimer le stock"
                     >
                       <mat-icon>delete</mat-icon>
+                    </button>
+                    <button 
+                      mat-icon-button 
+                      aria-label="Delete" 
+                      matTooltip="Ajouter une action"
+                      (click)="openActionModal(element.id_storage)"
+                    >
+                      <mat-icon>call_to_action</mat-icon>
                     </button>
                   </td>
                 </ng-container>

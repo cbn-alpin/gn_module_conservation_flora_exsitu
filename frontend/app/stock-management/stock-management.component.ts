@@ -3,7 +3,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { StockModalComponent } from '../components/stock-modal/stock-modal.component';
-
+import { ActionModalComponent } from '../components/action-modal/action-modal.component';
+import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'cfe-stock-management',
@@ -21,31 +23,43 @@ export class StockManagementComponent implements OnInit {
         'dry_type',
         'actions'
     ]; 
-    stocks: any[] = [];
+    public idMaterial;
 
     constructor(
         public dialog: MatDialog,
+        private exsituFormService: ExsituFormService,
+        public api: DataService
     ) {}
 
     ngOnInit(): void {
+        this.idMaterial = this.exsituFormService.idMaterial
         this.loadStocks();
     }
 
     loadStocks() {
-        // this.stockService.getAllStocks().subscribe((data) => {
-        //   this.stocks = data;
-        // });
+        this.api.getStorage(this.idMaterial).subscribe(
+            (stocks) =>{
+                this.dataSource.data = stocks;
+            }
+        )
     }
 
-    openActionModal(stock: any) {
-        // Logique ouverture modale pour ajouter une action à ce stock
-    }
-
-    openStockModal(id_material): void {      
+    openStockModal(): void {      
         const dialogRef = this.dialog.open(StockModalComponent, {
-            width: '100%',
+            width: '70%',
+            height: '60%',
+            data: { id_material: this.idMaterial  }
+        });
+        dialogRef.afterClosed().subscribe(() => {
+            
+        });
+    }
+
+    openActionModal(id_storage): void {      
+        const dialogRef = this.dialog.open(ActionModalComponent, {
+            width: '70%',
             height: '80%',
-            data: { id: id_material }
+            data: { id: id_storage }
         });
         dialogRef.afterClosed().subscribe(() => {
             
