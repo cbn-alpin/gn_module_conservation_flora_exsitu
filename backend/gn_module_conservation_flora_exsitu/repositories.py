@@ -21,7 +21,8 @@ from .models import(
     TMaterial,
     CorHarvestObserver,
     CorMaterialTaxon,
-    TMaterielSeed
+    TMaterielSeed,
+    TStorage
 )
 
 
@@ -430,6 +431,23 @@ class TMaterielSeedRepository:
 
             db.session.commit()
             return seed
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+class StorageRepository:
+    def create(self, data):
+        try:
+            additional_data = data.pop("additional_data", None)
+
+            if additional_data:
+                storage = TStorage(**data, additional_data=additional_data)
+            else:
+                storage = TStorage(**data)
+                
+            db.session.add(storage)
+            db.session.commit()
+            return storage 
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e

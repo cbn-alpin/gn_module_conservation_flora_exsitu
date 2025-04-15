@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
-from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository
+from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository, StorageRepository
 from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 from ref_geo.models import LAreas, BibAreasTypes
@@ -903,3 +903,25 @@ def update_seed(id_seed):
         return {"error": "Description non trouvée"}, 404
 
     return {"message": "Seed updated successfully"}, 200
+
+
+@blueprint.route('/materials/<int:id_material>/storage', methods=['POST'])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def add_storage(id_material):
+    """Ajout de stockage à un matériel"""
+    data = request.get_json()
+    material = TMaterial.query.get(id_material)
+    if not material:
+        return jsonify({'error': 'Matériel non trouvé'}), 404
+
+    required_fields = ['id_material', 'id_place', 'initial_quantity', 'current_quantity']
+    missing = [f for f in required_fields if f not in data]
+    if missing:
+        return jsonify({"error": f"Champs manquants: {', '.join(missing)}"}), 400
+    data["meta_create_by"] = g.current_user.id_role
+
+    storage_repo = StorageRepository()
+    storage = storage_repo.create(data)
+
+    return {"message": "Stock ajouté", "id_storage": storage.id_storage}, 201
