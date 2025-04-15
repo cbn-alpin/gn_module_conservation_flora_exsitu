@@ -4,7 +4,7 @@
 <mat-dialog-content class="mat-typography" *ngIf="stockForm">
   <div class="row row-0 mr-3 mt-2">
       <div class="col-6 padding-sm">
-        <small> Lieu de stockage *</small>
+        <label> Lieu de stockage *</label>
         <pnx-nomenclature
                 keyValue="id_nomenclature"
                 [bindAllItem]="false"
@@ -14,7 +14,7 @@
        </pnx-nomenclature>
       </div>
       <div class="col-6 padding-sm" *ngIf="showDryTypeField">
-        <small>Type de séchage</small>
+        <label>Type de séchage</label>
         <pnx-nomenclature
                 keyValue="id_nomenclature"
                 [bindAllItem]="false"
@@ -41,6 +41,10 @@
             type="number"
             [formControl]="stockForm.controls.current_quantity"
           />
+          <div style="color: red;" *ngIf="stockForm.errors?.quantityMismatch">
+            La quantité actuelle ne peut pas être supérieure à la quantité initiale.
+          </div>
+          
       </div>
   </div>
 
@@ -75,7 +79,7 @@
     <button *ngIf="edit"
         color="warn"
         mat-raised-button
-        matTooltip="Supprimer ce sctokage">
+        matTooltip="Supprimer ce stockage">
           Supprimer le stockage
           <mat-icon style="vertical-align: middle">delete</mat-icon>
     </button>
@@ -113,11 +117,11 @@
       <button
         class="button-success uppercase"
         mat-button [mat-dialog-close]="true"
-        matTooltip="Modifier et enregistrer ce sctokage"
+        matTooltip="Modifier et enregistrer ce stockage"
         (click)="submetData()"
         [disabled]="!stockForm.valid"
       >
-        Modifier ce sctokage
+        Modifier ce stockage
         <mat-icon style="vertical-align: middle">save</mat-icon>
       </button>
     </ng-template>

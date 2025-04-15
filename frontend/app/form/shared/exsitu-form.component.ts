@@ -100,6 +100,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
       
         if (materialIndex < urlSegments.length) {
           this.idMaterial = Number(urlSegments[materialIndex]);
+          this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
         }
       }
     }
