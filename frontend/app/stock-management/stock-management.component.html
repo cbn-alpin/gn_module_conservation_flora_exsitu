@@ -2,7 +2,11 @@
     <!-- Table des stocks -->
     <div class="container">
         <h2>Gestion des Stocks</h2>
-        <button mat-raised-button class="button-success uppercase">Ajouter un stockage</button>
+        <button 
+          mat-raised-button
+          class="button-success uppercase"
+          (click)="openStockModal(1)"
+          >Ajouter un stockage</button>
         <div class="card mt-2">
             <table mat-table [dataSource]="dataSource" class="mat-table">
                 <!-- Lieu -->
@@ -61,7 +65,7 @@
   
     <!-- Grille des actions -->
     <div class="mt-4">
-        <div class="row">
+        <div class="row row-0">
           <div class="col-md-6 mb-4">
             <cfe-actions-stock [title]="'Salle de pré-séchage'" [placeId]="1"></cfe-actions-stock>
           </div>

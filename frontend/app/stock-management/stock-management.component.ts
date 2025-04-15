@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { StockModalComponent } from '../components/stock-modal/stock-modal.component';
 
 
 @Component({
@@ -21,7 +23,9 @@ export class StockManagementComponent implements OnInit {
     ]; 
     stocks: any[] = [];
 
-    constructor() {}
+    constructor(
+        public dialog: MatDialog,
+    ) {}
 
     ngOnInit(): void {
         this.loadStocks();
@@ -33,11 +37,18 @@ export class StockManagementComponent implements OnInit {
         // });
     }
 
-    openStockModal() {
-        // Logique ouverture modale pour créer un stock
-    }
-
     openActionModal(stock: any) {
         // Logique ouverture modale pour ajouter une action à ce stock
+    }
+
+    openStockModal(id_material): void {      
+        const dialogRef = this.dialog.open(StockModalComponent, {
+            width: '100%',
+            height: '80%',
+            data: { id: id_material }
+        });
+        dialogRef.afterClosed().subscribe(() => {
+            
+        });
     }
 }
