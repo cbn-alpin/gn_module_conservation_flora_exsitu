@@ -12,18 +12,21 @@
                   Ce code de matériel existe déjà. Veuillez en choisir un autre.
                 </div>
               </div>
-              <div class="col-6 padding-sm">
-                  <label>Numéro de récolte parent</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  [formControl]="materialForm.controls.code_parent"
-                />
+              <div class="col-6 padding-sm mt-4">
+                <input type="text" 
+                  class="form-control mt-2"
+                  [formControl]="codeMaterialControl" 
+                  [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option *ngFor="let material of filteredMaterials$ | async" [value]="material.code_material">
+                    {{ material.code_material }}
+                  </mat-option>
+                </mat-autocomplete>
               </div>
           </div>
 
           <div class="row row-0 mr-3 mt-2">
-              <div class="col padding-sm">
+              <div class="col-6 padding-sm">
                   <label> Matériel végétal récolté *</label>
                   <pnx-nomenclature
                           keyValue="id_nomenclature"

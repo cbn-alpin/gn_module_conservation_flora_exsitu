@@ -147,10 +147,7 @@ export class HarvestFormService {
       // }
     }
 
-    patchForm(harvest: any): void {  
-      console.log('dans patch', harvest);
-      
-      
+    patchForm(harvest: any): void {       
       if (!harvest) return;
       const dateStart = harvest.date_start ? this.dateParser.parse(this.formatDate(harvest.date_start)) : null;
       const dateEnd = harvest.date_end ? this.dateParser.parse(this.formatDate(harvest.date_end)) : null;

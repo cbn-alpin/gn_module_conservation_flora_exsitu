@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { MaterialFormService } from './material-form.service';
 import { DataService } from '../../services/data.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
-import { HarvestFormService } from '../../harvest-form/harvest-form.service';
 import { ConstantsService } from '../../services/constants.service';
 import { ConfigService } from '../../services/config.service';
+import { Observable, of } from 'rxjs';
+import { map, startWith, switchMap, debounceTime } from 'rxjs/operators';
+
 
 @Component({
   selector: 'cs-material-form',
@@ -14,12 +16,13 @@ import { ConfigService } from '../../services/config.service';
 })
 export class MaterialFormComponent implements OnInit {
   materialForm: FormGroup;
-  idHarvest: number | null = null;
-  harvest: any;
   codeMaterialExists: boolean = false;
   allowMultipleTaxons: boolean = false;
   additionalDataForm: FormGroup;
   formsDefinition;
+  codeMaterialControl = new FormControl();
+  filteredMaterials$: Observable<string[]>;
+
 
   
   constructor(
@@ -33,6 +36,17 @@ export class MaterialFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeMaterialForm();
+     
+    this.filteredMaterials$ = this.codeMaterialControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      switchMap(value => this.api.getMaterialsCodeParent(this.exsituFormService.idHarvest).pipe(
+        map(materials => materials.filter(material =>
+          material.code_material.toLowerCase().includes(value.toLowerCase())
+        ))
+      ))
+    );
+
     this.additionalDataForm = this.materialForm.get('additional_data') as FormGroup;
     this.formsDefinition = this.cfg.getModuleConfigExsitu()['material_form']['additional_data'];
 
@@ -65,7 +79,7 @@ export class MaterialFormComponent implements OnInit {
   }
 
   submetData(){
-    let finalForm = this.formatDataFormHarvest();        
+    let finalForm = this.formatDataFormHarvest();            
     this.materialFormService.submitOccurrence(finalForm);
   }
 
@@ -90,6 +104,10 @@ export class MaterialFormComponent implements OnInit {
       } else {
         delete finalForm.additional_data;
       }
+    }
+
+    if(this.codeMaterialControl){
+      finalForm.code_parent = this.codeMaterialControl.value;
     }
     
     if(finalForm.taxons)

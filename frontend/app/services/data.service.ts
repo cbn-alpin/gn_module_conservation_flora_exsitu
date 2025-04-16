@@ -118,4 +118,9 @@ export class DataService {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/storages`);
   }
 
+  getMaterialsCodeParent(idHarvest: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/harvests/${idHarvest}/materials/code-autocomplete`);
+  }
+
+
 }
