@@ -6,6 +6,8 @@ import { MaterialFormService } from '../../material/material-form/material-form.
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ConstantsService } from '../../services/constants.service';
 import { ConfigService } from '../../services/config.service';
+import { Observable } from 'rxjs';
+import { map, startWith, switchMap, debounceTime } from 'rxjs/operators';
 
 
 @Component({
@@ -19,6 +21,8 @@ export class MaterialModalComponent implements OnInit {
     allowMultipleTaxons: boolean = false;
     additionalDataForm: FormGroup;
     formsDefinition;
+    codeMaterialControl = new FormControl();
+    filteredMaterials$: Observable<string[]>;
 
     constructor(
         public dialogRef: MatDialogRef<MaterialModalComponent>,
@@ -32,7 +36,17 @@ export class MaterialModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.initializeMaterialForm();     
+        this.initializeMaterialForm();    
+        this.filteredMaterials$ = this.codeMaterialControl.valueChanges.pipe(
+              startWith(''),
+              debounceTime(300),
+              switchMap(value => this.api.getMaterialsCodeParent(this.exsituFormService.idHarvest).pipe(
+                map(materials => materials.filter(material =>
+                  material.code_material.toLowerCase().includes(value.toLowerCase())
+                ))
+              ))
+        ); 
+
         this.additionalDataForm = this.materialForm.get('additional_data') as FormGroup;
         this.formsDefinition = this.cfg.getModuleConfigExsitu()['material_form']['additional_data']; 
         this.materialForm.get('code_material')?.valueChanges.subscribe(value => {
@@ -110,6 +124,10 @@ export class MaterialModalComponent implements OnInit {
           } else {
             delete finalForm.additional_data;
           }
+        }
+
+        if(this.codeMaterialControl){
+          finalForm.code_parent = this.codeMaterialControl.value;
         }
         
         if(finalForm.taxons)
