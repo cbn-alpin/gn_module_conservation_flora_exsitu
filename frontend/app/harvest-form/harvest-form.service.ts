@@ -172,19 +172,14 @@ export class HarvestFormService {
         id_exposition: harvest.id_exposition,
         slope: harvest.slope,
         precision: harvest.precision,
-        id_geographical_precision: harvest.id_geographical_precision
+        id_geographical_precision: harvest.id_geographical_precision,
+        additional_data: harvest.additional_data
       });
 
       if (harvest.observers && harvest.observers.length > 0) {
         // Appeler la méthode loadObservers pour charger et patcher les observateurs
         const observerIds = harvest.observers.map(observer => observer.id_observer);  // On récupère les IDs des observateurs
         this.loadObservers(observerIds);  // Charger et patcher les observateurs dans le formulaire
-      }
-
-      if (harvest.additional_data) {
-        this.harvestForm.get('additional_data')?.patchValue({
-          program: harvest.additional_data.program || ''
-        });
       }
 
       if (harvest.cd_hab) {
