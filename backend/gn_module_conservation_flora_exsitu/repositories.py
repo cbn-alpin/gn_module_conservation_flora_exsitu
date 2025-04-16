@@ -416,7 +416,13 @@ class HarvestMaterialRepository:
 class TMaterielSeedRepository:
     def create(self, data):
         try:
-            seed = TMaterielSeed(**data)
+            additional_data = data.pop("additional_data", None)
+                     
+            if additional_data:
+                seed = TMaterielSeed(**data, additional_data=additional_data)
+            else:
+                seed = TMaterielSeed(**data)
+            
             db.session.add(seed)
             db.session.commit()
             return seed 

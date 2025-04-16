@@ -358,6 +358,7 @@ class TMaterielSeed(db.Model):
             "sample_mass": self.sample_mass,
             "has_photo": self.has_photo,
             "remarks": self.remarks,
+            "additional_data": self.additional_data,
         }
 
 
