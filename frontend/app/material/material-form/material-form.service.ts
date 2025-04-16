@@ -55,6 +55,7 @@ export class MaterialFormService {
         is_soil_sampling: false,
         has_hybridation_risk: false,
         id_method_sample: null,
+        additional_data: this.fb.group({}),
         taxonInput: new UntypedFormControl(null),
         taxons: this.fb.array([]) 
       });
@@ -93,7 +94,8 @@ export class MaterialFormService {
         sample_foot_nb: occurrence.sample_foot_nb || null,
         is_soil_sampling: occurrence.is_soil_sampling,
         id_method_sample: occurrence.id_method_sample || null,
-        has_hybridation_risk: occurrence.has_hybridation_risk
+        has_hybridation_risk: occurrence.has_hybridation_risk,
+        additional_data: occurrence.additional_data
       });
       const taxons = occurrence.taxons || [];
       
@@ -124,7 +126,8 @@ export class MaterialFormService {
       sample_foot_nb: null,
       is_soil_sampling: false,
       id_method_sample: null,
-      has_hybridation_risk: null
+      has_hybridation_risk: null,
+      additional_data: null
     };
   }
 

@@ -5,6 +5,7 @@ import { DataService } from '../../services/data.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { HarvestFormService } from '../../harvest-form/harvest-form.service';
 import { ConstantsService } from '../../services/constants.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'cs-material-form',
@@ -17,18 +18,23 @@ export class MaterialFormComponent implements OnInit {
   harvest: any;
   codeMaterialExists: boolean = false;
   allowMultipleTaxons: boolean = false;
+  additionalDataForm: FormGroup;
+  formsDefinition;
 
   
   constructor(
     public materialFormService: MaterialFormService,
     public api: DataService,
     public exsituFormService: ExsituFormService,
-    private constants: ConstantsService
+    private constants: ConstantsService,
+    public cfg: ConfigService
   ) 
   {}
 
   ngOnInit(): void {
     this.initializeMaterialForm();
+    this.additionalDataForm = this.materialForm.get('additional_data') as FormGroup;
+    this.formsDefinition = this.cfg.getModuleConfigExsitu()['material_form']['additional_data'];
 
     this.materialForm.get('code_material')?.valueChanges.subscribe(value => {
       if (this.exsituFormService.mode === 'add' || (this.materialFormService.code_material !== null && value !== this.materialFormService.code_material)) {
@@ -65,6 +71,26 @@ export class MaterialFormComponent implements OnInit {
 
   private formatDataFormHarvest() {
     const finalForm = JSON.parse(JSON.stringify(this.materialForm.value));
+
+    const additionalFields = this.formsDefinition || [];
+
+    if (finalForm.additional_data) {
+      const cleanedAdditionalData = {};
+    
+      additionalFields.forEach(field => {
+        const key = field.attribut_name;
+        const value = finalForm.additional_data[key];
+        if (value !== null && value !== undefined && value !== '') {
+          cleanedAdditionalData[key] = value;
+        }
+      });
+    
+      if (Object.keys(cleanedAdditionalData).length > 0) {
+        finalForm.additional_data = cleanedAdditionalData;
+      } else {
+        delete finalForm.additional_data;
+      }
+    }
     
     if(finalForm.taxons)
       finalForm.taxons = finalForm.taxons.map(taxon => taxon.parentFormControl.cd_nom);
