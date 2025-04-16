@@ -491,6 +491,17 @@ def delete_material(id_material):
     return {"message": "Matériel supprimé"}, 200
 
 
+@blueprint.route("/harvests/<int:id_harvest>/materials/code-autocomplete", methods=["GET"])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+def get_materials_by_harvest(id_harvest):
+    materials = db.session.query(TMaterial).filter_by(id_harvest=id_harvest).all()
+    return jsonify([
+        {"id_material": m.id_material, "code_material": m.code_material}
+        for m in materials
+    ])
+
+
+
 @blueprint.route("/harvests/<int:id_harvest>/materials", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
