@@ -11,6 +11,7 @@ import {
 import { DataService } from '../../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { DialogService } from '../confirm-dialog/confirm-dialog.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
     selector: 'cfe-seed-description',
@@ -20,19 +21,24 @@ import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 export class SeddDescriptionComponent implements OnInit {
     public edit: boolean = false
     public seedForm: FormGroup;
+    additionalDataForm: FormGroup;
+    formsDefinition;
     constructor(
         private dataService: DataService,
         private _commonService: CommonService,
         public dialogRef: MatDialogRef<SeddDescriptionComponent>,
         private fb: FormBuilder,
         private dialogService: DialogService,
-        @Inject(MAT_DIALOG_DATA) public data: { id: number, mode: string, seedData: any }
+        @Inject(MAT_DIALOG_DATA) public data: { id: number, mode: string, seedData: any },
+        public cfg: ConfigService
     ){
 
     }
     ngOnInit(): void {              
         this.edit = this.data.mode === 'edit';
         this.buildForm(this.data.seedData || {});
+        this.additionalDataForm = this.seedForm.get('additional_data') as FormGroup;
+        this.formsDefinition = this.cfg.getModuleConfigExsitu()['seed_form']['additional_data'];
     }
 
 
@@ -47,6 +53,7 @@ export class SeddDescriptionComponent implements OnInit {
           sample_count: seedData.sample_count ?? null,
           sample_mass: seedData.sample_mass ?? null,
           has_photo: seedData.has_photo ?? false,
+          additional_data: seedData.additional_data ?? null,
           remarks: seedData.remarks ?? ''
         };
     
@@ -61,6 +68,7 @@ export class SeddDescriptionComponent implements OnInit {
                 sample_count: [defaultValues.sample_count],
                 sample_mass: [defaultValues.sample_mass],
                 has_photo: [defaultValues.has_photo],
+                additional_data: this.fb.group(defaultValues.additional_data ?? {}),
                 remarks: [defaultValues.remarks]
             },
             {
@@ -92,7 +100,9 @@ export class SeddDescriptionComponent implements OnInit {
     }
 
     submetData(){
-        const formData = this.seedForm.value;
+        const formData = this.formatDataForm();
+        console.log(formData);
+        
         if(!this.edit){
             this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
                 (response)=>{
@@ -104,7 +114,7 @@ export class SeddDescriptionComponent implements OnInit {
                 }
             )
         }else{
-            this.dataService.updateSeed(this.data.seedData.id_seed, this.seedForm.value).subscribe(
+            this.dataService.updateSeed(this.data.seedData.id_seed, formData).subscribe(
                 ()=>{
                     this._commonService.translateToaster('info', 'Semence modifiée avec succès');
                     this.close()
@@ -115,6 +125,31 @@ export class SeddDescriptionComponent implements OnInit {
             )
         }
         
+    }
+
+    private formatDataForm() {
+        const finalForm = this.seedForm.value;
+  
+        const additionalFields = this.formsDefinition || [];
+  
+        if (finalForm.additional_data) {
+          const cleanedAdditionalData = {};
+        
+          additionalFields.forEach(field => {
+            const key = field.attribut_name;
+            const value = finalForm.additional_data[key];
+            if (value !== null && value !== undefined && value !== '') {
+              cleanedAdditionalData[key] = value;
+            }
+          });
+        
+          if (Object.keys(cleanedAdditionalData).length > 0) {
+            finalForm.additional_data = cleanedAdditionalData;
+          } else {
+            delete finalForm.additional_data;
+          }
+        }
+        return finalForm;
     }
 
     close(): void {
