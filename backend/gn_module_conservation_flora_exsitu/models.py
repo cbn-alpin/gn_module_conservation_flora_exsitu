@@ -268,7 +268,8 @@ class TMaterial(db.Model):
             "remarks": self.remarks,
             "id_phenology_1": self.id_phenology_1,
             "id_phenology_2": self.id_phenology_2,
-            "has_hybridation_risk": self.has_hybridation_risk
+            "has_hybridation_risk": self.has_hybridation_risk,
+            "additional_data": self.additional_data
         }
 
 

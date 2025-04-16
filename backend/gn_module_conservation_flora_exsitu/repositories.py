@@ -350,7 +350,13 @@ class HarvestMaterialRepository:
                 bank = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
                 data["code_cultural_bank"] = bank.id_material if bank else None
 
-            material = TMaterial(**data)
+            additional_data = data.pop("additional_data", None)
+                     
+            if additional_data:
+                material = TMaterial(**data, additional_data=additional_data)
+            else:
+                material = TMaterial(**data)
+            
             db.session.add(material)
             db.session.commit()
             return True, material
