@@ -140,8 +140,8 @@ COMMENT ON COLUMN cor_material_taxon.cd_nom IS 'Clé étrangère GN.taxonomie.ta
 -- Si type_action = "destockage" ou "déplacement", alors il faut re-créer une action de type "stockage initial"
 
 
-CREATE TABLE "t_action" (
-    "id_action" SERIAL NOT NULL UNIQUE,
+CREATE TABLE "t_storage" (
+    "id_storage" SERIAL NOT NULL UNIQUE,
     "id_material" INTEGER NOT NULL,
 	"id_place" INTEGER NOT NULL,
     "date_start" DATE NOT NULL,
@@ -167,20 +167,21 @@ CREATE TABLE "t_action" (
     "humidity_rate" decimal,
     -- obligatoire si type_action = placement du témoin humidité
     "id_humidity_device" INTEGER,
+	"id_dry_type" INTEGER,
     "remarks" text,
     "additional_data" JSONB,
     "meta_create_by" INTEGER NOT NULL,
     "meta_create_date" TIMESTAMP NOT NULL,
     "meta_update_by" INTEGER,
     "meta_update_date" TIMESTAMP,
-    PRIMARY KEY ("id_action")
+    PRIMARY KEY ("id_storage")
 );
 
-COMMENT ON TABLE "t_action" IS 'Si type_action = "destockage" ou "déplacement", alors il faut re-créer une action de type "stockage initial"';
-COMMENT ON COLUMN "t_action"."quantity" IS 'Obligatoire lorsque type_action = destockage / deplacement';
-COMMENT ON COLUMN "t_action"."id_destination" IS 'Obligatoire lorsque type_action = stockage / destockage / deplacement';
-COMMENT ON COLUMN "t_action"."id_humidity_level" IS '- sec - moyennement humide - humide';
-COMMENT ON COLUMN "t_action"."id_humidity_device" IS 'obligatoire si type_action = placement du témoin d''humidité';
+COMMENT ON TABLE "t_storage" IS 'Si type_action = "destockage" ou "déplacement", alors il faut re-créer une action de type "stockage initial"';
+COMMENT ON COLUMN "t_storage"."quantity" IS 'Obligatoire lorsque type_action = destockage / deplacement';
+COMMENT ON COLUMN "t_storage"."id_destination" IS 'Obligatoire lorsque type_action = stockage / destockage / deplacement';
+COMMENT ON COLUMN "t_storage"."id_humidity_level" IS '- sec - moyennement humide - humide';
+COMMENT ON COLUMN "t_storage"."id_humidity_device" IS 'obligatoire si type_action = placement du témoin d''humidité';
 
 
 
@@ -291,33 +292,36 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material_seed"
 ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_actor") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_action_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_place") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_destock") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_destination") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_humidity_level") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_action"
+ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_humidity_device") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_storage"
+ADD FOREIGN KEY("id_dry_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;

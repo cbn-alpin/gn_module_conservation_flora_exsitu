@@ -363,10 +363,10 @@ class TMaterielSeed(db.Model):
 
 
 @serializable
-class TAction(db.Model):
-    __tablename__ = 't_action'
+class TStorage(db.Model):
+    __tablename__ = 't_storage'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_action = db.Column(
+    id_storage = db.Column(
         db.Integer,
         primary_key=True
     )
@@ -433,6 +433,14 @@ class TAction(db.Model):
     )
     humidity_rate = db.Column(db.Numeric)
     id_humidity_device = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    id_dry_type = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",
