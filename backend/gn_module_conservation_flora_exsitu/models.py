@@ -220,7 +220,7 @@ class TMaterial(db.Model):
     code_cultural_bank = db.Column(
         db.Integer,
     )
-    sample_foot_nb = db.Column(db.Integer)
+    sample_foot_count = db.Column(db.Integer)
     is_soil_sampling = db.Column(
         db.Boolean,
         default=False
@@ -261,7 +261,7 @@ class TMaterial(db.Model):
             "id_material_type": self.id_material_type,
             "id_material_quality": self.id_material_quality,
             "id_harvest": self.id_harvest,
-            "sample_foot_nb": self.sample_foot_nb,
+            "sample_foot_count": self.sample_foot_count,
             "id_foot_counting_class": self.id_foot_counting_class,
             "id_method_sample": self.id_method_sample,
             "is_soil_sampling": self.is_soil_sampling,
@@ -363,10 +363,10 @@ class TMaterielSeed(db.Model):
 
 
 @serializable
-class TStorage(db.Model):
-    __tablename__ = 't_storage'
+class TAction(db.Model):
+    __tablename__ = 't_action'
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_storage = db.Column(
+    id_action = db.Column(
         db.Integer,
         primary_key=True
     )
@@ -382,62 +382,6 @@ class TStorage(db.Model):
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",
             ondelete="NULL"
-        ),
-        nullable=False
-    )
-    id_dry_type = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
-    )
-    initial_quantity = db.Column(db.Integer)
-    current_quantity = db.Column(db.Integer)
-    remarks = db.Column(db.Text)
-    additional_data = db.Column(JSONB)
-    meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role",
-            ondelete="NULL",
-        ),
-    )
-    meta_create_date = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=datetime.utcnow,
-        server_default=sa.func.now(),
-    )
-    meta_update_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role",
-            ondelete="NULL",
-        ),
-    )
-    meta_update_date = db.Column(
-        db.DateTime,
-        onupdate=sa.func.now(),
-    )
-
-    place = db.relationship("TNomenclatures", foreign_keys=[id_place])
-    dry_type = db.relationship("TNomenclatures", foreign_keys=[id_dry_type])
-    
-
-@serializable
-class TAction(db.Model):
-    __tablename__ = 't_action'
-    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_action = db.Column(
-        db.Integer,
-        primary_key=True
-    )
-    id_storage = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_storage.id_storage",
         ),
         nullable=False
     )

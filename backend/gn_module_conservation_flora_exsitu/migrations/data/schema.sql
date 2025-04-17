@@ -98,7 +98,7 @@ CREATE TABLE "t_material" (
 	-- Remarques générales
 	"code_cultural_bank" INTEGER,
 	-- Nombre de pieds échantillonnés
-	"sample_foot_nb" INTEGER,
+	"sample_foot_count" INTEGER,
 	-- Prélèvement de terre
 	"is_soil_sampling" BOOLEAN DEFAULT FALSE,
 	-- Mode d’échantillonnage
@@ -118,7 +118,7 @@ COMMENT ON COLUMN t_material.id_foot_counting_class IS 'Classes d’individus';
 COMMENT ON COLUMN t_material.id_phenology_1 IS 'Phénologie';
 COMMENT ON COLUMN t_material.id_phenology_2 IS 'Phénologie';
 COMMENT ON COLUMN t_material.remarks IS 'Commentaire + Protocoles et astuces';
-COMMENT ON COLUMN t_material.sample_foot_nb IS 'Nombre de pieds échantillonnés';
+COMMENT ON COLUMN t_material.sample_foot_count IS 'Nombre de pieds échantillonnés';
 COMMENT ON COLUMN t_material.is_soil_sampling IS 'Prélèvement de terre';
 COMMENT ON COLUMN t_material.id_method_sample IS 'Mode d’échantillonnage';
 COMMENT ON COLUMN t_material.has_hybridation_risk IS 'Risque dhybridation';
@@ -134,21 +134,6 @@ CREATE TABLE "cor_material_taxon" (
 COMMENT ON COLUMN cor_material_taxon.cd_nom IS 'Clé étrangère GN.taxonomie.taxonomie.taxref.cd_nom';
 
 -------------------------------------------------------------------
-CREATE TABLE "t_storage" (
-    "id_storage" SERIAL NOT NULL UNIQUE,
-    "id_material" INTEGER NOT NULL,
-    "id_place" INTEGER NOT NULL,
-    "id_dry_type" INTEGER,
-    "initial_quantity" INTEGER NOT NULL,
-    "current_quantity" INTEGER NOT NULL,
-    "remarks" text,
-    "additional_data" JSONB,
-    "meta_create_by" INTEGER NOT NULL,
-    "meta_create_date" TIMESTAMP NOT NULL,
-    "meta_update_by" INTEGER,
-    "meta_update_date" TIMESTAMP,
-    PRIMARY KEY ("id_storage")
-);
 
 
 
@@ -157,7 +142,8 @@ CREATE TABLE "t_storage" (
 
 CREATE TABLE "t_action" (
     "id_action" SERIAL NOT NULL UNIQUE,
-    "id_storage" INTEGER NOT NULL,
+    "id_material" INTEGER NOT NULL,
+	"id_place" INTEGER NOT NULL,
     "date_start" DATE NOT NULL,
     "date_end" DATE NOT NULL,
     "id_actor" INTEGER NOT NULL,
@@ -296,21 +282,6 @@ ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_area_type") REFERENCES ref_geo.bib_areas_types(id_type)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 -----------------------------------------------------------
-ALTER TABLE "t_storage"
-ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_storage"
-ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_storage"
-ADD FOREIGN KEY("id_place") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_storage"
-ADD FOREIGN KEY("id_dry_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_storage"
-ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material_seed"
 ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -330,10 +301,13 @@ ALTER TABLE "t_action"
 ADD FOREIGN KEY("id_actor") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_action"
-ADD FOREIGN KEY("id_storage") REFERENCES "t_storage"("id_storage")
+ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_action"
 ADD FOREIGN KEY("id_action_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_place") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_action"
 ADD FOREIGN KEY("id_destock") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
