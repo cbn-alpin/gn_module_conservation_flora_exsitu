@@ -164,7 +164,7 @@ CREATE TABLE "t_action" (
     -- - moyennement humide
     -- - humide
     "id_humidity_level" INTEGER,
-    "humidity_rate " decimal,
+    "humidity_rate" decimal,
     -- obligatoire si type_action = placement du témoin humidité
     "id_humidity_device" INTEGER,
     "remarks" text,
