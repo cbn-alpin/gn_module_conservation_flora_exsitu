@@ -3,8 +3,8 @@ import logging
 from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
-from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository, StorageRepository
-from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed, TStorage
+from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository
+from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 from ref_geo.models import LAreas, BibAreasTypes
 from geonature.utils.env import db
@@ -746,7 +746,7 @@ def export_harvests():
             func.ST_X(func.ST_Transform(func.ST_Centroid(THarvest.geom), 4326)).label("longitude"),
             case([(THarvest.id_area_type == commune_id, LAreas.area_name)], else_=None).label("commune"),
             case([(THarvest.id_area_type == departement_id, LAreas.area_name)], else_=None).label("departement"),
-            TMaterial.sample_foot_nb.label("nombre_pieds_echantillonnes"),
+            TMaterial.sample_foot_count.label("nombre_pieds_echantillonnes"),
             case([
                 (TMaterial.is_soil_sampling == True, 'Oui'),
                 (TMaterial.is_soil_sampling == False, 'Non')
@@ -798,7 +798,7 @@ def export_harvests():
             MaterialQuality.label_default,
             LAreas.area_name,
             THarvest.id_area_type,
-            TMaterial.sample_foot_nb,
+            TMaterial.sample_foot_count,
             TMaterial.is_soil_sampling,
             TMaterial.has_hybridation_risk,
             TMaterial.remarks
@@ -915,48 +915,3 @@ def update_seed(id_seed):
 
     return {"message": "Seed updated successfully"}, 200
 
-
-@blueprint.route('/materials/<int:id_material>/storages', methods=['POST'])
-@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-@json_resp
-def add_storage(id_material):
-    """Ajout de stockage à un matériel"""
-    data = request.get_json()
-    material = TMaterial.query.get(id_material)
-    if not material:
-        return jsonify({'error': 'Matériel non trouvé'}), 404
-
-    required_fields = ['id_material', 'id_place', 'initial_quantity', 'current_quantity']
-    missing = [f for f in required_fields if f not in data]
-    if missing:
-        return jsonify({"error": f"Champs manquants: {', '.join(missing)}"}), 400
-    data["meta_create_by"] = g.current_user.id_role
-
-    storage_repo = StorageRepository()
-    storage = storage_repo.create(data)
-
-    return {"message": "Stock ajouté", "id_storage": storage.id_storage}, 201
-
-
-
-@blueprint.route('/materials/<int:id_material>/storages', methods=['GET'])
-@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
-def list_storages(id_material):
-    """Retourne la liste des stockages pour un matériel"""
-    material = TMaterial.query.get(id_material)
-    if not material:
-        return jsonify({'error': 'Matériel non trouvé'}), 404
-
-    storages = TStorage.query.filter_by(id_material=id_material).all()
-
-    storage_list = []
-    for s in storages:
-        storage_list.append({
-            'id_storage': s.id_storage,
-            'place': s.place.label_default,
-            'initial_quantity': s.initial_quantity,
-            'current_quantity': s.current_quantity,
-            'dry_type': s.dry_type.label_default if s.dry_type else None,
-        })
-
-    return jsonify(storage_list), 200
