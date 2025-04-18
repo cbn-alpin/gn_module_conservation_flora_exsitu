@@ -1,0 +1,49 @@
+<mat-card class="semis-table">
+  <mat-card-header>
+    <mat-card-title>Liste des Semis</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="numSemis">
+        <th mat-header-cell *matHeaderCellDef>N° Semis</th>
+        <td mat-cell *matCellDef="let element">{{element.numSemis}}</td>
+      </ng-container>
+      <ng-container matColumnDef="numSemence">
+        <th mat-header-cell *matHeaderCellDef>N° Semence</th>
+        <td mat-cell *matCellDef="let element">{{element.numSemence}}</td>
+      </ng-container>
+      <ng-container matColumnDef="dateDebut">
+        <th mat-header-cell *matHeaderCellDef>Date début</th>
+        <td mat-cell *matCellDef="let element">{{element.dateDebut | date}}</td>
+      </ng-container>
+      <ng-container matColumnDef="dateFin">
+        <th mat-header-cell *matHeaderCellDef>Date fin</th>
+        <td mat-cell *matCellDef="let element">{{element.dateFin | date}}</td>
+      </ng-container>
+      <ng-container matColumnDef="replicate">
+        <th mat-header-cell *matHeaderCellDef>Réplicate</th>
+        <td mat-cell *matCellDef="let element">{{element.replicate}}</td>
+      </ng-container>
+      <ng-container matColumnDef="levage">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="primary" (click)="onView()">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="accent" (click)="onEdit()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onDelete()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <div class="no-data " *ngIf="dataSource.data.length === 0">
+      Aucun semis enregistré
+    </div>
+  </mat-card-content>
+</mat-card>

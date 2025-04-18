@@ -46,13 +46,18 @@
             <a 
                 class="tablinks disabled" 
                 (click)="idMaterial ? goToTab('seeds') : null">
+                class="tablinks" 
+                (click)=" goToTab('germination')">
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
                 Test de germination
             </a>            
 
             <!-- Semis -->
-            <a class="tablinks disabled">
+            <a class="tablinks"
+                (click)="goToTab('semis')"
+                >
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+
                 Semis
             </a>
 
