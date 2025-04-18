@@ -37,6 +37,19 @@ import { SeddDescriptionComponent } from './components/seed-description/seed-des
 import { StockManagementComponent } from './stock-management/stock-management.component';
 import { ActionsStockComponent } from './stock-management/actions-stock/actions-stock.component';
 import { ActionModalComponent } from './components/action-modal/action-modal.component';
+import { SemisComponent } from './semis/semis.component';
+
+
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { SemisTableComponent } from './semis-table/semis-table.component';
+import { GerminationComponent } from './germination/germination.component';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -54,6 +67,10 @@ export const routingConfiguration: ExtraOptions = {
     HarvestMapComponent,
     TaxonModalComponent,
     ConfirmDialogComponent,
+    SemisComponent ,
+    SemisTableComponent,
+    GerminationComponent
+,
     SeddDescriptionComponent,
     StockManagementComponent,
     ActionsStockComponent,
@@ -85,6 +102,16 @@ export const routingConfiguration: ExtraOptions = {
     MatPaginatorModule,
     MatSortModule,
     MatButtonModule,
+
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCardModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   entryComponents: [
     ConfirmDialogComponent,

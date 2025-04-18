@@ -494,3 +494,378 @@ class TStorage(db.Model):
             "remarks": self.remarks,
             "additional_data": self.additional_data,
         }
+
+    stocks = db.relationship('TSeedStock', backref='seed')
+
+
+@serializable
+class TSeedStock(db.Model):
+    __tablename__ = 't_seed_stock'
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+    id_stock = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+    uuid_stock = db.Column(
+        UUID(as_uuid=True),
+        server_default=sa.text("uuid_generate_v4()"),
+    )
+    id_seed = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_seed.id_seed",
+        ),
+        nullable=False
+    )
+    id_stock_location = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    initial_quantity = db.Column(db.Integer)
+    current_quantity = db.Column(db.Integer)
+    stock_date = db.Column(db.DateTime)
+    stock_mvts = db.relationship('TSeedStockMouvement', backref='stock')
+    seed_tablets = db.relationship('TSeedTablet', backref='stock')
+
+@serializable
+class TSeedStockMouvement(db.Model):
+    __tablename__ = 't_seed_stock_mouvement'
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+    id_stock_mvt = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+    uuid_stock_mvt = db.Column(
+        UUID(as_uuid=True),
+        server_default=sa.text("uuid_generate_v4()"),
+    )
+    id_stock = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_seed_stock.id_stock"
+        ),
+        nullable=False
+    )
+    stock_mvt_date = db.Column(db.DateTime)
+    id_stock_flow = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature"
+        ),
+        nullable=False
+    )
+    quantity = db.Column(db.Integer)
+    mvt_comment = db.Column(db.Text)
+    role_mvmt =  db.Column(db.String(5))
+
+@serializable
+class TSeedTablet(db.Model):
+    __tablename__ = 't_seed_tablet'
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+    id_seed_tablet = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+    uuid_humidity = db.Column(
+        UUID(as_uuid=True),
+        server_default=sa.text("uuid_generate_v4()"),
+    )
+    id_stock = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_seed_stock.id_stock"
+        ),
+        nullable=False
+    )
+    evaluation_date = db.Column(db.DateTime)
+    id_color = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+        nullable=False
+    )
+    tablet_change_date = db.Column(db.DateTime)
+    remaks = db.Column(db.Text)
+
+@serializable
+class TSowing(db.Model):
+    __tablename__ = "t_sowing"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_sowing = db.Column(db.Integer, primary_key=True, unique=True)
+    
+    id_stock = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_seed_stock.id_stock", ondelete="NO ACTION"),
+        nullable=False
+    )
+
+    contract = db.Column(db.String(255))
+    sowing_number = db.Column(db.String(255))
+    seed_number = db.Column(db.String(255))
+    seed_preparation = db.Column(db.Text)
+    packaging = db.Column(db.Integer, nullable=False)
+    substrate = db.Column(db.Integer, nullable=False)
+
+    id_watering_method = db.Column(
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature"),
+        nullable=False
+    )
+
+    id_sowing_method = db.Column(
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature")
+    )
+
+    sowing_depth_mm = db.Column(db.String(255))
+    date_start = db.Column(db.Date)
+    date_end = db.Column(db.Date)
+    sowing_treatment = db.Column(db.Text)
+    remarks = db.Column(db.Text)
+
+    stock = db.relationship("TSeedStock", backref=db.backref("sowings", lazy="select"))
+
+    def to_dic(self):
+        return {
+            "id_sowing": self.id_sowing,
+            "contract": self.contract,
+            "sowing_number": self.sowing_number,
+            "date_start": self.date_start,
+            "date_end": self.date_end
+        }
+
+@serializable
+class TSowingReplicates(db.Model):
+    __tablename__ = "t_sowing_replicates"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_sowing_replicates = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_sowing = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_sowing.id_sowing"),
+        nullable=False
+    )
+
+    num_seedlings_emerged = db.Column(db.Integer)
+    num_seedlings_dead = db.Column(db.Integer)
+    num_seedlings_transplanted = db.Column(db.Integer)
+    num_seeds_sown = db.Column(db.Integer)
+    num_replicates = db.Column(db.Integer)
+    germination_rate = db.Column(db.Float)
+    germination_delay = db.Column(db.Integer)
+    germination_period = db.Column(db.Integer)
+
+    sowing = db.relationship("TSowing", backref=db.backref("replicates", lazy="select"))
+
+@serializable
+class TSowingReplicateDetails(db.Model):
+    __tablename__ = "t_sowing_replicate_details"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_sowing_replicate_details = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_sowing_replicate = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_sowing_replicates.id_sowing_replicates", ondelete="NO ACTION"),
+        nullable=False
+    )
+
+    date = db.Column(db.Date)
+    num_seedlings_emerged = db.Column(db.Integer)
+    num_seedlings_dead = db.Column(db.Integer)
+    num_seedlings_transplanted = db.Column(db.Integer)
+
+    replicate = db.relationship("TSowingReplicates", backref=db.backref("details", lazy="select"))
+
+@serializable
+class TGerminationTest(db.Model):
+    __tablename__ = "t_germination_test"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_germination_test = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_stock = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_seed_stock.id_stock", ondelete="NO ACTION"),
+        nullable=False
+    )
+
+    contract = db.Column(db.String(255))
+    initial_test = db.Column(db.Boolean)
+    test_number = db.Column(db.String(255))
+    seed_number = db.Column(db.String(255))
+    sterilization = db.Column(db.Text)
+    
+    id_support = db.Column(
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NO ACTION")
+    )
+    id_substrate = db.Column(
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NO ACTION")
+    )
+    id_liquid = db.Column(
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NO ACTION")
+    )
+
+    remarks = db.Column(db.Text)
+    scarification = db.Column(db.Text)
+    num_replicates = db.Column(db.String(255))
+
+    stock = db.relationship("TSeedStock", backref=db.backref("germination_tests", lazy="select"))
+
+    
+
+@serializable
+class TGerminationReplicates(db.Model):
+    __tablename__ = "t_germination_replicates"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_germination_replicates = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_germination_test = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_germination_test.id_germination_test"),
+        nullable=False
+    )
+
+    date = db.Column(db.Date)
+    num_seedlings_emerged = db.Column(db.Integer)
+    num_seedlings_dead = db.Column(db.Integer)
+    num_seedlings_transplanted = db.Column(db.Integer)
+    germination_rate = db.Column(db.Float)
+    germination_delay = db.Column(db.Integer)
+    germination_period = db.Column(db.Integer)
+    T50 = db.Column(db.Integer)
+
+    test = db.relationship("TGerminationTest", backref=db.backref("replicates", lazy="select"))
+
+@serializable
+class TGerminationReplicateDetails(db.Model):
+    __tablename__ = "t_germination_replicate_details"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_germination_replicate_details = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_germination_replicate = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_germination_replicates.id_germination_replicates", ondelete="NO ACTION"),
+        nullable=False
+    )
+
+    date = db.Column(db.Date)
+    num_seeds_germinated = db.Column(db.Integer)
+    num_seeds_dead = db.Column(db.Integer)
+    num_seeds_ungerminated = db.Column(db.Integer)
+
+    replicate = db.relationship("TGerminationReplicates", backref=db.backref("details", lazy="select"))
+
+@serializable
+class TGerminationTestPreTreatments(db.Model):
+    __tablename__ = "t_germination_test_pre_treatments"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_germination_test_pre_treatments = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_germination_test = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_germination_test.id_germination_test"),
+        nullable=False
+    )
+
+    pre_treatment = db.Column(db.Boolean)
+    date_start = db.Column(db.Date)
+    date_end = db.Column(db.Date)
+    id_photo_thermo = db.Column(db.Integer)
+    chemical_products = db.Column(db.Text)
+    duration_days = db.Column(db.Integer)
+
+    test = db.relationship("TGerminationTest", backref=db.backref("pre_treatments", lazy="select"))
+
+    def to_dic(self):
+        return {
+            "id": self.id_germination_test_pre_treatments,
+            "date_start": self.date_start,
+            "date_end": self.date_end,
+            "chemical_products": self.chemical_products,
+            "pre_treatment": self.pre_treatment,
+            "duration_days": self.duration_days
+        }
+    
+@serializable
+class TViabilityTest(db.Model):
+    __tablename__ = "t_viability_test"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_viability_test = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_stock = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_seed_stock.id_stock", ondelete="NO ACTION"),
+        nullable=True
+    )
+
+    contract = db.Column(db.String(255))
+    seed_number = db.Column(db.String(255))
+    viability_rate = db.Column(db.Float)
+    sterilization = db.Column(db.Text)
+    scarification = db.Column(db.Text)
+    remarks = db.Column(db.Text)
+
+    stock = db.relationship("TSeedStock", backref=db.backref("viability_tests", lazy="select"))
+
+    def to_dic(self):
+        return {
+            "id": self.id_viability_test,
+            "contract": self.contract,
+            "seed_number": self.seed_number,
+            "viability_rate": self.viability_rate
+        }
+@serializable
+class TViabilityTestReplicates(db.Model):
+    __tablename__ = "t_viability_test_replicates"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_viability_replicates = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_viability_test = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_viability_test.id_viability_test", ondelete="NO ACTION"),
+        nullable=False
+    )
+
+    num_seeds = db.Column(db.Integer)
+    num_seeds_viable = db.Column(db.Integer)
+    num_seeds_non_viable = db.Column(db.Integer)
+    viability_rate = db.Column(db.Float)
+
+    test = db.relationship("TViabilityTest", backref=db.backref("replicates", lazy="select"))
+@serializable
+class TViabilityTestTreatments(db.Model):
+    __tablename__ = "t_viability_test_treatments"
+    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+
+    id_viability_test_treatments = db.Column(db.Integer, primary_key=True, unique=True)
+
+    id_viability_test = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_viability_test.id_viability_test", ondelete="NO ACTION"),
+        nullable=False
+    )
+
+    datetime_start = db.Column(db.Date)
+    datetime_end = db.Column(db.Date)
+    id_thermo = db.Column(db.Integer)
+    concentration_ttc = db.Column(db.Text)
+    duration_hours = db.Column(db.Integer)
+
+    test = db.relationship("TViabilityTest", backref=db.backref("treatments", lazy="select"))

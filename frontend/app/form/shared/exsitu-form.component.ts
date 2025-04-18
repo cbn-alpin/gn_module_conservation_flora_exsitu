@@ -55,6 +55,12 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/stock`
           ]);
         }
+        else if (tab === 'semis') {
+          this.router.navigate([`${this.currentModulePath}/semis`]);
+        }
+        else if (tab === 'germination') {
+          this.router.navigate([`${this.currentModulePath}/germination`]);
+        }
     }
 
     updateTabAndIdsFromUrl(url: string) {      

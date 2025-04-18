@@ -4,12 +4,22 @@ import { MaterialFormComponent } from './material/material-form/material-form.co
 import { ExsituFormComponent } from './form/shared/exsitu-form.component';
 import { HarvestMapListComponent } from './harvest-map-list/harvest-map-list.component';
 import { HarvestFormComponent } from './harvest-form/harvest-form.component';
+import { SemisComponent } from './semis/semis.component';
+import { GerminationComponent } from './germination/germination.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
 
 export const routes: Routes = [
     {
         path: '',
         component: HarvestMapListComponent,
+    },
+    {
+        path: 'semis',
+        component: SemisComponent,
+    },
+    {
+        path: 'germination',
+        component: GerminationComponent,
     },
     {
         path: 'form',
