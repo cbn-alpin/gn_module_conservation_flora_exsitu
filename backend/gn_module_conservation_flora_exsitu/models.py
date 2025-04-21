@@ -474,3 +474,23 @@ class TStorage(db.Model):
         db.DateTime,
         onupdate=sa.func.now(),
     )
+
+    def to_dic(self):
+        return {
+            "id_storage": self.id_storage,
+            "id_material": self.id_material,
+            "id_place": self.id_place,
+            "id_action_type": self.id_action_type,
+            "quantity": self.quantity,
+            "date_start": self.date_start.isoformat() if self.date_start else None,
+            "date_end": self.date_end.isoformat() if self.date_end else None,
+            "id_actor": self.id_actor,
+            "id_humidity_level": self.id_humidity_level,
+            "id_destock": self.id_destock,
+            "humidity_rate": self.humidity_rate,
+            "id_humidity_device": self.id_humidity_device,
+            "id_dry_type": self.id_dry_type,
+            "id_destination": self.id_destination,
+            "remarks": self.remarks,
+            "additional_data": self.additional_data,
+        }
