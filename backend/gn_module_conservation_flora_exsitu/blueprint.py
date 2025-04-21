@@ -1003,4 +1003,15 @@ def get_actions_by_place(id_material):
         return jsonify({"error": "Erreur serveur"}), 500
 
 
+@blueprint.route('/materials/<int:id_material>/stock-summary', methods=['GET'])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+@json_resp
+def get_stock_summary(id_material):
+    """Retourne la quantité initiale et la quantité courante globale d'un matériel"""
+    action_repo = StorageRepository()
 
+    try:
+        result = action_repo.get_stock_summary(id_material)
+        return result, 200
+    except Exception as e:
+        return {"error": "Erreur lors du calcul du stock"}, 500

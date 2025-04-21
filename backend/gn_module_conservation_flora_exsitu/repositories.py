@@ -644,6 +644,30 @@ class StorageRepository:
 
         return actions, total
     
-    
+    def get_stock_summary(self, id_material):
+        id_sti = self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")  # stockage initial
+        id_dest = self.get_id_nomenclature("CFE_ACTION_TYPE", "dest")  # déstockage
+        id_depl = self.get_id_nomenclature("CFE_ACTION_TYPE", "depl")  # déplacement
+
+        # Quantité initiale globale
+        initial_storage = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
+            .filter(
+                TStorage.id_material == id_material,
+                TStorage.id_action_type == id_sti
+            ).scalar()
+
+        # Total des quantités consommées (destockage + déplacement)
+        quantite_sortie = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
+            .filter(
+                TStorage.id_material == id_material,
+                TStorage.id_action_type.in_([id_dest, id_depl])
+            ).scalar()
+
+        current_quantity = initial_storage - quantite_sortie
+
+        return {
+            "initial_storage": initial_storage,
+            "current_quantity": current_quantity
+        }
 
 
