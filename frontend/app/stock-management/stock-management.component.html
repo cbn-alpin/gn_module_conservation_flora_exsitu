@@ -1,98 +1,23 @@
-<div>
-    <!-- Table des stocks -->
-    <div class="container">
-        <h2>Gestion des Stocks</h2>
-        <button 
-          mat-raised-button
-          class="button-success uppercase"
-          (click)="openStockModal()"
-          >Ajouter un stockage</button>
-        <div class="card mt-2">
-            <table mat-table [dataSource]="dataSource" class="mat-table">
-                <!-- Lieu -->
-                <ng-container matColumnDef="place">
-                  <th mat-header-cell *matHeaderCellDef > Lieu </th>
-                  <td mat-cell *matCellDef="let element"> 
-                    {{ element.place }}
-                  </td>
-                </ng-container>
-                <!-- Quantité de semence initiale -->
-                <ng-container matColumnDef="initial_quantity">
-                  <th mat-header-cell *matHeaderCellDef> Quantité initiale </th>
-                  <td mat-cell *matCellDef="let element"> 
-                    {{ element.initial_quantity }}
-                  </td>
-                </ng-container>
-                <!-- Quantité actuellement -->
-                <ng-container matColumnDef="current_quantity">
-                  <th mat-header-cell *matHeaderCellDef> Quantité actuellement </th>
-                  <td mat-cell *matCellDef="let element"> 
-                    {{ element.current_quantity }}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="dry_type">
-                    <th mat-header-cell *matHeaderCellDef> Type de séchage </th>
-                    <td mat-cell *matCellDef="let element"> 
-                      {{ element.dry_type }}
-                    </td>
-                </ng-container>
-        
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef> Actions </th>
-                  <td mat-cell *matCellDef="let element">
-                    <button 
-                      mat-icon-button 
-                      aria-label="Edit" 
-                      matTooltip="Modifier le stock"
-                    ><mat-icon>edit</mat-icon></button>
-                    <button 
-                      mat-icon-button 
-                      color="warn" 
-                      aria-label="Delete" 
-                      matTooltip="Supprimer le stock"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                    <button 
-                      mat-icon-button 
-                      aria-label="Delete" 
-                      matTooltip="Ajouter une action"
-                      (click)="openActionModal(element.id_storage)"
-                    >
-                      <mat-icon>call_to_action</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-                <!-- Lignes de l'en-tête et des données -->
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"></tr>
-              </table>
-              <mat-paginator
-                    [length]="10"
-                    [pageSize]="4"    
-               ></mat-paginator>
-        </div>
-    </div>
-    
+<div class="container-fluid">
+  <div class="stock-summary">
+    <p><strong>Quantité initiale globale :</strong> {{ totalInitialQuantity }}</p>
+    <p><strong>Quantité actuelle globale :</strong> {{ totalCurrentQuantity }}</p>
+  </div>
   
-    <!-- Grille des actions -->
-    <div class="mt-4">
-        <div class="row row-0">
-          <div class="col-md-6 mb-4">
-            <cfe-actions-stock [title]="'Salle de pré-séchage'" [placeId]="1"></cfe-actions-stock>
-          </div>
-          <div class="col-md-6 mb-4">
-            <cfe-actions-stock [title]="'Salle de séchage'" [placeId]="2"></cfe-actions-stock>
-          </div>
-          <div class="col-md-6 mb-4">
-            <cfe-actions-stock [title]="'Chambre froide'" [placeId]="3"></cfe-actions-stock>
-          </div>
-          <div class="col-md-6 mb-4">
-            <cfe-actions-stock [title]="'Congélateur'" [placeId]="4"></cfe-actions-stock>
-          </div>
-        </div>
+  <div class="row">
+    <div class="col-md-6 col-12 mb-4">
+      <cfe-actions-stock [title]="'Salle de pré-séchage'" [placeCode]="constants.PLACE_CODES.PRE_DRYING_ROOM"></cfe-actions-stock>
     </div>
-      
-      
+    <div class="col-md-6 col-12 mb-4">
+      <cfe-actions-stock [title]="'Salle de séchage'" [placeCode]="constants.PLACE_CODES.DRYING_ROOM"></cfe-actions-stock>
+    </div>
+    <div class="col-md-6 col-12 mb-4">
+      <cfe-actions-stock [title]="'Chambre froide'" [placeCode]="constants.PLACE_CODES.COLD_ROOM"></cfe-actions-stock>
+    </div>
+    <div class="col-md-6 col-12 mb-4">
+      <cfe-actions-stock [title]="'Congélateur'" [placeCode]="constants.PLACE_CODES.FREEZER"></cfe-actions-stock>
+    </div>
+  </div>
 </div>
+
   

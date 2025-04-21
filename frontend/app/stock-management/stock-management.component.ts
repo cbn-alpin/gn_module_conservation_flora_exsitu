@@ -6,6 +6,7 @@ import { StockModalComponent } from '../components/stock-modal/stock-modal.compo
 import { ActionModalComponent } from '../components/action-modal/action-modal.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
+import { ConstantsService } from '../services/constants.service';
 
 @Component({
   selector: 'cfe-stock-management',
@@ -13,35 +14,21 @@ import { DataService } from '../services/data.service';
   styleUrls: ['./stock-management.component.css'],
 })
 export class StockManagementComponent implements OnInit {
-    dataSource = new MatTableDataSource<any>(); 
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
-    displayedColumns: string[] = [
-        'place',        
-        'initial_quantity', 
-        'current_quantity', 
-        'dry_type',
-        'actions'
-    ]; 
     public idMaterial;
+    totalInitialQuantity: number = 0;
+    totalCurrentQuantity: number = 0;
+
 
     constructor(
         public dialog: MatDialog,
         private exsituFormService: ExsituFormService,
-        public api: DataService
+        public api: DataService,
+        public constants: ConstantsService
     ) {}
 
     ngOnInit(): void {
-        this.idMaterial = this.exsituFormService.idMaterial
-        this.loadStocks();
-    }
-
-    loadStocks() {
-        this.api.getStorage(this.idMaterial).subscribe(
-            (stocks) =>{
-                this.dataSource.data = stocks;
-            }
-        )
+        this.idMaterial = this.exsituFormService.idMaterial;
+        this.getStockSummary() 
     }
 
     openStockModal(): void {      
@@ -65,4 +52,13 @@ export class StockManagementComponent implements OnInit {
             
         });
     }
+
+    getStockSummary() {
+        this.api.getStockSummary(this.idMaterial).subscribe((res) => {
+          console.log('Résumé global du stock:', res);
+          this.totalInitialQuantity = res['initial_storage'];
+          this.totalCurrentQuantity = res['current_quantity'];
+        });
+      }
+      
 }
