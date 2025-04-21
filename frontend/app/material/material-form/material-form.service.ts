@@ -51,7 +51,7 @@ export class MaterialFormService {
         id_phenology_2: null,
         remarks: null,
         code_cultural_bank: null,
-        sample_foot_nb: null,
+        sample_foot_count: null,
         is_soil_sampling: false,
         has_hybridation_risk: false,
         id_method_sample: null,
@@ -79,7 +79,6 @@ export class MaterialFormService {
       this.code_material = occurrence.code_material
       const taxonControls = this.form.get('taxons') as FormArray;
       taxonControls.clear();
-      // Patch le formulaire avec les données de l'occurrence
       this.form.patchValue({
         code_material: occurrence.code_material || '',
         code_parent: occurrence.code_parent || '',
@@ -91,7 +90,7 @@ export class MaterialFormService {
         id_phenology_2: occurrence.id_phenology_2 || null,
         remarks: occurrence.remarks || '',
         code_cultural_bank: occurrence.code_cultural_bank || null,
-        sample_foot_nb: occurrence.sample_foot_nb || null,
+        sample_foot_count: occurrence.sample_foot_count || null,
         is_soil_sampling: occurrence.is_soil_sampling,
         id_method_sample: occurrence.id_method_sample || null,
         has_hybridation_risk: occurrence.has_hybridation_risk,
@@ -123,7 +122,7 @@ export class MaterialFormService {
       id_phenology_2: null,
       remarks: '',
       code_cultural_bank: null,
-      sample_foot_nb: null,
+      sample_foot_count: null,
       is_soil_sampling: false,
       id_method_sample: null,
       has_hybridation_risk: null,
