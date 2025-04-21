@@ -22,6 +22,7 @@ from .models import(
     CorHarvestObserver,
     CorMaterialTaxon,
     TMaterielSeed,
+    TStorage
 )
 
 
@@ -445,3 +446,107 @@ class TMaterielSeedRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+
+         
+class StorageRepository:
+    def create(self, data):
+        try:
+            code_place = data.pop("code_place", None)
+            id_place = None
+            if code_place:
+                id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
+                if id_place:
+                    data["id_place"] = id_place
+
+            id_material = data["id_material"]
+            id_action_type = data["id_action_type"]
+            quantity = data.get("quantity") or 0
+
+            # Stockage initial
+            id_action_initial_storage = self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+
+            # Vérifie qu'un stockage initial existe si l'action n'est pas un "stockage initial"
+            if id_action_type != id_action_initial_storage:
+                initial_storage = db.session.query(TStorage).filter_by(
+                    id_material=id_material,
+                    id_place=id_place,
+                    id_action_type=id_action_initial_storage
+                ).first()
+
+                if not initial_storage:
+                    raise ValueError("Un stockage initial est requis avant d'effectuer cette action.")
+                
+                id_dry_type = data.get("id_destock")
+                dry_type_total = self.get_id_nomenclature("CFE_DESTOCK", "total")
+
+                if id_action_type == self.get_id_nomenclature("CFE_ACTION_TYPE", "dest") and id_dry_type == dry_type_total:
+                    quantity = self.get_current_quantity(id_material, id_place)
+                    data["quantity"] = quantity
+
+                # Vérifie la quantité pour les actions qui en consomment
+                action_codes_needing_quantity = ["depl", "dest"]
+                id_actions_need_quantity = [
+                    self.get_id_nomenclature("CFE_ACTION_TYPE", c) for c in action_codes_needing_quantity
+                ]
+
+                if id_action_type in id_actions_need_quantity:
+                    current_quantity = self.get_current_quantity(id_material, id_place)
+    
+                    if quantity > current_quantity:
+                        raise ValueError(
+                            f"Quantité demandée ({quantity}) supérieure au stock disponible ({current_quantity})."
+                        )
+
+            additional_data = data.pop("additional_data", None)
+
+            if additional_data:
+                action = TStorage(**data, additional_data=additional_data)
+            else:
+                action = TStorage(**data)
+
+            db.session.add(action)
+            db.session.commit()
+            return action
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    def get_id_nomenclature(self, type_code, code_nomenclature):
+        return db.session.execute(
+            text("SELECT ref_nomenclatures.get_id_nomenclature(:mytype, :mycdnomenclature)"),
+            {"mytype": type_code, "mycdnomenclature": code_nomenclature}
+        ).scalar()
+
+    def get_current_quantity(self, id_material, id_place):
+        """Calcule la quantité actuelle restante dans un lieu pour un matériel donné."""
+        id_action_initial_storage = self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+        id_action_destock = self.get_id_nomenclature("CFE_ACTION_TYPE", "dest")
+        id_action_deplacement = self.get_id_nomenclature("CFE_ACTION_TYPE", "depl")
+
+        # Somme des quantités entrées
+        initial_storage = db.session.query(
+            db.func.sum(TStorage.quantity)
+        ).filter_by(
+            id_material=id_material,
+            id_place=id_place,
+            id_action_type=id_action_initial_storage
+        ).scalar() or 0
+
+        # Quantités outputs : déstockages + déplacements
+        exits = db.session.query(
+            db.func.sum(TStorage.quantity)
+        ).filter(
+            TStorage.id_material == id_material,
+            TStorage.id_place == id_place,
+            TStorage.id_action_type.in_([id_action_destock, id_action_deplacement])
+        ).scalar() or 0
+
+        return initial_storage - exits
+    
+
+    

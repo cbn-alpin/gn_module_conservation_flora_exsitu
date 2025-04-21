@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
-from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository
+from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository, StorageRepository
 from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 from ref_geo.models import LAreas, BibAreasTypes
@@ -13,7 +13,7 @@ from sqlalchemy.orm import aliased
 from apptax.taxonomie.models import Taxref
 from pypnusershub.db.models import User, Organisme
 from geojson import Feature, FeatureCollection
-from sqlalchemy import and_, exists, Text
+from sqlalchemy import exists
 from flask import request, jsonify
 from pypn_habref_api.models import Habref
 from geoalchemy2.functions import ST_AsGeoJSON
@@ -914,4 +914,29 @@ def update_seed(id_seed):
         return {"error": "Description non trouvée"}, 404
 
     return {"message": "Seed updated successfully"}, 200
+
+
+@blueprint.route('/materials/<int:id_material>/actions', methods=['POST'])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def add_action(id_material):
+    """Ajout d'une action"""
+    data = request.get_json()
+    
+    material = TMaterial.query.get(id_material)
+    if not material:
+        return jsonify({'error': 'Matériel non trouvé'}), 404
+
+    data["id_material"] = id_material
+    data["meta_create_by"] = g.current_user.id_role
+
+    action_repo = StorageRepository()
+    try:
+        action = action_repo.create(data)
+        return {"message": "Action ajoutée avec succès", "id_storage": action.id_storage}, 201
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": "Erreur serveur"}), 500
+
 
