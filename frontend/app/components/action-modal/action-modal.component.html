@@ -12,6 +12,10 @@
                 [parentFormControl]="actionForm.controls.id_action_type"
           >
        </pnx-nomenclature>
+        <div *ngIf="showInitialStockWarning" class="alert alert-warning">
+          ⚠️ Aucune action de stockage initial détectée. Veuillez commencer par un stockage initial.
+        </div>
+      
       </div>
       <div class="col-6 padding-sm">
         <label> Auteur de l'action *</label>
@@ -57,12 +61,19 @@
         >
      </pnx-nomenclature>
     </div>
-    <div class="col-6 padding-sm">
+    <div class="col-6 padding-sm" *ngIf="showDestinationField">
       <label>Destination</label>
-      <pnx-nomenclature
+      <pnx-nomenclature *ngIf="showInternalField"
               keyValue="id_nomenclature"
               [bindAllItem]="false"
               codeNomenclatureType="CFE_INTERNAL_DESTINATION"
+              [parentFormControl]="actionForm.controls.id_destination"
+        >
+     </pnx-nomenclature>
+     <pnx-nomenclature *ngIf="showExternalField"
+              keyValue="id_nomenclature"
+              [bindAllItem]="false"
+              codeNomenclatureType="CFE_EXTERNAL_DESTINATION"
               [parentFormControl]="actionForm.controls.id_destination"
         >
      </pnx-nomenclature>
@@ -100,6 +111,9 @@
         type="number"
         [formControl]="actionForm.controls.quantity"
       />
+      <mat-error *ngIf="actionForm.get('quantity')?.hasError('exceedMax')">
+        La quantité dépasse la quantité maximale disponible ({{ quantiteMaxDisponible }}).
+      </mat-error>
     </div>
     <div class="col-6 padding-sm">
         <label>Mesure de l'humidité précise</label>
@@ -108,6 +122,19 @@
           type="number"
           [formControl]="actionForm.controls.humidity_rate"
         />
+    </div>
+  </div>
+
+  <div class="row row-0 mr-3 mt-2">
+    <div class="col-6 padding-sm">
+      <label>Type de séchage</label>
+      <pnx-nomenclature
+              keyValue="id_nomenclature"
+              [bindAllItem]="false"
+              codeNomenclatureType="CFE_DRY_TYPE"
+              [parentFormControl]="actionForm.controls.id_dry_type"
+        >
+     </pnx-nomenclature>
     </div>
   </div>
 
@@ -162,9 +189,9 @@
         matTooltip="Enregistrer cette action"
         class="button-success"
         (click)="submetData()"
-        [disabled]="!actionForm.valid"
+        [disabled]="!actionForm.valid || showInitialStockWarning"
       >
-        Ajouter le action
+        Ajouter l'action
         <mat-icon style="vertical-align: middle">save</mat-icon>
       </button>
     </ng-container>
@@ -184,7 +211,7 @@
         (click)="submetData()"
         [disabled]="!actionForm.valid"
       >
-        Modifier cette action
+        Modifier l'action
         <mat-icon style="vertical-align: middle">save</mat-icon>
       </button>
     </ng-template>

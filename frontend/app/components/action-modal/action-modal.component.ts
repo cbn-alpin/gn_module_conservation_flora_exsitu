@@ -3,16 +3,15 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     FormBuilder,
     FormGroup,
-    Validators,
-    AbstractControl,
-    ValidationErrors, 
-    ValidatorFn
+    Validators
   } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';
-import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 import { ConfigService } from '../../services/config.service';
+import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { ConstantsService } from '../../services/constants.service';
+import { FormService } from '@geonature_common/form/form.service';
+
 
 @Component({
     selector: 'cfe-action-modal',
@@ -25,25 +24,54 @@ export class ActionModalComponent implements OnInit {
     additionalDataForm: FormGroup;
     formsDefinition;
     public auteurs_code;
+    showDestinationField: boolean = false;
+    showInternalField: boolean = false;
+    showExternalField: boolean = false;
+    code_destock: string;
+    context: any = null;
+    quantiteMaxDisponible: number = 0;
+    public showInitialStockWarning: boolean = false;
+
 
     constructor(
         public dialogRef: MatDialogRef<ActionModalComponent>,
         private fb: FormBuilder,
         public cfg: ConfigService,
         public api: DataService,
+        @Inject(MAT_DIALOG_DATA) public data: { data: any },
+        private dateParser: NgbDateParserFormatter,
+        private _commonService: CommonService,
+        public constants: ConstantsService,
+        private coreFormService: FormService,
     ){
 
     }
 
-    ngOnInit(): void {
-        this.initForm()
+    ngOnInit(): void {        
+        this.initForm();
+        this.additionalDataForm = this.actionForm.get('additional_data') as FormGroup;
+        this.listenQuantityChanges();
         this.auteurs_code = this.cfg.getObsCode()
-        this.formsDefinition = this.cfg.getModuleConfigExsitu()['action_form']['additional_data'];
+        this.formsDefinition = this.cfg.getModuleConfigExsitu()['action_form']['additional_data'];   
+        
+        this.actionForm.controls['id_action_type'].valueChanges.subscribe(value => {      
+            if(value) {
+                this.getCodesNomenclature(value)
+            }
+          });
+        
+        this.actionForm.controls['id_destock'].valueChanges.subscribe(id => {      
+            if(id) {
+                this.getDestockCode(id)
+            }
+        });
+        this.loadContext();
     }
 
     initForm(){
         this.actionForm = this.fb.group({
-            id_storage: [null, Validators.required],
+            id_material: [this.data.data.id_material, Validators.required],
+            code_place: [this.data.data.placeCode, Validators.required],
             date_start: [null, Validators.required],
             date_end: [null, Validators.required],
             id_actor: [null, Validators.required],
@@ -54,13 +82,213 @@ export class ActionModalComponent implements OnInit {
             id_humidity_level: null,
             humidity_rate: null,
             id_humidity_device: null,
+            id_dry_type: null,
             remarks: '',
             additional_data: this.fb.group({})
         });
+
+        this.actionForm.setValidators([
+          this.coreFormService.dateValidator(
+            this.actionForm.get('date_start'),
+            this.actionForm.get('date_end')
+          ),
+        ]);
+
+    }
+
+    loadContext() {      
+        this.api.getActionContextStorage(this.data.data.id_material, this.data.data.placeCode).subscribe((res) => {
+          this.context = res;    
+          console.log(this.context);
+                
+          const placeCode = this.data.data.placeCode;
+          const idPlace = this.getIdPlaceFromCode(placeCode);
+          this.quantiteMaxDisponible = res.quantities[idPlace] || 0;        
+        });
+    }
+
+    getIdPlaceFromCode(code: string): number | null {
+      const mapping: { [key: string]: number } = {
+        [this.constants.PLACE_CODES.PRE_DRYING_ROOM]: this.context?.place_mapping?.sdps,
+        [this.constants.PLACE_CODES.DRYING_ROOM]: this.context?.place_mapping?.sds,
+        [this.constants.PLACE_CODES.COLD_ROOM]: this.context?.place_mapping?.cf,
+        [this.constants.PLACE_CODES.FREEZER]: this.context?.place_mapping?.cong,
+      };
+      return mapping[code] || null;
+    }
     
+
+    showInitialStockageRequiredMessage() {
+      this.showInitialStockWarning = true;
+      this._commonService.translateToaster('warning', 'Aucune action de stockage initial détectée. Veuillez commencer par un stockage initial.')
+    }
+      
+
+    listenQuantityChanges() {      
+      const quantityControl = this.actionForm.get('quantity');      
+  
+      if (!quantityControl) return;
+  
+      quantityControl.valueChanges.subscribe((val) => {        
+          if (val > this.quantiteMaxDisponible) {
+              quantityControl.setErrors({ exceedMax: true });
+          } else {
+              const errors = quantityControl.errors;
+              if (errors?.exceedMax) {
+                  delete errors.exceedMax;
+                  if (Object.keys(errors).length === 0) {
+                      quantityControl.setErrors(null);
+                  } else {
+                      quantityControl.setErrors(errors);
+                  }
+              }
+          }
+      });
+  }
+  
+      
+
+    submetData(){
+        let finalForm = this.formatDataForm();     
+             
+        this.api.addAction(this.data.data.id_material, finalForm).subscribe(
+            (response)=>{
+                this._commonService.translateToaster('info', 'Action ajoutée avec succès');
+            },
+            (error) => {
+                console.log(error);
+                this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de l\'action');
+            }
+        )  
+    }
+
+    private formatDataForm() {
+        const finalForm = this.actionForm.value;        
+  
+        const additionalFields = this.formsDefinition || [];
+  
+        if (finalForm.additional_data) {
+          const cleanedAdditionalData = {};
+        
+          additionalFields.forEach(field => {
+            const key = field.attribut_name;
+            const value = finalForm.additional_data[key];
+            if (value !== null && value !== undefined && value !== '') {
+              cleanedAdditionalData[key] = value;
+            }
+          });
+        
+          if (Object.keys(cleanedAdditionalData).length > 0) {
+            finalForm.additional_data = cleanedAdditionalData;
+          } else {
+            delete finalForm.additional_data;
+          }
+        }
+        finalForm.date_start = this.dateParser.format(finalForm.date_start);
+        finalForm.date_end = this.dateParser.format(finalForm.date_end);
+
+        finalForm['id_actor'] = finalForm['id_actor'][0].id_role;
+
+        return finalForm;
+    }
+
+    getDestockCode(idNomenclature: number){
+        this.api.getCodesNomenclature(idNomenclature).subscribe({
+            next: (code)=>{                
+                this.code_destock = code;
+                const quantity = this.actionForm.get('quantity');
+                if (quantity) {
+                    if (this.constants.DESTOCK_CODES.PARTIAL === code) {
+                        quantity.setValidators([Validators.required]);
+                    } else {
+                        quantity.clearValidators();
+                    }
+    
+                    quantity.updateValueAndValidity();
+                    quantity.markAsTouched();
+                    quantity.markAsDirty();
+                }    
+            }
+        });
+    }
+    
+
+    getCodesNomenclature(idNomenclature: number): void {    
+        this.api.getCodesNomenclature(idNomenclature).subscribe({
+          next: (codeNomenclature: string) => {            
+            this.showDestinationField = this.constants.DISPLAY_DESTINATION_FIELD.includes(codeNomenclature)
+            this.showInternalField = codeNomenclature === this.constants.ACTION_CODES.MOVEMENT ? true : false
+            this.showExternalField = codeNomenclature === this.constants.ACTION_CODES.DESTOCKING ? true : false
+            this.updateValidatorsBasedOnAction(codeNomenclature)
+            const isInitialStorage = codeNomenclature === this.constants.ACTION_CODES.INITIAL_STORAGE;
+            if (!isInitialStorage && this.context && this.context.has_initial_stockage === false) {
+              this.showInitialStockageRequiredMessage();
+            }
+          },
+          error: (error) => {
+            
+          }
+        });
+    }
+
+    updateValidatorsBasedOnAction(actionCode: string): void {
+        const quantity = this.actionForm.get('quantity');
+        const idHumidityDevice = this.actionForm.get('id_humidity_device');
+        const idHumidityLevel = this.actionForm.get('id_humidity_level');
+        const humidityRate = this.actionForm.get('humidity_rate');
+        const idDestock = this.actionForm.get('id_destock');
+        const idDestination = this.actionForm.get('id_destination');
+      
+        // Réinitialiser tous les validateurs
+        [quantity, idHumidityDevice, idHumidityLevel, humidityRate, idDestock, idDestination].forEach(control => {
+          control?.clearValidators();
+          control?.updateValueAndValidity();
+        });
+      
+        switch (actionCode) {
+          case this.constants.ACTION_CODES.INITIAL_STORAGE:
+            quantity?.setValidators([Validators.required]);
+            this.showInitialStockWarning = false;
+            break;
+      
+          case this.constants.ACTION_CODES.HUMIDITY_INDICATOR_ADDED:
+            idHumidityDevice?.setValidators([Validators.required]);
+            break;
+      
+          case this.constants.ACTION_CODES.HUMIDITY_EVALUATION:
+            idHumidityLevel?.setValidators([Validators.required]);
+            break;
+      
+          case this.constants.ACTION_CODES.PRECISE_HUMIDITY_MEASUREMENT:
+            humidityRate?.setValidators([Validators.required]);
+            break;
+      
+          case this.constants.ACTION_CODES.DESTOCKING:
+            idDestock?.setValidators([Validators.required]);
+      
+            if (this.constants.DESTOCK_CODES.PARTIAL === this.code_destock) {
+              quantity?.setValidators([Validators.required]);
+            }
+      
+            idDestination?.setValidators([Validators.required]);
+            break;
+      
+          case this.constants.ACTION_CODES.MOVEMENT:
+            quantity?.setValidators([Validators.required]);
+            idDestination?.setValidators([Validators.required]);
+            break;
+      
+          default:
+            break;
+        }
+      
+        // Appliquer les modifs
+        [quantity, idHumidityDevice, idHumidityLevel, humidityRate, idDestock, idDestination].forEach(control => {
+          control?.updateValueAndValidity();
+        });
     }
 
     close(): void {
-        this.dialogRef.close();
+      this.dialogRef.close();
     }
 }

@@ -110,17 +110,28 @@ export class DataService {
     return this.api.put<any>(`${this.moduleBaseUrl}/materials/seeds/${id_seed}`, data);
   }
 
-  addStorage(idMaterial: number, storageData: any): Observable<any>{
-    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/storages`, storageData);
-  }
-
-  getStorage(idMaterial: number): Observable<any>{
-    return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/storages`);
-  }
-
   getMaterialsCodeParent(idHarvest: number): Observable<any[]> {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/harvests/${idHarvest}/materials/code-autocomplete`);
   }
 
+  addAction(idMaterial: number, actionData: any): Observable<any> {
+    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/actions`, actionData);
+  }
+
+  getActionContextStorage(idMaterial: number, placeCode: string) : Observable<any>{
+    return this.api.get(`${this.moduleBaseUrl}/materials/${idMaterial}/action_context`, {params: { place_code: placeCode }});
+  }
+  
+
+  getActions(idMaterial: number, params?: HttpParams): Observable<any[]> {    
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/actions`, { params });
+  }
+  
+  getStockSummary(id_material: number): Observable<{ quantite_initiale: number, quantite_courante: number }> {
+    return this.api.get<{ quantite_initiale: number, quantite_courante: number }>(
+      `${this.moduleBaseUrl}/materials/${id_material}/stock-summary`
+    );
+  }
+  
 
 }

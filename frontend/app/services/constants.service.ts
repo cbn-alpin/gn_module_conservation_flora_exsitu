@@ -68,5 +68,30 @@ export class ConstantsService {
     return this._DRY_TYPE_CODES.slice();
   }
 
+  public readonly ACTION_CODES = {
+    INITIAL_STORAGE: 'sti',
+    HUMIDITY_INDICATOR_ADDED: 'acth',
+    HUMIDITY_EVALUATION: 'evu',
+    PRECISE_HUMIDITY_MEASUREMENT: 'mhp',
+    DESTOCKING: 'dest',
+    MOVEMENT: 'depl'
+  };
+
+  public readonly DISPLAY_DESTINATION_FIELD = [
+    this.ACTION_CODES.DESTOCKING,
+    this.ACTION_CODES.MOVEMENT
+  ];
+
+  public readonly REQUIRED_QUANTITY_FIELD = [
+    this.ACTION_CODES.INITIAL_STORAGE,
+    this.ACTION_CODES.DESTOCKING,
+    this.ACTION_CODES.MOVEMENT
+  ];
+
+  public readonly DESTOCK_CODES = {
+    PARTIAL: 'part',
+    FULL: 'total'
+  };
+
   constructor() {}
 }
