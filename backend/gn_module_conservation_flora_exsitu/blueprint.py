@@ -940,3 +940,28 @@ def add_action(id_material):
         return jsonify({"error": "Erreur serveur"}), 500
 
 
+@blueprint.route('/materials/<int:id_material>/action_context', methods=['GET'])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+@json_resp
+def get_action_context(id_material):
+    """Retourne le contexte d'action d'un matériel (stockage initial, quantités restantes...)"""
+    material = TMaterial.query.get(id_material)
+    if not material:
+        return jsonify({"error": "Matériel non trouvé"}), 404
+    
+    place_code = request.args.get("place_code")
+    print(place_code)
+    if not place_code:
+        return jsonify({"error": "Le code du lieu (place_code) est requis."}), 400
+
+    repo = StorageRepository()
+    quantities_by_place = repo.get_current_quantities(id_material)
+    has_initial_stockage = repo.has_initial_stockage(id_material, place_code)
+    place_mapping = repo.get_place_code_mapping()
+
+    return {
+        "has_initial_stockage": has_initial_stockage,
+        "quantities": quantities_by_place,
+        "place_mapping": place_mapping
+    }
+

@@ -549,4 +549,101 @@ class StorageRepository:
         return initial_storage - exits
     
 
+    def has_initial_stockage(self, id_material: int, code_place: str) -> bool:
+        id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
+        if not id_place:
+            return False
+        return db.session.query(
+            db.exists().where(
+                and_(
+                    TStorage.id_material == id_material,
+                    TStorage.id_place == id_place,
+                    TStorage.id_action_type == self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+                )
+            )
+        ).scalar()
     
+
+    def get_current_quantities(self, id_material: int) -> dict:
+        """Retourne un dict {id_place: current_quantity}"""
+        initial_storage = db.session.query(
+            TStorage.id_place,
+            func.sum(TStorage.quantity).label("quantity")
+        ).filter(
+            TStorage.id_material == id_material,
+            TStorage.id_action_type == self.get_id_nomenclature("CFE_ACTION_TYPE", "sti"),
+            TStorage.quantity != None
+        ).group_by(TStorage.id_place).all()
+
+        outputs = db.session.query(
+            TStorage.id_place,
+            func.sum(TStorage.quantity).label("quantity")
+        ).filter(
+            TStorage.id_material == id_material,
+            TStorage.id_action_type.in_([
+                self.get_id_nomenclature("CFE_ACTION_TYPE", "depl"),
+                self.get_id_nomenclature("CFE_ACTION_TYPE", "dest")
+            ]),
+            TStorage.quantity != None
+        ).group_by(TStorage.id_place).all()
+
+        result = {}
+        # Ajout des quantités initiales
+        for row in initial_storage:
+            result[row.id_place] = row.quantity or 0
+
+        # Retrait des quantités outputs
+        for row in outputs:
+            if row.id_place in result:
+                result[row.id_place] -= row.quantity or 0
+
+        # Nettoyage des quantités <= 0
+        # result = {k: v for k, v in result.items() if v > 0}
+        return result
+    
+    def get_place_code_mapping(self) -> dict:
+        """Retourne un mapping des codes de lieu vers leurs IDs (ex: 'cf' -> 12)"""
+        id_type_nomenclature = db.session.execute(text("SELECT ref_nomenclatures.get_id_nomenclature_type('CFE_PLACE')")).scalar()
+        rows = db.session.query(
+            TNomenclatures.cd_nomenclature,
+            TNomenclatures.id_nomenclature
+        ).filter(
+            TNomenclatures.id_type == id_type_nomenclature,
+            TNomenclatures.cd_nomenclature.in_(["cf", "sds", "sdps", "cong"])
+        ).all()
+
+        return {row.cd_nomenclature: row.id_nomenclature for row in rows}
+    
+    def get_actions_by_place(self, id_material: int, code_place: str, page: int = 1, limit: int = 10):
+        id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
+        if not id_place:
+            raise ValueError("Lieu inconnu")
+        
+        ActionType = aliased(TNomenclatures)
+        HumidityLevel = aliased(TNomenclatures)
+        HumidityDevice = aliased(TNomenclatures)
+
+        query = (
+            db.session.query(
+                TStorage,
+                ActionType.label_default.label("action_type_label"),
+                HumidityLevel.label_default.label("humidity_level_label"),
+                HumidityDevice.label_default.label("humidity_device_label")
+            )
+            .outerjoin(ActionType, TStorage.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(HumidityLevel, TStorage.id_humidity_level == HumidityLevel.id_nomenclature)
+            .outerjoin(HumidityDevice, TStorage.id_humidity_device == HumidityDevice.id_nomenclature)
+            .filter(TStorage.id_material == id_material)
+            .filter(TStorage.id_place == id_place)
+            .order_by(TStorage.date_start.desc(), TStorage.id_storage.desc())
+        )
+
+        total = query.count()
+        offset = (page - 1) * limit
+        actions = query.offset(offset).limit(limit).all()
+
+        return actions, total
+    
+    
+
+
