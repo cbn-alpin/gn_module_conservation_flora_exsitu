@@ -36,7 +36,6 @@ import { ConfigService } from './services/config.service';
 import { SeddDescriptionComponent } from './components/seed-description/seed-description.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
 import { ActionsStockComponent } from './stock-management/actions-stock/actions-stock.component';
-import { StockModalComponent } from './components/stock-modal/stock-modal.component';
 import { ActionModalComponent } from './components/action-modal/action-modal.component';
 
 export const routingConfiguration: ExtraOptions = {
@@ -58,7 +57,6 @@ export const routingConfiguration: ExtraOptions = {
     SeddDescriptionComponent,
     StockManagementComponent,
     ActionsStockComponent,
-    StockModalComponent,
     ActionModalComponent
   ],
   providers: [
