@@ -965,3 +965,42 @@ def get_action_context(id_material):
         "place_mapping": place_mapping
     }
 
+
+@blueprint.route('/materials/<int:id_material>/actions', methods=['GET'])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def get_actions_by_place(id_material):
+    code_place = request.args.get('placeCode')
+    limit = request.args.get('limit', default=10, type=int) 
+    page = request.args.get('page', default=1, type=int)
+
+
+    if not code_place:
+        return jsonify({"error": "Paramètre 'placeCode' requis"}), 400
+
+    repo = StorageRepository()
+    try:
+        actions, total = repo.get_actions_by_place(id_material, code_place, page, limit)
+        
+        results = []
+        for storage, action_type_label, humidity_level_label, humidity_device_label in actions:
+            item = storage.to_dic()
+            item["action_type_label"] = action_type_label
+            item["humidity_level_label"] = humidity_level_label
+            item["humidity_device_label"] = humidity_device_label
+            results.append(item)
+        
+        return {
+            "items": results,
+            "total": total,
+            "page": page,
+            "limit": limit
+        }, 200
+    except ValueError as ve:
+        print(str(ve))
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": "Erreur serveur"}), 500
+
+
+
