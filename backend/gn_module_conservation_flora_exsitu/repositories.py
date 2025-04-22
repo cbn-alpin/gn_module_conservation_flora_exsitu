@@ -669,5 +669,54 @@ class StorageRepository:
             "initial_storage": initial_storage,
             "current_quantity": current_quantity
         }
+    
+    def update(self, id_storage, data):
+        try:
+            action = TStorage.query.get(id_storage)
+
+            code_place = data.pop("code_place", None)
+            if code_place:
+                id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
+                if id_place:
+                    action.id_place = id_place
+
+            additional_data = data.get("additional_data")
+            if additional_data:
+                action.additional_data = additional_data
+
+            if data.get("quantity"):
+                self.verify_quantity(action, data["quantity"])
+            
+            for key, value in data.items():
+                if hasattr(action, key):
+                    setattr(action, key, value)
+
+            db.session.commit()
+            return action
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+        except Exception as e:
+            db.session.rollback()
+            raise e
+        
+    def verify_quantity(self, action, new_quantity):
+        id_material = action.id_material
+        id_place = action.id_place
+        id_action_type = action.id_action_type
+
+        current_quantity = self.get_current_quantity(id_material, id_place)
+
+        action_codes_needing_quantity = ["depl", "dest"]
+        id_actions_need_quantity = [
+            self.get_id_nomenclature("CFE_ACTION_TYPE", c) for c in action_codes_needing_quantity
+        ]
+
+        if id_action_type in id_actions_need_quantity:
+            if action.quantity:
+                current_quantity += action.quantity
+            
+            if new_quantity > current_quantity:
+                raise ValueError(f"Quantité demandée ({new_quantity}) supérieure au stock disponible ({current_quantity}).")
 
 

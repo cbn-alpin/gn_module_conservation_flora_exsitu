@@ -4,7 +4,7 @@ from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from utils_flask_sqla.response import json_resp
 from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository, StorageRepository
-from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed
+from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed, TStorage
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 from ref_geo.models import LAreas, BibAreasTypes
 from geonature.utils.env import db
@@ -964,6 +964,31 @@ def get_action_context(id_material):
         "quantities": quantities_by_place,
         "place_mapping": place_mapping
     }
+
+
+@blueprint.route('/materials/<int:id_material>/actions/<int:id_storage>', methods=['PUT'])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+def update_action(id_material, id_storage):
+    """Modification d'une action"""
+    data = request.get_json()
+
+    material = TMaterial.query.get(id_material)
+    if not material:
+        return jsonify({'error': 'Matériel non trouvé'}), 404
+
+    action = TStorage.query.get(id_storage)
+    if not action or action.id_material != id_material:
+        return jsonify({'error': 'Action non trouvée ou appartient à un autre matériel'}), 404
+
+    try:
+        action_repo = StorageRepository()
+        updated_action = action_repo.update(id_storage, data)
+
+        return {"message": "Action mise à jour avec succès", "id_storage": updated_action.id_storage}, 200
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": "Erreur serveur"}), 500
 
 
 @blueprint.route('/materials/<int:id_material>/actions', methods=['GET'])
