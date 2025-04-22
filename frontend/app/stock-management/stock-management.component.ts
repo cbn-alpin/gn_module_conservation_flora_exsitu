@@ -30,20 +30,8 @@ export class StockManagementComponent implements OnInit {
         this.getStockSummary() 
     }
 
-    openActionModal(id_storage): void {      
-        const dialogRef = this.dialog.open(ActionModalComponent, {
-            width: '70%',
-            height: '80%',
-            data: { id: id_storage }
-        });
-        dialogRef.afterClosed().subscribe(() => {
-            
-        });
-    }
-
     getStockSummary() {
         this.api.getStockSummary(this.idMaterial).subscribe((res) => {
-          console.log('Résumé global du stock:', res);
           this.totalInitialQuantity = res['initial_storage'];
           this.totalCurrentQuantity = res['current_quantity'];
         });

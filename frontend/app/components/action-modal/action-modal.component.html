@@ -112,7 +112,15 @@
         [formControl]="actionForm.controls.quantity"
       />
       <mat-error *ngIf="actionForm.get('quantity')?.hasError('exceedMax')">
-        La quantité dépasse la quantité maximale disponible ({{ quantiteMaxDisponible }}).
+        <ng-container *ngIf="!edit">
+          La quantité dépasse la quantité maximale disponible ({{ quantiteMaxDisponible }}).
+        </ng-container>
+        <ng-container *ngIf="edit">
+          La quantité dépasse la quantité maximale disponible pour la modification.<br>
+          Stock disponible : {{ quantiteMaxDisponible - data.data.quantity }},<br>
+          Quantité actuelle de l’action : {{ data.data.quantity }},<br>
+          Total autorisé : {{ quantiteMaxDisponible }}.
+        </ng-container>
       </mat-error>
     </div>
     <div class="col-6 padding-sm">
@@ -164,56 +172,45 @@
     </mat-card-content>
   </mat-card>
 </mat-dialog-content>
-<mat-dialog-actions style="display: flex; justify-content: space-between; align-items: center;" class="ml-3 mr-4">
-  <div>
-    <button *ngIf="edit"
-        color="warn"
-        mat-raised-button
-        matTooltip="Supprimer cette action">
-          Supprimer l'action
-          <mat-icon style="vertical-align: middle">delete</mat-icon>
-    </button>
-  </div>
-  <div>
-    <ng-container *ngIf="!edit; else modifButton">
-        <button
-            style="margin-right: 20px"
-            color="warn"
-            mat-raised-button
-            (click)="close()"
-          >
-            Retour
-        </button>
-      <button
-        mat-button [mat-dialog-close]="true"
-        matTooltip="Enregistrer cette action"
-        class="button-success"
-        (click)="submetData()"
-        [disabled]="!actionForm.valid || showInitialStockWarning"
-      >
-        Ajouter l'action
-        <mat-icon style="vertical-align: middle">save</mat-icon>
-      </button>
-    </ng-container>
-    <ng-template #modifButton>
-      <button
+<mat-dialog-actions align="end" class="ml-3 mr-4">
+  <ng-container *ngIf="!edit; else modifButton">
+    <button
         style="margin-right: 20px"
         color="warn"
         mat-raised-button
         (click)="close()"
       >
-        Annuler
-      </button>
-      <button
-        class="button-success uppercase"
-        mat-button [mat-dialog-close]="true"
-        matTooltip="Modifier et enregistrer cette action"
-        (click)="submetData()"
-        [disabled]="!actionForm.valid"
-      >
-        Modifier l'action
-        <mat-icon style="vertical-align: middle">save</mat-icon>
-      </button>
-    </ng-template>
-  </div>
+        Retour
+    </button>
+    <button
+      mat-button [mat-dialog-close]="true"
+      matTooltip="Enregistrer cette action"
+      class="button-success"
+      (click)="submetData()"
+      [disabled]="!actionForm.valid || showInitialStockWarning"
+    >
+      Ajouter l'action
+      <mat-icon style="vertical-align: middle">save</mat-icon>
+    </button>
+  </ng-container>
+  <ng-template #modifButton>
+    <button
+      style="margin-right: 20px"
+      color="warn"
+      mat-raised-button
+      (click)="close()"
+    >
+      Annuler
+    </button>
+    <button
+      class="button-success uppercase"
+      mat-button [mat-dialog-close]="true"
+      matTooltip="Modifier et enregistrer cette action"
+      (click)="submetData()"
+      [disabled]="!actionForm.valid"
+    >
+      Modifier l'action
+      <mat-icon style="vertical-align: middle">save</mat-icon>
+    </button>
+  </ng-template>
 </mat-dialog-actions>

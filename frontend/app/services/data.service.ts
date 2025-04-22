@@ -118,6 +118,10 @@ export class DataService {
     return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/actions`, actionData);
   }
 
+  upAction(idMaterial: number, idAction: number, actionData: any): Observable<any> {
+    return this.api.put<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idAction}`, actionData);
+  }
+
   getActionContextStorage(idMaterial: number, placeCode: string) : Observable<any>{
     return this.api.get(`${this.moduleBaseUrl}/materials/${idMaterial}/action_context`, {params: { place_code: placeCode }});
   }

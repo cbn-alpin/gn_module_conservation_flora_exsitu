@@ -50,9 +50,7 @@ export class ActionsStockComponent implements OnInit {
                   .set('limit', pageSize)
                   .set('placeCode', this.placeCode);   
       this.api.getActions(this.exsituFormService.idMaterial, params).subscribe({
-        next: (data) => {     
-          console.log(data);
-                         
+        next: (data) => {                              
           this.dataSource.data = data['items'];
           this.totalActions = data['total'];            
         },
@@ -62,17 +60,26 @@ export class ActionsStockComponent implements OnInit {
       })
     }
 
-    openActionModal(): void {
-      const data = {id_material: this.exsituFormService.idMaterial, placeCode: this.placeCode}      
+    openActionModal(action?: any): void {
+      const isEdit = !!action;
+      const baseData = {
+        id_material: this.exsituFormService.idMaterial,
+        placeCode: this.placeCode
+      };
+    
+      const data = isEdit ? { ...baseData, ...action } : baseData;
+    
       const dialogRef = this.dialog.open(ActionModalComponent, {
         width: '70%',
         height: '80%',
-        data: { data: data }
+        data: { data, edit: isEdit }
       });
+    
       dialogRef.afterClosed().subscribe(() => {
         this.loadActions();
       });
     }
+    
 
     calculateNbRow() {
       let wH = window.innerHeight;
