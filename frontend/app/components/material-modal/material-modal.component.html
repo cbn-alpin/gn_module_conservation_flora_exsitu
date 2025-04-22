@@ -15,9 +15,10 @@
           Ce code de matériel existe déjà. Veuillez en choisir un autre.
         </div>
       </div>
-      <div class="col-6 padding-sm mt-4">
+      <div class="col-6 padding-sm">
+        <label>Numéro de récolte parent</label>
         <input type="text" 
-          class="form-control mt-2"
+          class="form-control"
           [formControl]="codeMaterialControl" 
           [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete">
