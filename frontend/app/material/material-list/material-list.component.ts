@@ -39,6 +39,8 @@ export class MaterialListComponent implements OnInit {
       'code_material',        
       'harvest_material', 
       'taxons',     
+      'code_material_parent',
+      'code_cultural_bank',
       'actions'
     ];
 

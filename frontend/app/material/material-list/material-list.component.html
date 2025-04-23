@@ -6,7 +6,7 @@
     <table mat-table [dataSource]="dataSource" class="mat-table">
       <!-- N° de Récolte -->
       <ng-container matColumnDef="code_material">
-        <th mat-header-cell *matHeaderCellDef > N° réc </th>
+        <th mat-header-cell *matHeaderCellDef > N° récolte </th>
         <td mat-cell *matCellDef="let element"> {{ element.code_material }} </td>
       </ng-container>
       <!-- Matériel végétal -->
@@ -14,12 +14,22 @@
         <th mat-header-cell *matHeaderCellDef> Matériel végétal </th>
         <td mat-cell *matCellDef="let element"> {{ element.harvest_material_label }} </td>
       </ng-container>
-      <!-- Matériel végétal -->
+      <!-- Taxons -->
       <ng-container matColumnDef="taxons">
         <th mat-header-cell *matHeaderCellDef> Taxons </th>
         <td mat-cell *matCellDef="let element" matTooltip="{{ element.taxonsTooltip }}"> 
           {{ element.taxonsDisplay }} 
         </td>
+      </ng-container>
+      <!-- N° de Récolte parent -->
+      <ng-container matColumnDef="code_material_parent">
+        <th mat-header-cell *matHeaderCellDef > N° récolte parent </th>
+        <td mat-cell *matCellDef="let element"> {{ element.code_parent }} </td>
+      </ng-container>
+      <!-- N° de Récolte -->
+      <ng-container matColumnDef="code_cultural_bank">
+        <th mat-header-cell *matHeaderCellDef >Code banque culturale</th>
+        <td mat-cell *matCellDef="let element"> {{ element.code_cultural_bank }} </td>
       </ng-container>
       <!-- Boutons d'action (Fusionner les colonnes Info, Edit, Delete en une seule colonne) -->
       <ng-container matColumnDef="actions">
