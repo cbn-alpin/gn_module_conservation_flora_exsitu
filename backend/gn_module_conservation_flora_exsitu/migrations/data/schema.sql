@@ -88,7 +88,7 @@ CREATE TABLE "t_material" (
 	-- Classes d’individus
 	"id_foot_counting_class" INTEGER,
 	-- Phénologie
-	"id_phenology_1" INTEGER NOT NULL,
+	"id_phenology_1" INTEGER,
 	-- Phénologie
 	"id_phenology_2" INTEGER,
 	-- Protocoles et astuces
