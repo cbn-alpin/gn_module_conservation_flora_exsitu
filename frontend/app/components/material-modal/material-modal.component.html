@@ -73,6 +73,59 @@
     </div>
   </div>
 
+  <div [formGroup]="materialForm">
+    <div class="row row-0">
+      <div class="col-4 padding-sm">
+        <pnx-taxonomy
+          label="Taxon (nom cité)"
+          [parentFormControl]="materialForm.controls.taxonInput"
+          [charNumber]="3"
+          [displayAdvancedFilters]="false"
+          displayedLabel="search_name">
+        </pnx-taxonomy>
+      </div>
+      <div class="col-4 mt-4">
+        <button 
+          color="primary" 
+          mat-raised-button 
+          (click)="materialFormService.addTaxon(allowMultipleTaxons)" 
+          [disabled]="!isValidTaxonSelected()"
+        >
+          Ajouter taxon
+        </button>
+      </div>
+    </div>
+
+    <!-- FormArray des taxons -->
+    <div class="taxon-list-container">
+      <div formArrayName="taxons">
+        <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-1 taxon-item">
+
+          <div class="col-4 padding-sm">
+            <input 
+              class="form-control" 
+              [value]="taxon.get('parentFormControl').value?.search_name || 'Taxon ajouté'"
+              readonly
+            />
+          </div>
+
+          <div class="col-4">
+            <button 
+              mat-icon-button 
+              aria-label="Delete" 
+              matTooltip="Supprimer"
+              color="warn"
+              (click)="materialFormService.removeTaxon(i, taxon)"
+            >
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
       <label> Classes d’individus</label>
@@ -159,59 +212,6 @@
     </mat-card-content>
   </mat-card>
 
-  <div [formGroup]="materialForm" class="mb-5">
-    
-    <div class="row row-0">
-      <div class="col-4 padding-sm">
-        <pnx-taxonomy
-          label="Taxon (nom cité)"
-          [parentFormControl]="materialForm.controls.taxonInput"
-          [charNumber]="3"
-          [displayAdvancedFilters]="false"
-          displayedLabel="search_name">
-        </pnx-taxonomy>
-      </div>
-      <div class="col-4 mt-4">
-        <button 
-          color="primary" 
-          mat-raised-button 
-          (click)="materialFormService.addTaxon(allowMultipleTaxons)" 
-          [disabled]="!isValidTaxonSelected()"
-        >
-          Ajouter taxon
-        </button>
-      </div>
-    </div>
-
-    <!-- FormArray des taxons -->
-    <div class="taxon-list-container">
-      <div formArrayName="taxons">
-        <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-1 taxon-item">
-
-          <div class="col-4 padding-sm">
-            <input 
-              class="form-control" 
-              [value]="taxon.get('parentFormControl').value?.search_name || 'Taxon ajouté'"
-              readonly
-            />
-          </div>
-
-          <div class="col-4">
-            <button 
-              mat-icon-button 
-              aria-label="Delete" 
-              matTooltip="Supprimer"
-              color="warn"
-              (click)="materialFormService.removeTaxon(i, taxon)"
-            >
-              <mat-icon>clear</mat-icon>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <div class="mr-3">
