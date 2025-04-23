@@ -38,6 +38,7 @@ import { StockManagementComponent } from './stock-management/stock-management.co
 import { ActionsStockComponent } from './stock-management/actions-stock/actions-stock.component';
 import { ActionModalComponent } from './components/action-modal/action-modal.component';
 import { MaterialModalComponent } from './components/material-modal/material-modal.component';
+import { StockManagementService } from './stock-management/stock-management.service';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -75,7 +76,8 @@ export const routingConfiguration: ExtraOptions = {
     HarvestMapService,
     ObserversService,
     DialogService,
-    ConfigService
+    ConfigService,
+    StockManagementService,
   ],
   imports: [
     RouterModule.forChild(routes),

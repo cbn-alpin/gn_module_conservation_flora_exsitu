@@ -6,6 +6,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { DataService } from '../../services/data.service';
 import { HttpParams } from '@angular/common/http';
+import { CommonService } from '@geonature_common/service/common.service';
+import { DialogService } from '../../components/confirm-dialog/confirm-dialog.service';
+import { StockManagementService } from '../stock-management.service';
 
 
 @Component({
@@ -33,7 +36,10 @@ export class ActionsStockComponent implements OnInit {
     constructor(
       public dialog: MatDialog,
       private exsituFormService: ExsituFormService,
-      private api: DataService
+      private api: DataService,
+       private _commonService: CommonService,
+       private dialogService: DialogService,
+       private stockManagementService: StockManagementService
     ) {}
 
     ngOnInit(): void {
@@ -77,6 +83,7 @@ export class ActionsStockComponent implements OnInit {
     
       dialogRef.afterClosed().subscribe(() => {
         this.loadActions();
+        this.onGetStockSummary()
       });
     }
     
@@ -90,4 +97,38 @@ export class ActionsStockComponent implements OnInit {
     onPaginateChange(){
       this.loadActions();
     }
+
+    confirmDeleteAction(data) {
+      if (!data?.id_material || !data?.id_storage) return;      
+    
+      this.dialogService
+          .confirmDialog({ message: 'Êtes-vous sûr de vouloir cette action ?' })
+          .subscribe((yes) => {
+            if (yes) {
+              this.api.deleteAction(data.id_material, data.id_storage).subscribe({
+                next: () => {
+                  this._commonService.translateToaster('info', 'Action supprimée avec succès');
+                  this.loadActions();
+                  this.onGetStockSummary()
+                },
+                error: (err) => {
+                  if (err.status === 403 && err.error?.error) {
+                    this._commonService.translateToaster('warning', err.error.error);
+                    console.warn("Détail:", err.error.details);
+                  } else {
+                    this._commonService.translateToaster('warning', 'Erreur lors de la suppression de l\'action');
+                  }
+                }
+              });
+            }
+          });
+    }
+
+
+    onGetStockSummary(){
+      this.api.getStockSummary(this.exsituFormService.idMaterial).subscribe(res => {
+        this.stockManagementService.updateInitialQuantity(res['initial_storage']);
+        this.stockManagementService.updateCurrentQuantity(res['current_quantity']);
+      });
+    }    
 }

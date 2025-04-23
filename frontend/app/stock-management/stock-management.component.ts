@@ -6,6 +6,7 @@ import { ActionModalComponent } from '../components/action-modal/action-modal.co
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
 import { ConstantsService } from '../services/constants.service';
+import { StockManagementService } from './stock-management.service';
 
 @Component({
   selector: 'cfe-stock-management',
@@ -22,18 +23,30 @@ export class StockManagementComponent implements OnInit {
         public dialog: MatDialog,
         private exsituFormService: ExsituFormService,
         public api: DataService,
-        public constants: ConstantsService
+        public constants: ConstantsService,
+        private stockManagementService: StockManagementService
     ) {}
 
     ngOnInit(): void {
         this.idMaterial = this.exsituFormService.idMaterial;
-        this.getStockSummary() 
+        this.stockManagementService.totalInitialQuantity$.subscribe(qty => {
+          this.totalInitialQuantity = qty;
+        });
+      
+        this.stockManagementService.totalCurrentQuantity$.subscribe(qty => {
+          this.totalCurrentQuantity = qty;
+        });
+      
+        this.getStockSummary();
     }
 
     getStockSummary() {
         this.api.getStockSummary(this.idMaterial).subscribe((res) => {
-          this.totalInitialQuantity = res['initial_storage'];
-          this.totalCurrentQuantity = res['current_quantity'];
+          const init = res['initial_storage'];
+          const curr = res['current_quantity'];
+
+          this.stockManagementService.updateInitialQuantity(init);
+          this.stockManagementService.updateCurrentQuantity(curr);
         });
       }
       

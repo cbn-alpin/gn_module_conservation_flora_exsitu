@@ -136,6 +136,10 @@ export class DataService {
       `${this.moduleBaseUrl}/materials/${id_material}/stock-summary`
     );
   }
-  
+
+
+  deleteAction(idMaterial: number, idStorage: number): Observable<any> {
+    return this.api.delete(`${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idStorage}`);
+  }
 
 }
