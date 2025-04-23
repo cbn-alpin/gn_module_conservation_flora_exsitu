@@ -247,6 +247,9 @@ export class HarvestFormService {
       } else if (code_nomenclature === this.constants.LOCATION_CODES.PTAPP) {
         this.harvestForm.controls['geom'].setValidators([Validators.required]);
         this.harvestForm.controls['precision'].setValidators([Validators.required]);
+        this.harvestForm.patchValue({
+          precision: 10,
+        });
       }
       this.harvestForm.updateValueAndValidity();
     }
