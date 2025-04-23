@@ -46,7 +46,7 @@ export class MaterialFormService {
         id_harvest: null,
         id_material_type: [null, Validators.required],
         id_foot_counting_class: null,
-        id_phenology_1: [null, Validators.required],
+        id_phenology_1: null,
         id_phenology_2: null,
         remarks: null,
         code_cultural_bank: null,
