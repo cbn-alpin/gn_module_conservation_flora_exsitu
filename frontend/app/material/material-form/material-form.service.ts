@@ -204,9 +204,12 @@ export class MaterialFormService {
     addTaxon(allowMultiple: boolean = true) {
       const taxonsArray = this.form.get('taxons') as UntypedFormArray;
       const taxonValue = this.form.controls.taxonInput.value;
-    
-      if (!taxonValue) return;
-    
+      
+      if (!taxonValue || typeof taxonValue !== 'object' || !taxonValue.cd_nom) {
+        this.form.controls.taxonInput.reset();
+        return;
+      }
+        
       const isDuplicate = taxonsArray.controls.some(control => {
         const existingTaxon = control.get('parentFormControl')?.value;
         return existingTaxon?.cd_nom === taxonValue.cd_nom;

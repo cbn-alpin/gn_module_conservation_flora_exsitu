@@ -135,4 +135,10 @@ export class MaterialModalComponent implements OnInit {
     
         return finalForm;
     }
+
+    isValidTaxonSelected(): boolean {
+      const val = this.materialForm?.controls?.taxonInput?.value;
+      return val && typeof val === 'object' && 'cd_nom' in val;
+    }
+    
 }

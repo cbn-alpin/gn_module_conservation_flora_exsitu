@@ -176,7 +176,7 @@
           color="primary" 
           mat-raised-button 
           (click)="materialFormService.addTaxon(allowMultipleTaxons)" 
-          [disabled]="!materialForm.controls.taxonInput.value"
+          [disabled]="!isValidTaxonSelected()"
         >
           Ajouter taxon
         </button>
