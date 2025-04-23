@@ -38,8 +38,22 @@
             keyValue="search_name"
             [formatter]="formatter"
             label="Habitat"
+            (onChange)="addHabitat($event)"
             placeholder="Tapez les premières lettres..."
           ></pnx-autocomplete>
+          <div *ngIf="selectedHabitats.length > 0" class="alert alert-warning search-alert mt-2">
+            <p class="taxon-list"><b>Habitat(s) sélectionné(s) :</b></p>
+            <ul class="taxon-list">
+              <li *ngFor="let habitat of selectedHabitats; let i = index"
+                  class="d-flex justify-content-between align-items-center">
+                {{ habitat.search_name }} ({{ habitat.cd_hab }})
+                <i (click)="removeHab(i)"
+                  class="fa fa-times clickable"
+                  matTooltip="Retirer {{ habitat.cd_hab }} des filtres de recherche">
+                </i>
+              </li>
+            </ul>
+          </div>
 
           <small>N° de récolte</small>
           <input type="text"

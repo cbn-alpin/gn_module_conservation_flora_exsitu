@@ -22,6 +22,7 @@ export class HarvestFilterComponent implements OnInit {
     public municipalities = [];
     public departments = [];
     selectedTaxons: any[] = [];
+    selectedHabitats: any[] = [];
 
     
     constructor(
@@ -121,7 +122,7 @@ export class HarvestFilterComponent implements OnInit {
         return {
             ...rest,
             cd_nom: this.selectedTaxons.length > 0 ? this.selectedTaxons.map(taxon => taxon.cd_nom) : null,
-            cd_hab: cd_hab?.cd_hab ?? null,
+            cd_hab: this.selectedHabitats.length > 0 ? this.selectedHabitats.map(habt => habt.cd_hab) : null,
             id_harvest_type: id_harvest_type?.id_nomenclature ?? null,
             date_start: date_start ? this.dateParser.format(date_start) : null,
             date_end: date_end ? this.dateParser.format(date_end) : null,
@@ -148,10 +149,25 @@ export class HarvestFilterComponent implements OnInit {
         event.preventDefault();
         this.filterForm.controls.cd_nom.reset();
     }
+
+    addHabitat(event: any) {
+        const selectedHabtat = event.item;        
+        
+        if (!this.selectedHabitats.find(t => t.cd_hab === selectedHabtat.cd_hab)) {
+            this.selectedHabitats.push(selectedHabtat);
+        }
+        event.preventDefault();
+        this.filterForm.controls.cd_hab.reset();
+    }
     
 
     removeTaxon(index: number) {
         this.selectedTaxons.splice(index, 1);
+        this.applyFilters();
+    }
+
+    removeHab(index: number) {
+        this.selectedHabitats.splice(index, 1);
         this.applyFilters();
     }
 
