@@ -657,13 +657,13 @@ class StorageRepository:
             ).scalar()
 
         # Total des quantités consommées (destockage + déplacement)
-        quantite_sortie = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
+        quantity_output = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
             .filter(
                 TStorage.id_material == id_material,
                 TStorage.id_action_type.in_([id_dest, id_depl])
             ).scalar()
 
-        current_quantity = initial_storage - quantite_sortie
+        current_quantity = initial_storage - quantity_output
 
         return {
             "initial_storage": initial_storage,

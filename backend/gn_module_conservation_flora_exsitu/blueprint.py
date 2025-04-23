@@ -1040,3 +1040,71 @@ def get_stock_summary(id_material):
         return result, 200
     except Exception as e:
         return {"error": "Erreur lors du calcul du stock"}, 500
+
+
+@blueprint.route('/materials/<int:id_material>/actions/<int:id_storage>', methods=['DELETE'])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+def delete_action(id_material, id_storage):
+    """Suppression d'une action"""
+
+    material = TMaterial.query.get(id_material)
+    if not material:
+        return jsonify({'error': 'Matériel non trouvé'}), 404
+
+    action = TStorage.query.get(id_storage)
+    if not action or action.id_material != id_material:
+        return jsonify({'error': 'Action non trouvée ou appartient à un autre matériel'}), 404
+
+    try:
+        action_repo = StorageRepository()
+        code_stock_init = action_repo.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+
+        # Ne faire la vérif que si c’est un stockage initial
+        if action.id_action_type == code_stock_init:
+            id_place = action.id_place
+
+            # Somme des quantités de sortie (déstockage + déplacement)
+            codes_outputs = ["dest", "depl"]
+            ids_outputs = [action_repo.get_id_nomenclature("CFE_ACTION_TYPE", c) for c in codes_outputs]
+
+            outputs = (
+                db.session.query(db.func.coalesce(db.func.sum(TStorage.quantity), 0))
+                .filter(
+                    TStorage.id_material == id_material,
+                    TStorage.id_place == id_place,
+                    TStorage.id_action_type.in_(ids_outputs)
+                )
+                .scalar()
+            )
+
+            # Somme des autres stockages initiaux (sans celui qu’on supprime)
+            storages_init = (
+                db.session.query(db.func.coalesce(db.func.sum(TStorage.quantity), 0))
+                .filter(
+                    TStorage.id_material == id_material,
+                    TStorage.id_place == id_place,
+                    TStorage.id_action_type == code_stock_init,
+                    TStorage.id_storage != id_storage  # Exclure celui qu’on veut supprimer
+                )
+                .scalar()
+            )
+
+            # Vérification
+            if outputs > storages_init:
+                return jsonify({
+                    "error": "Impossible de supprimer cette action de stockage : des quantités ont déjà été utilisées.",
+                    "details": {
+                        "quantite_sortie": outputs,
+                        "quantite_stockage_restante_si_suppression": storages_init
+                    }
+                }), 403
+
+
+        db.session.delete(action)
+        db.session.commit()
+        return jsonify({'message': 'Action supprimée avec succès'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Erreur lors de la suppression'}), 500
+
