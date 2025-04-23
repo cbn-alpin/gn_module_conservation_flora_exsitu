@@ -257,6 +257,7 @@ class TMaterial(db.Model):
             "id_foot_counting_class": self.id_foot_counting_class,
             "id_method_sample": self.id_method_sample,
             "is_soil_sampling": self.is_soil_sampling,
+            "code_cultural_bank": self.code_cultural_bank,
             "remarks": self.remarks,
             "id_phenology_1": self.id_phenology_1,
             "id_phenology_2": self.id_phenology_2,
