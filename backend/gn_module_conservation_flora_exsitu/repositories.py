@@ -340,15 +340,15 @@ class HarvestMaterialRepository:
                 return False, "Ce code matériel existe déjà."
 
             code_parent = data.pop("code_parent", None)
-            code_cultural_bank = data.pop("code_cultural_bank", None)
+            # code_cultural_bank = data.pop("code_cultural_bank", None)
 
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_material_parent"] = parent.id_material if parent else None
 
-            if code_cultural_bank:
-                bank = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
-                data["code_cultural_bank"] = bank.id_material if bank else None
+            # if code_cultural_bank:
+            #     bank = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
+            #     data["code_cultural_bank"] = bank.id_material if bank else None
 
             additional_data = data.pop("additional_data", None)
                      
@@ -377,13 +377,13 @@ class HarvestMaterialRepository:
                     return False
 
             code_parent = data.pop("code_parent", None)
-            code_cultural_bank = data.pop("code_cultural_bank", None)
+            # code_cultural_bank = data.pop("code_cultural_bank", None)
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_material_parent"] = parent.id_material if parent else None
-            if code_cultural_bank:
-                parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
-                data["code_cultural_bank"] = parent.id_material if parent else None
+            # if code_cultural_bank:
+            #     parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
+            #     data["code_cultural_bank"] = parent.id_material if parent else None
 
             for key, value in data.items():
                 if hasattr(material, key):

@@ -540,22 +540,22 @@ def get_materials(id_harvest):
             harvest_material_code = nomenclature_material.cd_nomenclature if nomenclature_material else None
 
             code_parent_material = None
-            code_cultural_bank_material = None
+            # code_cultural_bank_material = None
 
             if material.id_material_parent:
                 parent_material = TMaterial.query.get(material.id_material_parent)
                 code_parent_material = parent_material.code_material if parent_material else None
 
-            if material.code_cultural_bank:
-                cultural_bank_material = TMaterial.query.get(material.code_cultural_bank)
-                code_cultural_bank_material = cultural_bank_material.code_material if cultural_bank_material else None
+            # if material.code_cultural_bank:
+            #     cultural_bank_material = TMaterial.query.get(material.code_cultural_bank)
+            #     code_cultural_bank_material = cultural_bank_material.code_material if cultural_bank_material else None
 
             material_dict = material.to_dic()
             material_dict["taxons"] = taxon_list
             material_dict["harvest_material_label"] = harvest_material_label
             material_dict["harvest_material_code"] = harvest_material_code
             material_dict["code_parent"] = code_parent_material
-            material_dict["code_cultural_bank"] = code_cultural_bank_material
+            # material_dict["code_cultural_bank"] = code_cultural_bank_material
 
             material_dict["has_seed_description"] = material.seeds is not None
 
