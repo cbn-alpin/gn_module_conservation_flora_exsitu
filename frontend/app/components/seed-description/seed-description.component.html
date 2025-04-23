@@ -4,7 +4,7 @@
 <mat-dialog-content class="wrapper" *ngIf="seedForm">
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
-        <label>Longueur moyenne</label>
+        <label>Longueur moyenne(mm)</label>
         <input
           class="form-control"
           type="number"
@@ -12,7 +12,7 @@
         />
       </div>
       <div class="col-6 padding-sm">
-        <label>Largeur moyenne</label>
+        <label>Largeur moyenne(mm)</label>
         <input
           class="form-control"
           type="number"
@@ -23,7 +23,7 @@
 
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
-        <label>Épaisseur moyenne</label>
+        <label>Épaisseur moyenne(mm)</label>
         <input
           class="form-control"
           type="number"
@@ -42,7 +42,7 @@
 
   <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
-        <label>Masse totale</label>
+        <label>Masse totale(g)</label>
         <input
           class="form-control"
           type="number"
@@ -60,19 +60,32 @@
   </div>
   <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
-        <label>Masse des graines échantillonnées</label>
+        <label>Masse des graines échantillonnées(g)</label>
         <input
           class="form-control"
           type="number"
           [formControl]="seedForm.controls.sample_mass"
         />
-      </div>
-    <div class="col-6 padding-sm mt-4">
-        <section class="check-section">
-            <mat-checkbox [formControl]="seedForm.controls.has_photo">
-                Photo
-            </mat-checkbox>
-          </section>
+    </div>
+    <div class="col-6 padding-sm">
+      <label>État du lot</label>
+      <pnx-nomenclature
+              keyValue="id_nomenclature"
+              [bindAllItem]="false"
+              keyLabel="label_default"
+              codeNomenclatureType="CFE_MATERIAL_QUALITY"
+              [parentFormControl]="seedForm.controls.id_material_quality"
+            >
+      </pnx-nomenclature>
+    </div>
+  </div>
+  <div class="row row-0 mt-4">
+    <div class="col-6 padding-sm">
+      <section class="check-section">
+          <mat-checkbox [formControl]="seedForm.controls.has_photo">
+              Photo
+          </mat-checkbox>
+        </section>
     </div>
   </div>
 

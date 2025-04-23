@@ -49,6 +49,7 @@ export class SeddDescriptionComponent implements OnInit {
           width: seedData.width ?? null,
           thickness: seedData.thickness ?? null,
           total_count: seedData.total_count ?? null,
+          id_material_quality: seedData.id_material_quality ?? null,
           total_mass: seedData.total_mass ?? null,
           sample_count: seedData.sample_count ?? null,
           sample_mass: seedData.sample_mass ?? null,
@@ -64,6 +65,7 @@ export class SeddDescriptionComponent implements OnInit {
                 width: [defaultValues.width],
                 thickness: [defaultValues.thickness],
                 total_count: [defaultValues.total_count],
+                id_material_quality: [defaultValues.id_material_quality],
                 total_mass: [defaultValues.total_mass],
                 sample_count: [defaultValues.sample_count],
                 sample_mass: [defaultValues.sample_mass],
@@ -77,6 +79,7 @@ export class SeddDescriptionComponent implements OnInit {
                     'width', 
                     'thickness', 
                     'total_count', 
+                    'id_material_quality',
                     'total_mass', 
                     'sample_count', 
                     'sample_mass',
@@ -100,9 +103,7 @@ export class SeddDescriptionComponent implements OnInit {
     }
 
     submetData(){
-        const formData = this.formatDataForm();
-        console.log(formData);
-        
+        const formData = this.formatDataForm();        
         if(!this.edit){
             this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
                 (response)=>{

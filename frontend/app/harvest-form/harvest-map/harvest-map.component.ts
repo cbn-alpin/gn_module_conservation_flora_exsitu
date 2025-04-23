@@ -64,9 +64,8 @@ export class HarvestMapComponent implements OnInit, OnDestroy {
 
     addGeoInfo(geojson) {
         if (geojson.geometry.type == 'Point') {
-            this.harvertFormService.harvestForm.controls['surface'].disable();
             this.harvertFormService.harvestForm.patchValue({
-                surface: null,
+                surface: 1,
             });
         } else {
             this.dataFormService.getAreaSize(geojson).subscribe((areaSize) => {

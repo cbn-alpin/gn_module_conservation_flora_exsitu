@@ -96,9 +96,7 @@ export class MaterialModalComponent implements OnInit {
     }
 
     submetData(){
-        let finalForm = this.formatDataFormHarvest();   
-        console.log('final',finalForm);
-         
+        let finalForm = this.formatDataFormHarvest();            
         this.materialFormService.submitOccurrence(finalForm);
         this.close()
     }
