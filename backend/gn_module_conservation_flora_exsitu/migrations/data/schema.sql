@@ -85,8 +85,6 @@ CREATE TABLE "t_material" (
 	"id_harvest" INTEGER NOT NULL,
 	-- Matériel végétal récolté
 	"id_material_type" INTEGER NOT NULL,
-	-- État du lot
-	"id_material_quality" INTEGER,
 	-- Classes d’individus
 	"id_foot_counting_class" INTEGER,
 	-- Phénologie
@@ -113,7 +111,6 @@ CREATE TABLE "t_material" (
 	PRIMARY KEY("id_material")
 );
 COMMENT ON COLUMN t_material.id_material_type IS 'Matériel végétal récolté';
-COMMENT ON COLUMN t_material.id_material_quality IS 'État du lot';
 COMMENT ON COLUMN t_material.id_foot_counting_class IS 'Classes d’individus';
 COMMENT ON COLUMN t_material.id_phenology_1 IS 'Phénologie';
 COMMENT ON COLUMN t_material.id_phenology_2 IS 'Phénologie';
@@ -194,6 +191,8 @@ CREATE TABLE "t_material_seed" (
     "width" decimal,
     "thickness" decimal,
 	"total_count" INTEGER,
+	-- État du lot
+	"id_material_quality" INTEGER,
 	"total_mass" decimal,
 	"sample_count" decimal,
 	"sample_mass" decimal,
@@ -209,6 +208,7 @@ CREATE TABLE "t_material_seed" (
 
 COMMENT ON COLUMN "t_material_seed"."length" IS 'Longueur moyenne (mm)';
 COMMENT ON COLUMN "t_material_seed"."width" IS 'Largeur moyenne (mm)';
+COMMENT ON COLUMN "t_material_seed"."id_material_quality" IS 'État du lot';
 
 ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
@@ -259,9 +259,6 @@ ALTER TABLE "t_material"
 ADD FOREIGN KEY("id_material_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
-ADD FOREIGN KEY("id_material_quality") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_material"
 ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material"
@@ -283,6 +280,9 @@ ALTER TABLE "t_harvest"
 ADD FOREIGN KEY("id_area_type") REFERENCES ref_geo.bib_areas_types(id_type)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 -----------------------------------------------------------
+ALTER TABLE "t_material_seed"
+ADD FOREIGN KEY("id_material_quality") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_material_seed"
 ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;

@@ -181,13 +181,6 @@ class TMaterial(db.Model):
             ondelete="NULL"
         ),
     )
-    id_material_quality = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-    )
     id_foot_counting_class = db.Column(
         db.Integer,
         db.ForeignKey(
@@ -259,7 +252,6 @@ class TMaterial(db.Model):
             "id_material": self.id_material,
             "code_material": self.code_material,
             "id_material_type": self.id_material_type,
-            "id_material_quality": self.id_material_quality,
             "id_harvest": self.id_harvest,
             "sample_foot_count": self.sample_foot_count,
             "id_foot_counting_class": self.id_foot_counting_class,
@@ -314,6 +306,13 @@ class TMaterielSeed(db.Model):
     width = db.Column(db.Numeric)
     thickness = db.Column(db.Numeric)
     total_count = db.Column(db.Integer)
+    id_material_quality = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="NULL"
+        ),
+    )
     total_mass = db.Column(db.Numeric)
     sample_count = db.Column(db.Numeric)
     sample_mass = db.Column(db.Numeric)
@@ -353,6 +352,7 @@ class TMaterielSeed(db.Model):
             "width": self.width,
             "thickness": self.thickness,
             "total_count": self.total_count,
+            "id_material_quality": self.id_material_quality,
             "total_mass": self.total_mass,
             "sample_count": self.sample_count,
             "sample_mass": self.sample_mass,
