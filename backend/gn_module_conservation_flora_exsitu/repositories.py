@@ -170,7 +170,7 @@ class HarvestRepository:
 
     def build_harvest_geometry_query(self, 
                             cd_nom_list, 
-                            cd_hab, 
+                            cd_hab_list, 
                             date_start, 
                             date_end, 
                             observers, 
@@ -206,8 +206,8 @@ class HarvestRepository:
             cd_nom_list = [cd_nom[0] for cd_nom in cd_nom_list]
             query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
 
-        if cd_hab:
-            query = query.filter(THarvest.cd_hab == cd_hab)
+        if cd_hab_list:
+            query = query.filter(THarvest.cd_hab.in_(cd_hab_list))
 
         if date_start:
             query = query.filter(THarvest.date_start >= date_start)
@@ -235,7 +235,7 @@ class HarvestRepository:
     
     def build_harvest_query(self, 
                             cd_nom_list, 
-                            cd_hab, 
+                            cd_hab_list, 
                             date_start, 
                             date_end, 
                             observers, 
@@ -287,8 +287,8 @@ class HarvestRepository:
             cd_nom_list = [cd_nom[0] for cd_nom in cd_nom_list]
             query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
 
-        if cd_hab:
-            query = query.filter(THarvest.cd_hab == cd_hab)
+        if cd_hab_list:
+            query = query.filter(THarvest.cd_hab.in_(cd_hab_list))
 
         if date_start:
             query = query.filter(THarvest.date_start >= date_start)

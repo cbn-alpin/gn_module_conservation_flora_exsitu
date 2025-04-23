@@ -109,7 +109,7 @@ def get_all_harvests():
 
     selected_ids = request.args.getlist('selected_ids', type=int)
     cd_nom_list = request.args.getlist('cd_nom', type=int)  
-    cd_hab = request.args.get('cd_hab', type=int)  
+    cd_hab_list = request.args.getlist('cd_hab', type=int)  
     date_start = request.args.get('date_start', type=str) 
     date_end = request.args.get('date_end', type=str) 
     observers = request.args.getlist('observers')  
@@ -122,7 +122,7 @@ def get_all_harvests():
 
     query = harvest_repo.build_harvest_query(
         cd_nom_list, 
-        cd_hab, 
+        cd_hab_list, 
         date_start, 
         date_end, 
         observers, 
@@ -214,7 +214,7 @@ def get_harvest_geometries():
     """Récupère uniquement les géométries des récoltes avec filtrage et pagination"""
 
     cd_nom_list = request.args.getlist('cd_nom', type=int)  
-    cd_hab = request.args.get('cd_hab', type=int)  
+    cd_hab_list = request.args.getlist('cd_hab', type=int)  
     date_start = request.args.get('date_start', type=str) 
     date_end = request.args.get('date_end', type=str) 
     observers = request.args.getlist('observers')  
@@ -227,7 +227,7 @@ def get_harvest_geometries():
 
     query = harvest_repo.build_harvest_geometry_query(
         cd_nom_list, 
-        cd_hab, 
+        cd_hab_list, 
         date_start, 
         date_end, 
         observers, 
