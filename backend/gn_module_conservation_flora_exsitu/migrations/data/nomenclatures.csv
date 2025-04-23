@@ -16,6 +16,7 @@ CFE_HARVEST_MATERIAL;gr;graine;Graine(Taxon unique);La graine est un organe cara
 CFE_HARVEST_MATERIAL;mdg;melangeDraine;Mélange de graine;Récolte d'un mélange de graine;Mélange de graine;Récolte d'un mélange de graine;conservation_flora_exsitu;.002
 CFE_HARVEST_MATERIAL;sp;spore;Spore;Une spore est chez les Embryophytes une cellule libérée par un sporophyte diploïde engendrant après germination un gamétophyte haploïde;Spore;Une spore est chez les Embryophytes une cellule libérée par un sporophyte diploïde engendrant après germination un gamétophyte haploïde;conservation_flora_exsitu;.003
 CFE_HARVEST_MATERIAL;prs;prelevementSol;Prélèvement de sol;Un échantillon de terre a été prélevé avec la récolte;Prélèvement de sol;Un échantillon de terre a été prélevé avec la récolte;conservation_flora_exsitu;.0010
+CFE_HARVEST_MATERIAL;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.0012
 CFE_FOOT_COUNTING_CLASS;2;11-100;11 à 100 pieds;La station comprend entre 11 et 100 individus;11 à 100 pieds;La station comprend entre 11 et 100 individus;conservation_flora_exsitu;.002
 CFE_FOOT_COUNTING_CLASS;3;101-1000;101 à 1000 pieds;La station comprend entre 101 et 1000 individus;101 à 1000 pieds;La station comprend entre 101 et 1000 individus;conservation_flora_exsitu;.003
 CFE_FOOT_COUNTING_CLASS;4;1001-10000;1001 à 10000 pieds;La station comprend entre 1001 et 10000 individus;1001 à 10000 pieds;La station comprend entre 1001 et 10000 individus;conservation_flora_exsitu;.004
