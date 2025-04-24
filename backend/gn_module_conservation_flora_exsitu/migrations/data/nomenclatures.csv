@@ -158,8 +158,7 @@ CFE_INTERNAL_DESTINATION;tdg;testDeGermination;Test de germination;Test de germi
 CFE_INTERNAL_DESTINATION;sem;semis;Semis;Semis;Semis;Semis;conservation_flora_exsitu;.002
 CFE_INTERNAL_DESTINATION;cult;culture;Culture;Culture;Culture;Culture;conservation_flora_exsitu;.003
 CFE_INTERNAL_DESTINATION;carp;carpotheque;Carpothèque;Carpothèque;Carpothèque;Carpothèque;conservation_flora_exsitu;.004
-CFE_INTERNAL_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.005
-CFE_INTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.006
+CFE_INTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.005
 CFE_EXTERNAL_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.001
 CFE_EXTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.002
 CFE_ACTION_TYPE;sti;stockageInitial;Stockage initial;Stockage initial;Stockage initial;Stockage initial;conservation_flora_exsitu;.001
