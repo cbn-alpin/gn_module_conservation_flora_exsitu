@@ -31,12 +31,15 @@
         />
       </div>
       <div class="col-6 padding-sm">
-          <label>Nombre total de graines calculé</label>
-          <input
-            class="form-control"
-            type="number"
-            [formControl]="seedForm.controls.total_count"
-          />
+        <label>État du lot</label>
+        <pnx-nomenclature
+                keyValue="id_nomenclature"
+                [bindAllItem]="false"
+                keyLabel="label_default"
+                codeNomenclatureType="CFE_MATERIAL_QUALITY"
+                [parentFormControl]="seedForm.controls.id_material_quality"
+              >
+        </pnx-nomenclature>
       </div>
   </div>
 
@@ -68,15 +71,13 @@
         />
     </div>
     <div class="col-6 padding-sm">
-      <label>État du lot</label>
-      <pnx-nomenclature
-              keyValue="id_nomenclature"
-              [bindAllItem]="false"
-              keyLabel="label_default"
-              codeNomenclatureType="CFE_MATERIAL_QUALITY"
-              [parentFormControl]="seedForm.controls.id_material_quality"
-            >
-      </pnx-nomenclature>
+      <label>Nombre total de graines calculé</label>
+      <input
+        class="form-control"
+        type="number"
+        [formControl]="seedForm.controls.total_count"
+        readonly
+      />
     </div>
   </div>
   <div class="row row-0 mt-4">

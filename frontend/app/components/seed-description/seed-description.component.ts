@@ -39,6 +39,10 @@ export class SeddDescriptionComponent implements OnInit {
         this.buildForm(this.data.seedData || {});
         this.additionalDataForm = this.seedForm.get('additional_data') as FormGroup;
         this.formsDefinition = this.cfg.getModuleConfigExsitu()['seed_form']['additional_data'];
+        this.seedForm.get('sample_count')?.valueChanges.subscribe(() => this.updateTotalCount());
+        this.seedForm.get('sample_mass')?.valueChanges.subscribe(() => this.updateTotalCount());
+        this.seedForm.get('total_mass')?.valueChanges.subscribe(() => this.updateTotalCount());
+
     }
 
 
@@ -175,5 +179,17 @@ export class SeddDescriptionComponent implements OnInit {
             }
           });
     }
+
+    private updateTotalCount(): void {
+      const sampleCount = this.seedForm.get('sample_count')?.value;
+      const sampleMass = this.seedForm.get('sample_mass')?.value;
+      const totalMass = this.seedForm.get('total_mass')?.value;
+    
+      if (sampleCount && sampleMass && totalMass && sampleMass !== 0) {
+        const calculatedTotal = (sampleCount * totalMass) / sampleMass;
+        this.seedForm.get('total_count')?.setValue(Math.round(calculatedTotal), { emitEvent: false });
+      }
+    }
+    
 
 }
