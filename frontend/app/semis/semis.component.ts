@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatDialogRef } from '@angular/material/dialog';
 
 interface Semis {
   numSemis: string;
@@ -28,7 +29,7 @@ export class SemisComponent implements OnInit {
     'levage'
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,public dialogRef: MatDialogRef<SemisComponent>) {
     this.semisForm = this.fb.group({
       reference: ['', Validators.required],
       provenance: ['', Validators.required],
@@ -87,21 +88,28 @@ export class SemisComponent implements OnInit {
   }
   onSubmit() {
     if (this.semisForm.valid) {
-      // Create new Semis entry from form values
-      const newEntry: Semis = {
-        numSemis: this.semisForm.value.numeroSemis,
-        numSemence: this.semisForm.value.numeroSemence,
-        dateDebut: this.semisForm.value.dateDebut,
-        dateFin: this.semisForm.value.dateFin,
-        replicate: 0, // Add actual value mapping
-        levage: 0    // Add actual value mapping
-      };
-
-      // Add to table
-      this.dataSource.data = [...this.dataSource.data, newEntry];
-      
-      // Reset form
-      this.semisForm.reset();
+      const formData = this.semisForm.value;
+      console.log('Formulaire soumis :', formData);
+      this.dialogRef.close(formData); // ferme le modal et renvoie les données
     }
   }
+  // onSubmit() {
+  //   if (this.semisForm.valid) {
+  //     // Create new Semis entry from form values
+  //     const newEntry: Semis = {
+  //       numSemis: this.semisForm.value.numeroSemis,
+  //       numSemence: this.semisForm.value.numeroSemence,
+  //       dateDebut: this.semisForm.value.dateDebut,
+  //       dateFin: this.semisForm.value.dateFin,
+  //       replicate: 0, // Add actual value mapping
+  //       levage: 0    // Add actual value mapping
+  //     };
+
+  //     // Add to table
+  //     this.dataSource.data = [...this.dataSource.data, newEntry];
+      
+  //     // Reset form
+  //     this.semisForm.reset();
+  //   }
+  // }
 }

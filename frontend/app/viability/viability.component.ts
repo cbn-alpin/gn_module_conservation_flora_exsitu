@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatDialogRef } from '@angular/material/dialog';
 
 interface Viability {
   numSemis: string;
@@ -28,7 +29,7 @@ export class ViabilityComponent implements OnInit {
     'levage'
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,public dialogRef: MatDialogRef<ViabilityComponent> ) {
     this.germinationForm = this.fb.group({
       reference: ['', Validators.required],
       provenance: ['', Validators.required],
@@ -89,21 +90,9 @@ export class ViabilityComponent implements OnInit {
   }
   onSubmit() {
     if (this.germinationForm.valid) {
-      // Create new Semis entry from form values
-      const newEntry: Viability = {
-        numSemis: this.germinationForm.value.numeroSemis,
-        numSemence: this.germinationForm.value.numeroSemence,
-        dateDebut: this.germinationForm.value.dateDebut,
-        dateFin: this.germinationForm.value.dateFin,
-        replicate: 0, // Add actual value mapping
-        levage: 0    // Add actual value mapping
-      };
-
-      // Add to table
-      this.dataSource.data = [...this.dataSource.data, newEntry];
-      
-      // Reset form
-      this.germinationForm.reset();
+      const formData = this.germinationForm.value;
+      console.log('Formulaire soumis :', formData);
+      this.dialogRef.close(formData); // ferme le modal et renvoie les données
     }
   }
 }

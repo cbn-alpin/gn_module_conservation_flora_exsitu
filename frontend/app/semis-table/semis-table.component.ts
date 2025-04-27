@@ -2,6 +2,8 @@
   import { Component, Input, Output, EventEmitter,OnInit } from '@angular/core';
   import { MatTableDataSource } from '@angular/material/table';
   import { Router } from '@angular/router';
+  import { MatDialog } from '@angular/material/dialog';
+import { SemisComponent } from '../semis/semis.component';
 
   export interface Semis {
     numSemis: string;
@@ -21,10 +23,23 @@
 
 
     ngOnInit(): void {
+
+      this.dataSource.data = [
+        {
+          numSemis: 'SEM-001',
+          numSemence: 'SEED-001',
+          dateDebut: new Date('2024-03-01'),
+          dateFin: new Date('2024-03-20'),
+          replicate: 5,
+          levage:5
+        }
+       
+      ];
   }
   
   constructor(
-          public router: Router
+          public router: Router,
+          private dialog: MatDialog
       ){
   
       }
@@ -58,8 +73,29 @@
       console.log("delete")
   
     }
-    addFicheSemis(){
-      this.router.navigate([`/conservation_flora_exsitu/semis`]);
-    }
+    // addFicheSemis(){
+    //   this.router.navigate([`/conservation_flora_exsitu/semis`]);
+    // }
+     addFicheSemis() {
+          const dialogRef = this.dialog.open(SemisComponent, {
+            width: '900px',
+            height: '90vh'
+          });
+        
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              const newEntry: Semis = {
+                numSemis: result.numeroSemis,
+                numSemence: result.numeroSemence,
+                dateDebut: result.dateDebut,
+                dateFin: result.dateFin,
+                replicate: 0, // tu peux aussi prendre de result si ton formulaire le fournit
+                levage: 0     // idem
+              };
+        
+              this.dataSource.data = [...this.dataSource.data, newEntry];
+            }
+          });
+        }
   
   }
