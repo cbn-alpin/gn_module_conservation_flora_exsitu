@@ -13,11 +13,11 @@
   }
   
   @Component({
-    selector: 'app-semis-table',
-    templateUrl: './semis-table.component.html',
-    styleUrls: ['./semis-table.component.scss']
+    selector: 'app-germination-table',
+    templateUrl: './germination-table.component.html',
+    styleUrls: ['./germination-table.component.scss']
   })
-  export class SemisTableComponent  implements OnInit  {
+  export class GerminationTableComponent  implements OnInit  {
 
 
     ngOnInit(): void {
@@ -59,7 +59,8 @@
   
     }
     addFicheSemis(){
-      this.router.navigate([`/conservation_flora_exsitu/semis`]);
+      // this.router.navigate([`/conservation_flora_exsitu/form/germination`]);
+      this.router.navigate([`/conservation_flora_exsitu/germination`]);
     }
   
   }

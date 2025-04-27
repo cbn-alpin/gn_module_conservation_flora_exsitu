@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
 
-interface Germination {
+interface Viability {
   numSemis: string;
   numSemence: string;
   dateDebut: Date;
@@ -12,15 +11,14 @@ interface Germination {
   levage: number;
 }
 @Component({
-  selector: 'app-germination',
-  templateUrl: './germination.component.html',
-  styleUrls: ['./germination.component.scss']
+  selector: 'app-viability',
+  templateUrl: './viability.component.html',
+  styleUrls: ['./viability.component.scss']
 })
-export class GerminationComponent implements OnInit {
+export class ViabilityComponent implements OnInit {
 
- 
   germinationForm: FormGroup;
-  dataSource = new MatTableDataSource<Germination>([]);
+  dataSource = new MatTableDataSource<Viability>([]);
   displayedColumns: string[] = [
     'numSemis',
     'numSemence',
@@ -30,7 +28,7 @@ export class GerminationComponent implements OnInit {
     'levage'
   ];
 
-  constructor(private fb: FormBuilder,public router: Router) {
+  constructor(private fb: FormBuilder) {
     this.germinationForm = this.fb.group({
       reference: ['', Validators.required],
       provenance: ['', Validators.required],
@@ -90,23 +88,22 @@ export class GerminationComponent implements OnInit {
     
   }
   onSubmit() {
-    // if (this.germinationForm.valid) {
-    //   // Create new Semis entry from form values
-    //   const newEntry: Germination = {
-    //     numSemis: this.germinationForm.value.numeroSemis,
-    //     numSemence: this.germinationForm.value.numeroSemence,
-    //     dateDebut: this.germinationForm.value.dateDebut,
-    //     dateFin: this.germinationForm.value.dateFin,
-    //     replicate: 0, // Add actual value mapping
-    //     levage: 0    // Add actual value mapping
-    //   };
+    if (this.germinationForm.valid) {
+      // Create new Semis entry from form values
+      const newEntry: Viability = {
+        numSemis: this.germinationForm.value.numeroSemis,
+        numSemence: this.germinationForm.value.numeroSemence,
+        dateDebut: this.germinationForm.value.dateDebut,
+        dateFin: this.germinationForm.value.dateFin,
+        replicate: 0, // Add actual value mapping
+        levage: 0    // Add actual value mapping
+      };
 
-      // // Add to table
-      // this.dataSource.data = [...this.dataSource.data, newEntry];
+      // Add to table
+      this.dataSource.data = [...this.dataSource.data, newEntry];
       
-      // // Reset form
-      // this.germinationForm.reset();
-      this.router.navigate([`conservation_flora_exsitu/germination-table`]);
-
+      // Reset form
+      this.germinationForm.reset();
     }
-  } 
+  }
+}
