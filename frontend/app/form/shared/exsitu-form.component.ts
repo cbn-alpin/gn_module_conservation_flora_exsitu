@@ -207,11 +207,6 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-
-
-
-
-
     ngAfterViewInit() {
       setTimeout(() => this.calcCardContentHeight(), 10);
     }

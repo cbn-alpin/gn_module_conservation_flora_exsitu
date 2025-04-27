@@ -57,6 +57,10 @@ import { GerminationTableComponent } from './germination-table/germination-table
 import { ViabilityComponent } from './viability/viability.component';
 import { ViabilityTableComponent } from './viability-table/viability-table.component';
 
+
+import { MatMenuModule } from '@angular/material/menu';
+
+
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
   };
@@ -126,6 +130,8 @@ export const routingConfiguration: ExtraOptions = {
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatMenuModule,
+    MatIconModule,
   ],
   entryComponents: [
     ConfirmDialogComponent,
