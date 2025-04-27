@@ -34,10 +34,8 @@
 
             <!-- Test de germination -->
             <a 
-                class="tablinks disabled" 
-                (click)="idMaterial ? goToTab('seeds') : null">
                 class="tablinks" 
-                (click)=" goToTab('germination')">
+                (click)=" goToTab('germination-table')">
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
                 Test de germination
             </a>            
@@ -51,6 +49,14 @@
                 Semis
             </a>
 
+            
+            <a class="tablinks"
+            (click)="goToTab('viability')"
+            >
+            <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+
+            Test de Viabilité
+            </a>
             <!-- Culture -->
             <a class="tablinks disabled">
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
@@ -107,6 +113,31 @@
         <cfe-stock-management></cfe-stock-management>
     </div>
 
+
+    <div *ngIf="exsituFormService.currentTab === 'germination-table'">
+        <app-germination-table></app-germination-table>
+    </div>
+
+    <div *ngIf="exsituFormService.currentTab === 'germination-add'"
+    >
+            <app-germination></app-germination>
+    </div> 
+    <div *ngIf="exsituFormService.currentTab === 'semis-table'">
+        <app-semis-table></app-semis-table>
+    </div>
+
+    <div *ngIf="exsituFormService.currentTab === 'semis-add'"
+    >
+            <app-semis></app-semis>
+    </div> 
+    <div *ngIf="exsituFormService.currentTab === 'viability-table'">
+        <app-viability-table></app-viability-table>
+    </div>
+
+    <div *ngIf="exsituFormService.currentTab === 'viability-add'"
+    >
+            <app-viability></app-viability>
+    </div> 
 
      
 </div>

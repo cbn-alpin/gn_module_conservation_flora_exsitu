@@ -6,6 +6,10 @@ import { HarvestMapListComponent } from './harvest-map-list/harvest-map-list.com
 import { HarvestFormComponent } from './harvest-form/harvest-form.component';
 import { SemisComponent } from './semis/semis.component';
 import { GerminationComponent } from './germination/germination.component';
+import { SemisTableComponent } from './semis-table/semis-table.component';
+import { GerminationTableComponent } from './germination-table/germination-table.component';
+import { ViabilityComponent } from './viability/viability.component';
+import { ViabilityTableComponent } from './viability-table/viability-table.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
 
 export const routes: Routes = [
@@ -13,14 +17,8 @@ export const routes: Routes = [
         path: '',
         component: HarvestMapListComponent,
     },
-    {
-        path: 'semis',
-        component: SemisComponent,
-    },
-    {
-        path: 'germination',
-        component: GerminationComponent,
-    },
+    
+        
     {
         path: 'form',
         component: ExsituFormComponent,
@@ -40,7 +38,33 @@ export const routes: Routes = [
             {
                 path: 'harvest/:idHarvest/material/:idMaterial/stock',
                 component: StockManagementComponent
-            }
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/germination',
+                component: GerminationComponent,
+
+            },
+            
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/germination-table',
+                component:  GerminationTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/semis',
+                component: SemisComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/semis-table',
+                component: SemisTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/viability',
+                component: ViabilityComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/viability-table',
+                component: ViabilityTableComponent,
+            },
         ]
     }
 ]

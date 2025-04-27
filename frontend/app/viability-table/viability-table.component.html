@@ -1,10 +1,9 @@
-<mat-card class="semis-table">
+<mat-card>
   <mat-card-header class="header-with-button">
-    <mat-card-title>Fiche de Semis</mat-card-title>
+    <mat-card-title>Fiche de Viabilité</mat-card-title>
 
     <button mat-button class="gray-button" (click)="addFicheSemis()">
-      <mat-icon>add</mat-icon> Ajouter une fiche de semis
-    </button>
+      <mat-icon>add</mat-icon> Ajouter une fiche de Viabilité    </button>
   </mat-card-header>
   
   <mat-card-content>
@@ -30,7 +29,7 @@
         <td mat-cell *matCellDef="let element">{{element.replicate}}</td>
       </ng-container>
       <ng-container matColumnDef="levage">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>Action</th>
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button color="primary" (click)="onView()">
             <mat-icon>visibility</mat-icon>
@@ -48,7 +47,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
     <div class="no-data " *ngIf="dataSource.data.length === 0">
-      Aucun semis enregistré
+      Aucun test de viabilité enregistré
     </div>
   </mat-card-content>
 </mat-card>

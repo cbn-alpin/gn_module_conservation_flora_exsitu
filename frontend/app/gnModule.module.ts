@@ -50,6 +50,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { SemisTableComponent } from './semis-table/semis-table.component';
 import { GerminationComponent } from './germination/germination.component';
+import { GerminationTableComponent } from './germination-table/germination-table.component';
+import { ViabilityComponent } from './viability/viability.component';
+import { ViabilityTableComponent } from './viability-table/viability-table.component';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -69,7 +72,10 @@ export const routingConfiguration: ExtraOptions = {
     ConfirmDialogComponent,
     SemisComponent ,
     SemisTableComponent,
-    GerminationComponent
+    GerminationComponent,
+    GerminationTableComponent,
+    ViabilityComponent,
+    ViabilityTableComponent
 ,
     SeddDescriptionComponent,
     StockManagementComponent,
