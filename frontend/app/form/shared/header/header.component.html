@@ -1,12 +1,15 @@
 <div class="header-bar" *ngIf="exsituFormService.harvest">
     <div class="row row-0">
-      <div class="col-5" style="display: flex;flex-direction: column;">
+      <div class="col-3" style="display: flex;flex-direction: column;">
         <span><b>Type de Récolte:</b> {{ harvest?.harvest_type }}</span>
         <span><b>{{ harvest?.id_area_type }}:</b> {{ harvest?.location_name }}</span>
       </div>
-      <div class="col" style="display: flex;flex-direction: column;">
+      <div class="col-3" style="display: flex;flex-direction: column;">
         <span><b>Date:</b> {{ harvest?.date_start }}</span>
         <span><b>Observateur:</b> {{ harvest?.observateur }}</span>
+      </div>
+      <div class="col-3" style="display: flex;flex-direction: column;" *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'">
+        <span><b>Matériel sélectionné:</b> {{ codeMaterial }}</span>
       </div>
     </div>
 </div>
