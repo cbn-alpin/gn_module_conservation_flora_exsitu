@@ -31,7 +31,7 @@
 
         <pnx-autocomplete
             id="habitat"
-            apiEndPoint="{{ storeService.config.API_ENDPOINT }}/habref/habitats/autocomplete"
+            apiEndPoint="{{ habref_url }}"
             [searchAsParameter]="false"
             queryParamSearch="search_name"
             [parentFormControl]="filterForm.controls.cd_hab"

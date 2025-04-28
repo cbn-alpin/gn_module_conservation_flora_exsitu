@@ -131,7 +131,7 @@
       
         <mat-paginator
           [length]="nbMats"  
-          [pageSize]="10"    
+          [pageSize]="rowPerPage"    
           [pageSizeOptions]="[5, 10, 25, 100]"  
           [showFirstLastButtons]="true" 
           (page)="onPaginateChange()">

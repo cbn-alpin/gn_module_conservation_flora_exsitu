@@ -97,8 +97,8 @@ export class HarvestMapListComponent implements OnInit, AfterViewInit {
 
   calculateNbRow() {
     let wH = window.innerHeight;
-    let listHeight = wH - 264;
-    this.rowPerPage = Math.round(listHeight / 40);   
+    let listHeight = wH - 400;
+    this.rowPerPage = Math.round(listHeight / 43);
   }
 
   zoomToHarvest(harvest: any) {

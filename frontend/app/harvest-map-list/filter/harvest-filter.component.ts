@@ -6,6 +6,7 @@ import { DataService } from '../../services/data.service';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, switchMap, map, startWith, distinctUntilChanged, catchError} from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { ConfigService } from '../../services/config.service';
 
 
 @Component({
@@ -23,13 +24,15 @@ export class HarvestFilterComponent implements OnInit {
     public departments = [];
     selectedTaxons: any[] = [];
     selectedHabitats: any[] = [];
+    public habref_url
 
     
     constructor(
         private formBuilder: FormBuilder,
         public storeService: HarvestStoreService,
         private dateParser: NgbDateParserFormatter,
-        private dataService: DataService
+        private dataService: DataService,
+        public cfg: ConfigService
     ){}
 
     ngOnInit(): void {
@@ -53,6 +56,7 @@ export class HarvestFilterComponent implements OnInit {
                     this.applyFilters();
                 }
             });
+        this.habref_url = this.cfg.getBackendUrl() + '/habref/habitats/autocomplete'
 
     }
 
