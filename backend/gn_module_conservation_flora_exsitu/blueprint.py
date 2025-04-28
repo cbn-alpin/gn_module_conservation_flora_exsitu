@@ -898,6 +898,51 @@ def get_seed_of_material(id_material):
     else:
         return {}, 204 
 
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+@blueprint.route('/materials/seeds/<int:id_seed>/infos', methods=['GET'])
+def get_full_seed_info(id_seed):
+    seed = (
+        db.session.query(TMaterielSeed)
+        .filter(TMaterielSeed.id_seed == id_seed)
+        .first()
+    )
+
+    if not seed:
+        return jsonify({"error": "Semence non trouvée"}), 404
+
+    seed_dict = seed.to_dic()
+
+    seed_dict['material_quality_label'] = (
+        seed.material_quality.label_default if seed.material_quality else None
+    )
+    seed_dict.pop('id_material_quality', None)
+
+    link = db.session.query(CorMaterialTaxon).filter_by(id_material=seed.id_material).first()
+    if link:
+        cd_nom = link.cd_nom
+        cd_ref = (
+            db.session.query(Taxref.cd_ref)
+            .filter(Taxref.cd_nom == cd_nom)
+            .scalar()
+        )
+        if cd_ref:
+            query = (
+                db.session.query(
+                    CorTaxonAttribut.valeur_attribut.label("content"),
+                    BibAttributs.nom_attribut.label("code"),
+                )
+                .join(BibAttributs)
+                .filter(CorTaxonAttribut.cd_ref == cd_ref)
+            )
+            attributs = db.session.execute(query).mappings().all()
+            seed_dict["taxon_attributs"] = {attr["code"]: attr["content"] for attr in attributs}
+        else:
+            seed_dict["taxon_attributs"] = {}
+    else:
+        seed_dict["taxon_attributs"] = {}
+
+    return jsonify(seed_dict)
+
 
 
 @blueprint.route('/materials/seeds/<int:id_seed>', methods=['DELETE'])
