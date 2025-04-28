@@ -144,6 +144,19 @@ def downgrade():
     delete_nomenclatures("CFE_EXTERNAL_DESTINATION")
     delete_nomenclatures("CFE_HUMIDITY_DEVICE")
     delete_nomenclatures("CFE_ACTION_TYPE")
+
+    delete_taxhub_attribute("cfe_form1")
+    delete_taxhub_attribute("cfe_form2")
+    delete_taxhub_attribute("cfe_type_albumen")
+    delete_taxhub_attribute("cfe_excroissance1")
+    delete_taxhub_attribute("cfe_excroissance2")
+    delete_taxhub_attribute("cfe_ornementation1")
+    delete_taxhub_attribute("cfe_ornementation2")
+    delete_taxhub_attribute("cfe_embryo_type1")
+    delete_taxhub_attribute("cfe_embryo_type2")
+    delete_taxhub_attribute("cfe_comm_dim_forme")
+
+    delete_taxhub_attribute_theme("Description semence")
     
     delete_module(MODULE_CODE)
 
@@ -180,3 +193,39 @@ def delete_module(module_code):
     )
     op.get_bind().execute(operation, {"moduleCode": module_code})
 
+
+def delete_taxhub_attribute_theme(theme_name):
+    operation = text(
+        """
+            -- Delete TaxHub attributs theme
+            WITH attributs_deleted AS (
+                DELETE FROM taxonomie.bib_attributs WHERE id_theme IN (
+                    SELECT id_theme FROM taxonomie.bib_themes
+                    WHERE nom_theme = :themeName
+                )
+                RETURNING id_attribut
+            )
+            DELETE FROM taxonomie.cor_taxon_attribut WHERE id_attribut IN (
+                SELECT id_attribut FROM attributs_deleted
+            );
+
+            DELETE FROM taxonomie.bib_themes WHERE nom_theme = :themeName ;
+        """
+    )
+    op.get_bind().execute(operation, {"themeName": theme_name})
+
+
+def delete_taxhub_attribute(attribut_name):
+    operation = text(
+        """
+            -- Delete TaxHub attribut
+            DELETE FROM taxonomie.cor_taxon_attribut WHERE id_attribut = (
+                SELECT id_attribut
+                FROM taxonomie.bib_attributs
+                WHERE nom_attribut = :attributName
+            );
+
+            DELETE FROM taxonomie.bib_attributs WHERE nom_attribut = :attributName ;
+        """
+    )
+    op.get_bind().execute(operation, {"attributName": attribut_name})
