@@ -70,7 +70,7 @@ CFE_FORM;lanc;lanceole;Lanceolé;En forme de fer de lance;Lanceolé;En forme de 
 CFE_FORM;oblan;oblanceole;Oblancéolé;En forme de fer de lance à l'envers;Oblancéolé;En forme de fer de lance à l'envers;conservation_flora_exsitu;.0018
 CFE_FORM;efds;enFormeDeSecteur;En forme de secteur;En forme de secteur;En forme de secteur;En forme de secteur;conservation_flora_exsitu;.0011
 CFE_FORM;cylin;cylindrique;Cylindrique;En forme de cylindre;Cylindrique;En forme de cylindre;conservation_flora_exsitu;.005
-CFE_FORM;falci;falciforme;Falciforme ;En forme de faux;Falciforme ;En forme de faux;conservation_flora_exsitu;.0012
+CFE_FORM;falci;falciforme;Falciforme;En forme de faux;Falciforme;En forme de faux;conservation_flora_exsitu;.0012
 CFE_FORM;cym;cymbiform;Cymbiform;En forme de navette;Cymbiform;En forme de navette;conservation_flora_exsitu;.006
 CFE_ATWATER_TYPE;peris;perisperme;Périsperme;Se dit d'une  graine pourvue d'un périsperme tissu nutritif issu du nucelle à l'extérieur du sac embryonnaire;Autre;Se dit d'une  graine pourvue d'un périsperme tissu nutritif issu du nucelle à l'extérieur du sac embryonnaire;conservation_flora_exsitu;.003
 CFE_ATWATER_TYPE;albu;albuminee;Albuminée;Se dit d'une graine pourvue d' albumen réserve alimentaire conteue dans la graine et formée lors de la seconde fécondation chez les Angiospermes;Albuminée;Se dit d'une graine pourvue d' albumen réserve alimentaire conteue dans la graine et formée lors de la seconde fécondation chez les Angiospermes;conservation_flora_exsitu;.001
@@ -102,7 +102,7 @@ CFE_DECORATION;nerv;nervure;Nervures;La surface est nervurée;Nervures;La surfac
 CFE_DECORATION;ond;ondulation;Ondulations;La surface est ondulée;Ondulations;La surface est ondulée;conservation_flora_exsitu;.0014
 CFE_DECORATION;pd;petiteDepression;Petites dépressions;La surface est marquée par de petites dépressions;Petites dépressions;La surface est marquée par de petites dépressions;conservation_flora_exsitu;.0015
 CFE_DECORATION;pdr;petiteDepressionReticulee;Petites dépressions réticulées;La surface est marquée par de petites dépressions réticulées;Petites dépressions réticulées;La surface est marquée par de petites dépressions réticulées;conservation_flora_exsitu;.0016
-CFE_DECORATION;pp;petitPointille;Petits pointillés ;La surface est couverte de petits pointillés;Petits pointillés ;La surface est couverte de petits pointillés;conservation_flora_exsitu;.0017
+CFE_DECORATION;pp;petitPointille;Petits pointillés;La surface est couverte de petits pointillés;Petits pointillés;La surface est couverte de petits pointillés;conservation_flora_exsitu;.0017
 CFE_DECORATION;poin;pointillee;Pointillés;La surface est couverte de pointillés;Pointillée;La surface est couverte de pointillés;conservation_flora_exsitu;.0018
 CFE_DECORATION;ponc;ponctuation;Ponctuations;La surface est ponctuée;Ponctuations;La surface est ponctuée;conservation_flora_exsitu;.0019
 CFE_DECORATION;pust;pustule;Pustules;La surface est couverte de pustules;Pustules;La surface est couverte de pustules;conservation_flora_exsitu;.0020
@@ -128,7 +128,7 @@ CFE_PLACE;cong;congElateur;Congélateur;Appareil utilisé pour le stockage et la
 CFE_PLACE;cf;chambreFroide;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;Chambre Froide;Installation utilisée pour le stockage et la conservation des semences au froid positif;conservation_flora_exsitu;.002
 CFE_PLACE;sdps;salleDePre-sechage;Salle de pré-séchage;Salle de pré-séchage;Salle de pré-séchage;Salle de pré-séchage;conservation_flora_exsitu;.004
 CFE_PLACE;sds;salleDeSechage;Salle de séchage;Salle de séchage;Salle de séchage;Salle de séchage;conservation_flora_exsitu;.001
-CFE_COLOR_TABLET;ob;orangeBleu;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité ;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité ;conservation_flora_exsitu;.001
+CFE_COLOR_TABLET;ob;orangeBleu;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité;Orange/Bleu;Couleur du gel de silice indicant un faible taux d'humidité;conservation_flora_exsitu;.001
 CFE_COLOR_TABLET;ci;couleurIntermediaire;Couleur intermédiaire;Couleur du gel de silice indicant un taux d'humidité moyen;Couleur intermédiaire;Couleur du gel de silice indicant un taux d'humidité moyen;conservation_flora_exsitu;.002
 CFE_COLOR_TABLET;br;blancRose;Blanc/Rose;Couleur du gel de silice indicant un fort taux d'humidité;Blanc/Rose;Couleur du gel de silice indicant un fort taux d'humidité;conservation_flora_exsitu;.003
 CFE_DISSEMINATION_UNIT;gr;graine;Graine;L' unité de dissémination est la graine;Graine;L' unité de dissémination est la graine;conservation_flora_exsitu;.001
@@ -165,5 +165,5 @@ CFE_ACTION_TYPE;sti;stockageInitial;Stockage initial;Stockage initial;Stockage i
 CFE_ACTION_TYPE;acth;ajoutChangementTemoinHumidite;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;conservation_flora_exsitu;.002
 CFE_ACTION_TYPE;evu;evaluationHumidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;conservation_flora_exsitu;.003
 CFE_ACTION_TYPE;mhp;mesureHumiditePrecise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;conservation_flora_exsitu;.004
-CFE_ACTION_TYPE;dest;destockage ;Déstockage ;Déstockage ;Déstockage ;Déstockage ;conservation_flora_exsitu;.005
-CFE_ACTION_TYPE;depl;deplacement;Déplacement ;Déplacement ;Déplacement ;Déplacement ;conservation_flora_exsitu;.006
+CFE_ACTION_TYPE;dest;destockage;Déstockage;Déstockage;Déstockage;Déstockage;conservation_flora_exsitu;.005
+CFE_ACTION_TYPE;depl;deplacement;Déplacement;Déplacement;Déplacement;Déplacement;conservation_flora_exsitu;.006
