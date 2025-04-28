@@ -1,0 +1,23 @@
+.info-block {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .info-row {
+    margin-bottom: 0.75rem;
+  }
+  
+  .other-content {
+    padding: 1rem;
+    border-left: 2px solid #ccc;
+    overflow-y: auto;
+    padding-right: 1rem;
+    max-height: calc(100vh - Xpx);
+  }
+  
+  mat-card {
+    background-color: #fff5bd !important;
+    margin-bottom: 1rem;
+  }

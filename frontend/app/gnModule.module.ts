@@ -39,6 +39,7 @@ import { ActionsStockComponent } from './stock-management/actions-stock/actions-
 import { ActionModalComponent } from './components/action-modal/action-modal.component';
 import { MaterialModalComponent } from './components/material-modal/material-modal.component';
 import { StockManagementService } from './stock-management/stock-management.service';
+import { SeedDetailsComponent } from './seed-details/seed-details.component';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -62,7 +63,8 @@ export const routingConfiguration: ExtraOptions = {
     ActionModalComponent,
     SeddDescriptionComponent,
     ConfirmDialogComponent,
-    MaterialModalComponent
+    MaterialModalComponent,
+    SeedDetailsComponent
   ],
   providers: [
     HarvestStoreService, 

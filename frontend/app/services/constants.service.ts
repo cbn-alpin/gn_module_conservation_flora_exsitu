@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { DataService } from './data.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +16,22 @@ export class ConstantsService {
     PTAPP: 'ptapp'
   };
 
-  // Configuration des champs en fonction du code nomenclature
-  public readonly FIELD_CONFIGS = new Map<string, any>([
-    [this.LOCATION_CODES.COMMUNE,  { locationType: 25, showCommune: true, showDepartment: false }],
-    [this.LOCATION_CODES.DEPARTMENT, { locationType: 26, showCommune: false, showDepartment: true }],
-    [this.LOCATION_CODES.NL, { hideAll: true, callFormValid: true }],
-    [this.LOCATION_CODES.PTP, { showMap: true, showCommune: false, showDepartment: false, showResolution: false }],
-    [this.LOCATION_CODES.PTAPP, { showMap: true, showResolution: true, showCommune: false, showDepartment: false }]
-  ]);
+  public readonly fieldConfigs$ = new BehaviorSubject<Map<string, any>>(new Map());
+  public FIELD_CONFIGS: Map<string, any> = new Map();
+
+  private initFieldConfigs() {
+    this.api.getLocationTypeIds().subscribe(ids => {
+      const configs = new Map<string, any>([
+        [this.LOCATION_CODES.COMMUNE, { locationType: ids.COMMUNE_ID, showCommune: true, showDepartment: false }],
+        [this.LOCATION_CODES.DEPARTMENT, { locationType: ids.DEPARTEMENT_ID, showCommune: false, showDepartment: true }],
+        [this.LOCATION_CODES.NL, { hideAll: true, callFormValid: true }],
+        [this.LOCATION_CODES.PTP, { showMap: true, showCommune: false, showDepartment: false, showResolution: false }],
+        [this.LOCATION_CODES.PTAPP, { showMap: true, showResolution: true, showCommune: false, showDepartment: false }]
+      ]);
+      this.FIELD_CONFIGS = configs;
+      this.fieldConfigs$.next(configs);
+    });    
+  }
 
   // Codes de nomenclature pour les matériaux
   public readonly HARVEST_MATERIAL_CODES = {
@@ -50,7 +60,9 @@ export class ConstantsService {
 
   private readonly STORABLE_MATERIAL_CODES = [
     this.HARVEST_MATERIAL_CODES.SEED,
-    this.HARVEST_MATERIAL_CODES.SPORE
+    this.HARVEST_MATERIAL_CODES.SPORE,
+    this.HARVEST_MATERIAL_CODES.SEED_MIX,
+    this.HARVEST_MATERIAL_CODES.SOIL_SAMPLING
   ]
 
   public readonly PLACE_CODES = {
@@ -93,5 +105,7 @@ export class ConstantsService {
     FULL: 'total'
   };
 
-  constructor() {}
+  constructor(private api: DataService) {
+    this.initFieldConfigs();
+  }
 }

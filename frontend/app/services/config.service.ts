@@ -59,7 +59,7 @@ export class ConfigService {
     }
     
     getTaxHubFrontendUrl() {
-        return `${this.config.API_TAXHUB}`.replace('/api', '/');
+        return `${this.config.API_TAXHUB}`.replace('/api', '');
     }
     
     getPriorityFloraBackendUrl() {

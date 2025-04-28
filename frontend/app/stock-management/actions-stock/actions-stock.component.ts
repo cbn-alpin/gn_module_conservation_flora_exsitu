@@ -27,9 +27,9 @@ export class ActionsStockComponent implements OnInit {
     displayedColumns: string[] = [
         'action_type',
         'quantity',
-        'id_humidity_level',
-        'humidity_rate',
-        'id_humidity_device',
+        'date',
+        'actor',
+        'destination',
         'actions'
     ]; 
 

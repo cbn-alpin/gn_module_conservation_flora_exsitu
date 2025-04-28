@@ -15,6 +15,10 @@ export class DataService {
     this.moduleBaseUrl = this.cfg.getModuleBackendUrl();
   }
 
+  getLocationTypeIds() {
+    return this.api.get<{ COMMUNE_ID: number, DEPARTEMENT_ID: number }>(`${this.moduleBaseUrl}/constants/location-types`);
+  }
+
   addHarvest(data: any) {
     return this.api.post<any>(`${this.moduleBaseUrl}/harvests`, data);
   }
@@ -76,6 +80,10 @@ export class DataService {
       map(response => response.code_nomenclature)
     );
   }
+
+  getMaterialInfos(id_material: number) {
+    return this.api.get<any>(`${this.moduleBaseUrl}/materials/${id_material}`);
+  }
   
 
   addTaxonToMaterial(id_material: number, cd_nom: number): Observable<any> {
@@ -108,6 +116,10 @@ export class DataService {
 
   updateSeed(id_seed: number, data: any) {
     return this.api.put<any>(`${this.moduleBaseUrl}/materials/seeds/${id_seed}`, data);
+  }
+
+  getFullSeedDetails(idSeed: number): Observable<any> {
+    return this.api.get(`${this.moduleBaseUrl}/materials/seeds/${idSeed}/infos`);
   }
 
   getMaterialsCodeParent(idHarvest: number): Observable<any[]> {
