@@ -14,6 +14,7 @@ from sqlalchemy import func
 import json
 from sqlalchemy import and_
 from sqlalchemy.sql import text
+from functools import cached_property
 
 
 from .models import(
@@ -39,6 +40,14 @@ class HarvestRepository:
             return ewkt
         except Exception as e:
             raise ValueError(f"Erreur de conversion GeoJSON -> EWKT : {e}")
+    
+    @cached_property
+    def commune_id(self):
+        return db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
+
+    @cached_property
+    def departement_id(self):
+        return db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
 
 
     def create(self, data):
@@ -56,8 +65,8 @@ class HarvestRepository:
                 data['geom'] = geom_transformed
             
             if data["id_area_type"] and not data.get('geom'):
-                commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
-                departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+                commune_id = self.commune_id
+                departement_id = self.departement_id
                 if data["id_area_type"] == commune_id:  # Commune
                     data["id_area"] = data.get("id_area_muni", [None])[0]
                 elif data["id_area_type"] == departement_id:  # Département
@@ -120,8 +129,8 @@ class HarvestRepository:
                 harvest.id_area_type = None
 
             if data["id_area_type"] and not data.get('geom'):
-                commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
-                departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+                commune_id = self.commune_id
+                departement_id = self.departement_id
                 if data["id_area_type"] == commune_id:
                     data["id_area"] = data.get("id_area_muni", [None])[0]
                 elif data["id_area_type"] == departement_id:
@@ -182,6 +191,8 @@ class HarvestRepository:
         l_areas_dept = aliased(LAreas)
         l_areas_commune = aliased(LAreas)
         Taxref_valid = aliased(Taxref)
+        commune_id = self.commune_id
+        departement_id = self.departement_id
 
         query = db.session.query(
             THarvest.id_harvest,
@@ -190,8 +201,8 @@ class HarvestRepository:
         .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
         .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
-        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
-        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
+        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == departement_id)) \
+        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == commune_id)) \
         .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
         .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
         .group_by(
@@ -247,6 +258,8 @@ class HarvestRepository:
         l_areas_dept = aliased(LAreas)
         l_areas_commune = aliased(LAreas)
         Taxref_valid = aliased(Taxref)
+        commune_id = self.commune_id
+        departement_id = self.departement_id
 
         query = db.session.query(
             THarvest.id_harvest,
@@ -266,8 +279,8 @@ class HarvestRepository:
         .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
         .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
         .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
-        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == 26)) \
-        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == 25)) \
+        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == departement_id)) \
+        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == commune_id)) \
         .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
         .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
         .group_by(
@@ -321,9 +334,6 @@ class HarvestRepository:
             db.session.rollback()  
             raise e
 
-
-
-                        
 
 class HarvestMaterialRepository:
     def get_one(self, id_material):
@@ -620,19 +630,20 @@ class StorageRepository:
             raise ValueError("Lieu inconnu")
         
         ActionType = aliased(TNomenclatures)
-        HumidityLevel = aliased(TNomenclatures)
-        HumidityDevice = aliased(TNomenclatures)
+        Destination = aliased(TNomenclatures)
+        Actor = aliased(User)
 
         query = (
             db.session.query(
                 TStorage,
                 ActionType.label_default.label("action_type_label"),
-                HumidityLevel.label_default.label("humidity_level_label"),
-                HumidityDevice.label_default.label("humidity_device_label")
+                Destination.label_default.label("destination"),
+                Actor.prenom_role.label("prenom_actor"),
+                Actor.nom_role.label("nom_actor"),
             )
             .outerjoin(ActionType, TStorage.id_action_type == ActionType.id_nomenclature)
-            .outerjoin(HumidityLevel, TStorage.id_humidity_level == HumidityLevel.id_nomenclature)
-            .outerjoin(HumidityDevice, TStorage.id_humidity_device == HumidityDevice.id_nomenclature)
+            .outerjoin(Destination, TStorage.id_destination == Destination.id_nomenclature)
+            .outerjoin(Actor, TStorage.id_actor == Actor.id_role)
             .filter(TStorage.id_material == id_material)
             .filter(TStorage.id_place == id_place)
             .order_by(TStorage.date_start.desc(), TStorage.id_storage.desc())

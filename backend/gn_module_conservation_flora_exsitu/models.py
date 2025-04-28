@@ -344,6 +344,7 @@ class TMaterielSeed(db.Model):
         db.DateTime,
         onupdate=sa.func.now(),
     )
+    material_quality = db.relationship("TNomenclatures", foreign_keys=[id_material_quality])
 
     def to_dic(self):
         return {
