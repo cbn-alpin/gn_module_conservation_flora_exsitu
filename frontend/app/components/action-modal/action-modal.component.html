@@ -32,6 +32,16 @@
 
   <div class="row row-0 mr-3 mt-2">
     <div class="col-4 padding-sm">
+      <label>Type de séchage</label>
+      <pnx-nomenclature
+              keyValue="id_nomenclature"
+              [bindAllItem]="false"
+              codeNomenclatureType="CFE_DRY_TYPE"
+              [parentFormControl]="actionForm.controls.id_dry_type"
+        >
+     </pnx-nomenclature>
+    </div>
+    <div class="col-4 padding-sm mt-2">
       <div class="form-group">
         <pnx-date
           [defaultToday]="true"
@@ -40,7 +50,7 @@
         ></pnx-date>
       </div>
     </div>
-    <div class="col-4">
+    <div class="col-4 padding-sm mt-2">
       <div class="form-group">
         <pnx-date
           label="Date fin"
@@ -50,7 +60,7 @@
     </div>
   </div>
 
-  <div class="row row-0 mr-3">
+  <div class="row row-0 mr-3 mt-1">
     <div class="col-6 padding-sm">
       <label>Type de déstockage</label>
       <pnx-nomenclature
@@ -59,7 +69,7 @@
               codeNomenclatureType="CFE_DESTOCK"
               [parentFormControl]="actionForm.controls.id_destock"
         >
-     </pnx-nomenclature>
+    </pnx-nomenclature>
     </div>
     <div class="col-6 padding-sm" *ngIf="showDestinationField">
       <label>Destination</label>
@@ -77,6 +87,28 @@
               [parentFormControl]="actionForm.controls.id_destination"
         >
      </pnx-nomenclature>
+    </div>
+  </div>
+
+  <div class="row row-0">
+    <div class="col-6 padding-sm">
+      <label>Quantité</label>
+      <input
+        class="form-control"
+        type="number"
+        [formControl]="actionForm.controls.quantity"
+      />
+      <mat-error *ngIf="actionForm.get('quantity')?.hasError('exceedMax')">
+        <ng-container *ngIf="!edit">
+          La quantité dépasse la quantité maximale disponible ({{ quantiteMaxDisponible }}).
+        </ng-container>
+        <ng-container *ngIf="edit">
+          La quantité dépasse la quantité maximale disponible pour la modification.<br>
+          Stock disponible : {{ quantiteMaxDisponible - data.data.quantity }},<br>
+          Quantité actuelle de l’action : {{ data.data.quantity }},<br>
+          Total autorisé : {{ quantiteMaxDisponible }}.
+        </ng-container>
+      </mat-error>
     </div>
   </div>
 
@@ -105,44 +137,12 @@
 
   <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
-      <label>Quantité</label>
-      <input
-        class="form-control"
-        type="number"
-        [formControl]="actionForm.controls.quantity"
-      />
-      <mat-error *ngIf="actionForm.get('quantity')?.hasError('exceedMax')">
-        <ng-container *ngIf="!edit">
-          La quantité dépasse la quantité maximale disponible ({{ quantiteMaxDisponible }}).
-        </ng-container>
-        <ng-container *ngIf="edit">
-          La quantité dépasse la quantité maximale disponible pour la modification.<br>
-          Stock disponible : {{ quantiteMaxDisponible - data.data.quantity }},<br>
-          Quantité actuelle de l’action : {{ data.data.quantity }},<br>
-          Total autorisé : {{ quantiteMaxDisponible }}.
-        </ng-container>
-      </mat-error>
-    </div>
-    <div class="col-6 padding-sm">
         <label>Mesure de l'humidité précise</label>
         <input
           class="form-control"
           type="number"
           [formControl]="actionForm.controls.humidity_rate"
         />
-    </div>
-  </div>
-
-  <div class="row row-0 mr-3 mt-2">
-    <div class="col-6 padding-sm">
-      <label>Type de séchage</label>
-      <pnx-nomenclature
-              keyValue="id_nomenclature"
-              [bindAllItem]="false"
-              codeNomenclatureType="CFE_DRY_TYPE"
-              [parentFormControl]="actionForm.controls.id_dry_type"
-        >
-     </pnx-nomenclature>
     </div>
   </div>
 

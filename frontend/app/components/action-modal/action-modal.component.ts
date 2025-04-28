@@ -51,9 +51,7 @@ export class ActionModalComponent implements OnInit {
 
     }
 
-    ngOnInit(): void {    
-      console.log(this.data.data);
-      
+    ngOnInit(): void {          
         this.edit = this.data.edit || false;    
         this.initForm();
         this.additionalDataForm = this.actionForm.get('additional_data') as FormGroup;
@@ -180,9 +178,7 @@ export class ActionModalComponent implements OnInit {
       
 
   submetData(){
-    let finalForm = this.formatDataForm();    
-    console.log(finalForm);
-     
+    let finalForm = this.formatDataForm();     
 
     if(this.edit){
       this.api.upAction(this.data.data.id_material, this.data.data.id_storage, finalForm).subscribe({
@@ -335,10 +331,8 @@ export class ActionModalComponent implements OnInit {
   }
 
   fillForm(actionData: any): void {
-    const fieldsToIgnore = ['action_type_label', 
-      'humidity_level_label', 
-      'humidity_device_label',
-      'additional_data', 
+    const fieldsToIgnore = ['action_type_label', 'destination',
+      'additional_data', 'actor',
       'id_actor', 'date_start', 'date_end'];
   
     Object.keys(actionData).forEach(key => {
