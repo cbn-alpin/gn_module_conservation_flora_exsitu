@@ -78,17 +78,21 @@ export class MaterialModalComponent implements OnInit {
     }
 
     checkCodeMaterial(codeMaterial: string): void {
-        if (codeMaterial) {
-          this.api.checkCodeMaterial(codeMaterial).subscribe(
-            response => {
-              this.codeMaterialExists = response.exists;
-            },
-            error => {
-              console.error('Erreur lors de la vérification du code material', error);
+      if (codeMaterial) {
+        this.api.checkCodeMaterial(codeMaterial).subscribe(
+          response => {
+            this.codeMaterialExists = response.exists;            
+            const control = this.materialForm.get('code_material');
+            if (this.codeMaterialExists) {
+              control?.setErrors({ codeExists: true });
             }
-          );
-        }
-    }
+          },
+          error => {
+            console.error('Erreur lors de la vérification du code material', error);
+          }
+        );
+      }
+    }    
 
     close(): void {
         this.materialFormService.occurrence.next(null);
