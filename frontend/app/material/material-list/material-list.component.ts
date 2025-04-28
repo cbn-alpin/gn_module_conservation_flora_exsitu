@@ -36,11 +36,11 @@ export class MaterialListComponent implements OnInit {
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
     displayedColumns: string[] = [
-      'code_material',        
-      'harvest_material', 
-      'taxons',     
+      'code_material',
+      'taxons',        
+      'harvest_material',    
+      'code_cultural_bank',  
       'code_material_parent',
-      'code_cultural_bank',
       'actions'
     ];
 
@@ -82,7 +82,7 @@ export class MaterialListComponent implements OnInit {
             this.materialListService.materials$.next(filteredMaterials);
             this.loadMaterials();            
             this.totalMaterials = filteredMaterials.length;
-            this.dataSource.data = transformedMaterials
+            this.dataSource.data = transformedMaterials            
         });
         
     }
@@ -205,24 +205,13 @@ export class MaterialListComponent implements OnInit {
 
 
     onAddOrEditSeed(materialId: number): void {
-      this.api.getSeedByMaterial(materialId).subscribe({
-        next: seed => {
-          // Cas où on a une seed renvoyée (HTTP 200)
-          if (seed && seed.seed) {
-            this.openDescriptionSeddModal(materialId, 'edit', seed.seed);
-          } else {
-            this.openDescriptionSeddModal(materialId, 'create', null);
-          }
-        },
-        error: err => {
-          if (err.status === 204) {
-            this.openDescriptionSeddModal(materialId, 'create', null);
-          } else {
-            console.error('Erreur lors de la récupération de la seed:', err);
-          }
-        }
-      });
-    }    
+      this.handleSeedByMaterial(
+        materialId,
+        seed => this.openDescriptionSeddModal(materialId, 'edit', seed),
+        () => this.openDescriptionSeddModal(materialId, 'create', null)
+      );
+    }
+     
 
     openDescriptionSeddModal(id_material, mode, data): void {      
       const dialogRef = this.dialog.open(SeddDescriptionComponent, {
@@ -235,8 +224,48 @@ export class MaterialListComponent implements OnInit {
       });
     }
 
-    goToStock(idMaterial: number) {
+    goToStock(material: any) {
+      const idMaterial = material.id_material
+      this.exsituFormService.setIdMaterial(idMaterial);
       this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/stock`]);
+    }
+
+    goToSeedDetails(material: any): void {
+      const idMaterial = material.id_material
+      this.exsituFormService.setIdMaterial(idMaterial);
+      this.handleSeedByMaterial(
+        idMaterial,
+        seed => this.router.navigate([
+          `${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/seed-details/${seed.id_seed}`
+        ]),
+        () => console.warn('Pas de seed disponible pour ce material'),
+        err => console.error('Erreur lors de la récupération de la seed:', err)
+      );
+    }    
+
+    private handleSeedByMaterial(
+      materialId: number,
+      onFound: (seed: any) => void,
+      onNotFound: () => void,
+      onError?: (err: any) => void
+    ): void {
+      this.api.getSeedByMaterial(materialId).subscribe({
+        next: seed => {
+          if (seed && seed.seed) {
+            onFound(seed.seed);
+          } else {
+            onNotFound();
+          }
+        },
+        error: err => {
+          if (err.status === 204) {
+            onNotFound();
+          } else {
+            console.error('Erreur lors de la récupération de la seed:', err);
+            if (onError) onError(err);
+          }
+        }
+      });
     }
     
 }

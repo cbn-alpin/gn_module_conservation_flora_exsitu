@@ -28,7 +28,7 @@
       </ng-container>
       <!-- N° de Récolte -->
       <ng-container matColumnDef="code_cultural_bank">
-        <th mat-header-cell *matHeaderCellDef >Code banque culturale</th>
+        <th mat-header-cell *matHeaderCellDef > N° banque culturale</th>
         <td mat-cell *matCellDef="let element"> {{ element.code_cultural_bank }} </td>
       </ng-container>
       <!-- Boutons d'action (Fusionner les colonnes Info, Edit, Delete en une seule colonne) -->
@@ -46,7 +46,7 @@
               <span>Modifier</span>
             </button>
             <button mat-menu-item 
-              [disabled]="element.has_seed_description"
+              [disabled]="element.has_seed_description || element.has_storage"
               (click)="deleteOccurrence(element)"
             >
               <mat-icon color="warn">delete</mat-icon>
@@ -64,8 +64,15 @@
               <span>Description</span>
             </button>
             <button mat-menu-item 
+              *ngIf="element.has_seed_description"
+              (click)="goToSeedDetails(element)"
+            >
+              <mat-icon>info</mat-icon>
+              <span>Détails semence</span>
+            </button>
+            <button mat-menu-item 
               *ngIf="constants.STORABLE_MATERIAL_CODES.includes(element.harvest_material_code)"
-              (click)="goToStock(element.id_material)"
+              (click)="goToStock(element)"
             >
               <mat-icon>warehouse</mat-icon>
               <span>Stocker</span>
