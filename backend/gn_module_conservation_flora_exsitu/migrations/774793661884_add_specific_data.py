@@ -156,7 +156,7 @@ def downgrade():
     delete_taxhub_attribute("cfe_embryo_type2")
     delete_taxhub_attribute("cfe_comm_dim_forme")
 
-    delete_taxhub_attribute_theme("Description semence")
+    delete_taxhub_attribute_theme("Semence")
     
     delete_module(MODULE_CODE)
 

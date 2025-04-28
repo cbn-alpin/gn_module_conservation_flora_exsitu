@@ -339,8 +339,8 @@ INSERT INTO taxonomie.bib_themes (
     ordre,
     id_droit
 ) VALUES (
-    'Description semence',
-    'Description de semence pour le module flora exsitu',
+    'Semence',
+    'Description des semences(graines) pour le module flora exsitu',
     (SELECT MAX(ordre) + 1 FROM taxonomie.bib_themes LIMIT 1),
     4 -- TODO : Voir à quoi cela correspond
 ) ;
@@ -357,40 +357,16 @@ INSERT INTO taxonomie.bib_attributs (
     id_theme,
     ordre
 ) VALUES (
-    'cfe_form1',
-    'Forme 1',
+    'cfe_form',
+    'Forme',
     '{"values":["Biconvexe","Circulaire","Cordiforme","Deltoïde","Elliptique","En forme de C","En forme de D","Irrégulière","Linéaire","Oblongue","Obovoïde","Ovoïde","Pyriforme","Quadrangulaire","Rectangulaire","Réniforme","Sigmoïde","Triangulaire","Obconique","Cunéiforme","Globulaire","Lanceolé","Oblancéolé","En forme de secteur","Cylindrique","Falciforme","Cymbiform"]}',
     False,
-    'Forme 1 de la semence',
+    'Forme de la semence',
     'text',
     'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
+    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1),
     (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
-    ) LIMIT 1)
-) ;
-
-INSERT INTO taxonomie.bib_attributs (
-    nom_attribut,
-    label_attribut,
-    liste_valeur_attribut,
-    obligatoire,
-    desc_attribut,
-    type_attribut,
-    type_widget,
-    id_theme,
-    ordre
-) VALUES (
-    'cfe_form2',
-    'Forme 2',
-    '{"values":["Biconvexe","Circulaire","Cordiforme","Deltoïde","Elliptique","En forme de C","En forme de D","Irrégulière","Linéaire","Oblongue","Obovoïde","Ovoïde","Pyriforme","Quadrangulaire","Rectangulaire","Réniforme","Sigmoïde","Triangulaire","Obconique","Cunéiforme","Globulaire","Lanceolé","Oblancéolé","En forme de secteur","Cylindrique","Falciforme","Cymbiform"]}',
-    False,
-    'Forme 2 de la semence',
-    'text',
-    'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
-    (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
+        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
 
@@ -412,9 +388,9 @@ INSERT INTO taxonomie.bib_attributs (
     'Type de semences',
     'text',
     'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
+    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1),
     (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
+        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
 
@@ -429,16 +405,16 @@ INSERT INTO taxonomie.bib_attributs (
     id_theme,
     ordre
 ) VALUES (
-    'cfe_excroissance1',
-    'Excroissance 1',
+    'cfe_excroissance',
+    'Excroissance',
     '{"values":["Aile","Arille","Aucune","Caroncule","Funicule","Pappus","Apex","Trichome","Couronne"]}',
     False,
-    'Excroissance 1',
+    'Excroissance',
     'text',
     'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
+    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1),
     (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
+        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
 
@@ -453,40 +429,16 @@ INSERT INTO taxonomie.bib_attributs (
     id_theme,
     ordre
 ) VALUES (
-    'cfe_excroissance2',
-    'Excroissance 2',
-    '{"values":["Aile","Arille","Aucune","Caroncule","Funicule","Pappus","Apex","Trichome","Couronne"]}',
-    False,
-    'Excroissance 2',
-    'text',
-    'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
-    (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
-    ) LIMIT 1)
-) ;
-
-INSERT INTO taxonomie.bib_attributs (
-    nom_attribut,
-    label_attribut,
-    liste_valeur_attribut,
-    obligatoire,
-    desc_attribut,
-    type_attribut,
-    type_widget,
-    id_theme,
-    ordre
-) VALUES (
-    'cfe_ornementation1',
-    'Ornementation 1',
+    'cfe_ornementation',
+    'Ornementation',
     '{"values":["Aiguillons","Aréoles","Ecailles","En forme échelles","En forme de viscères","Finement nervurée","Granulations","Lignes","Lignes parallèles très fines","Nervures","Ondulations","Petites dépressions","Petites dépressions réticulées","Petits pointillés","Pointillés","Ponctuations","Pustules","Renflements arrondis","Réticules","Rides","Sillons","Stries ou Côtes","Très petites dépressions","Tubercules","Verrues","Grosses dépressions","Alvéoles","Lisse","Tout petits pointillés"]}',
     False,
-    'Ornementation 1',
+    'Ornementation',
     'text',
     'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
+    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1),
     (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
+        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
 
@@ -501,64 +453,16 @@ INSERT INTO taxonomie.bib_attributs (
     id_theme,
     ordre
 ) VALUES (
-    'cfe_ornementation2',
-    'Ornementation 2',
-    '{"values":["Aiguillons","Aréoles","Ecailles","En forme échelles","En forme de viscères","Finement nervurée","Granulations","Lignes","Lignes parallèles très fines","Nervures","Ondulations","Petites dépressions","Petites dépressions réticulées","Petits pointillés","Pointillés","Ponctuations","Pustules","Renflements arrondis","Réticules","Rides","Sillons","Stries ou Côtes","Très petites dépressions","Tubercules","Verrues","Grosses dépressions","Alvéoles","Lisse","Tout petits pointillés"]}',
-    False,
-    'Ornementation 2',
-    'text',
-    'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
-    (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
-    ) LIMIT 1)
-) ;
-
-INSERT INTO taxonomie.bib_attributs (
-    nom_attribut,
-    label_attribut,
-    liste_valeur_attribut,
-    obligatoire,
-    desc_attribut,
-    type_attribut,
-    type_widget,
-    id_theme,
-    ordre
-) VALUES (
-    'cfe_embryo_type1',
-    'Type embryon 1',
+    'cfe_embryo_type',
+    'Type embryon',
     '{"values":["Axial","Basal","Feuillé","Miniature","Périphérique","Spiralé"]}',
     False,
-    'Type embryon 1',
+    'Type embryon',
     'text',
     'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
+    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1),
     (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
-    ) LIMIT 1)
-) ;
-
-INSERT INTO taxonomie.bib_attributs (
-    nom_attribut,
-    label_attribut,
-    liste_valeur_attribut,
-    obligatoire,
-    desc_attribut,
-    type_attribut,
-    type_widget,
-    id_theme,
-    ordre
-) VALUES (
-    'cfe_embryo_type2',
-    'Type embryon 2',
-    '{"values":["Axial","Basal","Feuillé","Miniature","Périphérique","Spiralé"]}',
-    False,
-    'Type embryon 2',
-    'text',
-    'multiselect',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
-    (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
+        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
 
@@ -580,8 +484,8 @@ INSERT INTO taxonomie.bib_attributs (
     'Commentaire dimension',
     'text',
     'textarea',
-    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1),
+    (SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1),
     (SELECT COALESCE(MAX(ordre) + 1, 1) FROM taxonomie.bib_attributs WHERE id_theme = (
-        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Description semence' LIMIT 1
+        SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
