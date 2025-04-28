@@ -102,33 +102,34 @@ export class HarvestFormService {
 
     updateFormFields(code_nomenclature: string) {
       this.hideAllFields()
-      const config = this.constants.FIELD_CONFIGS.get(code_nomenclature);      
-  
-      if (config) {
-        this.harvestForm.controls['id_area_type'].setValue(config.locationType || null);
-        
-        // Gestion de l'affichage des champs
-        this.showCommuneField = !!config.showCommune;
-        this.showDepartmentField = !!config.showDepartment;
-        this.showMapField = !!config.showMap;
-        this.showResolutionField = !!config.showResolution;
-
-        if (this.showMapField) {
-          // Si la carte doit être affichée, on la rend active
-          this.mapService.setShowMap(true);
+      this.constants.fieldConfigs$.subscribe(configs => {
+        const config = configs.get(code_nomenclature);
+        if (config) {
+          this.applyConfigToForm(config);
         } else {
-          // Si la carte ne doit pas être affichée, on la cache ou la désactive
-          this.mapService.setShowMap(false);
-        }
-  
-        if (config.hideAll) {
           this.hideAllFields();
         }
-  
-        if (config.callFormValid) {
-          this.formValid();
-        }
+      });     
+    }
+
+    applyConfigToForm(config){
+      this.harvestForm.controls['id_area_type'].setValue(config.locationType || null);
+        
+      // Gestion de l'affichage des champs
+      this.showCommuneField = !!config.showCommune;
+      this.showDepartmentField = !!config.showDepartment;
+      this.showMapField = !!config.showMap;
+      this.showResolutionField = !!config.showResolution;
+
+      if (this.showMapField) {
+        // Si la carte doit être affichée, on la rend active
+        this.mapService.setShowMap(true);
       } else {
+        // Si la carte ne doit pas être affichée, on la cache ou la désactive
+        this.mapService.setShowMap(false);
+      }
+
+      if (config.hideAll) {
         this.hideAllFields();
       }
     }
@@ -139,19 +140,14 @@ export class HarvestFormService {
       this.showMapField = false;
       this.showResolutionField = false;
     }
-  
-    formValid() {
-      // // Validation du formulaire si 'nl' est sélectionné
-      // if (this.harvestForm.valid) {
-      //   // Effectuer une action lorsque le formulaire est valide
-      // }
-    }
 
     patchForm(harvest: any): void {       
       if (!harvest) return;
       const dateStart = harvest.date_start ? this.dateParser.parse(this.formatDate(harvest.date_start)) : null;
       const dateEnd = harvest.date_end ? this.dateParser.parse(this.formatDate(harvest.date_end)) : null;
-  
+      const communeLocationType = this.constants.FIELD_CONFIGS.get(this.constants.LOCATION_CODES.COMMUNE)?.locationType;
+      const departmentLocationType = this.constants.FIELD_CONFIGS.get(this.constants.LOCATION_CODES.DEPARTMENT)?.locationType;
+      
       this.harvestForm.patchValue({
         id_harvest_type: harvest.id_harvest_type,
         date_start:  dateStart,
@@ -162,8 +158,8 @@ export class HarvestFormService {
         geom: harvest.geom,
         id_dataset: harvest.id_dataset,
         id_area_type: harvest.id_area_type,
-        id_area_muni: (harvest.id_area && harvest.id_area_type === 25) ? [harvest.id_area] : null,
-        id_area_dept: (harvest.id_area && harvest.id_area_type === 26) ? [harvest.id_area] : null,
+        id_area_muni: (harvest.id_area && harvest.id_area_type === communeLocationType) ? [harvest.id_area] : null,
+        id_area_dept: (harvest.id_area && harvest.id_area_type === departmentLocationType) ? [harvest.id_area] : null,
         surface: harvest.surface,
         altitude: harvest.altitude,
         id_exposition: harvest.id_exposition,
@@ -228,31 +224,32 @@ export class HarvestFormService {
     return date.toISOString().split('T')[0];
   }
 
-
   updateValidators(code_nomenclature: string): void {
     // Réinitialiser les validateurs
     this.clearValidators(code_nomenclature);
-
-    const config = this.constants.FIELD_CONFIGS.get(code_nomenclature);  
-     
-
-    if (config) {
-      // Ajouter des validateurs conditionnels
-      if (code_nomenclature === this.constants.LOCATION_CODES.COMMUNE) {
-        this.harvestForm.controls['id_area_muni'].setValidators([Validators.required]);
-      } else if (code_nomenclature === this.constants.LOCATION_CODES.DEPARTMENT) {
-        this.harvestForm.controls['id_area_dept'].setValidators([Validators.required]);
-      } else if (code_nomenclature === this.constants.LOCATION_CODES.PTP) {
-        this.harvestForm.controls['geom'].setValidators([Validators.required]);
-      } else if (code_nomenclature === this.constants.LOCATION_CODES.PTAPP) {
-        this.harvestForm.controls['geom'].setValidators([Validators.required]);
-        this.harvestForm.controls['precision'].setValidators([Validators.required]);
-        this.harvestForm.patchValue({
-          precision: 10,
-        });
+  
+    // Abonnement à fieldConfigs$ pour récupérer la config dès qu'elle est disponible
+    this.constants.fieldConfigs$.subscribe(configs => {
+      const config = configs.get(code_nomenclature);
+      
+      if (config) {
+        // Ajouter des validateurs conditionnels en fonction de la configuration
+        if (code_nomenclature === this.constants.LOCATION_CODES.COMMUNE) {
+          this.harvestForm.controls['id_area_muni'].setValidators([Validators.required]);
+        } else if (code_nomenclature === this.constants.LOCATION_CODES.DEPARTMENT) {
+          this.harvestForm.controls['id_area_dept'].setValidators([Validators.required]);
+        } else if (code_nomenclature === this.constants.LOCATION_CODES.PTP) {
+          this.harvestForm.controls['geom'].setValidators([Validators.required]);
+        } else if (code_nomenclature === this.constants.LOCATION_CODES.PTAPP) {
+          this.harvestForm.controls['geom'].setValidators([Validators.required]);
+          this.harvestForm.controls['precision'].setValidators([Validators.required]);
+          this.harvestForm.patchValue({
+            precision: 10,
+          });
+        }
+        this.harvestForm.updateValueAndValidity();
       }
-      this.harvestForm.updateValueAndValidity();
-    }
+    });
   }
 
   // Méthode pour effacer les validateurs de certains champs
