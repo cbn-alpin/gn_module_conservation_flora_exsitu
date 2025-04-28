@@ -13,11 +13,13 @@ export class ExsituFormService{
     mode:string = 'add'
     harvest: any
     materials: any
+    idMaterialChange = new BehaviorSubject<number>(null);
     public exsituData: BehaviorSubject<any> = new BehaviorSubject(null);
     public materials$: BehaviorSubject<any> = new BehaviorSubject(null);
     public id_harvest: BehaviorSubject<number> = new BehaviorSubject(null);
     public idMaterial: number;
-    public editionMode: BehaviorSubject<boolean> = new BehaviorSubject(false); // boolean to check if its editionMode
+    public idSeed: number;
+    public editionMode: BehaviorSubject<boolean> = new BehaviorSubject(false);
     public params = new HttpParams()
               .set('page', 1)
               .set('limit', 10);
@@ -25,7 +27,7 @@ export class ExsituFormService{
     constructor(
         private dataService: DataService
     ){
-        //observation de l'URL et recuperation du material si édition id !== null
+        //observation de l'URL et recuperation de la récolte et du material si édition id !== null
         this.id_harvest.pipe(
           skip(1),
           tap((id) => {
@@ -57,6 +59,11 @@ export class ExsituFormService{
         );
         
       
+    }
+
+    setIdMaterial(id: number) {
+      this.idMaterial = id;
+      this.idMaterialChange.next(id);
     }
 
     addOccurrenceData(occurrence): void {

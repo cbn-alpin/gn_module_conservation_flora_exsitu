@@ -16,6 +16,7 @@ import { CommonService } from '@geonature_common/service/common.service';
 export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
     idHarvest: number | null = null;
     idMaterial: number | null = null;
+    idSeed: number | null = null;
     public currentModulePath: string
     cardContentHeight: any;
     public urlSub: Subscription;
@@ -41,8 +42,6 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.updateTabAndIdsFromUrl(this.router.url);
         });
     
-        // Initialisation avec l'URL actuelle (utile au rechargement)        
-        // this.harvest = this.exsituFormService.harvest
     }
 
     goToTab(tab: string) {
@@ -50,6 +49,10 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
         } else if (tab === 'harvest' && this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}`]);
+        }else if (tab === 'seed' && this.exsituFormService.idHarvest && this.idMaterial) {
+          this.router.navigate([
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/seed-details/${this.exsituFormService.idSeed}`
+          ]);
         }else if (tab === 'stock' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/stock`
@@ -60,7 +63,6 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
     updateTabAndIdsFromUrl(url: string) {      
       let urlSegments = url.split('/');
       
-  
       // Vérifie si l'URL contient "harvest"
       if (urlSegments.includes('harvest')) {
         this.exsituFormService.currentTab = 'harvest';
@@ -69,11 +71,9 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Vérifie si un ID de récolte est présent après "harvest"
         if (index < urlSegments.length && !isNaN(Number(urlSegments[index]))) {
           this.exsituFormService.idHarvest = Number(urlSegments[index]);
-          ///////
           this.exsituFormService.id_harvest.next(Number(urlSegments[index]));
         } else {
           this.exsituFormService.idHarvest = null;
-          //////
           this.exsituFormService.id_harvest.next(null);
         }
       }
@@ -85,6 +85,28 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Vérifie que l'ID de récolte est bien présent avant
         if (!this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest`]);// Redirection si l'ID de récolte est absent
+        }
+      }
+
+      if (urlSegments.includes('seed-details')) {
+        this.exsituFormService.currentTab = 'seed';
+      
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+        const seedIndex = urlSegments.indexOf('seed-details') + 1;
+      
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(urlSegments[harvestIndex]);
+        }
+      
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(urlSegments[materialIndex]);
+          this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
+        }
+
+        if (materialIndex < urlSegments.length) {
+          this.idSeed = Number(urlSegments[seedIndex]);
+          this.exsituFormService.idSeed = Number(urlSegments[seedIndex]);
         }
       }
 

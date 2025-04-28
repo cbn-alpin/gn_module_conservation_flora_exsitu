@@ -22,6 +22,16 @@
                 Matériels récoltés
             </a>
 
+            <!-- Semence (Activé après avoir choisi un matériel) -->
+            <a 
+                class="tablinks" 
+                [class.disabled]="!idSeed"
+                [ngClass]="{ active: exsituFormService.currentTab === 'seed' }"
+                (click)="idMaterial ? goToTab('seed') : null">
+                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                Semence
+            </a>
+
             <!-- Stockage (Activé après avoir choisi un matériel) -->
             <a 
                 class="tablinks" 
@@ -91,6 +101,14 @@
         <div class="col-md-12">
             <cs-material-list></cs-material-list>
         </div>
+    </div>
+
+    <!-- Onglet Semence -->
+    <div *ngIf="exsituFormService.currentTab === 'seed'"
+        [ngStyle]="{ 'height.px': cardContentHeight - 110 }"
+        style="overflow-y: scroll"
+        >
+        <cs-seed-details></cs-seed-details>
     </div>
 
     <!-- Onglet Stockage -->
