@@ -917,6 +917,7 @@ def get_full_seed_info(id_seed):
         seed.material_quality.label_default if seed.material_quality else None
     )
     seed_dict.pop('id_material_quality', None)
+    seed_dict.pop('additional_data', None)
 
     link = db.session.query(CorMaterialTaxon).filter_by(id_material=seed.id_material).first()
     if link:
@@ -942,6 +943,8 @@ def get_full_seed_info(id_seed):
     else:
         seed_dict["taxon_attributs"] = {}
 
+    seed_dict['cd_ref'] = cd_ref
+    
     return jsonify(seed_dict)
 
 
