@@ -10,7 +10,7 @@ from ref_geo.models import LAreas, BibAreasTypes
 from geonature.utils.env import db
 from sqlalchemy.sql.expression import func, select
 from sqlalchemy.orm import aliased
-from apptax.taxonomie.models import Taxref
+from apptax.taxonomie.models import Taxref, BibAttributs, Taxref, CorTaxonAttribut
 from pypnusershub.db.models import User, Organisme
 from geojson import Feature, FeatureCollection
 from sqlalchemy import exists
@@ -47,7 +47,21 @@ def group_geometries(results):
 
     return grouped_results
 
+@blueprint.route("/constants/location-types", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def get_location_types():
+    try:
+        harvest_repo = HarvestRepository()
+        commune_id = harvest_repo.commune_id
+        departement_id = harvest_repo.departement_id
 
+        return jsonify({
+            "COMMUNE_ID": commune_id,
+            "DEPARTEMENT_ID": departement_id
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 
 @blueprint.route("/harvests", methods=["POST"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
@@ -178,7 +192,6 @@ def get_all_harvests():
             TMaterial.code_material.desc()
         ).offset(offset).limit(limit).all()
 
-        # Calculer le nombre total de résultats
         total_results = total
 
     items = [
@@ -195,7 +208,7 @@ def get_all_harvests():
         for result in all_results
     ]
 
-    total_pages = (total_results + limit - 1) // limit  # Calcul du total de pages
+    total_pages = (total_results + limit - 1) // limit
 
     return {
         'page': page,
@@ -572,6 +585,16 @@ def get_materials(id_harvest):
         return jsonify({"error": str(e)}), 500
     
 
+@blueprint.route("/materials/<int:id_material>", methods=["GET"])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+def get_material_code(id_material):
+    material = db.session.get(TMaterial, id_material)
+    if material:
+        return jsonify({"id_material": material.id_material, "code_material": material.code_material})
+    else:
+        return jsonify({"error": "Material not found"}), 404
+
+
 
 @blueprint.route("/check-code-material", methods=["GET"])
 def check_code_material():
@@ -876,6 +899,7 @@ def get_seed_of_material(id_material):
         return {}, 204 
 
 
+
 @blueprint.route('/materials/seeds/<int:id_seed>', methods=['DELETE'])
 @permissions.check_cruved_scope("D", module_code=MODULE_CODE)
 @json_resp
@@ -1002,11 +1026,11 @@ def get_actions_by_place(id_material):
         actions, total = repo.get_actions_by_place(id_material, code_place, page, limit)
         
         results = []
-        for storage, action_type_label, humidity_level_label, humidity_device_label in actions:
+        for storage, action_type_label, destination, prenom_actor, nom_actor in actions:
             item = storage.to_dic()
             item["action_type_label"] = action_type_label
-            item["humidity_level_label"] = humidity_level_label
-            item["humidity_device_label"] = humidity_device_label
+            item["destination"] = destination
+            item["actor"] = f"{prenom_actor or ''} {nom_actor or ''}".strip()
             results.append(item)
         
         return {
