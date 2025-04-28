@@ -570,7 +570,8 @@ def get_materials(id_harvest):
             material_dict["code_parent"] = code_parent_material
             # material_dict["code_cultural_bank"] = code_cultural_bank_material
 
-            material_dict["has_seed_description"] = material.seeds is not None
+            material_dict["has_seed_description"] = material.has_seed_description
+            material_dict["has_storage"] = material.has_storage
 
             materials_list.append(material_dict)
 

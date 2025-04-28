@@ -246,6 +246,15 @@ class TMaterial(db.Model):
     )
 
     seeds = db.relationship('TMaterielSeed', uselist=False, backref='material')
+    storages = db.relationship('TStorage', backref='material')
+
+    @property
+    def has_seed_description(self):
+        return self.seeds is not None
+
+    @property
+    def has_storage(self):
+        return len(self.storages) > 0
 
     def to_dic(self):
         return {
