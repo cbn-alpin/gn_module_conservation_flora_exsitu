@@ -90,7 +90,7 @@
     </div>
   </div>
 
-  <div class="row row-0">
+  <div class="row row-0 mt-1 mr-3">
     <div class="col-6 padding-sm">
       <label>Quantité</label>
       <input
@@ -109,6 +109,14 @@
           Total autorisé : {{ quantiteMaxDisponible }}.
         </ng-container>
       </mat-error>
+    </div>
+    <div class="col-6 padding-sm">
+      <label>Précision destination</label>
+      <input
+        class="form-control"
+        type="text"
+        [formControl]="actionForm.controls.destination_precision"
+      />
     </div>
   </div>
 

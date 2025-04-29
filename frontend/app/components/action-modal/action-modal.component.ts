@@ -91,6 +91,7 @@ export class ActionModalComponent implements OnInit {
             humidity_rate: null,
             id_humidity_device: null,
             id_dry_type: null,
+            destination_precision: '',
             remarks: '',
             additional_data: this.fb.group({})
         });
