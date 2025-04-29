@@ -459,6 +459,7 @@ class TStorage(db.Model):
         ),
         nullable=False
     )
+    destination_precision = db.Column(db.Text)
     remarks = db.Column(db.Text)
     additional_data = db.Column(JSONB)
     meta_create_by = db.Column(
@@ -502,6 +503,7 @@ class TStorage(db.Model):
             "id_humidity_device": self.id_humidity_device,
             "id_dry_type": self.id_dry_type,
             "id_destination": self.id_destination,
+            "destination_precision": self.destination_precision,
             "remarks": self.remarks,
             "additional_data": self.additional_data,
         }

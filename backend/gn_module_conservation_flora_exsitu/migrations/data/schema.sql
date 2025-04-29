@@ -166,6 +166,7 @@ CREATE TABLE "t_storage" (
     "id_humidity_device" INTEGER,
 	"id_dry_type" INTEGER,
     "remarks" text,
+	"destination_precision" text,
     "additional_data" JSONB,
     "meta_create_by" INTEGER NOT NULL,
     "meta_create_date" TIMESTAMP NOT NULL,
