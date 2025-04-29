@@ -336,13 +336,11 @@ WHERE module_code = :moduleCode ;
 INSERT INTO taxonomie.bib_themes (
     nom_theme,
     desc_theme,
-    ordre,
-    id_droit
+    ordre
 ) VALUES (
     'Semence',
     'Description des semences(graines) pour le module flora exsitu',
-    (SELECT MAX(ordre) + 1 FROM taxonomie.bib_themes LIMIT 1),
-    4 -- TODO : Voir à quoi cela correspond
+    (SELECT MAX(ordre) + 1 FROM taxonomie.bib_themes LIMIT 1)
 ) ;
 
 -- Update TaxHub attributes

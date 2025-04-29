@@ -10,7 +10,7 @@ export class ConfigService {
         
     }
 
-    getModuleConfigExsitu() {
+    getModuleConfigExsitu() {    
         return this.config.CONSERVATION_FLORA_EXSITU;
     }
 
@@ -59,7 +59,7 @@ export class ConfigService {
     }
     
     getTaxHubFrontendUrl() {
-        return `${this.config.API_TAXHUB}`.replace('/api', '');
+        return this.getBackendUrl();
     }
     
     getPriorityFloraBackendUrl() {

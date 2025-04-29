@@ -34,8 +34,7 @@ export class SeedDetailsComponent implements OnInit {
     private loadFullSeedDetails() {
         this.dataService.getFullSeedDetails(this.exsituService.idSeed).subscribe({
           next: (data) => {
-            
-            this.taxhubEditFormUrl += `/#!/taxonform/new/${data.cd_ref}`;
+            this.taxhubEditFormUrl += `/admin/taxons/edit/?id=${data.cd_ref}`;
             this.seed = data;
             this.attributs = data.taxon_attributs || {};
           },
