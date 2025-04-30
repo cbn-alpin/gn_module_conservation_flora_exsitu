@@ -240,11 +240,15 @@ export class HarvestFormService {
           this.harvestForm.controls['id_area_dept'].setValidators([Validators.required]);
         } else if (code_nomenclature === this.constants.LOCATION_CODES.PTP) {
           this.harvestForm.controls['geom'].setValidators([Validators.required]);
+          this.harvestForm.controls['precision'].setValidators([Validators.required]);
+          this.harvestForm.patchValue({
+            precision: 10,
+          });
         } else if (code_nomenclature === this.constants.LOCATION_CODES.PTAPP) {
           this.harvestForm.controls['geom'].setValidators([Validators.required]);
           this.harvestForm.controls['precision'].setValidators([Validators.required]);
           this.harvestForm.patchValue({
-            precision: 10,
+            precision: 100,
           });
         }
         this.harvestForm.updateValueAndValidity();

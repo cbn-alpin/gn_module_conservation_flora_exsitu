@@ -25,7 +25,7 @@ export class ConstantsService {
         [this.LOCATION_CODES.COMMUNE, { locationType: ids.COMMUNE_ID, showCommune: true, showDepartment: false }],
         [this.LOCATION_CODES.DEPARTMENT, { locationType: ids.DEPARTEMENT_ID, showCommune: false, showDepartment: true }],
         [this.LOCATION_CODES.NL, { hideAll: true, callFormValid: true }],
-        [this.LOCATION_CODES.PTP, { showMap: true, showCommune: false, showDepartment: false, showResolution: false }],
+        [this.LOCATION_CODES.PTP, { showMap: true, showCommune: false, showDepartment: false, showResolution: true }],
         [this.LOCATION_CODES.PTAPP, { showMap: true, showResolution: true, showCommune: false, showDepartment: false }]
       ]);
       this.FIELD_CONFIGS = configs;
