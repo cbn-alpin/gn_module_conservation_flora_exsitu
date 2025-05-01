@@ -469,18 +469,18 @@ class StorageRepository:
                     data["id_place"] = id_place
 
             id_material = data["id_material"]
-            id_action_type = data["id_action_type"]
+            id_storage_action = data["id_storage_action"]
             quantity = data.get("quantity") or 0
 
             # Stockage initial
             id_action_initial_storage = self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
 
             # Vérifie qu'un stockage initial existe si l'action n'est pas un "stockage initial"
-            if id_action_type != id_action_initial_storage:
+            if id_storage_action != id_action_initial_storage:
                 initial_storage = db.session.query(TStorage).filter_by(
                     id_material=id_material,
                     id_place=id_place,
-                    id_action_type=id_action_initial_storage
+                    id_storage_action=id_action_initial_storage
                 ).first()
 
                 if not initial_storage:
@@ -489,7 +489,7 @@ class StorageRepository:
                 id_dry_type = data.get("id_destock")
                 dry_type_total = self.get_id_nomenclature("CFE_DESTOCK", "total")
 
-                if id_action_type == self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest") and id_dry_type == dry_type_total:
+                if id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest") and id_dry_type == dry_type_total:
                     quantity = self.get_current_quantity(id_material, id_place)
                     data["quantity"] = quantity
 
@@ -499,7 +499,7 @@ class StorageRepository:
                     self.get_id_nomenclature("CFE_STORAGE_ACTION", c) for c in action_codes_needing_quantity
                 ]
 
-                if id_action_type in id_actions_need_quantity:
+                if id_storage_action in id_actions_need_quantity:
                     current_quantity = self.get_current_quantity(id_material, id_place)
     
                     if quantity > current_quantity:
@@ -544,7 +544,7 @@ class StorageRepository:
         ).filter_by(
             id_material=id_material,
             id_place=id_place,
-            id_action_type=id_action_initial_storage
+            id_storage_action=id_action_initial_storage
         ).scalar() or 0
 
         # Quantités outputs : déstockages + déplacements
@@ -553,7 +553,7 @@ class StorageRepository:
         ).filter(
             TStorage.id_material == id_material,
             TStorage.id_place == id_place,
-            TStorage.id_action_type.in_([id_action_destock, id_action_deplacement])
+            TStorage.id_storage_action.in_([id_action_destock, id_action_deplacement])
         ).scalar() or 0
 
         return initial_storage - exits
@@ -568,7 +568,7 @@ class StorageRepository:
                 and_(
                     TStorage.id_material == id_material,
                     TStorage.id_place == id_place,
-                    TStorage.id_action_type == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
+                    TStorage.id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
                 )
             )
         ).scalar()
@@ -581,7 +581,7 @@ class StorageRepository:
             func.sum(TStorage.quantity).label("quantity")
         ).filter(
             TStorage.id_material == id_material,
-            TStorage.id_action_type == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti"),
+            TStorage.id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti"),
             TStorage.quantity != None
         ).group_by(TStorage.id_place).all()
 
@@ -590,7 +590,7 @@ class StorageRepository:
             func.sum(TStorage.quantity).label("quantity")
         ).filter(
             TStorage.id_material == id_material,
-            TStorage.id_action_type.in_([
+            TStorage.id_storage_action.in_([
                 self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl"),
                 self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")
             ]),
@@ -641,7 +641,7 @@ class StorageRepository:
                 Actor.prenom_role.label("prenom_actor"),
                 Actor.nom_role.label("nom_actor"),
             )
-            .outerjoin(ActionType, TStorage.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(ActionType, TStorage.id_storage_action == ActionType.id_nomenclature)
             .outerjoin(Destination, TStorage.id_destination == Destination.id_nomenclature)
             .outerjoin(Actor, TStorage.id_actor == Actor.id_role)
             .filter(TStorage.id_material == id_material)
@@ -664,14 +664,14 @@ class StorageRepository:
         initial_storage = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
             .filter(
                 TStorage.id_material == id_material,
-                TStorage.id_action_type == id_sti
+                TStorage.id_storage_action == id_sti
             ).scalar()
 
         # Total des quantités consommées (destockage + déplacement)
         quantity_output = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
             .filter(
                 TStorage.id_material == id_material,
-                TStorage.id_action_type.in_([id_dest, id_depl])
+                TStorage.id_storage_action.in_([id_dest, id_depl])
             ).scalar()
 
         current_quantity = initial_storage - quantity_output
@@ -714,7 +714,7 @@ class StorageRepository:
     def verify_quantity(self, action, new_quantity):
         id_material = action.id_material
         id_place = action.id_place
-        id_action_type = action.id_action_type
+        id_storage_action = action.id_storage_action
 
         current_quantity = self.get_current_quantity(id_material, id_place)
 
@@ -723,7 +723,7 @@ class StorageRepository:
             self.get_id_nomenclature("CFE_STORAGE_ACTION", c) for c in action_codes_needing_quantity
         ]
 
-        if id_action_type in id_actions_need_quantity:
+        if id_storage_action in id_actions_need_quantity:
             if action.quantity:
                 current_quantity += action.quantity
             

@@ -151,7 +151,7 @@ CREATE TABLE "t_storage" (
     -- - Mesure humidité précise -> valeur AWMètre (décimal)
     -- - Destockage -> partiel/total -> quantité & destination (txt)
     -- - Déplacement du lot -> quantité & destination
-    "id_action_type" INTEGER NOT NULL,
+    "id_storage_action" INTEGER NOT NULL,
     -- Obligatoire lorsque type_action = destockage / deplacement
     "quantity" INTEGER,
     "id_destock" INTEGER,
@@ -306,7 +306,7 @@ ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_storage"
-ADD FOREIGN KEY("id_action_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ADD FOREIGN KEY("id_storage_action") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_place") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)

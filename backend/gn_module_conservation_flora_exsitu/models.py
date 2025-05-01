@@ -409,7 +409,7 @@ class TStorage(db.Model):
             ondelete="NULL",
         ),
     )
-    id_action_type = db.Column(
+    id_storage_action = db.Column(
         db.Integer,
         db.ForeignKey(
             "ref_nomenclatures.t_nomenclatures.id_nomenclature",
@@ -492,7 +492,7 @@ class TStorage(db.Model):
             "id_storage": self.id_storage,
             "id_material": self.id_material,
             "id_place": self.id_place,
-            "id_action_type": self.id_action_type,
+            "id_storage_action": self.id_storage_action,
             "quantity": self.quantity,
             "date_start": self.date_start.isoformat() if self.date_start else None,
             "date_end": self.date_end.isoformat() if self.date_end else None,

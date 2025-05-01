@@ -59,7 +59,7 @@ export class ActionModalComponent implements OnInit {
         this.auteurs_code = this.cfg.getObsCode()
         this.formsDefinition = this.cfg.getModuleConfigExsitu()['action_form']['additional_data'];   
         
-        this.actionForm.controls['id_action_type'].valueChanges.subscribe(value => {      
+        this.actionForm.controls['id_storage_action'].valueChanges.subscribe(value => {      
             if(value) {
                 this.getCodesNomenclature(value)
             }
@@ -83,7 +83,7 @@ export class ActionModalComponent implements OnInit {
             date_start: [null, Validators.required],
             date_end: [null, Validators.required],
             id_actor: [[], Validators.required],
-            id_action_type: [null, Validators.required],
+            id_storage_action: [null, Validators.required],
             quantity : null,
             id_destock: null,
             id_destination: null,
@@ -137,7 +137,7 @@ export class ActionModalComponent implements OnInit {
 
   listenQuantityChanges() {
     const quantityControl = this.actionForm.get('quantity');      
-    const actionTypeControl = this.actionForm.get('id_action_type');
+    const actionTypeControl = this.actionForm.get('id_storage_action');
   
     if (!quantityControl || !actionTypeControl) return;
   

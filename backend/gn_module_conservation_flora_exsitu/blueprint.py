@@ -1128,7 +1128,7 @@ def delete_action(id_material, id_storage):
         code_stock_init = action_repo.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
 
         # Ne faire la vérif que si c’est un stockage initial
-        if action.id_action_type == code_stock_init:
+        if action.id_storage_action == code_stock_init:
             id_place = action.id_place
 
             # Somme des quantités de sortie (déstockage + déplacement)
@@ -1140,7 +1140,7 @@ def delete_action(id_material, id_storage):
                 .filter(
                     TStorage.id_material == id_material,
                     TStorage.id_place == id_place,
-                    TStorage.id_action_type.in_(ids_outputs)
+                    TStorage.id_storage_action.in_(ids_outputs)
                 )
                 .scalar()
             )
@@ -1151,7 +1151,7 @@ def delete_action(id_material, id_storage):
                 .filter(
                     TStorage.id_material == id_material,
                     TStorage.id_place == id_place,
-                    TStorage.id_action_type == code_stock_init,
+                    TStorage.id_storage_action == code_stock_init,
                     TStorage.id_storage != id_storage  # Exclure celui qu’on veut supprimer
                 )
                 .scalar()
