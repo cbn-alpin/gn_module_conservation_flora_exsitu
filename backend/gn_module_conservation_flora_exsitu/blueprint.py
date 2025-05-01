@@ -1125,7 +1125,7 @@ def delete_action(id_material, id_storage):
 
     try:
         action_repo = StorageRepository()
-        code_stock_init = action_repo.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+        code_stock_init = action_repo.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
 
         # Ne faire la vérif que si c’est un stockage initial
         if action.id_action_type == code_stock_init:
@@ -1133,7 +1133,7 @@ def delete_action(id_material, id_storage):
 
             # Somme des quantités de sortie (déstockage + déplacement)
             codes_outputs = ["dest", "depl"]
-            ids_outputs = [action_repo.get_id_nomenclature("CFE_ACTION_TYPE", c) for c in codes_outputs]
+            ids_outputs = [action_repo.get_id_nomenclature("CFE_STORAGE_ACTION", c) for c in codes_outputs]
 
             outputs = (
                 db.session.query(db.func.coalesce(db.func.sum(TStorage.quantity), 0))

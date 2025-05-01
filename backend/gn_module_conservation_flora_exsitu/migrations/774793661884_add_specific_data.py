@@ -143,7 +143,7 @@ def downgrade():
     delete_nomenclatures("CFE_INTERNAL_DESTINATION")
     delete_nomenclatures("CFE_EXTERNAL_DESTINATION")
     delete_nomenclatures("CFE_HUMIDITY_DEVICE")
-    delete_nomenclatures("CFE_ACTION_TYPE")
+    delete_nomenclatures("CFE_STORAGE_ACTION")
 
     delete_taxhub_attribute("cfe_form1")
     delete_taxhub_attribute("cfe_form2")

@@ -305,11 +305,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 ) ;
 
 
--- Create the "CFE_ACTION_TYPE" nomenclature type
+-- Create the "CFE_STORAGE_ACTION" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
-    'CFE_ACTION_TYPE',
+    'CFE_STORAGE_ACTION',
     'Type action',
     'Nomenclature des types action.',
     'Type action',

@@ -473,7 +473,7 @@ class StorageRepository:
             quantity = data.get("quantity") or 0
 
             # Stockage initial
-            id_action_initial_storage = self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+            id_action_initial_storage = self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
 
             # Vérifie qu'un stockage initial existe si l'action n'est pas un "stockage initial"
             if id_action_type != id_action_initial_storage:
@@ -489,14 +489,14 @@ class StorageRepository:
                 id_dry_type = data.get("id_destock")
                 dry_type_total = self.get_id_nomenclature("CFE_DESTOCK", "total")
 
-                if id_action_type == self.get_id_nomenclature("CFE_ACTION_TYPE", "dest") and id_dry_type == dry_type_total:
+                if id_action_type == self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest") and id_dry_type == dry_type_total:
                     quantity = self.get_current_quantity(id_material, id_place)
                     data["quantity"] = quantity
 
                 # Vérifie la quantité pour les actions qui en consomment
                 action_codes_needing_quantity = ["depl", "dest"]
                 id_actions_need_quantity = [
-                    self.get_id_nomenclature("CFE_ACTION_TYPE", c) for c in action_codes_needing_quantity
+                    self.get_id_nomenclature("CFE_STORAGE_ACTION", c) for c in action_codes_needing_quantity
                 ]
 
                 if id_action_type in id_actions_need_quantity:
@@ -534,9 +534,9 @@ class StorageRepository:
 
     def get_current_quantity(self, id_material, id_place):
         """Calcule la quantité actuelle restante dans un lieu pour un matériel donné."""
-        id_action_initial_storage = self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
-        id_action_destock = self.get_id_nomenclature("CFE_ACTION_TYPE", "dest")
-        id_action_deplacement = self.get_id_nomenclature("CFE_ACTION_TYPE", "depl")
+        id_action_initial_storage = self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
+        id_action_destock = self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")
+        id_action_deplacement = self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl")
 
         # Somme des quantités entrées
         initial_storage = db.session.query(
@@ -568,7 +568,7 @@ class StorageRepository:
                 and_(
                     TStorage.id_material == id_material,
                     TStorage.id_place == id_place,
-                    TStorage.id_action_type == self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")
+                    TStorage.id_action_type == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
                 )
             )
         ).scalar()
@@ -581,7 +581,7 @@ class StorageRepository:
             func.sum(TStorage.quantity).label("quantity")
         ).filter(
             TStorage.id_material == id_material,
-            TStorage.id_action_type == self.get_id_nomenclature("CFE_ACTION_TYPE", "sti"),
+            TStorage.id_action_type == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti"),
             TStorage.quantity != None
         ).group_by(TStorage.id_place).all()
 
@@ -591,8 +591,8 @@ class StorageRepository:
         ).filter(
             TStorage.id_material == id_material,
             TStorage.id_action_type.in_([
-                self.get_id_nomenclature("CFE_ACTION_TYPE", "depl"),
-                self.get_id_nomenclature("CFE_ACTION_TYPE", "dest")
+                self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl"),
+                self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")
             ]),
             TStorage.quantity != None
         ).group_by(TStorage.id_place).all()
@@ -656,9 +656,9 @@ class StorageRepository:
         return actions, total
     
     def get_stock_summary(self, id_material):
-        id_sti = self.get_id_nomenclature("CFE_ACTION_TYPE", "sti")  # stockage initial
-        id_dest = self.get_id_nomenclature("CFE_ACTION_TYPE", "dest")  # déstockage
-        id_depl = self.get_id_nomenclature("CFE_ACTION_TYPE", "depl")  # déplacement
+        id_sti = self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")  # stockage initial
+        id_dest = self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")  # déstockage
+        id_depl = self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl")  # déplacement
 
         # Quantité initiale globale
         initial_storage = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
@@ -720,7 +720,7 @@ class StorageRepository:
 
         action_codes_needing_quantity = ["depl", "dest"]
         id_actions_need_quantity = [
-            self.get_id_nomenclature("CFE_ACTION_TYPE", c) for c in action_codes_needing_quantity
+            self.get_id_nomenclature("CFE_STORAGE_ACTION", c) for c in action_codes_needing_quantity
         ]
 
         if id_action_type in id_actions_need_quantity:

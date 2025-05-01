@@ -161,9 +161,9 @@ CFE_INTERNAL_DESTINATION;carp;carpotheque;Carpothèque;Carpothèque;Carpothèque
 CFE_INTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.005
 CFE_EXTERNAL_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.001
 CFE_EXTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.002
-CFE_ACTION_TYPE;sti;stockageInitial;Stockage initial;Stockage initial;Stockage initial;Stockage initial;conservation_flora_exsitu;.001
-CFE_ACTION_TYPE;acth;ajoutChangementTemoinHumidite;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;conservation_flora_exsitu;.002
-CFE_ACTION_TYPE;evu;evaluationHumidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;conservation_flora_exsitu;.003
-CFE_ACTION_TYPE;mhp;mesureHumiditePrecise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;conservation_flora_exsitu;.004
-CFE_ACTION_TYPE;dest;destockage;Déstockage;Déstockage;Déstockage;Déstockage;conservation_flora_exsitu;.005
-CFE_ACTION_TYPE;depl;deplacement;Déplacement;Déplacement;Déplacement;Déplacement;conservation_flora_exsitu;.006
+CFE_STORAGE_ACTION;sti;stockageInitial;Stockage initial;Stockage initial;Stockage initial;Stockage initial;conservation_flora_exsitu;.001
+CFE_STORAGE_ACTION;acth;ajoutChangementTemoinHumidite;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;Ajout/changement du témoin d'humidité;conservation_flora_exsitu;.002
+CFE_STORAGE_ACTION;evu;evaluationHumidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;Evaluation de l'humidité;conservation_flora_exsitu;.003
+CFE_STORAGE_ACTION;mhp;mesureHumiditePrecise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;Mesure de l'humidité précise;conservation_flora_exsitu;.004
+CFE_STORAGE_ACTION;dest;destockage;Déstockage;Déstockage;Déstockage;Déstockage;conservation_flora_exsitu;.005
+CFE_STORAGE_ACTION;depl;deplacement;Déplacement;Déplacement;Déplacement;Déplacement;conservation_flora_exsitu;.006
