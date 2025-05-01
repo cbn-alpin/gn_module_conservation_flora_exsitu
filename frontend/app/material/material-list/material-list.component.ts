@@ -160,7 +160,7 @@ export class MaterialListComponent implements OnInit {
         });
     }
 
-    transformTaxons(taxons: { cd_nom: number; search_name: string }[]): { 
+    transformTaxons(taxons: { cd_nom: number; nom_valide: string }[]): { 
       taxonsDisplay: string, 
       taxonsTooltip: string 
     } {
@@ -173,12 +173,12 @@ export class MaterialListComponent implements OnInit {
         };
       }
     
-      // Extraire uniquement les `search_name`
-      const uniqueTaxons = Array.from(new Set(taxons.map(t => t.search_name)));
+      // Extraire uniquement les `nom_valide`
+      const uniqueTaxons = Array.from(new Set(taxons.map(t => t.nom_valide)));
     
       // Construire l'affichage des taxons
-      const taxonsTooltip = uniqueTaxons.join(', ').replace(/, ([^,]+)$/, ' & $1') + '.';
-      let taxonsDisplay = uniqueTaxons.join(', ');
+      const taxonsTooltip = uniqueTaxons.join(' ... ').replace(/, ([^,]+)$/, ' & $1') + '.';
+      let taxonsDisplay = uniqueTaxons.join('... ');
     
       if (uniqueTaxons.length > MAX_NAMES) {
         const firstTaxon = uniqueTaxons.slice(0, MAX_NAMES);
