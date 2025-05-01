@@ -109,6 +109,7 @@ export class MaterialListComponent implements OnInit {
     }
 
     editOccurrence(occurrence) {
+      this.exsituFormService.setIdMaterial(occurrence.id_material);
       this.exsituFormService.mode = 'edit'      
       this.materialFormService.occurrence.next(occurrence);
       this.addModalMaterial();
