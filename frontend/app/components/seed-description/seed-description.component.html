@@ -1,6 +1,7 @@
-
-<h1 mat-dialog-title *ngIf="!edit">Ajouter une description</h1>
-<h1 mat-dialog-title *ngIf="edit">Modifier la description</h1>
+<div mat-dialog-title>
+  <h3 *ngIf="!edit">Ajout description</h3>
+  <h3 *ngIf="edit">Modification description</h3>
+</div>
 <mat-dialog-content class="wrapper" *ngIf="seedForm">
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
@@ -123,7 +124,7 @@
         mat-raised-button
         (click)="deleteDescription()"
         matTooltip="Supprimer cette description">
-          Supprimer la description
+          Supprimer
           <mat-icon style="vertical-align: middle">delete</mat-icon>
     </button>
   </div>
@@ -144,7 +145,7 @@
         (click)="submetData()"
         [disabled]="!seedForm.valid"
       >
-        Ajouter la description
+        Enregistrer
         <mat-icon style="vertical-align: middle">save</mat-icon>
       </button>
     </ng-container>
@@ -164,7 +165,7 @@
         (click)="submetData()"
         [disabled]="!seedForm.valid"
       >
-        Modifier cette description
+        Enregistrer
         <mat-icon style="vertical-align: middle">save</mat-icon>
       </button>
     </ng-template>
