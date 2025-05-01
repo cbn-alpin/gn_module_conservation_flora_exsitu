@@ -205,6 +205,7 @@ export class MaterialListComponent implements OnInit {
 
 
     onAddOrEditSeed(materialId: number): void {
+      this.exsituFormService.setIdMaterial(materialId);
       this.handleSeedByMaterial(
         materialId,
         seed => this.openDescriptionSeddModal(materialId, 'edit', seed),
