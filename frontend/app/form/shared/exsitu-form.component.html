@@ -18,7 +18,7 @@
                 [ngClass]="{ active: exsituFormService.currentTab === 'materials' }"
                 (click)="goToTab('materials')"
             >
-                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                <mat-icon class="example-tab-icon">spa</mat-icon>
                 Matériels récoltés
             </a>
 
@@ -28,7 +28,7 @@
                 [class.disabled]="!idSeed"
                 [ngClass]="{ active: exsituFormService.currentTab === 'seed' }"
                 (click)="idMaterial ? goToTab('seed') : null">
-                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                <mat-icon class="example-tab-icon">description</mat-icon>
                 Semence
             </a>
 
@@ -38,7 +38,7 @@
                 [class.disabled]="!idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'stock' }"
                 (click)="idMaterial ? goToTab('stock') : null">
-                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                <mat-icon class="example-tab-icon">store</mat-icon>
                 Stockage
             </a>
 
