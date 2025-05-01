@@ -542,7 +542,7 @@ def get_materials(id_harvest):
                 if taxon_data:
                     taxon_list.append({
                         "cd_nom": taxon.cd_nom,
-                        "search_name": taxon_data.lb_nom
+                        "nom_valide": taxon_data.nom_valide
                     })
 
             nomenclature_material = db.session.query(
