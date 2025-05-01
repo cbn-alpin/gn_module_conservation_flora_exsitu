@@ -16,8 +16,15 @@
     padding-right: 1rem;
     max-height: calc(100vh - Xpx);
   }
-  
-  mat-card {
-    background-color: #fff5bd !important;
-    margin-bottom: 1rem;
-  }
+
+mat-card {
+  margin-bottom: 1rem;
+}
+
+mat-card.warning {
+  background-color: #fff5bd !important;
+}
+
+mat-card:not(.warning) {
+  background-color: white;
+}

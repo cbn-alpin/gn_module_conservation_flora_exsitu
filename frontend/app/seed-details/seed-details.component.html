@@ -44,14 +44,14 @@
         <div class="other-content">
             <mat-card *ngIf="attributs.cfe_form; else noForm1">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar>yard</mat-icon>
-                  <mat-card-title>Form</mat-card-title>
+                  <mat-icon mat-card-avatar>bubble_chart</mat-icon>
+                  <mat-card-title>Forme</mat-card-title>
                 </mat-card-header>
                 <mat-card-content [innerHTML]="attributs.cfe_form"></mat-card-content>
             </mat-card>
               
             <ng-template #noForm1>
-                <mat-card>
+                <mat-card class="warning">
                   <mat-card-content>
                     <mat-icon inline>warning</mat-icon>
                     Aucune forme disponible pour ce taxon.
@@ -66,14 +66,14 @@
 
             <mat-card *ngIf="attributs.cfe_type_albumen; else noAlbumen">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar>yard</mat-icon>
+                  <mat-icon mat-card-avatar>spa</mat-icon>
                   <mat-card-title>Type de semences</mat-card-title>
                 </mat-card-header>
                 <mat-card-content [innerHTML]="attributs.cfe_type_albumen"></mat-card-content>
             </mat-card>
               
             <ng-template #noAlbumen>
-                <mat-card>
+                <mat-card class="warning">
                   <mat-card-content>
                     <mat-icon inline>warning</mat-icon>
                     Aucun type de semence disponible pour ce taxon.
@@ -88,14 +88,14 @@
 
             <mat-card *ngIf="attributs.cfe_excroissance; else noExcroissance1">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar>yard</mat-icon>
+                  <mat-icon mat-card-avatar>nature</mat-icon>
                   <mat-card-title>Excroissance</mat-card-title>
                 </mat-card-header>
                 <mat-card-content [innerHTML]="attributs.cfe_excroissance"></mat-card-content>
             </mat-card>
               
             <ng-template #noExcroissance1>
-                <mat-card>
+                <mat-card class="warning">
                   <mat-card-content>
                     <mat-icon inline>warning</mat-icon>
                     Aucune excroissance pour ce taxon.
@@ -110,14 +110,14 @@
 
             <mat-card *ngIf="attributs.cfe_ornementation; else noOrnementation1">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar>yard</mat-icon>
+                  <mat-icon mat-card-avatar>flare</mat-icon>
                   <mat-card-title>Ornementation</mat-card-title>
                 </mat-card-header>
                 <mat-card-content [innerHTML]="attributs.cfe_ornementation"></mat-card-content>
             </mat-card>
               
             <ng-template #noOrnementation1>
-                <mat-card>
+                <mat-card class="warning">
                   <mat-card-content>
                     <mat-icon inline>warning</mat-icon>
                     Aucune ornementation pour ce taxon.
@@ -132,14 +132,14 @@
 
             <mat-card *ngIf="attributs.cfe_embryo_type; else noEmbryoType1">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar>yard</mat-icon>
+                  <mat-icon mat-card-avatar>blur_on</mat-icon>
                   <mat-card-title>Type embryon</mat-card-title>
                 </mat-card-header>
                 <mat-card-content [innerHTML]="attributs.cfe_embryo_type"></mat-card-content>
             </mat-card>
               
             <ng-template #noEmbryoType1>
-                <mat-card>
+                <mat-card class="warning">
                   <mat-card-content>
                     <mat-icon inline>warning</mat-icon>
                     Aucun type d'embryon pour ce taxon.
@@ -154,14 +154,14 @@
 
             <mat-card *ngIf="attributs.cfe_comm_dim_forme; else noComm">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar>yard</mat-icon>
+                  <mat-icon mat-card-avatar>notes</mat-icon>
                   <mat-card-title>Commentaire dimension</mat-card-title>
                 </mat-card-header>
                 <mat-card-content [innerHTML]="attributs.cfe_comm_dim_forme"></mat-card-content>
             </mat-card>
               
             <ng-template #noComm>
-                <mat-card>
+                <mat-card class="warning">
                   <mat-card-content>
                     <mat-icon inline>warning</mat-icon>
                     Aucun commentaire dimension pour ce taxon.
