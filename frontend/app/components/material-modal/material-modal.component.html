@@ -1,6 +1,8 @@
 
-<h1 mat-dialog-title *ngIf="!(materialFormService.occurrence | async)">Ajouter matériel</h1>
-<h1 mat-dialog-title *ngIf="(materialFormService.occurrence | async)">Modifier matériel</h1>
+<div mat-dialog-title>
+  <h3 *ngIf="!(materialFormService.occurrence | async)">Ajout matériel</h3>
+  <h4 *ngIf="(materialFormService.occurrence | async)">Modification matériel</h4>
+</div>
 <mat-dialog-content class="wrapper">
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
@@ -14,17 +16,46 @@
           Ce code de matériel existe déjà. Veuillez en choisir un autre.
         </div>
       </div>
-      <div class="col-6 padding-sm">
-        <label>Numéro de récolte parent</label>
-        <input type="text" 
-          class="form-control"
-          [formControl]="codeMaterialControl" 
-          [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let material of filteredMaterials$ | async" [value]="material.code_material">
-            {{ material.code_material }}
-          </mat-option>
-        </mat-autocomplete>
+      <div class="col-6 padding-sm mt-2">
+        <div [formGroup]="materialForm">
+          <pnx-taxonomy
+            label="Taxon (nom cité)"
+            [parentFormControl]="materialForm.controls.taxonInput"
+            [charNumber]="3"
+            [displayAdvancedFilters]="true"
+            (onChange)="onTaxonSelected($event)"
+            displayedLabel="search_name">
+          </pnx-taxonomy>
+      
+          <!-- FormArray des taxons -->
+          <div class="taxon-list-container">
+            <div formArrayName="taxons">
+              <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-1 taxon-item">
+      
+                <div class="col-4 padding-sm">
+                  <input 
+                    class="form-control" 
+                    [value]="taxon.get('parentFormControl').value?.nom_valide || 'Taxon ajouté'"
+                    readonly
+                  />
+                </div>
+      
+                <div class="col-4">
+                  <button 
+                    mat-icon-button 
+                    aria-label="Delete" 
+                    matTooltip="Supprimer"
+                    color="warn"
+                    (click)="materialFormService.removeTaxon(i, taxon)"
+                  >
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </div>
+      
+              </div>
+            </div>
+          </div>
+        </div>      
       </div>
   </div>
 
@@ -41,13 +72,39 @@
           </pnx-nomenclature>
       </div>
       <div class="col-6 padding-sm">
-          <label>N° Banque culturale</label>
-          <input
-            class="form-control"
-            type="text"
-            [formControl]="materialForm.controls.code_cultural_bank"
-          />
+        <label> Classes d’individus</label>
+        <pnx-nomenclature
+            keyValue="id_nomenclature"
+            [bindAllItem]="false"
+            keyLabel="label_default"
+            codeNomenclatureType="CFE_FOOT_COUNTING_CLASS"
+            [parentFormControl]="materialForm.controls.id_foot_counting_class"
+          >
+        </pnx-nomenclature>
       </div>
+  </div>
+
+  <div class="row row-0 mr-3 mt-2">
+    <div class="col-6 padding-sm">
+      <label>Numéro de récolte parent</label>
+      <input type="text" 
+        class="form-control"
+        [formControl]="codeMaterialControl" 
+        [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let material of filteredMaterials$ | async" [value]="material.code_material">
+          {{ material.code_material }}
+        </mat-option>
+      </mat-autocomplete>
+    </div>
+    <div class="col padding-sm">
+      <label>N° Banque culturale</label>
+      <input
+        class="form-control"
+        type="text"
+        [formControl]="materialForm.controls.code_cultural_bank"
+      />
+    </div>
   </div>
 
   <div class="row row-0 mr-3 mt-2">
@@ -69,73 +126,6 @@
         type="number"
         [formControl]="materialForm.controls.sample_foot_count"
       />
-    </div>
-  </div>
-
-  <div [formGroup]="materialForm">
-    <div class="row row-0">
-      <div class="col-4 padding-sm">
-        <pnx-taxonomy
-          label="Taxon (nom cité)"
-          [parentFormControl]="materialForm.controls.taxonInput"
-          [charNumber]="3"
-          [displayAdvancedFilters]="true"
-          displayedLabel="search_name">
-        </pnx-taxonomy>
-      </div>
-      <div class="col-4 mt-4">
-        <button 
-          color="primary" 
-          mat-raised-button 
-          (click)="materialFormService.addTaxon(allowMultipleTaxons)" 
-          [disabled]="!isValidTaxonSelected()"
-        >
-          Ajouter taxon
-        </button>
-      </div>
-    </div>
-
-    <!-- FormArray des taxons -->
-    <div class="taxon-list-container">
-      <div formArrayName="taxons">
-        <div *ngFor="let taxon of materialFormService.taxons.controls; let i = index" [formGroupName]="i" class="d-flex align-items-center mt-1 taxon-item">
-
-          <div class="col-4 padding-sm">
-            <input 
-              class="form-control" 
-              [value]="taxon.get('parentFormControl').value?.search_name || 'Taxon ajouté'"
-              readonly
-            />
-          </div>
-
-          <div class="col-4">
-            <button 
-              mat-icon-button 
-              aria-label="Delete" 
-              matTooltip="Supprimer"
-              color="warn"
-              (click)="materialFormService.removeTaxon(i, taxon)"
-            >
-              <mat-icon>clear</mat-icon>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row row-0 mr-3 mt-2">
-    <div class="col-6 padding-sm">
-      <label> Classes d’individus</label>
-      <pnx-nomenclature
-          keyValue="id_nomenclature"
-          [bindAllItem]="false"
-          keyLabel="label_default"
-          codeNomenclatureType="CFE_FOOT_COUNTING_CLASS"
-          [parentFormControl]="materialForm.controls.id_foot_counting_class"
-        >
-      </pnx-nomenclature>
     </div>
   </div>
 
@@ -212,47 +202,45 @@
   </mat-card>
 
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-    <div class="mr-3">
-        <ng-container *ngIf="!(materialFormService.occurrence | async); else modifButton">
-            <button
-                style="margin-right: 20px"
-                color="warn"
-                mat-raised-button
-                (click)="close()"
-              >
-                Retour
-            </button>
-          <button
-            mat-button [mat-dialog-close]="true"
-            matTooltip="Enregistrer ce matériel"
-            [disabled]="!materialForm.valid"
-            class="button-success"
-            (click)="submetData()"
-          >
-            Ajouter ce material
-            <mat-icon style="vertical-align: middle">save</mat-icon>
-          </button>
-        </ng-container>
-        <ng-template #modifButton>
-          <button
-            style="margin-right: 20px"
-            color="warn"
-            mat-raised-button
-            (click)="close()"
-          >
-            Annuler
-          </button>
-          <button
-            class="button-success uppercase"
-            mat-button [mat-dialog-close]="true"
-            [disabled]="!materialForm.valid"
-            matTooltip="Modifier et enregistrer ce matériel"
-            (click)="submetData()"
-          >
-            Modifier ce matériel
-            <mat-icon style="vertical-align: middle">save</mat-icon>
-          </button>
-        </ng-template>
+<mat-dialog-actions>
+  <div class="button-container">
+    <div>
+      <button
+        color="warn"
+        mat-raised-button
+        (click)="close()"
+      >
+        Annuler
+      </button>
     </div>
+
+    <div>
+      <ng-container *ngIf="!(materialFormService.occurrence | async); else modifButton">
+        <button
+          mat-button
+          [mat-dialog-close]="true"
+          matTooltip="Enregistrer ce matériel"
+          [disabled]="!materialForm.valid"
+          class="button-success"
+          (click)="submetData()"
+        >
+          Enregistrer
+          <mat-icon style="vertical-align: middle">save</mat-icon>
+        </button>
+      </ng-container>
+      <ng-template #modifButton>
+        <button
+          class="button-success uppercase"
+          mat-button
+          [mat-dialog-close]="true"
+          [disabled]="!materialForm.valid"
+          matTooltip="Modifier et enregistrer ce matériel"
+          (click)="submetData()"
+        >
+          Enregistrer
+          <mat-icon style="vertical-align: middle">save</mat-icon>
+        </button>
+      </ng-template>
+    </div>
+  </div>
 </mat-dialog-actions>

@@ -99,6 +99,13 @@ export class MaterialModalComponent implements OnInit {
         this.dialogRef.close();
     }
 
+    onTaxonSelected(event: any) {     
+      const selectedTaxon = event?.item;      
+      if (!selectedTaxon) return;
+      this.materialFormService.addTaxon(selectedTaxon, this.allowMultipleTaxons);
+      event.preventDefault();
+    }
+    
     submetData(){
         let finalForm = this.formatDataFormHarvest();            
         this.materialFormService.submitOccurrence(finalForm);

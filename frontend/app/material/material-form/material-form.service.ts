@@ -201,10 +201,9 @@ export class MaterialFormService {
       );
     }
 
-    addTaxon(allowMultiple: boolean = true) {
+    addTaxon(taxonValue, allowMultiple: boolean = true) {
       const taxonsArray = this.form.get('taxons') as UntypedFormArray;
-      const taxonValue = this.form.controls.taxonInput.value;
-      
+            
       if (!taxonValue || typeof taxonValue !== 'object' || !taxonValue.cd_nom) {
         this.form.controls.taxonInput.reset();
         return;
@@ -248,7 +247,7 @@ export class MaterialFormService {
     
       const isAlreadySaved = existingTaxons.some(t => t.cd_nom === cd_nom);
       this.dialogService
-          .confirmDialog({ message: `Supprimer le taxon "${value.search_name}" ?` })
+          .confirmDialog({ message: `Supprimer le taxon "${value.nom_valide}" ?` })
           .subscribe((yes) => {
             if (yes) {
               if (id_material && cd_nom && isAlreadySaved) {
