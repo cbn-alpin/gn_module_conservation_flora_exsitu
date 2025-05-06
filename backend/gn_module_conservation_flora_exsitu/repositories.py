@@ -654,20 +654,26 @@ class StorageRepository:
         actions = query.offset(offset).limit(limit).all()
 
         return actions, total
-    
+
     def get_stock_summary(self, id_material):
         id_sti = self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")  # stockage initial
         id_dest = self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")  # déstockage
         id_depl = self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl")  # déplacement
 
-        # Quantité initiale globale
-        initial_storage = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
-            .filter(
-                TStorage.id_material == id_material,
-                TStorage.id_storage_action == id_sti
-            ).scalar()
+        # Récupérer le total_count du TMaterielSeed (s'il existe)
+        seed_data = db.session.query(TMaterielSeed.total_count).filter_by(id_material=id_material).one_or_none()
 
-        # Total des quantités consommées (destockage + déplacement)
+        # Déterminer initial_storage
+        if seed_data and seed_data.total_count and seed_data.total_count > 0:
+            initial_storage = seed_data.total_count
+        else:
+            initial_storage = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
+                .filter(
+                    TStorage.id_material == id_material,
+                    TStorage.id_storage_action == id_sti
+                ).scalar()
+
+        # Calcul du total des quantités sorties (déstockage + déplacement)
         quantity_output = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
             .filter(
                 TStorage.id_material == id_material,
