@@ -1,6 +1,8 @@
 
-<h1 mat-dialog-title *ngIf="!edit">Ajouter une action</h1>
-<h1 mat-dialog-title *ngIf="edit">Modifier l'action</h1>
+<div mat-dialog-title>
+  <h3 *ngIf="!edit">Ajout d'une action</h3>
+  <h3 *ngIf="edit">Modification de l'action</h3>
+</div>
 <mat-dialog-content class="mat-typography" *ngIf="actionForm">
   <div class="row row-0 mr-3 mt-2">
       <div class="col-6 padding-sm">
@@ -180,15 +182,14 @@
     </mat-card-content>
   </mat-card>
 </mat-dialog-content>
-<mat-dialog-actions align="end" class="ml-3 mr-4">
-  <ng-container *ngIf="!edit; else modifButton">
+<mat-dialog-actions class="ml-3 mr-4 mb-3">
+  <div class="flex-actions">
     <button
-        style="margin-right: 20px"
-        color="warn"
-        mat-raised-button
-        (click)="close()"
-      >
-        Retour
+      color="warn"
+      mat-raised-button
+      (click)="close()"
+    >
+      Retour
     </button>
     <button
       mat-button [mat-dialog-close]="true"
@@ -197,28 +198,8 @@
       (click)="submetData()"
       [disabled]="!actionForm.valid || showInitialStockWarning"
     >
-      Ajouter l'action
+      Enregistrer
       <mat-icon style="vertical-align: middle">save</mat-icon>
     </button>
-  </ng-container>
-  <ng-template #modifButton>
-    <button
-      style="margin-right: 20px"
-      color="warn"
-      mat-raised-button
-      (click)="close()"
-    >
-      Annuler
-    </button>
-    <button
-      class="button-success uppercase"
-      mat-button [mat-dialog-close]="true"
-      matTooltip="Modifier et enregistrer cette action"
-      (click)="submetData()"
-      [disabled]="!actionForm.valid"
-    >
-      Modifier l'action
-      <mat-icon style="vertical-align: middle">save</mat-icon>
-    </button>
-  </ng-template>
+  </div>
 </mat-dialog-actions>
