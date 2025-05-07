@@ -75,23 +75,19 @@
       <div class="other-content">
             <mat-card *ngIf="mediasFilesTaxhub.length > 0; else noMedia">
               <mat-card-content>
-                <carousel
-                  class="cs-description-media flex-fill"
-                >
-                  <slide *ngFor="let media of mediasFilesTaxhub">
+                <div class="custom-carousel" *ngIf="mediasFilesTaxhub.length > 0">
+                  <div class="carousel-slide">
                     <img
-                      class="img-thumbnail"
-                      [src]="cfg.getBackendUrl() + media.url" 
-                      [alt]="media.title + ' - ' + media.author"
+                      [src]="cfg.getBackendUrl() + mediasFilesTaxhub[currentIndex].url"
+                      [alt]="mediasFilesTaxhub[currentIndex].title"
+                      class="carousel-img"
                     />
-                    <div class="carousel-caption d-none d-md-block">
-                      <p>
-                        {{ media.title }} <br />
-                        {{ media.author }}
-                      </p>
+                    <div class="caption">
+                      <h5>{{ mediasFilesTaxhub[currentIndex].title }}</h5>
+                      <p>{{ mediasFilesTaxhub[currentIndex].author }}</p>
                     </div>
-                  </slide>
-                </carousel>
+                  </div>
+                </div>                
               </mat-card-content>
           </mat-card>
             

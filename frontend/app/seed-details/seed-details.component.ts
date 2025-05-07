@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from '@librairies/rxjs';
 import { DataService } from '../services/data.service';
 import { ConfigService } from '../services/config.service';
+import { HarvestStoreService } from '../services/store.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
@@ -19,6 +20,7 @@ export class SeedDetailsComponent implements OnInit {
     taxonInfos$: Observable<{ attributs: { [key: string]: string } }> | null = null;
     attributs = [];
     mediasFilesTaxhub = [];
+    currentIndex = 0;
     seed
     taxhubEditFormUrl: string;
     mediaFiles: Array<{ type: string, title: string, url: string }> = [];
@@ -34,11 +36,18 @@ export class SeedDetailsComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadFullSeedDetails()
+        setInterval(() => {
+          if (this.mediasFilesTaxhub && this.mediasFilesTaxhub.length > 0) {
+            this.currentIndex = (this.currentIndex + 1) % this.mediasFilesTaxhub.length;
+          }
+        }, 2000);
     }
 
     private loadFullSeedDetails() {        
         this.dataService.getFullSeedDetails(this.exsituService.idSeed).subscribe({
-          next: (data) => {                                    
+          next: (data) => {     
+            console.log(data);
+                               
             this.taxhubEditFormUrl += `/admin/taxons/edit/?id=${data.cd_ref}`;
             this.seed = data;
             this.attributs = data.taxon_attributs || {};
