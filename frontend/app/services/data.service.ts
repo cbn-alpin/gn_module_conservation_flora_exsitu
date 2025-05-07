@@ -122,6 +122,18 @@ export class DataService {
     return this.api.get(`${this.moduleBaseUrl}/materials/seeds/${idSeed}/infos`);
   }
 
+  addSeedMedia(id_seed: number, formData: FormData): Observable<any> {
+    return this.api.post(`${this.moduleBaseUrl}/seeds/${id_seed}/media`, formData);
+  }
+
+  upSeedMedia(id_seed: number, formData: FormData): Observable<any> {
+    return this.api.put(`${this.moduleBaseUrl}/seeds/${id_seed}/media`, formData);
+  }
+
+  deleteMedia(id_media){
+    return this.api.delete(`${this.moduleBaseUrl}/seeds/medias/${id_media}`);
+  }
+
   getMaterialsCodeParent(idHarvest: number): Observable<any[]> {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/harvests/${idHarvest}/materials/code-autocomplete`);
   }

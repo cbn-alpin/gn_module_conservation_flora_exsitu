@@ -1,180 +1,246 @@
 <div class="wrapper" *ngIf="seed">
-    <div class="row row-0">
-      <div class="col-6">
-        <div class="info-block">
-          <div class="info-row">
-            <strong>Longueur moyenne :</strong>
-            {{ seed.length !== null && seed.length !== undefined ? seed.length + ' mm' : 'Non renseignée' }}
-          </div>
-          <div class="info-row">
-            <strong>Largeur moyenne :</strong>
-            {{ seed.width !== null && seed.width !== undefined ? seed.width + ' mm' : 'Non renseignée' }}
-          </div>
-          <div class="info-row">
-            <strong>Épaisseur moyenne :</strong>
-            {{ seed.thickness !== null && seed.thickness !== undefined ? seed.thickness + ' mm' : 'Non renseignée' }}
-          </div>
-          <div class="info-row">
-            <strong>État du lot :</strong> {{ seed.material_quality_label || 'Non renseigné' }}
-          </div>
-          <div class="info-row">
-            <strong>Masse totale :</strong>
-            {{ seed.total_mass !== null && seed.total_mass !== undefined ? seed.total_mass + ' g' : 'Non renseignée' }}
-          </div>
-          <div class="info-row">
-            <strong>Nombre de graines échantillonnées :</strong> {{ seed.sample_count || 'Non renseigné' }}
-          </div>
-          <div class="info-row">
-            <strong>Masse des graines échantillonnées :</strong>
-            {{ seed.sample_mass !== null && seed.sample_mass !== undefined ? seed.sample_mass + ' g' : 'Non renseignée' }}
-          </div>
-          <div class="info-row">
-            <strong>Nombre total de graines calculé :</strong> {{ seed.total_count || 'Non renseigné' }}
-          </div>
-          <div class="info-row">
-            <strong>Photo disponible :</strong> {{ seed.has_photo ? 'Oui' : 'Non' }}
-          </div>
-          <div class="info-row">
-            <strong>Remarques :</strong> {{ seed.remarks || 'Non renseigné'}}
-          </div>
+  <div class="row row-0">
+    <div class="col-6">
+      <div class="info-block">
+        <div class="info-row">
+          <strong>Longueur moyenne :</strong>
+          {{ seed.length !== null && seed.length !== undefined ? seed.length + ' mm' : 'Non renseignée' }}
+        </div>
+        <div class="info-row">
+          <strong>Largeur moyenne :</strong>
+          {{ seed.width !== null && seed.width !== undefined ? seed.width + ' mm' : 'Non renseignée' }}
+        </div>
+        <div class="info-row">
+          <strong>Épaisseur moyenne :</strong>
+          {{ seed.thickness !== null && seed.thickness !== undefined ? seed.thickness + ' mm' : 'Non renseignée' }}
+        </div>
+        <div class="info-row">
+          <strong>État du lot :</strong> {{ seed.material_quality_label || 'Non renseigné' }}
+        </div>
+        <div class="info-row">
+          <strong>Masse totale :</strong>
+          {{ seed.total_mass !== null && seed.total_mass !== undefined ? seed.total_mass + ' g' : 'Non renseignée' }}
+        </div>
+        <div class="info-row">
+          <strong>Nombre de graines échantillonnées :</strong> {{ seed.sample_count || 'Non renseigné' }}
+        </div>
+        <div class="info-row">
+          <strong>Masse des graines échantillonnées :</strong>
+          {{ seed.sample_mass !== null && seed.sample_mass !== undefined ? seed.sample_mass + ' g' : 'Non renseignée' }}
+        </div>
+        <div class="info-row">
+          <strong>Nombre total de graines calculé :</strong> {{ seed.total_count || 'Non renseigné' }}
+        </div>
+        <div class="info-row">
+          <strong>Photo disponible :</strong> {{ seed.has_photo ? 'Oui' : 'Non' }}
+        </div>
+        <div class="info-row">
+          <strong>Remarques :</strong> {{ seed.remarks || 'Non renseigné'}}
         </div>
       </div>
-  
-      <div class="col-6">
-        <div class="other-content">
-            <mat-card *ngIf="attributs.cfe_form; else noForm1">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar>bubble_chart</mat-icon>
-                  <mat-card-title>Forme</mat-card-title>
-                </mat-card-header>
-                <mat-card-content [innerHTML]="attributs.cfe_form"></mat-card-content>
-            </mat-card>
-              
-            <ng-template #noForm1>
-                <mat-card class="warning">
-                  <mat-card-content>
-                    <mat-icon inline>warning</mat-icon>
-                    Aucune forme disponible pour ce taxon.
-                  </mat-card-content>
-                  <mat-card-actions class="d-flex flex-row-reverse">
-                    <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
-                      Renseignez la forme sur TaxHub
-                    </a>
-                  </mat-card-actions>
-                </mat-card>
-            </ng-template>
 
-            <mat-card *ngIf="attributs.cfe_type_albumen; else noAlbumen">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar>spa</mat-icon>
-                  <mat-card-title>Type de semences</mat-card-title>
-                </mat-card-header>
-                <mat-card-content [innerHTML]="attributs.cfe_type_albumen"></mat-card-content>
-            </mat-card>
-              
-            <ng-template #noAlbumen>
-                <mat-card class="warning">
-                  <mat-card-content>
-                    <mat-icon inline>warning</mat-icon>
-                    Aucun type de semence disponible pour ce taxon.
-                  </mat-card-content>
-                  <mat-card-actions class="d-flex flex-row-reverse">
-                    <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
-                      Renseignez le type de semence sur TaxHub
-                    </a>
-                  </mat-card-actions>
-                </mat-card>
-            </ng-template>
+      <div class="info-row" *ngIf="mediaFiles?.length > 0">
+        <h3>Photo(s) :</h3>
+        <div class="media-gallery">
+          <div *ngFor="let media of mediaFiles" class="media-item position-relative">
+            <img *ngIf="media.type === 'file'" 
+                 [src]="cfg.getBackendUrl() + media.url" 
+                 alt="{{ media.title }}" 
+                 class="media-preview"
+                 (click)="openLightbox(cfg.getBackendUrl() + media.url)" />
+            
+            <img *ngIf="media.type === 'url'" 
+                 [src]="media.url"
+                 (click)="openLightbox(media.url)" 
+                 alt="{{ media.title }}" 
+                 class="media-preview" />
+            
+            <a *ngIf="media.type === 'url'" [href]="media.url" target="_blank">Ouvrir dans un nouvel onglet</a>
+          
+            <button matTooltip="Supprimer la photo" class="btn-delete-media" (click)="deleteMedia(media.id_media)">✕</button>
+          </div>
+          
+        </div>
+      </div>
 
-            <mat-card *ngIf="attributs.cfe_excroissance; else noExcroissance1">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar>nature</mat-icon>
-                  <mat-card-title>Excroissance</mat-card-title>
-                </mat-card-header>
-                <mat-card-content [innerHTML]="attributs.cfe_excroissance"></mat-card-content>
-            </mat-card>
-              
-            <ng-template #noExcroissance1>
-                <mat-card class="warning">
-                  <mat-card-content>
-                    <mat-icon inline>warning</mat-icon>
-                    Aucune excroissance pour ce taxon.
-                  </mat-card-content>
-                  <mat-card-actions class="d-flex flex-row-reverse">
-                    <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
-                      Renseignez l'excroissance sur TaxHub
-                    </a>
-                  </mat-card-actions>
-                </mat-card>
-            </ng-template>
-
-            <mat-card *ngIf="attributs.cfe_ornementation; else noOrnementation1">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar>flare</mat-icon>
-                  <mat-card-title>Ornementation</mat-card-title>
-                </mat-card-header>
-                <mat-card-content [innerHTML]="attributs.cfe_ornementation"></mat-card-content>
-            </mat-card>
-              
-            <ng-template #noOrnementation1>
-                <mat-card class="warning">
-                  <mat-card-content>
-                    <mat-icon inline>warning</mat-icon>
-                    Aucune ornementation pour ce taxon.
-                  </mat-card-content>
-                  <mat-card-actions class="d-flex flex-row-reverse">
-                    <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
-                      Renseignez l'ornementation sur TaxHub
-                    </a>
-                  </mat-card-actions>
-                </mat-card>
-            </ng-template>
-
-            <mat-card *ngIf="attributs.cfe_embryo_type; else noEmbryoType1">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar>blur_on</mat-icon>
-                  <mat-card-title>Type embryon</mat-card-title>
-                </mat-card-header>
-                <mat-card-content [innerHTML]="attributs.cfe_embryo_type"></mat-card-content>
-            </mat-card>
-              
-            <ng-template #noEmbryoType1>
-                <mat-card class="warning">
-                  <mat-card-content>
-                    <mat-icon inline>warning</mat-icon>
-                    Aucun type d'embryon pour ce taxon.
-                  </mat-card-content>
-                  <mat-card-actions class="d-flex flex-row-reverse">
-                    <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
-                      Renseignez type embryon sur TaxHub
-                    </a>
-                  </mat-card-actions>
-                </mat-card>
-            </ng-template>
-
-            <mat-card *ngIf="attributs.cfe_comm_dim_forme; else noComm">
-                <mat-card-header>
-                  <mat-icon mat-card-avatar>notes</mat-icon>
-                  <mat-card-title>Commentaire dimension</mat-card-title>
-                </mat-card-header>
-                <mat-card-content [innerHTML]="attributs.cfe_comm_dim_forme"></mat-card-content>
-            </mat-card>
-              
-            <ng-template #noComm>
-                <mat-card class="warning">
-                  <mat-card-content>
-                    <mat-icon inline>warning</mat-icon>
-                    Aucun commentaire dimension pour ce taxon.
-                  </mat-card-content>
-                  <mat-card-actions class="d-flex flex-row-reverse">
-                    <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
-                      Renseignez commentaire dimension sur TaxHub
-                    </a>
-                  </mat-card-actions>
-                </mat-card>
-            </ng-template>
+      <div class="lightbox-backdrop" *ngIf="lightboxVisible" (click)="closeLightbox()">
+        <div class="lightbox-content" (click)="$event.stopPropagation()">
+          <img [src]="lightboxImage" alt="Image en grand" />
+          <button class="close-btn" (click)="closeLightbox()">✕</button>
         </div>
       </div>
     </div>
+
+    <div class="col-6">
+      <div class="other-content">
+            <mat-card *ngIf="mediasFilesTaxhub; else noMedia">
+              <mat-card-content>
+                <carousel
+                  class="cs-description-media flex-fill"
+                  *ngIf="mediasFilesTaxhub; else noMedia"
+                >
+                  <slide *ngFor="let media of mediasFilesTaxhub">
+                    <img
+                      class="img-thumbnail"
+                      [src]="cfg.getBackendUrl() + media.url" 
+                      [alt]="media.title + ' - ' + media.author"
+                    />
+                    <div class="carousel-caption d-none d-md-block">
+                      <p>
+                        {{ media.title }} <br />
+                        {{ media.author }}
+                      </p>
+                    </div>
+                  </slide>
+                </carousel>
+              </mat-card-content>
+          </mat-card>
+            
+          <ng-template #noMedia>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucune image pour ce taxon
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez la forme sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+          <mat-card *ngIf="attributs.cfe_form; else noForm1">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>bubble_chart</mat-icon>
+                <mat-card-title>Forme</mat-card-title>
+              </mat-card-header>
+              <mat-card-content [innerHTML]="attributs.cfe_form"></mat-card-content>
+          </mat-card>
+            
+          <ng-template #noForm1>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucune forme disponible pour ce taxon.
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez la forme sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+
+          <mat-card *ngIf="attributs.cfe_type_albumen; else noAlbumen">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>spa</mat-icon>
+                <mat-card-title>Type de semences</mat-card-title>
+              </mat-card-header>
+              <mat-card-content [innerHTML]="attributs.cfe_type_albumen"></mat-card-content>
+          </mat-card>
+            
+          <ng-template #noAlbumen>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucun type de semence disponible pour ce taxon.
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez le type de semence sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+
+          <mat-card *ngIf="attributs.cfe_excroissance; else noExcroissance1">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>nature</mat-icon>
+                <mat-card-title>Excroissance</mat-card-title>
+              </mat-card-header>
+              <mat-card-content [innerHTML]="attributs.cfe_excroissance"></mat-card-content>
+          </mat-card>
+            
+          <ng-template #noExcroissance1>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucune excroissance pour ce taxon.
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez l'excroissance sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+
+          <mat-card *ngIf="attributs.cfe_ornementation; else noOrnementation1">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>flare</mat-icon>
+                <mat-card-title>Ornementation</mat-card-title>
+              </mat-card-header>
+              <mat-card-content [innerHTML]="attributs.cfe_ornementation"></mat-card-content>
+          </mat-card>
+            
+          <ng-template #noOrnementation1>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucune ornementation pour ce taxon.
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez l'ornementation sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+
+          <mat-card *ngIf="attributs.cfe_embryo_type; else noEmbryoType1">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>blur_on</mat-icon>
+                <mat-card-title>Type embryon</mat-card-title>
+              </mat-card-header>
+              <mat-card-content [innerHTML]="attributs.cfe_embryo_type"></mat-card-content>
+          </mat-card>
+            
+          <ng-template #noEmbryoType1>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucun type d'embryon pour ce taxon.
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez type embryon sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+
+          <mat-card *ngIf="attributs.cfe_comm_dim_forme; else noComm">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>notes</mat-icon>
+                <mat-card-title>Commentaire dimension</mat-card-title>
+              </mat-card-header>
+              <mat-card-content [innerHTML]="attributs.cfe_comm_dim_forme"></mat-card-content>
+          </mat-card>
+            
+          <ng-template #noComm>
+              <mat-card class="warning">
+                <mat-card-content>
+                  <mat-icon inline>warning</mat-icon>
+                  Aucun commentaire dimension pour ce taxon.
+                </mat-card-content>
+                <mat-card-actions class="d-flex flex-row-reverse">
+                  <a mat-raised-button [href]="taxhubEditFormUrl" target="_blank">
+                    Renseignez commentaire dimension sur TaxHub
+                  </a>
+                </mat-card-actions>
+              </mat-card>
+          </ng-template>
+      </div>
+    </div>
+  </div>
 </div>
-  

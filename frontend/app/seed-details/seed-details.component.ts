@@ -4,6 +4,8 @@ import { DataService } from '../services/data.service';
 import { ConfigService } from '../services/config.service';
 import { HarvestStoreService } from '../services/store.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
 interface ITaxon {
     taxhubRecordId: number;
@@ -17,12 +19,16 @@ interface ITaxon {
 export class SeedDetailsComponent implements OnInit {
     taxonInfos$: Observable<{ attributs: { [key: string]: string } }> | null = null;
     attributs = [];
+    mediasFilesTaxhub = [];
     seed
     taxhubEditFormUrl: string;
+    mediaFiles: Array<{ type: string, title: string, url: string }> = [];
     constructor(
         private cfg: ConfigService,
         private dataService: DataService,
-        private exsituService: ExsituFormService
+        private exsituService: ExsituFormService,
+        private dialogService: DialogService,
+        private _commonService: CommonService
     ){
         this.taxhubEditFormUrl = this.cfg.getTaxHubFrontendUrl();
     }
@@ -31,16 +37,55 @@ export class SeedDetailsComponent implements OnInit {
         this.loadFullSeedDetails()
     }
 
-    private loadFullSeedDetails() {
+    private loadFullSeedDetails() {        
         this.dataService.getFullSeedDetails(this.exsituService.idSeed).subscribe({
-          next: (data) => {
+          next: (data) => {     
+            console.log(data);
+                               
             this.taxhubEditFormUrl += `/admin/taxons/edit/?id=${data.cd_ref}`;
             this.seed = data;
             this.attributs = data.taxon_attributs || {};
+            this.mediaFiles = data.media_files || []; 
+            this.mediasFilesTaxhub = data.media_files_taxhub || [];       
           },
           error: (err) => {
             console.error('Erreur chargement infos complètes :', err);
           }
         });
     }
+
+    lightboxVisible = false;
+    lightboxImage: string = '';
+
+    openLightbox(imageUrl: string): void {
+        this.lightboxImage = imageUrl;
+        this.lightboxVisible = true;
+    }
+
+    closeLightbox(): void {
+        this.lightboxVisible = false;
+        this.lightboxImage = '';
+    }
+
+    deleteMedia(id: number): void {
+        this.dialogService
+          .confirmDialog({ message: 'Voulez-vous vraiment supprimer la photo ?' })
+          .subscribe((yes) => {
+            if (yes) {
+                this.dataService.deleteMedia(id).subscribe({
+                    next: () => {
+                      this.loadFullSeedDetails();
+                      this._commonService.translateToaster('info', 'Photo supprimée avec succès');
+                    },
+                    error: err => {
+                      this._commonService.translateToaster('warning', 'Erreur suppression de la photo');
+                    }
+                });
+            }
+          });
+      
+        
+      }
+      
+
 }
