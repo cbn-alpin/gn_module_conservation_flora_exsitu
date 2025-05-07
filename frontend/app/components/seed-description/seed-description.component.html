@@ -53,6 +53,16 @@
           [formControl]="seedForm.controls.total_mass"
         />
       </div>
+      <div class="col-6 padding-sm">
+        <label>Masse des graines échantillonnées(g)</label>
+        <input
+          class="form-control"
+          type="number"
+          [formControl]="seedForm.controls.sample_mass"
+        />
+    </div>
+  </div>
+  <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
       <label>Nombre de graines échantillonnées</label>
       <input
@@ -60,16 +70,6 @@
         type="number"
         [formControl]="seedForm.controls.sample_count"
       />
-    </div>
-  </div>
-  <div class="row row-0 mr-3 mt-2">
-    <div class="col-6 padding-sm">
-        <label>Masse des graines échantillonnées(g)</label>
-        <input
-          class="form-control"
-          type="number"
-          [formControl]="seedForm.controls.sample_mass"
-        />
     </div>
     <div class="col-6 padding-sm">
       <label>Nombre total de graines calculé</label>
@@ -88,6 +88,49 @@
               Photo
           </mat-checkbox>
         </section>
+    </div>
+  </div>
+
+  <div class="row row-0 mt-2 mr-3" *ngIf="seedForm.get('has_photo')?.value">
+    <div class="col-6 padding-sm">
+      <label> Type de média</label>
+      <pnx-nomenclature
+          keyValue="id_nomenclature"
+          [bindAllItem]="false"
+          keyLabel="label_default"
+          codeNomenclatureType="TYPE_MEDIA"
+          [parentFormControl]="seedForm.controls.id_media_type"
+        >
+      </pnx-nomenclature>
+    </div>
+    <div class="col-6 padding-sm" *ngIf="showPhotoField">
+      <label for="photoInput">Fichier image</label>
+      <input 
+        type="file"
+        id="photoInput"
+        (change)="onMultipleFilesSelected($event)"
+        accept="image/*"
+        class="form-control"
+        multiple
+      />
+    </div>
+  
+    <div class="col-6 padding-sm" *ngIf="showURLField">
+      <div style="display: flex; justify-content: space-between;align-items: center;">
+        <label>URL du média</label>
+        <button mat-button color="primary" (click)="addUrlField()">Ajouter une URL</button>  
+      </div>
+      <div *ngFor="let control of mediaUrlControls.controls; let i = index" style="display: flex;">
+        <input
+          type="text"
+          class="form-control"
+          [formControl]="control"
+          placeholder="URL du média"
+        />
+        <button mat-icon-button color="warn" (click)="removeUrlField(i)">
+          <mat-icon>remove_circle</mat-icon>
+        </button>
+      </div>    
     </div>
   </div>
 

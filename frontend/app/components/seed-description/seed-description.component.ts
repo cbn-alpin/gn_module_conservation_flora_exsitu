@@ -6,12 +6,14 @@ import {
     Validators,
     AbstractControl,
     ValidationErrors, 
-    ValidatorFn
+    ValidatorFn, FormControl, FormArray
   } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 import { ConfigService } from '../../services/config.service';
+import { ConstantsService } from '../../services/constants.service';
+import { Observable, of, forkJoin } from 'rxjs';
 
 @Component({
     selector: 'cfe-seed-description',
@@ -23,6 +25,19 @@ export class SeddDescriptionComponent implements OnInit {
     public seedForm: FormGroup;
     additionalDataForm: FormGroup;
     formsDefinition;
+    selectedFile: File | null = null;
+    mediaTypeCode: string | null = null;
+    mediaTypeId;
+    showURLField: boolean = false;
+    showPhotoField: boolean = false;
+    mediaFileData
+    mediaURLData
+    selectedFiles: File[] = [];
+    mediaUrlControls = new FormArray([]);
+    existingPhotoMedias: any[] = [];
+    existingUrlMedias: any[] = [];
+
+    
     constructor(
         private dataService: DataService,
         private _commonService: CommonService,
@@ -30,7 +45,8 @@ export class SeddDescriptionComponent implements OnInit {
         private fb: FormBuilder,
         private dialogService: DialogService,
         @Inject(MAT_DIALOG_DATA) public data: { id: number, mode: string, seedData: any },
-        public cfg: ConfigService
+        public cfg: ConfigService,
+        public constants: ConstantsService
     ){
 
     }
@@ -43,6 +59,11 @@ export class SeddDescriptionComponent implements OnInit {
         this.seedForm.get('sample_mass')?.valueChanges.subscribe(() => this.updateTotalCount());
         this.seedForm.get('total_mass')?.valueChanges.subscribe(() => this.updateTotalCount());
 
+        this.seedForm.controls['id_media_type'].valueChanges.subscribe(value => {      
+          if(value) {
+              this.getCodesNomenclature(value)
+          }
+        });                
     }
 
 
@@ -59,9 +80,21 @@ export class SeddDescriptionComponent implements OnInit {
           sample_mass: seedData.sample_mass ?? null,
           has_photo: seedData.has_photo ?? false,
           additional_data: seedData.additional_data ?? null,
-          remarks: seedData.remarks ?? ''
+          remarks: seedData.remarks ?? '',
+          id_media_type: seedData.id_media_type ?? null,
         };
-    
+
+        if (this.edit && seedData.media?.length) {
+          for (const media of seedData.media) {
+            if (media.media_url) {
+              this.existingUrlMedias.push(media.media_url);
+              this.mediaUrlControls.push(new FormControl(media.media_url)); 
+            } else if (media.media_file_name) {
+              this.existingPhotoMedias.push(media.media_file_name);
+            }
+          }
+        }
+        
         this.seedForm = this.fb.group(
             {
                 id_material: [defaultValues.id_material, Validators.required],
@@ -75,7 +108,10 @@ export class SeddDescriptionComponent implements OnInit {
                 sample_mass: [defaultValues.sample_mass],
                 has_photo: [defaultValues.has_photo],
                 additional_data: this.fb.group(defaultValues.additional_data ?? {}),
-                remarks: [defaultValues.remarks]
+                remarks: [defaultValues.remarks],
+                id_media_type: [defaultValues['id_media_type']],
+                media_url_input: [defaultValues['media_url_input']],
+                media_file_input: [null]
             },
             {
                 validators: this.atLeastOneFieldRequired([
@@ -92,6 +128,9 @@ export class SeddDescriptionComponent implements OnInit {
                 ])
             }
         );
+        this.seedForm.addControl('id_media_type', new FormControl(null));
+        this.seedForm.addControl('media_url_input', new FormControl(null)); 
+        this.seedForm.addControl('media_file_input', new FormControl(null));
     }
 
     atLeastOneFieldRequired(fields: string[]): ValidatorFn {
@@ -99,18 +138,19 @@ export class SeddDescriptionComponent implements OnInit {
           const formGroup = control as any;
           for (const field of fields) {
             if (formGroup.controls[field].value) {
-              return null; // Si au moins un champ est rempli, la validation est réussie.
+              return null;
             }
           }
-          return { atLeastOneRequired: true }; // Aucun champ n'est rempli.
+          return { atLeastOneRequired: true };
         };
     }
 
     submetData(){
-        const formData = this.formatDataForm();        
+        const formData = this.formatDataForm();  
         if(!this.edit){
             this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
                 (response)=>{
+                    this.uploadSeedMedia(response.id_seed);
                     this._commonService.translateToaster('info', 'Semence ajoutée avec succès');
                     this.close()
                 },
@@ -121,8 +161,13 @@ export class SeddDescriptionComponent implements OnInit {
         }else{
             this.dataService.updateSeed(this.data.seedData.id_seed, formData).subscribe(
                 ()=>{
+                  if (this.seedForm.value.has_photo) {
+                    this.uploadSeedMedia(this.data.seedData.id_seed);
                     this._commonService.translateToaster('info', 'Semence modifiée avec succès');
-                    this.close()
+                  } else {
+                    this._commonService.translateToaster('info', 'Semence modifiée avec succès');
+                    this.close();
+                  }
                 },
                 (error) => {
                     this._commonService.translateToaster('warning', 'Erreur lors de la modification de la semence');
@@ -154,6 +199,18 @@ export class SeddDescriptionComponent implements OnInit {
             delete finalForm.additional_data;
           }
         }
+        if(finalForm.media_file_input){
+          this.mediaFileData = finalForm.media_file_input
+        }
+        if(finalForm.media_url_input){
+          this.mediaURLData = finalForm.media_url_input
+        }
+        if(finalForm.id_media_type){
+          this.mediaTypeId = finalForm.id_media_type
+        }
+        delete finalForm.media_file_input
+        delete finalForm.media_url_input
+        delete finalForm.id_media_type
         return finalForm;
     }
 
@@ -191,5 +248,77 @@ export class SeddDescriptionComponent implements OnInit {
       }
     }
     
+    onMultipleFilesSelected(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      if (input.files) {
+        this.selectedFiles = Array.from(input.files);
+      }
+      console.log(this.selectedFiles);
+      
+    }
+    
+    addUrlField(): void {
+      this.mediaUrlControls.push(new FormControl(''));
+    }
+    
+    removeUrlField(index: number): void {
+      this.mediaUrlControls.removeAt(index);
+    }
+
+    uploadSeedMedia(id_seed: number): void {
+      const uploads: Observable<any>[] = [];
+    
+      const hasExistingMedia = this.data.seedData?.medias?.length > 0;
+      const method = hasExistingMedia ? 'upSeedMedia' : 'addSeedMedia';      
+    
+      for (const file of this.selectedFiles) {
+        const formData = new FormData();
+        formData.append('media_file', file);
+        formData.append('id_media_type', this.mediaTypeId);
+        formData.append('title', 'Photo de la semence');
+        uploads.push(this.dataService[method](id_seed, formData));
+      }
+    
+      for (const urlControl of this.mediaUrlControls.controls) {
+        const formData = new FormData();
+        formData.append('media_url', urlControl.value);
+        formData.append('id_media_type', this.mediaTypeId);
+        formData.append('title', 'Lien média');
+        uploads.push(this.dataService[method](id_seed, formData));
+      }
+    
+      if (uploads.length === 0) {
+        this._commonService.translateToaster('info', 'Aucun média à enregistrer');
+        return;
+      }
+    
+      forkJoin(uploads).subscribe({
+        next: () => {
+          this._commonService.translateToaster(
+            'info',
+            hasExistingMedia ? 'Médias mis à jour avec succès' : 'Médias enregistrés avec succès'
+          );
+          this.close();
+        },
+        error: () => {
+          this._commonService.translateToaster(
+            'warning',
+            hasExistingMedia ? 'Erreur lors de la mise à jour des médias' : 'Erreur lors de l\'upload des médias'
+          );
+        }
+      });
+    }
+    
+    getCodesNomenclature(idNomenclature: number): void {    
+      this.dataService.getCodesNomenclature(idNomenclature).subscribe({
+        next: (codeNomenclature: string) => {            
+          this.showPhotoField = codeNomenclature === this.constants.MEDIA_TYPE.PHOTO ? true : false
+          this.showURLField = codeNomenclature === this.constants.MEDIA_TYPE.URL ? true : false
+        },
+        error: (error) => {
+          
+        }
+      });
+    }
 
 }

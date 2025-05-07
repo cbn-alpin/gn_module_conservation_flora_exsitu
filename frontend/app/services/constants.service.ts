@@ -108,4 +108,9 @@ export class ConstantsService {
   constructor(private api: DataService) {
     this.initFieldConfigs();
   }
+
+  public readonly MEDIA_TYPE = {
+    PHOTO: '2',
+    URL: '3'
+  };
 }
