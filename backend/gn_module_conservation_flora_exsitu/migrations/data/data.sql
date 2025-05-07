@@ -317,6 +317,18 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'CBNA'
 ) ;
 
+-- Create the "CFE_MEDIA_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_MEDIA_TYPE',
+    'Type de média',
+    'Nomenclature des types de média.',
+    'Type de média',
+    'Nomenclature des types de média.',
+    'CBNA'
+) ;
+
 -- --------------------------------------------------------------------------------
 -- COMMONS
 
@@ -487,3 +499,9 @@ INSERT INTO taxonomie.bib_attributs (
         SELECT id_theme FROM taxonomie.bib_themes WHERE nom_theme = 'Semence' LIMIT 1
     ) LIMIT 1)
 ) ;
+
+
+INSERT INTO gn_commons.bib_tables_location 
+    (schema_name, table_name, pk_field, uuid_field_name, table_desc)
+    VALUES 
+    ('pr_conservation_flora_exsitu', 't_material_seed', 'id_seed', 'unique_id_seed', 'Semences associées au matériel');

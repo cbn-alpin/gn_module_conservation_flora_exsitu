@@ -185,6 +185,7 @@ COMMENT ON COLUMN "t_storage"."id_humidity_device" IS 'obligatoire si type_actio
 
 CREATE TABLE "t_material_seed" (
     "id_seed" SERIAL NOT NULL UNIQUE,
+	"unique_id_seed" UUID DEFAULT uuid_generate_v4(),
     "id_material" INTEGER UNIQUE,
     -- Longueur moyenne (mm)
     "length" decimal,

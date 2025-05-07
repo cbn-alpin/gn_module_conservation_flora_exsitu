@@ -144,6 +144,7 @@ def downgrade():
     delete_nomenclatures("CFE_EXTERNAL_DESTINATION")
     delete_nomenclatures("CFE_HUMIDITY_DEVICE")
     delete_nomenclatures("CFE_STORAGE_ACTION")
+    delete_nomenclatures("CFE_MEDIA_TYPE")
 
     delete_taxhub_attribute("cfe_form1")
     delete_taxhub_attribute("cfe_form2")
@@ -157,7 +158,8 @@ def downgrade():
     delete_taxhub_attribute("cfe_comm_dim_forme")
 
     delete_taxhub_attribute_theme("Semence")
-    
+    delete_table_location("pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed")
+
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
@@ -229,3 +231,17 @@ def delete_taxhub_attribute(attribut_name):
         """
     )
     op.get_bind().execute(operation, {"attributName": attribut_name})
+
+
+def delete_table_location(schema_name, table_name, uuid_field_name):
+    operation = text("""
+        DELETE FROM gn_commons.bib_tables_location
+        WHERE schema_name = :schema_name
+          AND table_name = :table_name
+          AND uuid_field_name = :uuid_field_name
+    """)
+    op.get_bind().execute(operation, {
+        "schema_name": schema_name,
+        "table_name": table_name,
+        "uuid_field_name": uuid_field_name
+    })

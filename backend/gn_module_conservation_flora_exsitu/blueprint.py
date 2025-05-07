@@ -11,10 +11,11 @@ from geonature.utils.env import db
 from sqlalchemy.sql.expression import func, select
 from sqlalchemy.orm import aliased
 from apptax.taxonomie.models import Taxref, BibAttributs, Taxref, CorTaxonAttribut
+from apptax.taxonomie.models import TMedias as TMediasTaxHub
 from pypnusershub.db.models import User, Organisme
 from geojson import Feature, FeatureCollection
 from sqlalchemy import exists
-from flask import request, jsonify
+from flask import request, jsonify, current_app, request
 from pypn_habref_api.models import Habref
 from geoalchemy2.functions import ST_AsGeoJSON
 import json
@@ -27,6 +28,13 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import text
 import sqlalchemy as sa
 from sqlalchemy import case, cast, String
+from geonature.core.gn_commons.models import (
+    TMedias,
+    BibTablesLocation
+)
+from werkzeug.utils import secure_filename
+from pathlib import Path
+from datetime import datetime
 
 
 blueprint = Blueprint("conservation_flora_exsitu", __name__)
@@ -874,6 +882,198 @@ def export_harvests():
     output.headers["Content-Disposition"] = "attachment; filename=harvest.csv"
     return output
 
+
+def get_code_nomenclature_by_id(id_nomenclature):
+    nomenclature = TNomenclatures.query.get(id_nomenclature)
+    return nomenclature.cd_nomenclature if nomenclature else None
+
+def get_table_location_id(schema_name, table_name):
+    table = BibTablesLocation.query.filter_by(
+        schema_name=schema_name,
+        table_name=table_name
+    ).first()
+    return table.id_table_location if table else None
+
+@blueprint.route('/seeds/<int:id_seed>/media', methods=['POST'])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def add_multiple_media_to_seed(id_seed):
+    seed = TMaterielSeed.query.get(id_seed)
+    if not seed:
+        return {"error": "Seed not found"}, 404
+
+    id_media_type = request.form.get("id_media_type", type=int)
+    if not id_media_type:
+        return {"error": "id_media_type is required"}, 400
+    
+    code_nomenclature = get_code_nomenclature_by_id(id_media_type)
+    if not code_nomenclature:
+        return {"error": "Invalid id_media_type"}, 400
+    
+    id_table_location = get_table_location_id('pr_conservation_flora_exsitu', 't_material_seed')
+    if not id_table_location:
+        return {"error": "BibTablesLocation not found"}, 500
+
+    title = request.form.get("title", "")
+
+    files = request.files.getlist("media_file")
+    urls = request.form.getlist("media_url")
+    print(urls)
+
+    created_media_ids = []
+
+    #Photo
+    if code_nomenclature == "2":
+        for file in files:
+            filename = secure_filename(file.filename)
+            target_dir = Path(current_app.config["MEDIA_FOLDER"]) / "attachments"
+            target_dir.mkdir(parents=True, exist_ok=True)
+            media_path_full = target_dir / filename
+            file.save(media_path_full)
+            media_path = str(media_path_full.relative_to(current_app.config["MEDIA_FOLDER"] + "/attachments"))
+
+            media = TMedias(
+                id_table_location=id_table_location,
+                id_nomenclature_media_type=id_media_type,
+                uuid_attached_row=seed.unique_id_seed,
+                title_fr=title,
+                media_path=media_path,
+                is_public=True,
+                meta_create_date=datetime.utcnow()
+            )
+            print('photos saved')
+            db.session.add(media)
+            created_media_ids.append(media)
+
+    # URLs
+    if code_nomenclature == "3":
+        for media_url in urls:
+            media = TMedias(
+                id_table_location=id_table_location,
+                id_nomenclature_media_type=id_media_type,
+                uuid_attached_row=seed.unique_id_seed,
+                title_fr=title,
+                media_url=media_url,
+                is_public=True,
+                meta_create_date=datetime.utcnow()
+            )
+            print('URLs saved')
+            db.session.add(media)
+            created_media_ids.append(media)
+
+    db.session.commit()
+    return {"message": "Médias ajoutés", "ids": [m.id_media for m in created_media_ids]}, 201
+
+@blueprint.route('/seeds/<int:id_seed>/media', methods=['PUT'])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+@json_resp
+def update_media_for_seed(id_seed):
+    seed = TMaterielSeed.query.get(id_seed)
+    if not seed:
+        return {"error": "Seed not found"}, 404
+
+    id_media_type = request.form.get("id_media_type", type=int)
+    if not id_media_type:
+        return {"error": "id_media_type is required"}, 400
+
+    code_nomenclature = get_code_nomenclature_by_id(id_media_type)
+    if not code_nomenclature:
+        return {"error": "Invalid id_media_type"}, 400
+
+    id_table_location = get_table_location_id('pr_conservation_flora_exsitu', 't_material_seed')
+    if not id_table_location:
+        return {"error": "BibTablesLocation not found"}, 500
+
+    title = request.form.get("title", "")
+    files = request.files.getlist("media_file")
+    urls = request.form.getlist("media_url")
+
+    existing_media = TMedias.query.filter_by(
+        uuid_attached_row=seed.unique_id_seed
+    ).all()
+
+    for media in existing_media:
+        if media.media_path:
+            try:
+                old_path = Path(current_app.config["MEDIA_FOLDER"]) / "attachments" / media.media_path
+                if old_path.exists():
+                    old_path.unlink()
+            except Exception as e:
+                current_app.logger.warning(f"Could not delete old media file: {e}")
+        db.session.delete(media)
+        
+
+    created_media_ids = []
+
+    if code_nomenclature == "2":
+        for file in files:
+            filename = secure_filename(file.filename)
+            target_dir = Path(current_app.config["MEDIA_FOLDER"]) / "attachments"
+            target_dir.mkdir(parents=True, exist_ok=True)
+            media_path_full = target_dir / filename
+            file.save(media_path_full)
+            media_path = str(media_path_full.relative_to(current_app.config["MEDIA_FOLDER"] + "/attachments"))
+
+            media = TMedias(
+                id_table_location=id_table_location,
+                id_nomenclature_media_type=id_media_type,
+                uuid_attached_row=seed.unique_id_seed,
+                title_fr=title,
+                media_path=media_path,
+                is_public=True,
+                meta_create_date=datetime.utcnow()
+            )
+            db.session.add(media)
+            created_media_ids.append(media)
+
+    elif code_nomenclature == "3":
+        for media_url in urls:
+            media = TMedias(
+                id_table_location=id_table_location,
+                id_nomenclature_media_type=id_media_type,
+                uuid_attached_row=seed.unique_id_seed,
+                title_fr=title,
+                media_url=media_url,
+                is_public=True,
+                meta_create_date=datetime.utcnow()
+            )
+            db.session.add(media)
+            created_media_ids.append(media)
+
+    else:
+        return {"error": f"Unsupported media type: {code_nomenclature}"}, 400
+
+    db.session.commit()
+    return {"message": "Médias remplacés", "ids": [m.id_media for m in created_media_ids]}, 200
+
+@blueprint.route('/seeds/medias/<int:id_media>', methods=['DELETE'])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+@json_resp
+def delete_media(id_media):
+    """Suppression d'un média"""
+    media = TMedias.query.get(id_media)
+    if not media:
+        return {"error": "Média non trouvé"}, 404
+
+    try:
+        # Supprimer le fichier physique si c'est un fichier
+        if media.media_path:
+            try:
+                file_path = Path(current_app.config["MEDIA_FOLDER"]) / "attachments" / media.media_path
+                if file_path.exists():
+                    file_path.unlink()
+            except Exception as e:
+                current_app.logger.warning(f"Erreur suppression fichier: {e}")
+        
+        db.session.delete(media)
+        db.session.commit()
+        return {"message": "Média supprimé avec succès"}, 200
+
+    except SQLAlchemyError:
+        db.session.rollback()
+        return {"error": "Erreur lors de la suppression du média"}, 500
+
+
 @blueprint.route('/materials/<int:id_material>/seeds', methods=['POST'])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
@@ -894,10 +1094,34 @@ def add_seed_to_material(id_material):
 @json_resp
 def get_seed_of_material(id_material):
     seed = TMaterielSeed.query.filter_by(id_material=id_material).first()
-    if seed:
-        return {"seed": seed.to_dic()}, 200
-    else:
-        return {}, 204 
+    if not seed:
+        return {}, 204
+
+    seed_data = seed.to_dic()
+
+    # Récupérer TOUS les médias associés à cette semence
+    medias = TMedias.query.filter_by(
+        uuid_attached_row=seed.unique_id_seed
+    ).order_by(TMedias.meta_create_date.desc()).all()
+
+    media_list = []
+    id_media_type = None
+
+    for media in medias:
+        if id_media_type is None and media.id_nomenclature_media_type:
+            id_media_type = media.id_nomenclature_media_type
+
+        media_list.append({
+            'id_media': media.id_media,
+            'media_url': media.media_url,
+            'media_path': media.media_path,
+        })
+
+    seed_data['id_media_type'] = id_media_type
+    seed_data['medias'] = media_list
+
+    return {"seed": seed_data}, 200
+
 
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @blueprint.route('/materials/seeds/<int:id_seed>/infos', methods=['GET'])
@@ -944,27 +1168,95 @@ def get_full_seed_info(id_seed):
         seed_dict["taxon_attributs"] = {}
 
     seed_dict['cd_ref'] = cd_ref
+
+    media_entries = (
+        db.session.query(TMedias)
+        .filter(
+            TMedias.uuid_attached_row == str(seed.unique_id_seed)
+        )
+        .all()
+    )
+    
+    media_files = []
+    for media in media_entries:
+        if media.media_url:
+            media_files.append({
+                "type": "url",
+                "title": media.title_fr,
+                "url": media.media_url,
+                "id_media": media.id_media
+            })
+        elif media.media_path:
+            media_files.append({
+                "type": "file",
+                "title": media.title_fr,
+                "url": f"/media/attachments/{media.media_path}",
+                "id_media": media.id_media
+            })
+
+    seed_dict["media_files"] = media_files
+
+    media_taxhub = (
+        db.session.query(TMediasTaxHub)
+        .filter(
+            TMediasTaxHub.cd_ref == cd_ref
+        )
+        .all()
+    )
+    
+    media_files_taxhub = []
+    for media in media_taxhub:
+        if media.url:
+            media_files_taxhub.append({
+                "type": "url",
+                "title": media.titre,
+                "url": media.url,
+                "id_media": media.id_media
+            })
+        elif media.chemin:
+            media_files_taxhub.append({
+                "type": "file",
+                "title": media.titre,
+                "url": f"/media/taxhub/{media.chemin}",
+                "id_media": media.id_media
+            })
+    seed_dict["media_files_taxhub"] = media_files_taxhub
     
     return jsonify(seed_dict)
 
-
-
+    
 @blueprint.route('/materials/seeds/<int:id_seed>', methods=['DELETE'])
 @permissions.check_cruved_scope("D", module_code=MODULE_CODE)
 @json_resp
 def delete_seed(id_seed):
-    """Suppression d'une description de semence"""
+    """Suppression d'une description de semence et de ses médias"""
     seed = TMaterielSeed.query.get(id_seed)
     if not seed:
         return {"error": "Semence non trouvée"}, 404
 
     try:
+        existing_media = TMedias.query.filter_by(
+            uuid_attached_row=seed.unique_id_seed
+        ).all()
+
+        for media in existing_media:
+            if media.media_path:
+                try:
+                    old_path = Path(current_app.config["MEDIA_FOLDER"]) / "attachments" / media.media_path
+                    if old_path.exists():
+                        old_path.unlink()
+                except Exception as e:
+                    current_app.logger.warning(f"Erreur suppression fichier: {e}")
+            db.session.delete(media)
+
         db.session.delete(seed)
         db.session.commit()
-        return {"message": "Semence supprimée avec succès"}, 200
-    except SQLAlchemyError as e:
+
+        return {"message": "Semence et médias associés supprimés avec succès"}, 200
+
+    except SQLAlchemyError:
         db.session.rollback()
-        return {"error": "Erreur lors de la suppression de la semence"}, 500
+        return {"error": "Erreur lors de la suppression de la semence ou des médias"}, 500
 
 
 @blueprint.route('/materials/seeds/<int:id_seed>', methods=['PUT'])

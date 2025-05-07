@@ -304,6 +304,10 @@ class TMaterielSeed(db.Model):
         db.Integer,
         primary_key=True
     )
+    unique_id_seed = db.Column(
+        UUID(as_uuid=True),
+        server_default=sa.text("uuid_generate_v4()"),
+    )
     id_material = db.Column(
         db.Integer,
         db.ForeignKey(
