@@ -73,11 +73,10 @@
 
     <div class="col-6">
       <div class="other-content">
-            <mat-card *ngIf="mediasFilesTaxhub; else noMedia">
+            <mat-card *ngIf="mediasFilesTaxhub.length > 0; else noMedia">
               <mat-card-content>
                 <carousel
                   class="cs-description-media flex-fill"
-                  *ngIf="mediasFilesTaxhub; else noMedia"
                 >
                   <slide *ngFor="let media of mediasFilesTaxhub">
                     <img
