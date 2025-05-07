@@ -288,7 +288,6 @@ export class SeddDescriptionComponent implements OnInit {
       }
     
       if (uploads.length === 0) {
-        this._commonService.translateToaster('info', 'Aucun média à enregistrer');
         return;
       }
     
