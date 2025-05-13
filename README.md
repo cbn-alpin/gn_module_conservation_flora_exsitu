@@ -27,6 +27,14 @@ UPDATE ref_geo.l_areas SET centroid = ST_Centroid(geom) WHERE centroid IS NULL;
 ## Associer d'une liste d'utilisateurs pour créer des récoltes
 Renseigner le paramètre `observers_list_code` qui par défaut prend la valeur `OFS`. Renseigner la table de correspondance `cor_role_liste` pour associer des utilisateurs à cette liste.
 
+## Ajout du MNT (DEM)
+Vous pouvez vérifier la présence du MNT dans la table : ref_geo.dem Si la table est vide, cela signifie que le MNT n'est pas installé.
+
+Pour ajouter le MNT raster à la base GeoNature utiliser la commande GeoNature suivante :
+```
+geonature db upgrade ign_bd_alti@head
+```
+
 ## Désinstallation
 **⚠️ ATTENTION :** la désinstallation du module implique la suppression de toutes les données associées. Assurez vous d'avoir fait une sauvegarde de votre base de données au préalable.
 
