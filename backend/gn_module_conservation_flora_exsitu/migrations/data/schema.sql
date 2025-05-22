@@ -208,136 +208,104 @@ CREATE TABLE "t_material_seed" (
 COMMENT ON COLUMN "t_material_seed"."length" IS 'Longueur moyenne (mm)';
 COMMENT ON COLUMN "t_material_seed"."width" IS 'Largeur moyenne (mm)';
 COMMENT ON COLUMN "t_material_seed"."id_material_quality" IS 'État du lot';
+-------------------------------------------------------------------
+CREATE TABLE "t_test" (
+    "id_test" SERIAL NOT NULL UNIQUE,
+    "id_test_parent" INTEGER,
+    "id_material" INTEGER NOT NULL,
+    "id_actor" INTEGER NOT NULL,
+    "id_storage" INTEGER NOT NULL,
+    "id_test_type" INTEGER NOT NULL,
+    "code" VARCHAR(50),
+    "seed_initial_count" INTEGER,
+    "replicate_count" INTEGER DEFAULT 1,
+    "id_support" INTEGER,
+    "id_substrate" INTEGER,
+    "remarks" TEXT,
+    "additional_data" JSONB,
+    "meta_create_by" INTEGER NOT NULL,
+    "meta_create_date" TIMESTAMP NOT NULL,
+    "meta_update_by" INTEGER,
+    "meta_update_date" TIMESTAMP,
+    PRIMARY KEY ("id_test")
+);
 
-
--- Table des semis
 CREATE TABLE "t_sowing" (
-	"id_sowing" SERIAL NOT NULL UNIQUE,
-	"id_storage" INTEGER NOT NULL,
-	"contract" VARCHAR(255),
-	"sowing_number" VARCHAR(255),
-	"seed_number" VARCHAR(255),
-	"seed_preparation" TEXT,
-	"packaging" INTEGER NOT NULL,
-	"substrate" INTEGER NOT NULL,
-	"id_watering_method" INTEGER NOT NULL,
-	"id_sowing_method" INTEGER,
-	"sowing_depth_mm" VARCHAR(255),
-	"date_start" DATE,
-	"date_end" DATE,
-	"sowing_treatment" TEXT,
-	"remarks" TEXT
+    "id_sowing" SERIAL NOT NULL UNIQUE,
+    "id_material" INTEGER NOT NULL,
+    "id_storage" INTEGER NOT NULL,
+    "code" VARCHAR(50),
+    "id_actor" INTEGER NOT NULL,
+    "start_date" TIMESTAMP NOT NULL,
+    "end_date" TIMESTAMP,
+    "substrate" JSONB,
+    "container" JSONB,
+    "id_location" INTEGER,
+    "specification_location" VARCHAR(100),
+    "id_watering_method" INTEGER,
+    "id_sowing_method" INTEGER,
+    "depth" INTEGER,
+    "initial_count" INTEGER,
+    "replicate_count" INTEGER DEFAULT 1,
+    "remarks" TEXT,
+    "additional_data" JSONB,
+    "meta_create_by" INTEGER NOT NULL,
+    "meta_create_date" TIMESTAMP NOT NULL,
+    "meta_update_by" INTEGER,
+    "meta_update_date" TIMESTAMP,
+    PRIMARY KEY ("id_sowing")
 );
 
--- Réplicats de semis
-CREATE TABLE "t_sowing_replicates" (
-	"id_sowing_replicates" SERIAL PRIMARY KEY,
-	"id_sowing" INTEGER NOT NULL,
-	"num_seedlings_emerged" INTEGER,
-	"num_seedlings_dead" INTEGER,
-	"num_seedlings_transplanted" INTEGER,
-	"num_seeds_sown" INTEGER,
-	"num_replicates" INTEGER,
-	"germination_rate" REAL,
-	"germination_delay" INTEGER,
-	"germination_period" INTEGER
+CREATE TABLE "t_action" (
+    "id_action" SERIAL NOT NULL UNIQUE,
+    "id_test" INTEGER,
+    "id_sowing" INTEGER,
+    "date_start" TIMESTAMP NOT NULL,
+    "date_end" TIMESTAMP,
+    "id_actor" INTEGER NOT NULL,
+    "id_action_type" INTEGER NOT NULL,
+    "id_scarification_type" INTEGER,
+    "temperature_light" INTEGER,
+    "temperature_shadow" INTEGER,
+    "hour_count_light" INTEGER,
+    "hour_count_shadow" INTEGER,
+    "id_water_type" INTEGER,
+    "duration_water" INTEGER,
+    "id_chemical_liquid" INTEGER,
+    "duration_chemical_liquid" INTEGER,
+    "concentration_chemical_liquid" INTEGER,
+    "remarks" TEXT,
+    "additional_data" JSONB,
+    "meta_create_by" INTEGER NOT NULL,
+    "meta_create_date" TIMESTAMP NOT NULL,
+    "meta_update_by" INTEGER,
+    "meta_update_date" TIMESTAMP,
+    PRIMARY KEY ("id_action")
+);
+COMMENT ON COLUMN "t_action"."id_test" IS 'Au moins un des champs id_test ou id_sowing doit être non NULL.';
+COMMENT ON COLUMN "t_action"."id_sowing" IS 'Au moins un des champs id_test ou id_sowing doit être non NULL.';
+COMMENT ON COLUMN "t_action"."concentration_chemical_liquid" IS 'Valeur entre 0 et 100 (%).';
+COMMENT ON COLUMN "t_action"."temperature_light" IS 'Valeur entre -10 et 50 (°C).';
+COMMENT ON COLUMN "t_action"."temperature_shadow" IS 'Valeur entre -10 et 50 (°C).';
+COMMENT ON COLUMN "t_action"."hour_count_light" IS 'Maximum 24 (heures).';
+COMMENT ON COLUMN "t_action"."hour_count_shadow" IS 'Maximum 24 (heures).';
+
+
+CREATE TABLE "t_action_replicate" (
+    "id_action_replicate" SERIAL NOT NULL UNIQUE,
+    "id_action" INTEGER NOT NULL,
+    "code" VARCHAR(10),
+    "count_viable" INTEGER,
+    "count_germinated" INTEGER,
+    "count_transplanted" INTEGER,
+    "count_dead" INTEGER,
+    "total_count_viable" INTEGER,
+    "total_count_germinated" INTEGER,
+    "total_count_transplanted" INTEGER,
+    "total_count_dead" INTEGER,
+    PRIMARY KEY ("id_action_replicate")
 );
 
--- Détails des réplicats de semis
-CREATE TABLE "t_sowing_replicate_details" (
-	"id_sowing_replicate_details" SERIAL PRIMARY KEY,
-	"id_sowing_replicate" INTEGER NOT NULL,
-	"date" DATE,
-	"num_seedlings_emerged" INTEGER,
-	"num_seedlings_dead" INTEGER,
-	"num_seedlings_transplanted" INTEGER
-);
-
--- Test de germination
-CREATE TABLE "t_germination_test" (
-	"id_germination_test" SERIAL PRIMARY KEY,
-	"contract" VARCHAR(255),
-	"initial_test" BOOLEAN,
-	"id_storage" INTEGER NOT NULL,
-	"test_number" VARCHAR(255),
-	"seed_number" VARCHAR(255),
-	"sterilization" TEXT,
-	"id_support" INTEGER,
-	"id_substrate" INTEGER,
-	"id_liquid" INTEGER,
-	"remarks" TEXT,
-	"scarification" TEXT,
-	"num_replicates" VARCHAR(255)
-);
-
--- Réplicats de germination
-CREATE TABLE "t_germination_replicates" (
-	"id_germination_replicates" SERIAL PRIMARY KEY,
-	"id_germination_test" INTEGER NOT NULL,
-	"date" DATE,
-	"num_seedlings_emerged" INTEGER,
-	"num_seedlings_dead" INTEGER,
-	"num_seedlings_transplanted" INTEGER,
-	"germination_rate" REAL,
-	"germination_delay" INTEGER,
-	"germination_period" INTEGER,
-	"T50" INTEGER
-);
-
--- Détail réplicats de germination
-CREATE TABLE "t_germination_replicate_details" (
-	"id_germination_replicate_details" SERIAL PRIMARY KEY,
-	"id_germination_replicate" INTEGER NOT NULL,
-	"date" DATE,
-	"num_seeds_germinated" INTEGER,
-	"num_seeds_dead" INTEGER,
-	"num_seeds_ungerminated" INTEGER
-);
-
--- Prétraitements germination
-CREATE TABLE "t_germination_test_pre_treatments" (
-	"id_germination_test_pre_treatments" SERIAL PRIMARY KEY,
-	"id_germination_test" INTEGER NOT NULL,
-	"pre_treatment" BOOLEAN,
-	"date_start" DATE,
-	"date_end" DATE,
-	"id_photo_thermo" INTEGER NOT NULL,
-	"chemical_products" TEXT,
-	"duration_days" INTEGER
-);
-
--- Tests de viabilité
-CREATE TABLE "t_viability_test" (
-	"id_viability_test" SERIAL PRIMARY KEY,
-	"id_storage" INTEGER NOT NULL,
-	"contract" VARCHAR(255),
-	"seed_number" VARCHAR(255),
-	"viability_rate" REAL,
-	"sterilization" TEXT,
-	"scarification" TEXT,
-	"remarks" TEXT
-);
-
--- Réplicats de viabilité
-CREATE TABLE "t_viability_test_replicates" (
-	"id_viability_replicates" SERIAL PRIMARY KEY,
-	"id_viability_test" INTEGER NOT NULL,
-	"num_seeds" INTEGER,
-	"num_seeds_viable" INTEGER,
-	"num_seeds_non_viable" INTEGER,
-	"viability_rate" REAL
-);
-
--- Traitements tests viabilité
-CREATE TABLE "t_viability_test_treatments" (
-	"id_viability_test_treatments" SERIAL PRIMARY KEY,
-	"id_viability_test" INTEGER NOT NULL,
-	"datetime_start" DATE,
-	"datetime_end" DATE,
-	"id_thermo" INTEGER NOT NULL,
-	"concentration_ttc" TEXT,
-	"duration_hours" INTEGER
-);
 
 -------------------------------------------------------------------
 
@@ -458,48 +426,90 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_storage"
 ADD FOREIGN KEY("id_dry_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_sowing" 
-ADD FOREIGN KEY("id_storage") REFERENCES t_storage(id_storage)
+
+---------------------------------------------------------------------------
+
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_test_parent") REFERENCES "t_test"("id_test")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_sowing" 
-ADD FOREIGN KEY("id_sowing_method") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_sowing" 
-ADD FOREIGN KEY("id_watering_method") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_actor") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_sowing_replicates" 
-ADD FOREIGN KEY("id_sowing") REFERENCES t_sowing(id_sowing) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_storage") REFERENCES "t_storage"("id_storage")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_sowing_replicate_details" 
-ADD FOREIGN KEY("id_sowing_replicate") REFERENCES t_sowing_replicates(id_sowing_replicates) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_test_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_test" 
-ADD FOREIGN KEY("id_storage") REFERENCES t_storage(id_storage) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_support") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_test" 
-ADD FOREIGN KEY("id_support") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("id_substrate") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_test" 
-ADD FOREIGN KEY("id_substrate") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_test" 
-ADD FOREIGN KEY("id_liquid") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature) 
+ALTER TABLE "t_test"
+ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_replicates" 
-ADD FOREIGN KEY("id_germination_test") REFERENCES t_germination_test(id_germination_test) 
+
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_replicate_details" 
-ADD FOREIGN KEY("id_germination_replicate") REFERENCES t_germination_replicates(id_germination_replicates) 
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_storage") REFERENCES "t_storage"("id_storage")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_germination_test_pre_treatments" 
-ADD FOREIGN KEY("id_germination_test") REFERENCES t_germination_test(id_germination_test) 
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_actor") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_viability_test" 
-ADD FOREIGN KEY("id_storage") REFERENCES t_storage(id_storage) 
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_location") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_viability_test_replicates" 
-ADD FOREIGN KEY("id_viability_test") REFERENCES t_viability_test(id_viability_test) 
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_watering_method") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE "t_viability_test_treatments" 
-ADD FOREIGN KEY("id_viability_test") REFERENCES t_viability_test(id_viability_test) 
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_sowing_method") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_test") REFERENCES "t_test"("id_test")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_sowing") REFERENCES "t_sowing"("id_sowing")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_actor") REFERENCES utilisateurs.t_roles(id_role)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_action_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_scarification_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_water_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_chemical_liquid") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("meta_create_by") REFERENCES utilisateurs.t_roles(id_role)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE "t_action_replicate"
+ADD FOREIGN KEY("id_action") REFERENCES "t_action"("id_action")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
