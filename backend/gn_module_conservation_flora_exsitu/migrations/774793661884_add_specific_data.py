@@ -156,15 +156,16 @@ def downgrade():
     delete_taxhub_attribute("cfe_embryo_type1")
     delete_taxhub_attribute("cfe_embryo_type2")
     delete_taxhub_attribute("cfe_comm_dim_forme")
-
+   
     delete_taxhub_attribute_theme("Semence")
+    delete_medias_for_table_location("pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed")
     delete_table_location("pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed")
     
     delete_nomenclatures("CFE_WATERING_METHOD")
-    delete_nomenclatures("CFE_SUBSTRATE")
+    delete_nomenclatures("CFE_TEST_SUBSTRATE")
     delete_nomenclatures("CFE_SOWING_METHOD")
     delete_nomenclatures("CFE_LIQUID")
-    delete_nomenclatures("CFE_SUPPORT")
+    delete_nomenclatures("CFE_TG_SUPPORT")
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
@@ -245,6 +246,26 @@ def delete_table_location(schema_name, table_name, uuid_field_name):
           AND table_name = :table_name
           AND uuid_field_name = :uuid_field_name
     """)
+    op.get_bind().execute(operation, {
+        "schema_name": schema_name,
+        "table_name": table_name,
+        "uuid_field_name": uuid_field_name
+    })
+
+def delete_medias_for_table_location(schema_name, table_name, uuid_field_name):
+    operation = sa.text(
+        """
+            -- Delete medias linked to a specific table location
+            DELETE FROM gn_commons.t_medias
+            WHERE id_table_location = (
+                SELECT id_table_location
+                FROM gn_commons.bib_tables_location
+                WHERE schema_name = :schema_name
+                  AND table_name = :table_name
+                  AND uuid_field_name = :uuid_field_name
+            );
+        """
+    )
     op.get_bind().execute(operation, {
         "schema_name": schema_name,
         "table_name": table_name,
