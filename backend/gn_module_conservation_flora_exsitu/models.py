@@ -585,6 +585,10 @@ class TSowing(db.Model):
         db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="SET NULL"),
         nullable=False
     )
+    id_test = db.Column(
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="SET NULL")
+    )
     id_storage = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="SET NULL"),
