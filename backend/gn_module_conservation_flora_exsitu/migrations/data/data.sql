@@ -353,11 +353,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'conservation_flora_exsitu'
 ) ;
 
--- Create the "CFE_SUBSTRATE" nomenclature type
+-- Create the "CFE_TEST_SUBSTRATE" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
-    'CFE_SUBSTRATE',
+    'CFE_TEST_SUBSTRATE',
     'Type de substrat',
     'Nomenclature des types de substrat.',
     'Type de substrat',
@@ -365,11 +365,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'conservation_flora_exsitu'
 ) ;
 
--- Create the "CFE_LIQUID" nomenclature type
+-- Create the "CFE_WATER_TYPE" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
-    'CFE_LIQUID',
+    'CFE_WATER_TYPE',
     'Type de liquide',
     'Nomenclature des types de liquide.',
     'Type de liquide',
@@ -377,11 +377,11 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'conservation_flora_exsitu'
 ) ;
 
--- Create the "CFE_SUPPORT" nomenclature type
+-- Create the "CFE_TG_SUPPORT" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
-    'CFE_SUPPORT',
+    'CFE_TG_SUPPORT',
     'Type de support',
     'Nomenclature des types de support.',
     'Type de support',
