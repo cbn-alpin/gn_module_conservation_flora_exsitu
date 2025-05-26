@@ -1,5 +1,4 @@
 <div>
-  <!-- Left Panel: Form -->
   <mat-card>
     <mat-card-header>
       <mat-card-title>Fiche de Semis</mat-card-title>
@@ -10,35 +9,45 @@
         <h2 class="section-title">Informations générales</h2>
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Id Stock</mat-label>
-            <input matInput formControlName="reference" required>
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code" required>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>provenance</mat-label>
-            <input matInput formControlName="provenance" required>
+            <mat-label> Date de début  </mat-label>
+            <input matInput formControlName="datededébut" required>
           </mat-form-field>
         </div>
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Numéro de semis</mat-label>
-            <input matInput formControlName="numeroSemis" required>
+            <mat-label>Date de fin </mat-label>
+            <input matInput formControlName="datedefin" required>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Numéro de semence</mat-label>
-            <input matInput formControlName="numeroSemence" required>
+            <mat-label>Méthode</mat-label>
+            <mat-select formControlName="modeSemis">
+              <mat-option value="direct">En ligne</mat-option>
+              <mat-option value="indirect">En poquets</mat-option>
+              <mat-option value="indirect">A la volée</mat-option>
+              <mat-option value="indirect">Individuel</mat-option>
+            </mat-select>
           </mat-form-field>
         </div>
-      
-     
-
-        <!-- Seed Preparation -->
-        <h2 class="section-title">Préparation des semences</h2>
         <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Préparation</mat-label>
-            <textarea matInput formControlName="preparation" rows="3"></textarea>
+         
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Mode d'arrosage</mat-label>
+            <mat-select formControlName="modeSemis">
+              <mat-option value="direct">Aspersion</mat-option>
+              <mat-option value="indirect">Capillarité</mat-option>
+              <mat-option value="indirect">Autre</mat-option>
+            </mat-select>
           </mat-form-field>
-        </div>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Profondeur(mm)</mat-label>
+            <input matInput type="number" formControlName="profondeur">
+          </mat-form-field>
+        </div>  
+          
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Contenant</mat-label>
@@ -49,129 +58,86 @@
             <input matInput formControlName="substrat">
           </mat-form-field>
         </div>
+
+        <!-- Localisation -->
         <div class="form-row">
           <div class="form-group half-width">
-            <small>Mode d'arrosage *</small>
+            <small>Lieu *</small>
             <pnx-nomenclature
               keyValue="id_nomenclature"
+              codeNomenclatureType="CFE_SOWING_LOCATION"
               [bindAllItem]="false"
-              codeNomenclatureType="CFE_ARROSAGE_MODE"
-              [parentFormControl]="semisForm.controls.arrosage"
-            ></pnx-nomenclature>
+              [parentFormControl]="semisForm.controls.idLocation">
+            </pnx-nomenclature>
           </div>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Mode de semis</mat-label>
-            <mat-select formControlName="modeSemis">
-              <mat-option value="direct">En ligne</mat-option>
-              <mat-option value="indirect">En poquets</mat-option>
-              <mat-option value="indirect">A la volée</mat-option>
-              <mat-option value="indirect">Individuel</mat-option>
+            <mat-label>Précision sur la localisation</mat-label>
+            <input matInput formControlName="specificationLocation">
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Matériel</mat-label>
+            <mat-select formControlName="idMaterial">
+              <!-- options dynamiques -->
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Stock</mat-label>
+            <mat-select formControlName="idStorage">
+              <!-- options dynamiques -->
             </mat-select>
           </mat-form-field>
         </div>
+        
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Profondeur du semis (mm)</mat-label>
+            <mat-label>Personne ayant effectué le semis</mat-label>
+            <mat-select formControlName="idActor">
+              <!-- options dynamiques -->
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre de graines semées</mat-label>
+            <input matInput type="number" formControlName="initialCount">
+          </mat-form-field>
+        </div>
+    
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre de replicats</mat-label>
             <input matInput type="number" formControlName="profondeur">
           </mat-form-field>
-        </div>
-        <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Date de début</mat-label>
-            <input matInput [matDatepicker]="picker1" formControlName="dateDebut">
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Date de fin</mat-label>
-            <input matInput [matDatepicker]="picker2" formControlName="dateFin">
-            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-            <mat-datepicker #picker2></mat-datepicker>
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Traitement du semis</mat-label>
-            <input matInput formControlName="traitement">
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Remarques</mat-label>
-            <textarea matInput formControlName="remarques" rows="2"></textarea>
+            <textarea matInput formControlName="remarks" rows="2"></textarea>
           </mat-form-field>
         </div>
-
-        <!-- Replicates -->
-        <div class="section-header">
-          <h2 class="section-title">Réplicats de semis</h2>
-          <button  mat-button class="gray-button" (click)="addReplicat()">
-            <mat-icon>add</mat-icon> Ajouter un réplicat
-          </button>
-          
-        </div>
-
-        <!-- Replicat Fields -->
-        <div formArrayName="replicats">
-          <div *ngFor="let replicat of replicatsControls; let i = index" [formGroupName]="i" class="form-row replicat-row">
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>id semis replicat</mat-label>
-                <input matInput type="text" formControlName="plantulesLevees">
-              </mat-form-field>
-      
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Plantules levées</mat-label>
-                <input matInput type="number" formControlName="plantulesLevees">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Plantules mortes</mat-label>
-                <input matInput type="number" formControlName="plantulesMortes">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Plantules repiquées</mat-label>
-                <input matInput type="number" formControlName="plantulesRepiques">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Graines semées</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Nombre de replicats</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Pourcentage de levee</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Delai de levee</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Periode de levee</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-            </div>
-            
-          </div>
+        <div>
+          <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Programme</mat-label>
+          <input matInput formControlName="program">
+          </mat-form-field>
         </div>
 
         <!-- Submit -->
-        <div class="form-actions ">
-          <button mat-button class="gray-button with-border" type="submit">
+        <div class="form-actions dual-buttons">
+          <button mat-button class="cancel-button with-border" type="button" (click)="onCancel()">
+            <mat-icon>close</mat-icon>
+            Annuler
+          </button>
+        
+          <button mat-button class="save-button with-border" type="submit" (click)="onSubmit()">
             <mat-icon>save</mat-icon>
-            Enregistrer</button>
+            Enregistrer
+          </button>
         </div>
+        
       </form>
     </mat-card-content>
   </mat-card>
 
+  
   <!-- Right Panel: List -->
   <!-- <app-semis-table
   class="right-panel"

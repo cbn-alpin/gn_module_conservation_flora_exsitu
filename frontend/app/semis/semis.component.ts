@@ -31,20 +31,23 @@ export class SemisComponent implements OnInit {
 
   constructor(private fb: FormBuilder,public dialogRef: MatDialogRef<SemisComponent>) {
     this.semisForm = this.fb.group({
-      reference: ['', Validators.required],
-      provenance: ['', Validators.required],
-      numeroSemis: ['', Validators.required],
-      numeroSemence: ['', Validators.required],
-      preparation: [''],
+      code: ['', Validators.required],
+      datededebut: ['', Validators.required],
+      datedefin: ['', Validators.required],
+      modeSemis: [''],
+      arrosage: [''],
+      profondeur: [''],
       contenant: [''],
       substrat: [''],
-      arrosage: [''],
-      modeSemis: [''],
-      profondeur: [''],
-      dateDebut: ['', Validators.required],
-      dateFin: [''],
-      traitement: [''],
-      remarques: [''],
+      idLocation: [null, Validators.required],
+      specificationLocation: [''],
+      idMaterial: [null, Validators.required],
+      idStorage: [null],
+      idActor: [null],
+      initialCount: [0],
+      replicateCount: [0],
+      remarks: [''],
+      program: [''],
       replicats: this.fb.array([this.createReplicat()])
     });
   }
@@ -73,7 +76,6 @@ export class SemisComponent implements OnInit {
   
 
   ngOnInit(): void {
-    // Initialize with sample data if needed
     this.dataSource.data = [];
   }
 
@@ -93,23 +95,10 @@ export class SemisComponent implements OnInit {
       this.dialogRef.close(formData); // ferme le modal et renvoie les données
     }
   }
-  // onSubmit() {
-  //   if (this.semisForm.valid) {
-  //     // Create new Semis entry from form values
-  //     const newEntry: Semis = {
-  //       numSemis: this.semisForm.value.numeroSemis,
-  //       numSemence: this.semisForm.value.numeroSemence,
-  //       dateDebut: this.semisForm.value.dateDebut,
-  //       dateFin: this.semisForm.value.dateFin,
-  //       replicate: 0, // Add actual value mapping
-  //       levage: 0    // Add actual value mapping
-  //     };
 
-  //     // Add to table
-  //     this.dataSource.data = [...this.dataSource.data, newEntry];
-      
-  //     // Reset form
-  //     this.semisForm.reset();
-  //   }
-  // }
+  onCancel(){
+    this.dialogRef.close();
+
+  }
+
 }
