@@ -95,4 +95,10 @@ export class ViabilityComponent implements OnInit {
       this.dialogRef.close(formData); // ferme le modal et renvoie les données
     }
   }
+
+
+  onCancel(){
+    this.dialogRef.close();
+
+  }
 }

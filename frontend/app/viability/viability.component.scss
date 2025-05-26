@@ -119,3 +119,28 @@ mat-form-field {
   background-color: #1976d2; // Bleu Material par défaut
   color: white;
 }
+
+.dual-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+}
+.cancel-button {
+  background-color: #f44336; /* Rouge */
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+.save-button {
+  background-color: #4caf50; /* Vert */
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #388e3c;
+}
+
