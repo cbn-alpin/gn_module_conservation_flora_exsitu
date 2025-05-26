@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SemisTableComponent } from './germination-table.component';
+import { GerminationTableComponent } from './germination-table.component';
 
-describe('SemisTableComponent', () => {
-  let component: SemisTableComponent;
-  let fixture: ComponentFixture<SemisTableComponent>;
+describe('GerminationTableComponent', () => {
+  let component: GerminationTableComponent;
+  let fixture: ComponentFixture<GerminationTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SemisTableComponent ]
+      declarations: [ GerminationTableComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SemisTableComponent);
+    fixture = TestBed.createComponent(GerminationTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -3,7 +3,8 @@
   import { MatTableDataSource } from '@angular/material/table';
   import { Router } from '@angular/router';
   import { MatDialog } from '@angular/material/dialog';
-import { GerminationComponent } from '../germination/germination.component';
+  import { GerminationComponent } from '../germination/germination.component';
+  import { ExsituFormService } from '../form/shared/exsitu-form.service';
 
   export interface Germination {
     numSemis: string;
@@ -20,6 +21,7 @@ import { GerminationComponent } from '../germination/germination.component';
     styleUrls: ['./germination-table.component.scss']
   })
   export class GerminationTableComponent  implements OnInit  {
+    idMaterial: number | null = null;
 
 
     ngOnInit(): void {
@@ -38,7 +40,9 @@ import { GerminationComponent } from '../germination/germination.component';
   
   constructor(
           public router: Router,
-          private dialog: MatDialog
+          private dialog: MatDialog,
+                  public exsituFormService: ExsituFormService,
+          
       ){
   
       }
@@ -71,12 +75,18 @@ import { GerminationComponent } from '../germination/germination.component';
       // this.delete.emit(element);
       console.log("delete")
   
+    }onRowClick(): void {
+     // const id = row.id; // ou row.numSemis si tu veux baser sur numSemis
+      console.log('Ligne cliquée, ID:');
+      // Par exemple : router.navigate
+      this.router.navigate([`/conservation_flora_exsitu/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/germination-details`]);
     }
     // addFicheSemis(){
     //   // this.router.navigate([`/conservation_flora_exsitu/form/germination`]);
     //   this.router.navigate([`/conservation_flora_exsitu/germination`]);
     // }
 
+    
     addFicheGermination() {
           const dialogRef = this.dialog.open(GerminationComponent, {
             width: '900px',
