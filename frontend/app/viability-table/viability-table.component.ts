@@ -4,6 +4,7 @@
   import { Router } from '@angular/router';
 import { ViabilityComponent } from '../viability/viability.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ExsituFormService } from '../form/shared/exsitu-form.service';
 
  
   interface Viability {
@@ -20,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrls: ['./viability-table.component.scss']
   })
   export class ViabilityTableComponent  implements OnInit  {
+    idMaterial: number | null = null;
 
 
     ngOnInit(): void {
@@ -39,7 +41,8 @@ import { MatDialog } from '@angular/material/dialog';
   
   constructor(
           public router: Router,
-          private dialog: MatDialog
+          private dialog: MatDialog,
+                            public exsituFormService: ExsituFormService,
       ){
   
       }
@@ -73,10 +76,12 @@ import { MatDialog } from '@angular/material/dialog';
       console.log("delete")
   
     }
-    // addFicheSemis(){
-    //   this.router.navigate([`/conservation_flora_exsitu/form/harvest/:id_harvest/material/:idMaterial/semis`]);
-    // }
-
+    onRowClick(): void {
+      // const id = row.id; // ou row.numSemis si tu veux baser sur numSemis
+       console.log('Ligne cliquée, ID:');
+       // Par exemple : router.navigate
+       this.router.navigate([`/conservation_flora_exsitu/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/viability-details`]);
+     }
     addFicheViability() {
       const dialogRef = this.dialog.open(ViabilityComponent, {
         width: '900px',
