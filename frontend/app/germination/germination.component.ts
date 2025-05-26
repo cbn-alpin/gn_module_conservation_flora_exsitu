@@ -84,6 +84,10 @@ export class GerminationComponent implements OnInit {
   onDelete(){
 
   }
+  onCancel(){
+    this.dialogRef.close();
+
+  }
   onView(){
     
   }
