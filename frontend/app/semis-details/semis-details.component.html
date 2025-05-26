@@ -1,0 +1,78 @@
+<div>
+  <div class="return-button">
+    <button mat-raised-button color="primary" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Retour
+    </button>
+  </div> 
+    <mat-card-header>
+      <mat-card-title>Les Informations de Semis </mat-card-title>
+    </mat-card-header>
+    <div>
+      <mat-card-content>
+        <form [formGroup]="sowingForm" class="semis-form">      
+          <div class="form-row">
+            <div class="half-width"><strong>Code :</strong> {{ sowingForm.get('reference')?.value }}</div>
+            <div class="half-width"><strong>Programme :</strong> {{ sowingForm.get('provenance')?.value }}</div>
+          </div>
+        
+          <div class="form-row">
+            <div class="half-width"><strong>Date de début :</strong> {{ sowingForm.get('startDate')?.value }}</div>
+            <div class="half-width"><strong>Date de fin :</strong> {{ sowingForm.get('endDate')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="half-width"><strong>Méthode de semis :</strong> {{ sowingForm.get('sowingMethod')?.value }}</div>
+            <div class="half-width"><strong>Mode d’arrosage :</strong> {{ sowingForm.get('wateringMethod')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="half-width"><strong>Lieu :</strong> {{ sowingForm.get('idLocation')?.value }}</div>
+            <div class="half-width"><strong>Précision :</strong> {{ sowingForm.get('specificationLocation')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="half-width"><strong>Matériel végétal :</strong> {{ sowingForm.get('idMaterial')?.value }}</div>
+            <div class="half-width"><strong>Stock de semences :</strong> {{ sowingForm.get('idStorage')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="half-width"><strong>Effectué par :</strong> {{ sowingForm.get('idActor')?.value }}</div>
+            <div class="half-width"><strong>Nombre de graines semées:</strong> {{ sowingForm.get('initialCount')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="half-width"><strong>Nombre de réplicats :</strong> {{ sowingForm.get('replicateCount')?.value }}</div>
+            <div class="half-width"><strong>Profondeur (cm) :</strong> {{ sowingForm.get('depth')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="half-width"><strong>Contenant :</strong> {{ sowingForm.get('container')?.value }}</div>
+            <div class="half-width"><strong>Substrat :</strong> {{ sowingForm.get('substrate')?.value }}</div>
+          </div>
+    
+          <div class="form-row">
+            <div class="full-width"><strong>Remarques :</strong> {{ sowingForm.get('remarks')?.value }}</div>
+          </div>
+    
+        </form>
+        
+  
+      </mat-card-content>
+    </div>
+    <div class="action-detail split-view">
+      <div class="germination-list">
+        <app-action-table
+          [dataSource]="dataSource"
+          (rowClicked)="onActionSelected($event)">
+        </app-action-table>
+      </div>
+    
+      <div class="germination-detail" *ngIf="selectedAction">
+        <app-action-details [action]="selectedAction"></app-action-details>
+      </div>
+    </div>
+    
+    
+</div>
+
