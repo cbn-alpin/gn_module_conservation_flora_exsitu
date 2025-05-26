@@ -200,6 +200,53 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
       }
+      if (urlSegments.includes('germination-details')) {
+        this.exsituFormService.currentTab = 'germination-details';
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+        const semisIndex = urlSegments.indexOf('germination-details') + 1;
+
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(urlSegments[harvestIndex]);
+        }
+      
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(urlSegments[materialIndex]);
+          this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
+        }
+      }
+
+      if (urlSegments.includes('semis-details')) {
+        this.exsituFormService.currentTab = 'semis-details';
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+        const semisIndex = urlSegments.indexOf('semis-details') + 1;
+
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(urlSegments[harvestIndex]);
+        }
+      
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(urlSegments[materialIndex]);
+          this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
+        }
+      }
+
+      if (urlSegments.includes('viability-details')) {
+        this.exsituFormService.currentTab = 'viability-details';
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+        const semisIndex = urlSegments.indexOf('viability-details') + 1;
+
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(urlSegments[harvestIndex]);
+        }
+      
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(urlSegments[materialIndex]);
+          this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
+        }
+      }
       
 
 

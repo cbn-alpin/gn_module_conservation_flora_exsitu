@@ -46,7 +46,7 @@
             <a 
                 class="tablinks" 
                 (click)=" goToTab('germination-table')">
-                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                <mat-icon class="example-tab-icon">spa</mat-icon>
                 Test de germination
             </a>            
 
@@ -54,7 +54,7 @@
             <a class="tablinks"
                 (click)="goToTab('semis')"
                 >
-                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                <mat-icon class="example-tab-icon">spa</mat-icon>
 
                 Semis
             </a>
@@ -63,7 +63,7 @@
             <a class="tablinks"
             (click)="goToTab('viability')"
             >
-            <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+            <mat-icon class="example-tab-icon">spa</mat-icon>
 
             Test de Viabilité
             </a>
@@ -156,5 +156,17 @@
             <app-viability></app-viability>
     </div> 
 
-     
+    <div *ngIf="exsituFormService.currentTab === 'germination-details'"
+    >
+            <app-germination-details></app-germination-details>
+    </div> 
+
+    <div *ngIf="exsituFormService.currentTab === 'semis-details'"
+    >
+            <app-semis-details></app-semis-details>
+    </div> 
+    <div *ngIf="exsituFormService.currentTab === 'viability-details'"
+    >
+            <app-viability-details></app-viability-details>
+    </div> 
 </div>
