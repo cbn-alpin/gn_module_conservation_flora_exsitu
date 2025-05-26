@@ -521,26 +521,26 @@ class TTest(db.Model):
     id_test = db.Column(db.Integer, primary_key=True, unique=True)
     id_test_parent = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="SET NULL")
+        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="NULL")
     )
     id_material = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="SET NULL"),
+        db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="NULL"),
         nullable=False
     )
     id_actor = db.Column(
         db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL"),
         nullable=False
     )
     id_storage = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="SET NULL"),
+        db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="NULL"),
         nullable=False
     )
     id_test_type = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
         nullable=False
     )
     code = db.Column(db.String(50))
@@ -548,18 +548,18 @@ class TTest(db.Model):
     replicate_count = db.Column(db.Integer, default=1)
     id_support = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL")
     )
     id_substrate = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL")
     )
     remarks = db.Column(db.Text)
     additional_data = db.Column(JSONB)
 
     meta_create_by = db.Column(
         db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
     )
     meta_create_date = db.Column(
         db.DateTime,
@@ -569,7 +569,7 @@ class TTest(db.Model):
     )
     meta_update_by = db.Column(
         db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
     )
     meta_update_date = db.Column(db.DateTime, onupdate=sa.func.now())
 
