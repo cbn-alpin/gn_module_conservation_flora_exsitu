@@ -3,7 +3,6 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
-
 interface Action {
   numSemis: string;
   numSemence: string;
