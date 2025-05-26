@@ -59,6 +59,12 @@ import { ViabilityTableComponent } from './viability-table/viability-table.compo
 
 
 import { MatMenuModule } from '@angular/material/menu';
+import { GerminationDetailsComponent } from './germination-details/germination-details.component';
+import { ActionTableComponent } from './action-table/action-table.component';
+import { ActionComponent } from './action/action.component';
+import { ActionDetailsComponent } from './action-details/action-details.component';
+import { SemisDetailsComponent } from './semis-details/semis-details.component';
+import { ViabilityDetailsComponent } from './viability-details/viability-details.component';
 
 
 export const routingConfiguration: ExtraOptions = {
@@ -91,7 +97,17 @@ export const routingConfiguration: ExtraOptions = {
     SeddDescriptionComponent,
     ConfirmDialogComponent,
     MaterialModalComponent,
-    SeedDetailsComponent
+    SeedDetailsComponent,
+    
+
+
+    GerminationDetailsComponent,
+    ActionTableComponent,
+    ActionComponent,
+    ActionDetailsComponent,
+    SemisDetailsComponent,
+    ViabilityDetailsComponent,
+
   ],
   providers: [
     HarvestStoreService, 

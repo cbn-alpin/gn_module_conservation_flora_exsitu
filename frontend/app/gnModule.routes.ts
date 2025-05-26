@@ -12,6 +12,9 @@ import { ViabilityComponent } from './viability/viability.component';
 import { ViabilityTableComponent } from './viability-table/viability-table.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
 import { SeedDetailsComponent } from './seed-details/seed-details.component';
+import { GerminationDetailsComponent } from './germination-details/germination-details.component';
+import { SemisDetailsComponent } from './semis-details/semis-details.component';
+import { ViabilityDetailsComponent } from './viability-details/viability-details.component';
 
 export const routes: Routes = [
     {
@@ -69,6 +72,18 @@ export const routes: Routes = [
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/viability-table',
                 component: ViabilityTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/germination-details',
+                component: GerminationDetailsComponent,
+            }, 
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/semis-details',
+                component: SemisDetailsComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/viability-details',
+                component: ViabilityDetailsComponent,
             },
         ]
     }
