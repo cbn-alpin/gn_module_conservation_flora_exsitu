@@ -145,6 +145,7 @@ def downgrade():
     delete_nomenclatures("CFE_HUMIDITY_DEVICE")
     delete_nomenclatures("CFE_STORAGE_ACTION")
     delete_nomenclatures("CFE_MEDIA_TYPE")
+    
 
     delete_taxhub_attribute("cfe_form1")
     delete_taxhub_attribute("cfe_form2")
@@ -165,7 +166,9 @@ def downgrade():
     delete_nomenclatures("CFE_TEST_SUBSTRATE")
     delete_nomenclatures("CFE_SOWING_METHOD")
     delete_nomenclatures("CFE_LIQUID")
+    delete_nomenclatures("CFE_WATER_TYPE")
     delete_nomenclatures("CFE_TG_SUPPORT")
+    
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
