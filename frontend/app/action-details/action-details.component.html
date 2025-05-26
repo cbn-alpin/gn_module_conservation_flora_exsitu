@@ -1,0 +1,30 @@
+<div>
+  <mat-card-header>
+    <mat-card-title>Informations de l'action : Traitement</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="germinationForm" class="semis-form">      
+
+      <h3 class="section-subtitle">Prétraitement chimique</h3>
+      <div class="form-row">
+        <div class="half-width"><strong>Liquide chimique :</strong> {{ germinationForm.get('scarificationLiquide')?.value }}</div>
+        <div class="half-width"><strong>Durée (heures) :</strong> {{ germinationForm.get('scarificationDuree')?.value }}</div>
+      </div>
+      <div class="form-row">
+        <div class="half-width"><strong>Concentration (%) :</strong> {{ germinationForm.get('scarificationConcentration')?.value }}</div>
+      </div>
+
+      <h3 class="section-subtitle">Régime thermo-photo</h3>
+      <div class="form-row">
+        <div class="half-width"><strong>T° Lumière :</strong> {{ germinationForm.get('stratificationTempLumiere')?.value }}</div>
+        <div class="half-width"><strong>T° Obscurité :</strong> {{ germinationForm.get('stratificationTempObscurite')?.value }}</div>
+      </div>
+      <div class="form-row">
+        <div class="half-width"><strong>Nb heures Lumière :</strong> {{ germinationForm.get('stratificationHeuresLumiere')?.value }}</div>
+        <div class="half-width"><strong>Nb heures Obscurité :</strong> {{ germinationForm.get('stratificationHeuresObscurite')?.value }}</div>
+      </div>
+
+    </form>
+  </mat-card-content>
+</div>
