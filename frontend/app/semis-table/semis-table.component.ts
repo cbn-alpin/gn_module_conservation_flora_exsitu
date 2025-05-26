@@ -4,6 +4,7 @@
   import { Router } from '@angular/router';
   import { MatDialog } from '@angular/material/dialog';
 import { SemisComponent } from '../semis/semis.component';
+import { ExsituFormService } from '../form/shared/exsitu-form.service';
 
   export interface Semis {
     numSemis: string;
@@ -20,6 +21,7 @@ import { SemisComponent } from '../semis/semis.component';
     styleUrls: ['./semis-table.component.scss']
   })
   export class SemisTableComponent  implements OnInit  {
+    idMaterial: number | null = null;
 
 
     ngOnInit(): void {
@@ -27,7 +29,7 @@ import { SemisComponent } from '../semis/semis.component';
       this.dataSource.data = [
         {
           numSemis: 'SEM-001',
-          numSemence: 'SEED-001',
+          numSemence: 'En poquets',
           dateDebut: new Date('2024-03-01'),
           dateFin: new Date('2024-03-20'),
           replicate: 5,
@@ -39,7 +41,8 @@ import { SemisComponent } from '../semis/semis.component';
   
   constructor(
           public router: Router,
-          private dialog: MatDialog
+          private dialog: MatDialog,
+           public exsituFormService: ExsituFormService,
       ){
   
       }
@@ -73,9 +76,12 @@ import { SemisComponent } from '../semis/semis.component';
       console.log("delete")
   
     }
-    // addFicheSemis(){
-    //   this.router.navigate([`/conservation_flora_exsitu/semis`]);
-    // }
+    onRowClick(): void {
+      // const id = row.id; // ou row.numSemis si tu veux baser sur numSemis
+       console.log('Ligne cliquée, ID:');
+       // Par exemple : router.navigate
+       this.router.navigate([`/conservation_flora_exsitu/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/semis-details`]);
+     }
      addFicheSemis() {
           const dialogRef = this.dialog.open(SemisComponent, {
             width: '900px',

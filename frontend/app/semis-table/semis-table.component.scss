@@ -29,32 +29,32 @@ background-color: #ffffff;
     font-style: italic;
   }
 }
-
 .header-with-button {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  position: relative;
+  height: 60px; 
 }
+
+.title-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none; 
+}
+
 .gray-button {
-  background-color: #66BB6A;  
-  color: #fff; 
-  border: 1px solid #45A049;
+  background-color: #66BB6A !important;
+  color: #fff !important;
+  border: 1px solid #45A049 !important;
   border-radius: 4px;
   padding: 6px 12px;
   font-weight: 500;
-  
-}
-
-.gray-button:hover {
-  background-color: #45A049;  
+  z-index: 1; 
 }
 
 
-
-
-
-
-
-
-
+.clickable-row {
+  cursor: pointer;
+}
 
