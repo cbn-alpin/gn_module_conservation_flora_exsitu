@@ -1,0 +1,60 @@
+<div>
+  <div class="return-button">
+    <button mat-raised-button color="primary" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Retour
+    </button>
+  </div> 
+    <mat-card-header>
+      <mat-card-title>Les Informations de Viabilité </mat-card-title>
+    </mat-card-header>
+    <div>
+      <mat-card-content>
+        <form [formGroup]="germinationForm" class="semis-form">      
+          <div class="form-row">
+            <div class="half-width"><strong>Contrat :</strong> {{ germinationForm.get('reference')?.value }}</div>
+            <div class="half-width"><strong>Test initial :</strong> {{ germinationForm.get('provenance')?.value }}</div>
+          </div>
+        
+          <div class="form-row">
+            <div class="half-width"><strong>Provenance :</strong> {{ germinationForm.get('provenance')?.value }}</div>
+            <div class="half-width"><strong>Numéro de test :</strong> {{ germinationForm.get('numeroSemence')?.value }}</div>
+          </div>
+        
+          <div class="form-row">
+            <div class="half-width"><strong>Numéro de semis :</strong> {{ germinationForm.get('numeroSemis')?.value }}</div>
+          </div>
+        
+          <div class="form-row">
+            <div class="full-width"><strong>Remarques :</strong> {{ germinationForm.get('preparation')?.value }}</div>
+          </div>
+        
+          <div class="form-row">
+            <div class="half-width"><strong>Scarification :</strong> {{ germinationForm.get('scarification')?.value }}</div>
+            <div class="half-width"><strong>Substrat :</strong> {{ germinationForm.get('substrat')?.value }}</div>
+          </div>
+        
+          <div class="form-row">
+            <div class="half-width"><strong>Liquide :</strong> {{ germinationForm.get('liquide')?.value }}</div>
+            <div class="half-width"><strong>Stérilisation :</strong> {{ germinationForm.get('sterilisation')?.value }}</div>
+          </div>
+        </form>
+        
+  
+      </mat-card-content>
+    </div>
+    <div class="action-detail split-view">
+      <div class="germination-list">
+        <app-action-table
+          [dataSource]="dataSource"
+          (rowClicked)="onActionSelected($event)">
+        </app-action-table>
+      </div>
+    
+      <div class="germination-detail" *ngIf="selectedAction">
+        <app-action-details [action]="selectedAction"></app-action-details>
+      </div>
+    </div>
+    
+</div>
+
