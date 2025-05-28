@@ -31,21 +31,18 @@ export class ViabilityComponent implements OnInit {
 
   constructor(private fb: FormBuilder,public dialogRef: MatDialogRef<ViabilityComponent> ) {
     this.germinationForm = this.fb.group({
-      reference: ['', Validators.required],
-      provenance: ['', Validators.required],
-      numeroSemis: ['', Validators.required],
-      numeroSemence: ['', Validators.required],
-      preparation: [''],
-      contenant: [''],
-      substrat: [''],
-      arrosage: [''],
-      modeSemis: [''],
-      profondeur: [''],
-      dateDebut: ['', Validators.required],
-      dateFin: [''],
-      traitement: [''],
-      remarques: [''],
-      replicats: this.fb.array([this.createReplicat()])
+      code: ['', Validators.required],
+      idTestParent: [null, Validators.required], 
+      idMaterial: [null, Validators.required],
+      idActor: [null, Validators.required],
+      idTestType: [null, Validators.required], 
+      idStorage: [null], 
+      seedInitialCount: [null],
+      replicateCount: [1],
+      idSubstrate: [null],
+      idSupport: [null],
+      program: [''],
+      remarks: ['']
     });
   }
   get replicats(): FormArray {

@@ -5,153 +5,80 @@
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="germinationForm" class="semis-form">
-        <!-- General Info -->
         <h2 class="section-title">Informations générales</h2>
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Id Stock Location</mat-label>
-            <input matInput formControlName="reference" required>
-          </mat-form-field>
-         
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Contrat</mat-label>
-            <input matInput formControlName="provenance" required>
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code" required>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Provenance</mat-label>
-            <input matInput formControlName="numeroSemis" required>
-          </mat-form-field>
-          
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Numéro de semence</mat-label>
-            <input matInput formControlName="numeroSemis" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Synthèse</mat-label>
-            <input matInput formControlName="numeroSemence" required>
+            <mat-label>Test de germination parent </mat-label>
+            <mat-select formControlName="idTestParent" required>
+            </mat-select>
           </mat-form-field>
         </div>
-      
-     
 
-        <!-- Seed Preparation -->
-                 <!-- <h2 class="section-title">Préparation des semences</h2> -->
-
-        
-      
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Scarification</mat-label>
-            <input matInput formControlName="contenant">
+            <mat-label>Matériel végétal</mat-label>
+            <mat-select formControlName="idMaterial">
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Sterilisation</mat-label>
-            <input matInput formControlName="substrat">
+            <mat-label>Personne ayant effectué le test</mat-label>
+            <mat-select formControlName="idActor">
+            </mat-select>
           </mat-form-field>
         </div>
+
         <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Type de test</mat-label>
+            <mat-select formControlName="idTestType">
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Stock de semences</mat-label>
+            <mat-select formControlName="idStorage">
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre de graines testées</mat-label>
+            <input matInput type="number" formControlName="seedInitialCount">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre de réplicats</mat-label>
+            <input matInput type="number" formControlName="replicateCount">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Substrat</mat-label>
+            <mat-select formControlName="idSubstrate">
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Support </mat-label>
+            <mat-select formControlName="idSupport">
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Programme</mat-label>
+            <input matInput formControlName="program">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
             <mat-label>Remarques</mat-label>
-            <textarea matInput formControlName="preparation" rows="3"></textarea>
+            <textarea matInput formControlName="remarks" rows="2"></textarea>
           </mat-form-field>
         </div>
-       
-      
-       
-      
-        <div class="section-header">
-          <h2 class="section-title">Traitement de viabilité</h2>
-          <button  mat-button class="save-button" (click)="addReplicat()">
-            <mat-icon>add</mat-icon> Ajouter un traitement
-          </button>
-          
-        </div>
 
-        <div formArrayName="replicats">
-          <div *ngFor="let replicat of replicatsControls; let i = index" [formGroupName]="i" class="form-row replicat-row">
-            <div class="form-row">
-
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Date et heure debut</mat-label>
-                <input matInput type="date" formControlName="plantulesMortes">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Date et heure fin</mat-label>
-                <input matInput type="date" formControlName="plantulesRepiques">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Regime thermo </mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Concentration TTC</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Duree</mat-label>
-                <input matInput type="duree" formControlName="grainesSemees">
-              </mat-form-field>
-              
-            </div>
-            
-          </div>
-        </div>
-        <!-- Replicates -->
-        <div class="section-header">
-          <h2 class="section-title">Réplicats de viabilité</h2>
-          <button  mat-button class="save-button" (click)="addReplicat()">
-            <mat-icon>add</mat-icon> Ajouter un réplicat
-          </button>
-          
-        </div>
-
-        <!-- Replicat Fields -->
-        <div formArrayName="replicats">
-          <div *ngFor="let replicat of replicatsControls; let i = index" [formGroupName]="i" class="form-row replicat-row">
-            <div class="form-row">
-
-              <!-- 
-                            <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>id test germination replicat</mat-label>
-                <input matInput type="text" formControlName="plantulesLevees">
-              </mat-form-field>
-               -->
-
-          
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Nb de graines</mat-label>
-                <input matInput type="number" formControlName="plantulesMortes">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Graines viables</mat-label>
-                <input matInput type="number" formControlName="plantulesRepiques">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Graines non viables</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-
-    
-
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Pourcentage de viabilité</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-            
-            </div>
-            
-          </div>
-        </div>
 
         <!-- Submit -->
         <div class="form-actions dual-buttons">

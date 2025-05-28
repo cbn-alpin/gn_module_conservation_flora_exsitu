@@ -34,21 +34,18 @@ export class ViabilityDetailsComponent implements OnInit {
 
   constructor(private fb: FormBuilder,public router: Router ) {
     this.germinationForm = this.fb.group({
-      reference: ['', Validators.required],
-      provenance: ['', Validators.required],
-      numeroSemis: ['', Validators.required],
-      numeroSemence: ['', Validators.required],
-      preparation: [''],
-      contenant: [''],
-      substrat: [''],
-      arrosage: [''],
-      modeSemis: [''],
-      profondeur: [''],
-      dateDebut: ['', Validators.required],
-      dateFin: [''],
-      traitement: [''],
-      remarques: [''],
-      replicats: this.fb.array([this.createReplicat()])
+      code: [''],
+      idTestParent: [null],
+      idMaterial: [null],
+      idActor: [null],
+      idTestType: [null],
+      idStorage: [null],
+      seedInitialCount: [null],
+      replicateCount: [1],
+      idSubstrate: [null],
+      idSupport: [null],
+      program: [''],
+      remarks: [''],
     });
   }
   get replicats(): FormArray {
@@ -81,15 +78,8 @@ export class ViabilityDetailsComponent implements OnInit {
   
 
   ngOnInit(): void {
-    this.germinationForm.patchValue({
-      reference: 'Contrat ABC',
-      provenance: 'Test 123',
-      numeroSemis: 'SEM123',
-      numeroSemence: 'SEED456',
-      preparation: 'Some remarks',
-      contenant: 'Scarification process',
-      substrat: 'Peat moss'
-    });
+
+    this.dataSource.data = [];
   }
 
   onDelete(){
