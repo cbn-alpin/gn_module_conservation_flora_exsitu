@@ -8,183 +8,92 @@
         <!-- General Info -->
          
         <h2 class="section-title">Informations générales</h2>
+        <!-- Code + Test parent -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Contrat</mat-label>
-            <input matInput formControlName="reference" required>
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code" required>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Test initial</mat-label>
-            <input matInput formControlName="provenance" required>
+            <mat-label>Test parent (facultatif)</mat-label>
+            <mat-select formControlName="idTestParent">
+              <!-- options dynamiques -->
+            </mat-select>
           </mat-form-field>
         </div>
+
+        <!-- Matériel + Stock -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Provenance</mat-label>
-            <input matInput formControlName="numeroSemis" required>
+            <mat-label>Matériel végétal</mat-label>
+            <mat-select formControlName="idMaterial">
+              <!-- options dynamiques -->
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Numéro de test</mat-label>
-            <input matInput formControlName="numeroSemence" required>
+            <mat-label>Stock de semences</mat-label>
+            <mat-select formControlName="idStorage">
+              <!-- options dynamiques -->
+            </mat-select>
           </mat-form-field>
         </div>
+
+        <!-- Acteur + Type de test -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Numéro de semence</mat-label>
-            <input matInput formControlName="numeroSemis" required>
+            <mat-label>Personne ayant effectué le test</mat-label>
+            <mat-select formControlName="idActor">
+              <!-- options dynamiques -->
+            </mat-select>
           </mat-form-field>
-         
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Type de test</mat-label>
+            <mat-select formControlName="idTestType">
+              <!-- options dynamiques (CFE_TEST_TYPE) -->
+            </mat-select>
+          </mat-form-field>
         </div>
-    
+
+        <!-- Nombre de graines + Réplicats -->
         <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre de graines testées</mat-label>
+            <input matInput type="number" formControlName="seedInitialCount">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nombre de réplicats</mat-label>
+            <input matInput type="number" formControlName="replicateCount">
+          </mat-form-field>
+        </div>
+
+        <!-- Support + Substrat -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Support utilisé</mat-label>
+            <mat-select formControlName="idSupport">
+              <!-- options dynamiques (CFE_TG_SUPPORT) -->
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Substrat utilisé</mat-label>
+            <mat-select formControlName="idSubstrate">
+              <!-- options dynamiques (CFE_TEST_SUBSTRAT) -->
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Programme + Remarques -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Programme</mat-label>
+            <input matInput formControlName="program">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
             <mat-label>Remarques</mat-label>
-            <textarea matInput formControlName="preparation" rows="3"></textarea>
+            <textarea matInput formControlName="remarks" rows="2"></textarea>
           </mat-form-field>
         </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Scarification</mat-label>
-            <input matInput formControlName="contenant">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Substrat</mat-label>
-            <input matInput formControlName="substrat">
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Liquide</mat-label>
-            <input matInput formControlName="contenant">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Sterilisation</mat-label>
-            <input matInput formControlName="substrat">
-          </mat-form-field>
-        </div>
-      
-       
-      
-        <div class="section-header">
-          <h2 class="section-title">Traitement de germination</h2>
-          <button  mat-button class="save-button" (click)="addReplicat()">
-            <mat-icon>add</mat-icon> Ajouter un traitement
-          </button>
-          
-        </div>
 
-        <div formArrayName="replicats">
-          <div *ngFor="let replicat of replicatsControls; let i = index" [formGroupName]="i" class="form-row replicat-row">
-            <div class="form-row">
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>id traitement</mat-label>
-                <input matInput type="text" formControlName="plantulesLevees">
-              </mat-form-field>
-      
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Traitement</mat-label>
-                <input matInput type="text" formControlName="plantulesLevees">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Date de debut</mat-label>
-                <input matInput type="date" formControlName="plantulesMortes">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Date de fin</mat-label>
-                <input matInput type="date" formControlName="plantulesRepiques">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Regime thermo photo</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Produits chimiques</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Duree</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-              
-            </div>
-            
-          </div>
-        </div>
-        <!-- Replicates -->
-        <div class="section-header">
-          <h2 class="section-title">Réplicats de germination</h2>
-          <button  mat-button class="save-button" (click)="addReplicat()">
-            <mat-icon>add</mat-icon> Ajouter un réplicat
-          </button>
-          
-        </div>
-
-        <!-- Replicat Fields -->
-        <div formArrayName="replicats">
-          <div *ngFor="let replicat of replicatsControls; let i = index" [formGroupName]="i" class="form-row replicat-row">
-            <div class="form-row">
-
-              <!-- 
-                            <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>id test germination replicat</mat-label>
-                <input matInput type="text" formControlName="plantulesLevees">
-              </mat-form-field>
-               -->
-
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Id test germination</mat-label>
-                <input matInput type="text" formControlName="plantulesLevees">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Nb de graines</mat-label>
-                <input matInput type="number" formControlName="plantulesMortes">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Graines germees</mat-label>
-                <input matInput type="number" formControlName="plantulesRepiques">
-              </mat-form-field>
-            
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Graines mortes</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Graines non germees</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Nb de replicat</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Pourcentage de germination</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Delai germinatif</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>Periode germinative</mat-label>
-                <input matInput type="number" formControlName="grainesSemees">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="fifth-width">
-                <mat-label>T50</mat-label>
-                <input matInput type="text" formControlName="grainesSemees">
-              </mat-form-field>
-            </div>
-            
-          </div>
-        </div>
 
         <!-- Submit -->
         <div class="form-actions dual-buttons">

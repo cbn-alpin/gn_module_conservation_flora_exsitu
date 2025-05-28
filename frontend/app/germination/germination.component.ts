@@ -33,21 +33,18 @@ export class GerminationComponent implements OnInit {
 
   constructor(private fb: FormBuilder,public router: Router,public dialogRef: MatDialogRef<GerminationComponent> ) {
     this.germinationForm = this.fb.group({
-      reference: ['', Validators.required],
-      provenance: ['', Validators.required],
-      numeroSemis: ['', Validators.required],
-      numeroSemence: ['', Validators.required],
-      preparation: [''],
-      contenant: [''],
-      substrat: [''],
-      arrosage: [''],
-      modeSemis: [''],
-      profondeur: [''],
-      dateDebut: ['', Validators.required],
-      dateFin: [''],
-      traitement: [''],
-      remarques: [''],
-      replicats: this.fb.array([this.createReplicat()])
+      code: [''],
+      idTestParent: [null],
+      idMaterial: [null],
+      idActor: [null],
+      idTestType: [null],
+      idStorage: [null],
+      seedInitialCount: [null],
+      replicateCount: [1],
+      idSubstrate: [null],
+      idSupport: [null],
+      program: [''],
+      remarks: [''],
     });
   }
   get replicats(): FormArray {
@@ -77,7 +74,6 @@ export class GerminationComponent implements OnInit {
   
 
   ngOnInit(): void {
-    // Initialize with sample data if needed
     this.dataSource.data = [];
   }
 
@@ -101,24 +97,5 @@ export class GerminationComponent implements OnInit {
       this.dialogRef.close(formData); // ferme le modal et renvoie les données
     }
   }
-  // onSubmit() {
-  //   // if (this.germinationForm.valid) {
-  //   //   // Create new Semis entry from form values
-  //   //   const newEntry: Germination = {
-  //   //     numSemis: this.germinationForm.value.numeroSemis,
-  //   //     numSemence: this.germinationForm.value.numeroSemence,
-  //   //     dateDebut: this.germinationForm.value.dateDebut,
-  //   //     dateFin: this.germinationForm.value.dateFin,
-  //   //     replicate: 0, // Add actual value mapping
-  //   //     levage: 0    // Add actual value mapping
-  //   //   };
 
-  //     // // Add to table
-  //     // this.dataSource.data = [...this.dataSource.data, newEntry];
-      
-  //     // // Reset form
-  //     // this.germinationForm.reset();
-  //     this.router.navigate([`conservation_flora_exsitu/germination-table`]);
-
-  //   }
   } 
