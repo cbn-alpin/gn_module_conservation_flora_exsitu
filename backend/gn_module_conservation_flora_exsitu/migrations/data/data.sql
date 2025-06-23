@@ -389,6 +389,102 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'conservation_flora_exsitu'
 ) ;
 
+-- Create the "CFE_SOWING_LOCATION" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SOWING_LOCATION',
+    'Lieu de semis',
+    'Nomenclature des lieux de semis.',
+    'Lieu de semis',
+    'Nomenclature des lieux de semis.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_TEST_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_TEST_TYPE',
+    'Type de test',
+    'Nomenclature des types de test.',
+    'Type de test',
+    'Nomenclature des types de test.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_SCARIFICATION_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SCARIFICATION_TYPE',
+    'Type de scarification',
+    'Nomenclature des types de scarification.',
+    'Type de scarification',
+    'Nomenclature des types de scarification.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_SOWING_SUBSTRATE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SOWING_SUBSTRATE',
+    'Substrat de semis',
+    'Nomenclature des substrats utilisés pour les semis.',
+    'Substrat de semis',
+    'Nomenclature des substrats utilisés pour les semis.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_SOWING_CONTAINER" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SOWING_CONTAINER',
+    'Contenant de semis',
+    'Nomenclature des contenants utilisés pour les semis.',
+    'Contenant de semis',
+    'Nomenclature des contenants utilisés pour les semis.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_ACTION_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_ACTION_TYPE',
+    'Type d’action',
+    'Nomenclature des types d’action appliquées aux semences.',
+    'Type d’action',
+    'Nomenclature des types d’action appliquées aux semences.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_CHEMICAL" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_CHEMICAL',
+    'Produit chimique',
+    'Nomenclature des produits chimiques utilisés pour les semences.',
+    'Produit chimique',
+    'Nomenclature des produits chimiques utilisés pour les semences.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_LIQUID" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_LIQUID',
+    'Liquide',
+    'Nomenclature des liquides utilisés pour les semences ou les tests.',
+    'Liquide',
+    'Nomenclature des liquides utilisés pour les semences ou les tests.',
+    'conservation_flora_exsitu'
+);
+
 
 
 -- --------------------------------------------------------------------------------
