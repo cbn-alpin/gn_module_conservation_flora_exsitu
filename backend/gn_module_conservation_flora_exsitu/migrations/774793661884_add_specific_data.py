@@ -168,7 +168,15 @@ def downgrade():
     delete_nomenclatures("CFE_LIQUID")
     delete_nomenclatures("CFE_WATER_TYPE")
     delete_nomenclatures("CFE_TG_SUPPORT")
-    
+    delete_nomenclatures("CFE_SOWING_LOCATION")
+    delete_nomenclatures("CFE_TEST_TYPE")
+    delete_nomenclatures("CFE_SCARIFICATION_TYPE")
+    delete_nomenclatures("CFE_SOWING_SUBSTRATE")
+    delete_nomenclatures("CFE_SOWING_CONTAINER")
+    delete_nomenclatures("CFE_ACTION_TYPE")
+    delete_nomenclatures("CFE_CHEMICAL")
+    delete_nomenclatures("CFE_LIQUID")
+
     delete_module(MODULE_CODE)
 
 def delete_nomenclatures(mnemonique):
