@@ -119,12 +119,7 @@ mat-form-field {
   background-color: #1976d2; 
   color: white;
 }
-.dual-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 40px;
-}
+
 .cancel-button {
   background-color: #f44336; /* Rouge */
   color: white;
@@ -141,4 +136,33 @@ mat-form-field {
 
 .save-button:hover {
   background-color: #388e3c;
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 1000 !important;
+}
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  border-bottom: 1px solid #ccc;
+}
+.form-actions.dual-buttons.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 10;
+  border-top: 1px solid #ccc;
+  padding: 1rem 2rem;
+
+  display: flex;
+  justify-content: space-between; /* ← bouton gauche / bouton droit */
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
