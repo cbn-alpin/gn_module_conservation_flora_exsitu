@@ -20,7 +20,10 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
     public currentModulePath: string
     cardContentHeight: any;
     public urlSub: Subscription;
-    harvest: any
+    harvest: any;
+    idStorage: number | null = null;
+
+
 
     constructor(
         public router: Router,
@@ -34,6 +37,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit(): void {
+      
         this.moduleService.currentModule$.subscribe((module) => {
           this.currentModulePath = module.module_path.toLowerCase();
         });
@@ -42,6 +46,9 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.updateTabAndIdsFromUrl(this.router.url);
 
         });
+        this.exsituFormService.id_storage.subscribe(id => {
+          this.idStorage = id;
+        });
     
         // Initialisation avec l'URL actuelle (utile au rechargement)        
         // this.harvest = this.exsituFormService.harvest
@@ -49,6 +56,10 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     goToTab(tab: string) {
+      console.log('onglet cliqué :', tab);
+      this.exsituFormService.currentTab = tab;
+      console.log('currentTab après affectation :', this.exsituFormService.currentTab);
+    
       console.log(tab)
         if (tab === 'materials' && this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
@@ -63,7 +74,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/stock`
           ]);
         }
-        else if (tab === 'semis') {
+        else if (tab === 'semis' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/semis-table`]);
           
         }
@@ -75,7 +86,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           //   this.router.navigate([`${this.currentModulePath}/form/germination-table`]);// Redirection si l'ID de récolte est absent
           // }
         }
-        else if (tab === 'viability') {
+        else if (tab === 'viability-table') {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/viability-table`]);
         }
     }
@@ -247,6 +258,29 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
         }
       }
+      if (urlSegments.includes('storage')) {
+        this.exsituFormService.currentTab = 'stock';
+      
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+        const storageIndex = urlSegments.indexOf('storage') + 1;
+      
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(urlSegments[harvestIndex]);
+        }
+      
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(urlSegments[materialIndex]);
+          this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
+        }
+      
+        if (storageIndex < urlSegments.length) {
+          this.idStorage = Number(urlSegments[storageIndex]);
+          this.exsituFormService.idStorage = Number(urlSegments[storageIndex]);
+          this.exsituFormService.id_storage.next(Number(urlSegments[storageIndex]));
+        }
+      }
+      
       
 
 

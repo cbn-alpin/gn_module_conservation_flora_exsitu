@@ -44,37 +44,46 @@
 
             <!-- Test de germination -->
             <a 
-                class="tablinks" 
-                (click)=" goToTab('germination-table')">
+                class="tablinks"
+                [class.disabled]="!idStorage"
+
+                [ngClass]="{ active: exsituFormService.currentTab === 'germination-table' }"
+                (click)="idStorage ? goToTab('germination-table') : null"
+            >
                 <mat-icon class="example-tab-icon">spa</mat-icon>
                 Test de germination
-            </a>            
+            </a>
+                 
 
             <!-- Semis -->
             <a class="tablinks"
-                (click)="goToTab('semis')"
-                >
-                <mat-icon class="example-tab-icon">spa</mat-icon>
+                [class.disabled]="!idStorage"
 
+                [ngClass]="{ active: exsituFormService.currentTab === 'semis-table' }"
+                (click)="idStorage ? goToTab('semis-table') : null">
+                <mat-icon class="example-tab-icon">semis</mat-icon>
                 Semis
             </a>
 
+
             
             <a class="tablinks"
-            (click)="goToTab('viability')"
-            >
-            <mat-icon class="example-tab-icon">spa</mat-icon>
-
-            Test de Viabilité
+                [class.disabled]="!idStorage"
+                [ngClass]="{ active: exsituFormService.currentTab === 'viability-table' }"
+                (click)="idStorage ? goToTab('viability-table') : null">
+                <mat-icon class="example-tab-icon">sp</mat-icon>
+                Test de Viabilité
             </a>
+
             <!-- Culture -->
             <a class="tablinks disabled">
                 <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
                 Culture
             </a>
+              
         </div>
     </div>
-
+    
     <!-- Les header -->
 
     <div class="mb-5" *ngIf="exsituFormService.currentTab !== 'harvest'">

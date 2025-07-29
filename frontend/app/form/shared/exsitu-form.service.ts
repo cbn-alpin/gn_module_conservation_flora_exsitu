@@ -19,6 +19,11 @@ export class ExsituFormService{
     public id_harvest: BehaviorSubject<number> = new BehaviorSubject(null);
     public idMaterial: number;
     public idSeed: number;
+    public idTest: number;
+    public idTestChange = new BehaviorSubject<number>(null);
+    public idStorage: number | null = null;
+    public id_storage: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
+    
     public editionMode: BehaviorSubject<boolean> = new BehaviorSubject(false);
     public params = new HttpParams()
               .set('page', 1)
@@ -90,6 +95,11 @@ export class ExsituFormService{
         this.removeOccurrenceData(occurrence.id_material);
         this.addOccurrenceData(occurrence);
       }
+      setIdTest(id: number): void {
+        this.idTest = id;
+        this.idTestChange.next(id);
+      }
+      
     
 
 }
