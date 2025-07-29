@@ -142,3 +142,35 @@ mat-form-field {
 .save-button:hover {
   background-color: #388e3c;
 }
+::ng-deep .cdk-overlay-container {
+  z-index: 1000 !important;
+}
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  border-bottom: 1px solid #ccc;
+}
+
+
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+
+.form-actions.dual-buttons.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 10;
+  border-top: 1px solid #ccc;
+  padding: 1rem 2rem;
+
+  display: flex;
+  justify-content: space-between; /* ← bouton gauche / bouton droit */
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}

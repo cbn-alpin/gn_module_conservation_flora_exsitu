@@ -1,189 +1,188 @@
 <mat-card>
-  <mat-card-header>
+  <mat-card-header  class="sticky-header">
     <mat-card-title>Détails Action</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
     <form [formGroup]="germinationForm" class="semis-form">
-      <h2 class="section-title">Informations générales</h2>
+      <h2 class="section-title sticky-header">Synthèse du suivi</h2>
 
       <!-- Type d'action -->
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Type d'action</mat-label>
-          <mat-select formControlName="typeAction" (selectionChange)="onTypeChange()">
-            <mat-option *ngFor="let action of actions" [value]="action">
-              {{ action }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-        <!-- Afficher ces champs seulement si un type d'action est sélectionné -->
-        <div *ngIf="germinationForm.get('typeAction')?.value">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Date de début</mat-label>
-              <input matInput [matDatepicker]="startPicker" formControlName="date_start">
-              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-              <mat-datepicker #startPicker></mat-datepicker>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Date de fin</mat-label>
-              <input matInput [matDatepicker]="endPicker" formControlName="date_end">
-              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-              <mat-datepicker #endPicker></mat-datepicker>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Effectué par</mat-label>
-              <mat-select formControlName="id_actor">
-                <mat-option *ngFor="let user of actors" [value]="user.id_role">
-                  {{ user.nom_complet }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Remarques</mat-label>
-              <textarea matInput formControlName="remarks" rows="2"></textarea>
-            </mat-form-field>
-          </div>
-        </div>
-
-     
-                  <!-- Suivi Test -->
-        <div *ngIf="germinationForm.get('typeAction')?.value === 'Suivi Test'">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Nb graines germées</mat-label>
-              <input matInput type="number" formControlName="nbGermes">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Nb graines viables</mat-label>
-              <input matInput type="number" formControlName="nbViables">
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Nb graines repiquées</mat-label>
-              <input matInput type="number" formControlName="nbRepiques">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Nb graines mortes</mat-label>
-              <input matInput type="number" formControlName="nbMortes">
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Total graines germées</mat-label>
-              <input matInput type="number" formControlName="totalGermes">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Total graines viables</mat-label>
-              <input matInput type="number" formControlName="totalViables">
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Total graines repiquées</mat-label>
-              <input matInput type="number" formControlName="totalRepiques">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Total graines mortes</mat-label>
-              <input matInput type="number" formControlName="totalMortes">
-            </mat-form-field>
-          </div>
-        </div>
-
-      <!-- Stérilisation -->
-      <div *ngIf="germinationForm.get('typeAction')?.value === 'Stérilisation'">
-       <div>
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Liquide de trempage</mat-label>
-            <input matInput formControlName="sterilisationLiquide">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Durée (en heures)</mat-label>
-            <input matInput type="number" formControlName="sterilisationDuree">
-          </mat-form-field>
-       </div>
+      <div class="form-group full-width" *ngIf="!hideTypeField">
+        <small>Type d'action *</small>
+        <pnx-nomenclature
+          keyValue="id_nomenclature"
+          [bindAllItem]="true"
+          codeNomenclatureType="CFE_ACTION_TYPE"
+          [parentFormControl]="germinationForm.controls.id_action_type"
+        ></pnx-nomenclature>
       </div>
 
-
-      <!-- Scarification -->
-      <div *ngIf="germinationForm.get('typeAction')?.value === 'Scarification'">
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Liquide chimique</mat-label>
-            <input matInput formControlName="scarificationLiquide">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Durée (en heures)</mat-label>
-            <input matInput type="number" formControlName="scarificationDuree">
-          </mat-form-field>
+      
+     <!-- Stérilisation -->
+      <div *ngIf="code === 'ster'">
+        <div class="form-group half-width">
+          <small>liquide utilisé </small>
+          <pnx-nomenclature
+            keyValue="id_nomenclature"
+            [bindAllItem]="false"
+            codeNomenclatureType="CFE_STERILIZATION_LIQUID"
+            [parentFormControl]="germinationForm.controls.id_water_type"
+          ></pnx-nomenclature>
         </div>
+        <div class="form-group half-width">
+          <small> produit utilisé</small>
+          <pnx-nomenclature
+            keyValue="id_nomenclature"
+            [bindAllItem]="false"
+            codeNomenclatureType="CFE_STERILIZATION_PRODUCT"
+            [parentFormControl]="germinationForm.controls.id_chemical_liquid"
+          ></pnx-nomenclature>
+        </div>
+        
         <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Durée (en minutes)</mat-label>
+            <input matInput type="number" formControlName="duration_water">
+          </mat-form-field>
+         
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Concentration (%)</mat-label>
-            <input matInput type="number" formControlName="scarificationConcentration">
+            <input matInput type="number" formControlName="concentration_chemical_liquid">
+          </mat-form-field>
+        
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nb heures Lumière</mat-label>
+            <input matInput type="number" formControlName="hour_count_light">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nb heures Obscurité</mat-label>
+            <input matInput type="number" formControlName="hour_count_shadow">
           </mat-form-field>
         </div>
       </div>
+
+
+            <!-- Scarification -->
+      <div *ngIf="code === 'scar'">
+          <!-- Type de scarification (toujours affiché) -->
+          <div class="form-row">
+            <div class="form-group full-width">
+              <small>Type de scarification</small>
+              <pnx-nomenclature
+                keyValue="id_nomenclature"
+                [bindAllItem]="false"
+                codeNomenclatureType="CFE_SCARIFICATION_TYPE"
+                [parentFormControl]="germinationForm.controls.id_scarification_type"
+              ></pnx-nomenclature>
+            </div>
+          </div>
+
+          <!-- Si mécanique -->
+          <div *ngIf="scarTypeCode === 'mec'">
+              <div class="form-group full-width">
+                <small>Type de scarification mécanique</small>
+                <pnx-nomenclature
+                  keyValue="id_nomenclature"
+                  [bindAllItem]="false"
+                  codeNomenclatureType="CFE_SCARIFICATION_MEC"
+                  [parentFormControl]="germinationForm.controls.id_scarification_mecanique"
+                ></pnx-nomenclature>
+              </div>
+            
+              <div class="form-group half-width">
+                <small>Outil</small>
+                <pnx-nomenclature
+                  keyValue="id_nomenclature"
+                  codeNomenclatureType="CFE_SCARIFICATION_TOOL"
+                  [parentFormControl]="germinationForm.controls.id_tool"
+                ></pnx-nomenclature>
+              </div>
+          </div>
+
+          <!-- Si chimique -->
+          <div *ngIf="scarTypeCode === 'chi'">
+            <div class="form-row">
+              <div class="form-group half-width">
+                <small>produit utilisé</small>
+                <pnx-nomenclature
+                  keyValue="id_nomenclature"
+                  codeNomenclatureType="CFE_SCA_CH_PRODUCT"
+                  [parentFormControl]="germinationForm.controls.id_chemical_liquid"
+                ></pnx-nomenclature>
+              </div>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Concentration (%)</mat-label>
+                <input matInput type="number" formControlName="concentration_chemical_liquid">
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Température (°C)</mat-label>
+                <input matInput type="number" formControlName="temperature">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Durée (minutes)</mat-label>
+                <input matInput type="number" formControlName="duration_chemical_liquid">
+              </mat-form-field>
+            </div>
+          </div>
+      </div>
+
+
       
 
 
-          <!-- Stratification -->
-          <div *ngIf="germinationForm.get('typeAction')?.value === 'Stratification'">
+         <!-- Stratification -->
+          <div *ngIf="code === 'strat'">
             <h3 class="section-subtitle">Régime thermo-photo</h3>
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>T° Lumière</mat-label>
-                <input matInput type="number" formControlName="stratificationTempLumiere">
+                <input matInput type="number" formControlName="temperature_light">
               </mat-form-field>
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>T° Obscurité</mat-label>
-                <input matInput type="number" formControlName="stratificationTempObscurite">
+                <input matInput type="number" formControlName="temperature_shadow">
               </mat-form-field>
             </div>
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Nb heures Lumière</mat-label>
-                <input matInput type="number" formControlName="stratificationHeuresLumiere">
+                <input matInput type="number" formControlName="hour_count_light">
               </mat-form-field>
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Nb heures Obscurité</mat-label>
-                <input matInput type="number" formControlName="stratificationHeuresObscurite">
+                <input matInput type="number" formControlName="hour_count_shadow">
               </mat-form-field>
             </div>
           </div>
-    
+          
+          
+          
+
             <!-- Traitement -->
-            <div *ngIf="germinationForm.get('typeAction')?.value === 'Traitement'">
-              <h3 class="section-subtitle">Prétraitement chimique</h3>
+            <div *ngIf="code === 'tra'">
+              <h3 class="section-subtitle">Liquide traitement</h3>
+          
               <div class="form-row">
-                <mat-form-field appearance="outline" class="half-width">
-                  <mat-label>Liquide chimique</mat-label>
-                  <input matInput formControlName="scarificationLiquide">
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="half-width">
-                  <mat-label>Durée (en heures)</mat-label>
-                  <input matInput type="number" formControlName="scarificationDuree">
-                </mat-form-field>
-              </div>
-              <div class="form-row">
+                <div class="form-group half-width">
+                  <small>produit utilisé</small>
+                  <pnx-nomenclature
+                    keyValue="id_nomenclature"
+                    [bindAllItem]="false"
+                    codeNomenclatureType="CFE_LIQUID_TREATMENT"
+                    [parentFormControl]="germinationForm.controls.id_liquid_treatment"
+                  ></pnx-nomenclature>
+                </div>
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>Concentration (%)</mat-label>
-                  <input matInput type="number" formControlName="scarificationConcentration">
+                  <input matInput type="number" formControlName="concentration_chemical_liquid">
                 </mat-form-field>
               </div>
             
@@ -191,37 +190,114 @@
               <div class="form-row">
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>T° Lumière</mat-label>
-                  <input matInput type="number" formControlName="stratificationTempLumiere">
+                  <input matInput type="number" formControlName="temperature_light">
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>T° Obscurité</mat-label>
-                  <input matInput type="number" formControlName="stratificationTempObscurite">
+                  <input matInput type="number" formControlName="temperature_shadow">
                 </mat-form-field>
               </div>
               <div class="form-row">
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>Nb heures Lumière</mat-label>
-                  <input matInput type="number" formControlName="stratificationHeuresLumiere">
+                  <input matInput type="number" formControlName="hour_count_light">
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>Nb heures Obscurité</mat-label>
-                  <input matInput type="number" formControlName="stratificationHeuresObscurite">
+                  <input matInput type="number" formControlName="hour_count_shadow">
+                </mat-form-field>
+              </div>
+              <div class="form-row">
+                
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Date de fin</mat-label>
+                  <input matInput [matDatepicker]="endPicker" formControlName="date_end">
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
                 </mat-form-field>
               </div>
             </div>
             
 
+                <!-- Afficher ces champs seulement si un type d'action est sélectionné -->
+        <div  *ngIf="code">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Date de début</mat-label>
+              <input matInput [matDatepicker]="startPicker" formControlName="date_start">
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+            </mat-form-field>
+            <div *ngIf="isReplicateDateUsed()" class="alert alert-warning">
+              ⚠️ Une action de type "Suivi réplicat" existe déjà pour cette date.
+            </div>
+            
+
+            
+          </div>
+          <div class="form-row">
+            <div class="form-group half-width">
+              <small> Effectué par</small>
+              <pnx-observers
+                [bindAllItem]="true"
+                [parentFormControl]="germinationForm.controls.id_actor"
+                [codeList]="observers_list_code"
+                matTooltipPosition="above"
+                [multiSelect]="true"
+              >
+              </pnx-observers>
+            </div>
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Remarques</mat-label>
+              <textarea matInput formControlName="remarks" rows="2"></textarea>
+            </mat-form-field>
+            
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <pnx-dynamic-form-generator
+                [myFormGroup]="additionalDataForm"
+                [formsDefinition]="formsDefinition"
+                [autoGenerated]="true"
+              ></pnx-dynamic-form-generator>
+            </div>
+          </div>
+          <div>
+            <app-replicates-modal
+            *ngIf="code === 'svr' || code === 'synth'"
+            [replicatesForm]="replicatesForm"
+            [replicateLabels]="replicateLabels"
+            [code]="code"
+          ></app-replicates-modal>
+          
+          </div>
+         
+          
+        </div>
+
+            
+
 
       <!-- Boutons -->
-      <div class="form-actions dual-buttons" *ngIf="germinationForm.get('typeAction')?.value">
-        <button mat-button class="cancel-button with-border" type="button" (click)="onCancel()">
+      <div class="form-actions dual-buttons  sticky-actions" *ngIf="code">
+        <button mat-button class="cancel-button with-border " type="button" (click)="onCancel()">
           <mat-icon>close</mat-icon>
           Annuler
         </button>
-        <button mat-button class="save-button with-border" type="submit" (click)="onSubmit()">
+        <button mat-button class="save-button with-border" type="submit" (click)="onSubmit()"
+        [disabled]="germinationForm.invalid"
+        >
           <mat-icon>save</mat-icon>
           Enregistrer
         </button>
+        <button mat-button class="save-button with-border"
+            type="button"
+            [disabled]="!germinationForm.valid"
+            (click)="addNewAction()">
+          <mat-icon>add</mat-icon>
+          Ajouter une autre action
+        </button>
+
       </div>
     </form>
   </mat-card-content>
