@@ -486,6 +486,90 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 );
 
 
+-- Create the "CFE_SCARIFICATION_TOOL" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SCARIFICATION_TOOL',
+    'Outil de scarification',
+    'Nomenclature des outils utilisés pour la scarification mécanique.',
+    'Outil de scarification',
+    'Nomenclature des outils utilisés pour la scarification mécanique.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_SCARIFICATION_MEC" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SCARIFICATION_MEC',
+    'Type de scarification mécanique',
+    'Nomenclature des types de scarification mécanique (partielle, totale).',
+    'Type de scarification mécanique',
+    'Nomenclature des types de scarification mécanique (partielle, totale).',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_SCA_CH_PRODUCT" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_SCA_CH_PRODUCT',
+    'Produit de scarification chimique',
+    'Nomenclature des produits utilisés pour la scarification chimique.',
+    'Produit de scarification chimique',
+    'Nomenclature des produits utilisés pour la scarification chimique.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_TREATMENT_PRODUCT" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_TREATMENT_PRODUCT',
+    'Produit de traitement',
+    'Nomenclature des produits utilisés pour les traitements de semences.',
+    'Produit de traitement',
+    'Nomenclature des produits utilisés pour les traitements de semences.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_STERILIZATION_PRODUCT" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_STERILIZATION_PRODUCT',
+    'Produit de stérilisation',
+    'Nomenclature des produits utilisés pour la stérilisation des semences.',
+    'Produit de stérilisation',
+    'Nomenclature des produits utilisés pour la stérilisation des semences.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_LIQUID_TREATMENT" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_LIQUID_TREATMENT',
+    'Traitement liquide',
+    'Nomenclature des liquides utilisés pour les traitements des semences.',
+    'Traitement liquide',
+    'Nomenclature des liquides utilisés pour les traitements des semences.',
+    'conservation_flora_exsitu'
+);
+
+-- Create the "CFE_STERILIZATION_LIQUID" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_STERILIZATION_LIQUID',
+    'Liquide de stérilisation',
+    'Nomenclature des liquides utilisés pour la stérilisation des semences.',
+    'Liquide de stérilisation',
+    'Nomenclature des liquides utilisés pour la stérilisation des semences.',
+    'conservation_flora_exsitu'
+);
+
 
 -- --------------------------------------------------------------------------------
 -- COMMONS
