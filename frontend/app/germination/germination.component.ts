@@ -31,6 +31,7 @@ interface Germination {
 export class GerminationComponent implements OnInit {
 
  
+  
   germinationForm: FormGroup;
   dataSource = new MatTableDataSource<Germination>([]);
   displayedColumns: string[] = [
