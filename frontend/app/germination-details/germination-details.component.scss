@@ -184,7 +184,12 @@ mat-card-content,
 
 
 .return-button {
-  margin: 20px 0 10px 10px; /* haut, droite, bas, gauche */
+  // margin: 20px 0 10px 10px; /* haut, droite, bas, gauche */
+
+  position: fixed;
+  top: 280px;
+  left: 20px;
+  z-index: 1000;
 }
 .return-button button {
   font-weight: bold;

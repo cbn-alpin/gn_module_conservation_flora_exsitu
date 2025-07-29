@@ -11,54 +11,51 @@
     <div>
       <mat-card-content>
         <form [formGroup]="germinationForm" class="semis-form">      
+       
+        <!-- <div class="half-width">
+          <strong>Test parent :</strong> {{ germinationForm.get('id_test_parent')?.value }}
+        </div> -->
+
       <div class="form-row">
         <div class="half-width">
-          <strong>Code du test :</strong> {{ germinationForm.get('code')?.value }}
+          <strong>Matériel végétal :</strong> {{ germinationForm.get('id_material')?.value }}
         </div>
         <div class="half-width">
-          <strong>Test parent :</strong> {{ germinationForm.get('idTestParent')?.value }}
+          <strong>Effectué par :</strong> {{ germinationForm.get('id_actor')?.value }}
         </div>
       </div>
 
       <div class="form-row">
         <div class="half-width">
-          <strong>Matériel végétal :</strong> {{ germinationForm.get('idMaterial')?.value }}
+          <strong>Numéro de TG :</strong> {{ germinationForm.get('code')?.value }}
         </div>
         <div class="half-width">
-          <strong>Personne ayant effectué :</strong> {{ germinationForm.get('idActor')?.value }}
+          <strong>Stock utilisé :</strong> {{ germinationForm.get('id_storage')?.value }}
+          
+        </div>
+
+      </div>
+
+      <div class="form-row">
+        <div class="half-width">
+          <strong>Nombre de graines testées :</strong> {{ germinationForm.get('seed_initial_count')?.value }}
+        </div>
+        <div class="half-width">
+          <strong>Nombre de réplicats :</strong> {{ germinationForm.get('replicate_count')?.value }}
         </div>
       </div>
 
       <div class="form-row">
         <div class="half-width">
-          <strong>Stock de semences :</strong> {{ germinationForm.get('idStorage')?.value }}
+          <strong>Substrat :</strong> {{ germinationForm.get('id_substrate')?.value }}
         </div>
         <div class="half-width">
-          <strong>Type de test :</strong> {{ germinationForm.get('idTestType')?.value }}
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Nombre de graines testées :</strong> {{ germinationForm.get('seedInitialCount')?.value }}
-        </div>
-        <div class="half-width">
-          <strong>Nombre de réplicats :</strong> {{ germinationForm.get('replicateCount')?.value }}
+          <strong>Support :</strong> {{ germinationForm.get('id_support')?.value }}
         </div>
       </div>
-
       <div class="form-row">
         <div class="half-width">
-          <strong>Substrat :</strong> {{ germinationForm.get('idSubstrate')?.value }}
-        </div>
-        <div class="half-width">
-          <strong>Support :</strong> {{ germinationForm.get('idSupport')?.value }}
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Programme :</strong> {{ germinationForm.get('program')?.value }}
+          <strong>Programme :</strong> {{ germinationForm.get('additional_data')?.value?.program || '-' }}
         </div>
         <div class="half-width">
           <strong>Remarques :</strong> {{ germinationForm.get('remarks')?.value }}
@@ -66,21 +63,23 @@
       </div>
         </form>
         
-  
       </mat-card-content>
     </div>
     <div class="action-detail split-view">
       <div class="germination-list">
         <app-action-table
           [dataSource]="dataSource"
+          [idTest]="idTest" 
           (rowClicked)="onActionSelected($event)">
         </app-action-table>
       </div>
     
       <div class="germination-detail" *ngIf="selectedAction">
-        <app-action-details [action]="selectedAction"></app-action-details>
+        <app-action-details [actionId]="selectedAction.id_action"></app-action-details>
+
       </div>
     </div>
     
 </div>
+
 
