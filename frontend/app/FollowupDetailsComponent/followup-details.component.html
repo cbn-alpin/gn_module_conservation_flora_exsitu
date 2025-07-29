@@ -1,0 +1,24 @@
+<!-- Suivi réplicats -->
+<div *ngIf="code === 'svr'">
+    <h3 class="section-subtitle">Suivi par réplicat</h3>
+    <div *ngFor="let rep of replicates; let i = index" class="replicate-block">
+      <h3 class="section-subtitle">Suivi réplicats</h3>
+      <h4>Réplicat {{ i + 1 }}</h4>
+      <div class="field-block"><label>Nb germes :</label><span>{{ rep.count_germinated }}</span></div>
+      <div class="field-block"><label>Nb viables :</label><span>{{ rep.count_viable }}</span></div>
+      <div class="field-block"><label>Nb repiqués :</label><span>{{ rep.count_transplanted }}</span></div>
+      <div class="field-block"><label>Nb mortes :</label><span>{{ rep.count_dead }}</span></div>
+      
+    </div>
+  </div>
+ 
+  <!-- Synthèse de suivi -->
+  <div *ngIf="code === 'synth'">
+    <h3 class="section-subtitle">Synthèse du suivi</h3>
+    <span>{{ replicates[0]?.total_count_germinated || '-' }}</span>
+    <span>{{ replicates[0]?.total_count_dead || '-' }}</span>
+    <span>{{ replicates[0]?.total_count_viable || '-' }}</span>
+    <span>{{ replicates[0]?.total_count_transplanted || '-' }}</span>
+    
+  </div>
+  
