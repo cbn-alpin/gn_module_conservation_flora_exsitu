@@ -1,30 +1,189 @@
-<div>
-  <mat-card-header>
-    <mat-card-title>Informations de l'action : Traitement</mat-card-title>
+<mat-card>
+  <mat-card-header class="sticky-header">
+    <mat-card-title>Détails de l'action</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
-    <form [formGroup]="germinationForm" class="semis-form">      
+    <form [formGroup]="germinationForm" class="semis-form">
 
-      <h3 class="section-subtitle">Prétraitement chimique</h3>
-      <div class="form-row">
-        <div class="half-width"><strong>Liquide chimique :</strong> {{ germinationForm.get('scarificationLiquide')?.value }}</div>
-        <div class="half-width"><strong>Durée (heures) :</strong> {{ germinationForm.get('scarificationDuree')?.value }}</div>
-      </div>
-      <div class="form-row">
-        <div class="half-width"><strong>Concentration (%) :</strong> {{ germinationForm.get('scarificationConcentration')?.value }}</div>
+      <!-- Type d'action -->
+      <div class="field-block">
+        <label>Type d'action :</label>
+        <span>{{ labels.id_action_type }}</span>
       </div>
 
-      <h3 class="section-subtitle">Régime thermo-photo</h3>
-      <div class="form-row">
-        <div class="half-width"><strong>T° Lumière :</strong> {{ germinationForm.get('stratificationTempLumiere')?.value }}</div>
-        <div class="half-width"><strong>T° Obscurité :</strong> {{ germinationForm.get('stratificationTempObscurite')?.value }}</div>
-      </div>
-      <div class="form-row">
-        <div class="half-width"><strong>Nb heures Lumière :</strong> {{ germinationForm.get('stratificationHeuresLumiere')?.value }}</div>
-        <div class="half-width"><strong>Nb heures Obscurité :</strong> {{ germinationForm.get('stratificationHeuresObscurite')?.value }}</div>
+      <!-- Suivi réplicats -->
+      <div *ngIf="code === 'svr' && replicatesGrouped?.length" class="replicates-scroll-wrapper">
+        <h3 class="section-subtitle">Suivi par réplicats</h3>
+
+        <table class="replicate-table">
+          <thead>
+            <tr>
+              <th rowspan="2">Date</th>
+              <ng-container *ngFor="let label of replicateLabels">
+                <th colspan="3">{{ label }}</th>
+              </ng-container>
+              <th colspan="3">Total</th>
+            </tr>
+            <tr>
+              <ng-container *ngFor="let label of replicateLabels">
+                <th>Germées</th>
+                <th>Mortes</th>
+                <th class="group-end">Non germées</th>
+              </ng-container>
+              <th>Germées</th>
+              <th>Mortes</th>
+              <th class="group-end">Non germées</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Lignes par date -->
+            <tr *ngFor="let line of replicatesGrouped">
+              <td>
+                <ng-container *ngIf="line.date; else noDate">
+                  {{ line.date !== 'inconnue' ? (line.date | date: 'shortDate') : 'Inconnue' }}
+                </ng-container>
+                <ng-template #noDate>Inconnue</ng-template>
+              </td>
+
+              <ng-container *ngFor="let rep of line.replicates">
+                <td>{{ rep.count_germinated ?? 0 }}</td>
+                <td>{{ rep.count_dead ?? 0 }}</td>
+                <td class="group-end">{{ rep.count_viable ?? 0 }}</td>
+              </ng-container>
+
+              <!-- Totaux ligne -->
+              <td>{{ line.total_germinated }}</td>
+              <td>{{ line.total_dead }}</td>
+              <td class="group-end">{{ line.total_viable }}</td>
+            </tr>
+
+            <!-- Ligne finale : totaux globaux -->
+            <tr class="total-row">
+              <td><strong>Total</strong></td>
+            
+              <ng-container *ngFor="let label of replicateLabels">
+                <td>{{ getReplicateTotals().byReplicate[label]?.germinated || 0 }}</td>
+                <td>{{ getReplicateTotals().byReplicate[label]?.dead || 0 }}</td>
+                <td class="group-end">{{ getReplicateTotals().byReplicate[label]?.viable || 0 }}</td>
+              </ng-container>
+            
+              <td><strong>{{ getReplicateTotals().grandTotal.germinated }}</strong></td>
+              <td><strong>{{ getReplicateTotals().grandTotal.dead }}</strong></td>
+              <td class="group-end"><strong>{{ getReplicateTotals().grandTotal.viable }}</strong></td>
+            </tr>
+            
+          </tbody>
+        </table>
+        <!-- Synthèse de germination par réplicat -->
+        <div *ngIf="code === 'svr' && replicateLabels?.length" class="summary-table-wrapper mt-3">
+          <h3 class="section-subtitle">Synthèse de la germination par réplicat</h3>
+
+          <table class="replicate-table">
+            <thead>
+              <tr>
+                <th>Indicateur</th>
+                <th *ngFor="let r of replicateLabels">{{ r }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Délai germinatif (jours)</td>
+                <td *ngFor="let r of replicateLabels">
+                  {{ getReplicateIndicator(r, 'delay') ?? '-' }}
+                </td>
+              </tr>
+              <tr>
+                <td>Période germinative (jours)</td>
+                <td *ngFor="let r of replicateLabels">
+                  {{ getReplicateIndicator(r, 'period') ?? '-' }}
+                </td>
+              </tr>
+              <tr>
+                <td>% germination</td>
+                <td *ngFor="let r of replicateLabels">
+                  {{ getReplicateIndicator(r, 'percent') ?? '-' }}%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
       </div>
 
+
+
+      <!-- Stérilisation -->
+      <div *ngIf="code === 'ster'">
+        <h3 class="section-subtitle">Stérilisation</h3>
+        <div class="field-block"><label>Type d'eau :</label><span>{{ labels.id_water_type }}</span></div>
+        <div class="field-block"><label>Durée (h) :</label><span>{{ germinationForm.get('duration_water')?.value }}</span></div>
+        <div class="field-block"><label>Liquide :</label><span>{{ labels.id_sterilization_liquid }}</span></div>
+        <div class="field-block"><label>Liquide :</label><span>{{ labels.id_sterilization_product }}</span></div>
+        <div class="field-block"><label>Concentration (%) :</label><span>{{ germinationForm.get('concentration_chemical_liquid')?.value }}</span></div>
+        <div class="field-block"><label>Heures lumière :</label><span>{{ germinationForm.get('hour_count_light')?.value }}</span></div>
+        <div class="field-block"><label>Heures obscurité :</label><span>{{ germinationForm.get('hour_count_shadow')?.value }}</span></div>
+      </div>
+
+      <!-- Scarification -->
+      <div *ngIf="code === 'scar'">
+        <h3 class="section-subtitle">Scarification</h3>
+        <div class="field-block"><label>Type :</label><span>{{ labels.id_scarification_type }}</span></div>
+
+        <ng-container *ngIf="scarificationTypeCode === 'mec'">
+          <div class="field-block"><label>Type mécanique :</label><span>{{ labels.id_scarification_mecanique }}</span></div>
+          <div class="field-block"><label>Outil :</label><span>{{ labels.id_tool }}</span></div>
+        </ng-container>
+
+        <ng-container *ngIf="scarificationTypeCode === 'chi'">
+          <div class="field-block"><label>Produit :</label><span>{{ labels.id_chemical_liquid }}</span></div>
+          <div class="field-block"><label>Concentration (%) :</label><span>{{ germinationForm.get('concentration_chemical_liquid')?.value || '-' }}</span></div>
+          <div class="field-block"><label>Température (°C) :</label><span>{{ germinationForm.get('temperature')?.value || '-' }}</span></div>
+          <div class="field-block"><label>Durée (min) :</label><span>{{ germinationForm.get('duration_chemical_liquid')?.value || '-' }}</span></div>
+        </ng-container>
+      </div>
+
+      <!-- Stratification -->
+      <div *ngIf="code === 'strat'">
+        <h3 class="section-subtitle">Stratification</h3>
+        <div class="field-block"><label>T° lumière :</label><span>{{ germinationForm.get('temperature_light')?.value }}</span></div>
+        <div class="field-block"><label>T° obscurité :</label><span>{{ germinationForm.get('temperature_shadow')?.value }}</span></div>
+        <div class="field-block"><label>Heures lumière :</label><span>{{ germinationForm.get('hour_count_light')?.value }}</span></div>
+        <div class="field-block"><label>Heures obscurité :</label><span>{{ germinationForm.get('hour_count_shadow')?.value }}</span></div>
+      </div>
+
+      <!-- Traitement -->
+      <div *ngIf="code === 'tra'">
+        <h3 class="section-subtitle">Traitement</h3>
+        <div class="field-block"><label>Liquide :</label><span>{{ labels.id_liquid_treatment }}</span></div>
+        <div class="field-block"><label>Concentration (%) :</label><span>{{ germinationForm.get('concentration_chemical_liquid')?.value }}</span></div>
+
+        <h3 class="section-subtitle">Régime thermo-photo</h3>
+        <div class="field-block"><label>T° lumière :</label><span>{{ germinationForm.get('temperature_light')?.value }}</span></div>
+        <div class="field-block"><label>T° obscurité :</label><span>{{ germinationForm.get('temperature_shadow')?.value }}</span></div>
+        <div class="field-block"><label>Heures lumière :</label><span>{{ germinationForm.get('hour_count_light')?.value }}</span></div>
+        <div class="field-block"><label>Heures obscurité :</label><span>{{ germinationForm.get('hour_count_shadow')?.value }}</span></div>
+      </div>
+
+      <!-- Infos générales -->
+      <div class="field-block" *ngIf="code && code !== 'svr'">
+        <label>Date début :</label>
+        <span>{{ germinationForm.get('date_start')?.value | date }}</span>
+      </div>
+      <div class="field-block" *ngIf="code">
+        <label>Date fin :</label>
+        <span>{{ germinationForm.get('date_end')?.value | date }}</span>
+      </div>
+      <div class="field-block" *ngIf="code">
+        <label>Effectué par :</label>
+        <span>{{ labels.id_actor }}</span>
+      </div>
+      <div class="field-block" *ngIf="code">
+        <label>Remarques :</label>
+        <span>{{ germinationForm.get('remarks')?.value }}</span>
+      </div>
     </form>
   </mat-card-content>
-</div>
+</mat-card>

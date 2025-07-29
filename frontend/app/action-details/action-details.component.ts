@@ -1,118 +1,365 @@
-import { Component, OnInit,Input } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { DataService } from '../services/data.service';
 
-interface Action {
-  numSemis: string;
-  numSemence: string;
-  dateDebut: Date;
-  dateFin: Date;
-  replicate: number;
-  levage: number;
+interface ReplicateGroup {
+  date: Date | null;
+  replicates: any[];
+  total_germinated: number;
+  total_dead: number;
+  total_viable: number;
 }
+
 @Component({
   selector: 'app-action-details',
   templateUrl: './action-details.component.html',
   styleUrls: ['./action-details.component.scss']
 })
-export class ActionDetailsComponent implements OnInit {
-  @Input() action: any;
+export class ActionDetailsComponent implements OnChanges {
+  @Input() actionId: number | null = null;
 
- 
   germinationForm: FormGroup;
-  dataSource = new MatTableDataSource<Action>([]);
-  displayedColumns: string[] = [
-    'numSemis',
-    'numSemence',
-    'dateDebut',
-    'dateFin',
-    'replicate',
-    'levage'
-  ];
+  code: string | null = null;
+  replicates: any[] = [];
+  replicatesGrouped: ReplicateGroup[] = [];
+  replicateLabels: string[] = [];
 
-  constructor(private fb: FormBuilder,public router: Router ) {
-    this.germinationForm = this.fb.group({
-      reference: ['', Validators.required],
-      provenance: ['', Validators.required],
-      numeroSemis: ['', Validators.required],
-      numeroSemence: ['', Validators.required],
-      preparation: [''],
-      contenant: [''],
-      substrat: [''],
-      arrosage: [''],
-      modeSemis: [''],
-      profondeur: [''],
-      dateDebut: ['', Validators.required],
-      dateFin: [''],
-      traitement: [''],
-      remarques: [''],
-    
-      replicats: this.fb.array([this.createReplicat()])
+  action: any = null;
+  scarificationTypeCode: string | null = null;
 
-      
-    });
-  }
-  get replicats(): FormArray {
-    return this.germinationForm.get('replicats') as FormArray;
-  }
-  addNewGermination(){
-  }
+  labels: any = {
+    id_action_type: '',
+    id_actor: '',
+    id_water_type: '',
+    id_chemical_liquid: '',
+    id_liquid_treatment: '',
+    id_scarification_type: '',
+    id_scarification_mecanique: '',
+    id_tool: '',
+    id_sterilization_liquid: '',
+    id_sterilization_product: '',
+  };
 
-  onBack(){
-  }
-
-
-
-  get replicatsControls() {
-    return (this.germinationForm.get('replicats') as FormArray).controls;
-  }
-
-  createReplicat(): FormGroup {
-    return this.fb.group({
-      date: [''],
-      plantulesLevees: [''],
-      plantulesMortes: [''],
-      plantulesRepiques: [''],
-      grainesSemees: ['']
-    });
-  }
-
-  addReplicat(): void {
-    (this.germinationForm.get('replicats') as FormArray).push(this.createReplicat());
-  }
+  germinationIndicators: { delay: number; period: number; percent: number } | null = null;
+  germinationIndicatorsByReplicat: {
+    [replicatCode: string]: { delay: number | null; period: number | null; percent: number }
+  } = {};
   
 
-  ngOnInit(): void {
-    this.germinationForm.patchValue({
-      reference: 'Contrat ABC',
-      provenance: 'Test 123',
-      numeroSemis: 'SEM123',
-      numeroSemence: 'SEED456',
-      preparation: 'Some remarks',
-      contenant: 'Scarification process',
+  constructor(
+    private fb: FormBuilder,
+    private api: DataService
+  ) {
+    this.germinationForm = this.fb.group({
+      id_action_type: [''],
+      id_actor: [''],
+      date_start: [''],
+      date_end: [''],
+      remarks: [''],
+      nbGermes: [null],
+      nbViables: [null],
+      nbRepiques: [null],
+      nbMortes: [null],
+      totalGermes: [null],
+      totalViables: [null],
+      totalRepiques: [null],
+      totalMortes: [null],
+      id_water_type: [null],
+      duration_water: [null],
+      duration_chemical_liquid: [null],
+      id_chemical_liquid: [null],
+      id_liquid_treatment: [null],
+      concentration_chemical_liquid: [null],
+      temperature_light: [null],
+      temperature_shadow: [null],
+      hour_count_light: [null],
+      hour_count_shadow: [null],
+      id_scarification_type: [null],
+      id_tool: [null],
     });
   }
 
-  onDelete(){
-
-  }
-  onView(){
-    
-  }
-  onEdit(){
-    
-  }
-
-  onCancel(){
-    
-  }
-  onSubmit() {
-    if (this.germinationForm.valid) {
-      const formData = this.germinationForm.value;
-      console.log('Formulaire soumis :', formData);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.actionId && this.actionId) {
+      this.loadActionDetails(this.actionId);
     }
   }
 
-  } 
+  loadActionDetails(id: number): void {
+    this.api.getActionWithLabels(id).subscribe({
+      next: (action) => {
+        console.log("✅ Action chargée :", action);
+        this.action = action;
+
+        // Libellés à afficher
+        this.labels = {
+          id_action_type: action.label_action_type,
+          id_actor: action.label_actor,
+          id_chemical_liquid: action.label_chemical_liquid,
+          id_sterilization_liquid: action.label_sterilization_liquid,
+          id_sterilization_product: action.label_sterilization_product,
+          id_liquid_treatment: action.label_liquid_treatment,
+          id_water_type: action.label_water_type,
+          id_scarification_type: action.label_scarification_type,
+          id_scarification_mecanique: action.label_scarification_mecanique,
+          id_tool: action.label_tool,
+        };
+
+        // Patch des champs du formulaire
+        this.patchForm(action);
+
+        // Détection du code d'action
+        if (action.id_action_type) {
+          this.getActionByCode(action.id_action_type, 'code');
+        }
+
+        if (action.id_scarification_type) {
+          this.getActionByCode(action.id_scarification_type, 'scarification');
+        }
+
+        // Réplicats si suivi
+        if (action.replicates?.length && action.label_action_type?.toLowerCase().includes('suivi')) {
+          this.replicates = action.replicates;
+          this.replicateLabels = this.getReplicateLabels(this.replicates);
+          this.replicatesGrouped = this.groupReplicatesByDate(this.replicates);
+          this.calculateGerminationIndicators();
+          const indicators = this.germinationIndicators;
+
+            if (indicators && this.action?.id_test) {
+              this.api.updateTestIndicators(this.action.id_test, indicators).subscribe({
+                next: () => {
+                  console.log("✅ Indicateurs stockés dans la base :", indicators);
+                },
+                error: (err) => {
+                  console.error("❌ Erreur lors de l'enregistrement des indicateurs :", err);
+                }
+              });
+            }
+ 
+          
+        }
+        
+      }
+    });
+  }
+
+  getActionByCode(id_nomenclature: number, target: 'code' | 'scarification'): void {
+    this.api.getActionByCode(id_nomenclature).subscribe({
+      next: (result) => {
+        if (target === 'code') {
+          this.code = result.cd_nomenclature;
+        } else if (target === 'scarification') {
+          this.scarificationTypeCode = result.cd_nomenclature;
+        }
+      },
+      error: (err) => {
+        console.error("❌ Erreur lors de la récupération du code :", err);
+      }
+    });
+  }
+
+  calculateGerminationIndicators(): void {
+    if (!this.replicatesGrouped?.length) return;
+  
+    const germinationDates: Date[] = [];
+  
+    for (const group of this.replicatesGrouped) {
+      if (!group.date) continue;
+      const germinated = group.replicates.reduce((sum, r) => sum + (r.count_germinated || 0), 0);
+      if (germinated > 0) {
+        germinationDates.push(group.date);
+      }
+    }
+  
+    const startDate = new Date(this.germinationForm.get('date_start')?.value);
+  
+    // Délai germinatif
+    const delay = germinationDates.length
+      ? Math.max(0, Math.floor((germinationDates[0].getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
+      : null;
+  
+    // Période germinative
+    let period: number | null = null;
+
+    if (germinationDates.length >= 2) {
+      const first = germinationDates[0].getTime();
+      const last = germinationDates[germinationDates.length - 1].getTime();
+      const diffDays = Math.floor((last - first) / (1000 * 60 * 60 * 24));
+      period = diffDays === 0 ? 1 : diffDays;
+    } else if (germinationDates.length === 1) {
+      period = 1;
+    }
+  
+    // % Germination
+    const totals = this.getReplicateTotals().grandTotal;
+    const percent = totals.germinated && (totals.germinated + totals.dead + totals.viable)
+      ? Math.round((totals.germinated / (totals.germinated + totals.dead + totals.viable)) * 100)
+      : 0;
+  
+    this.germinationIndicators = {
+      delay: delay ?? 0,
+      period: period ?? 0,
+      percent
+    };
+
+    this.germinationIndicatorsByReplicat = {};
+
+for (const code of this.replicateLabels) {
+  const germinationDates: Date[] = [];
+  let total_germinated = 0;
+  let total_dead = 0;
+  let total_viable = 0;
+
+  for (const group of this.replicatesGrouped) {
+    const rep = group.replicates.find(r => r.code === code);
+    if (rep) {
+      const g = rep.count_germinated || 0;
+      const d = rep.count_dead || 0;
+      const v = rep.count_viable || 0;
+
+      if (g > 0 && group.date) {
+        germinationDates.push(group.date);
+      }
+
+      total_germinated += g;
+      total_dead += d;
+      total_viable += v;
+    }
+  }
+
+  const startDate = new Date(this.germinationForm.get('date_start')?.value);
+
+  const delay = germinationDates.length
+    ? Math.max(0, Math.floor((germinationDates[0].getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
+    : null;
+
+  let period: number | null = null;
+  if (germinationDates.length >= 2) {
+    const first = germinationDates[0].getTime();
+    const last = germinationDates[germinationDates.length - 1].getTime();
+    const diffDays = Math.floor((last - first) / (1000 * 60 * 60 * 24));
+    period = diffDays === 0 ? 1 : diffDays;
+  } else if (germinationDates.length === 1) {
+    period = 1;
+  }
+
+  const percent = (total_germinated + total_dead + total_viable) > 0
+    ? Math.round((total_germinated / (total_germinated + total_dead + total_viable)) * 100)
+    : 0;
+
+  this.germinationIndicatorsByReplicat[code] = {
+    delay,
+    period,
+    percent
+  };
+}
+
+  }
+  
+  patchForm(action: any): void {
+    this.germinationForm.patchValue({
+      id_action_type: action.id_action_type,
+      id_actor: action.id_actor,
+      date_start: action.date_start,
+      date_end: action.date_end,
+      remarks: action.remarks,
+      nbGermes: action.nbGermes,
+      nbViables: action.nbViables,
+      nbRepiques: action.nbRepiques,
+      nbMortes: action.nbMortes,
+      totalGermes: action.totalGermes,
+      totalViables: action.totalViables,
+      totalRepiques: action.totalRepiques,
+      totalMortes: action.totalMortes,
+      id_water_type: action.id_water_type,
+      duration_water: action.duration_water,
+      duration_chemical_liquid: action.duration_chemical_liquid,
+      id_chemical_liquid: action.id_chemical_liquid,
+      id_liquid_treatment: action.id_liquid_treatment,
+      concentration_chemical_liquid: action.concentration_chemical_liquid,
+      temperature_light: action.temperature_light,
+      temperature_shadow: action.temperature_shadow,
+      hour_count_light: action.hour_count_light,
+      hour_count_shadow: action.hour_count_shadow,
+      id_scarification_type: action.id_scarification_type,
+      id_tool: action.id_tool,
+    });
+  }
+
+  getReplicateLabels(replicates: any[]): string[] {
+    const set = new Set(replicates.map(r => r.code));
+    return Array.from(set).sort();
+  }
+
+  groupReplicatesByDate(replicates: any[]): ReplicateGroup[] {
+    const groupedByDate: { [date: string]: any[] } = {};
+    replicates.forEach(rep => {
+      const rawDate = rep.date ? new Date(rep.date) : null;
+      const key = rawDate ? rawDate.toISOString().split('T')[0] : 'inconnue';
+      if (!groupedByDate[key]) groupedByDate[key] = [];
+      groupedByDate[key].push(rep);
+    });
+
+    const result: ReplicateGroup[] = [];
+
+    for (const [dateKey, reps] of Object.entries(groupedByDate)) {
+      const date = dateKey !== 'inconnue' ? new Date(dateKey) : null;
+      const grouped: { [code: string]: any } = {};
+      reps.forEach(rep => grouped[rep.code] = rep);
+      const replicateArray = this.replicateLabels.map(code => grouped[code] || {});
+      const total_germinated = replicateArray.reduce((sum, r) => sum + (r.count_germinated || 0), 0);
+      const total_dead = replicateArray.reduce((sum, r) => sum + (r.count_dead || 0), 0);
+      const total_viable = replicateArray.reduce((sum, r) => sum + (r.count_viable || 0), 0);
+
+      result.push({ date, replicates: replicateArray, total_germinated, total_dead, total_viable });
+    }
+
+    return result.sort((a, b) => {
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return a.date.getTime() - b.date.getTime();
+    });
+  }
+
+  getReplicateTotals() {
+    const totalsByRep: { [code: string]: { germinated: number; dead: number; viable: number } } = {};
+    let totalGermes = 0;
+    let totalMortes = 0;
+    let totalViables = 0;
+
+    for (const rep of this.replicates) {
+      const code = rep.code;
+      if (!totalsByRep[code]) {
+        totalsByRep[code] = { germinated: 0, dead: 0, viable: 0 };
+      }
+
+      const g = rep.count_germinated || 0;
+      const d = rep.count_dead || 0;
+      const v = rep.count_viable || 0;
+
+      totalsByRep[code].germinated += g;
+      totalsByRep[code].dead += d;
+      totalsByRep[code].viable += v;
+
+      totalGermes += g;
+      totalMortes += d;
+      totalViables += v;
+    }
+
+    return {
+      byReplicate: totalsByRep,
+      grandTotal: {
+        germinated: totalGermes,
+        dead: totalMortes,
+        viable: totalViables
+      }
+    };
+  }
+
+  getReplicateIndicator(code: string, key: 'delay' | 'period' | 'percent'): number | null {
+    return this.germinationIndicatorsByReplicat[code]?.[key] ?? null;
+  }
+  
+}
+
+
