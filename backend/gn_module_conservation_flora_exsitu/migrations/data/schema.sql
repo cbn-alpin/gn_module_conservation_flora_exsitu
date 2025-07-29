@@ -223,6 +223,12 @@ CREATE TABLE "t_test" (
     "id_substrate" INTEGER,
     "remarks" TEXT,
     "additional_data" JSONB,
+    "germination_rate" REAL,    
+    "germination_delay" INTEGER,
+    "germination_period" INTEGER,               
+    "photo_thermo_regime" VARCHAR(100),  
+    "last_test" BOOLEAN DEFAULT FALSE,  
+    "pre_treatment"  BOOLEAN DEFAULT FALSE, 
     "meta_create_by" INTEGER,
     "meta_create_date" TIMESTAMP,
     "meta_update_by" INTEGER,
@@ -265,6 +271,7 @@ CREATE TABLE "t_action" (
     "id_actor" INTEGER NOT NULL,
     "id_action_type" INTEGER NOT NULL,
     "id_scarification_type" INTEGER,
+    "id_scarification_mecanique" INTEGER,
     "temperature_light" INTEGER,
     "temperature_shadow" INTEGER,
     "hour_count_light" INTEGER,
@@ -274,6 +281,11 @@ CREATE TABLE "t_action" (
     "id_chemical_liquid" INTEGER,
     "duration_chemical_liquid" INTEGER,
     "concentration_chemical_liquid" INTEGER,
+    "id_liquid_treatment" INTEGER,
+    "id_tool" INTEGER,
+    "id_sterilization_product" INTEGER,
+    "id_sterilization_liquid" INTEGER,
+
     "remarks" TEXT,
     "additional_data" JSONB,
     "meta_create_by" INTEGER NOT NULL,
@@ -303,6 +315,8 @@ CREATE TABLE "t_action_replicate" (
     "total_count_germinated" INTEGER,
     "total_count_transplanted" INTEGER,
     "total_count_dead" INTEGER,
+    "last_replicate" BOOLEAN DEFAULT FALSE,
+
     PRIMARY KEY ("id_action_replicate")
 );
 
@@ -457,6 +471,7 @@ ALTER TABLE "t_test"
 ADD FOREIGN KEY("meta_update_by") REFERENCES utilisateurs.t_roles(id_role)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
+
 ALTER TABLE "t_sowing"
 ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -498,6 +513,22 @@ ALTER TABLE "t_action"
 ADD FOREIGN KEY("id_scarification_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_scarification_mecanique") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_tool") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_sterilization_product") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_sterilization_liquid") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_action"
+ADD FOREIGN KEY("id_liquid_treatment") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE "t_action"
 ADD FOREIGN KEY("id_water_type") REFERENCES ref_nomenclatures.t_nomenclatures(id_nomenclature)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_action"
@@ -512,4 +543,4 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE "t_action_replicate"
 ADD FOREIGN KEY("id_action") REFERENCES "t_action"("id_action")
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE NO ACTION ON DELETE CASCADE;
