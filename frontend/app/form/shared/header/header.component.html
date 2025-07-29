@@ -9,7 +9,11 @@
         <span><b>Observateur:</b> {{ harvest?.observateur }}</span>
       </div>
       <div class="col-3" style="display: flex;flex-direction: column;" *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'">
-        <span><b>Matériel sélectionné:</b> {{ codeMaterial }}</span>
+        <span><b>N° récolte	:</b> {{ codeMaterial }}</span>
+        <span><b>Taxon:</b> 
+          <span [matTooltip]="taxonTooltip">{{ taxonName || 'Non défini' }}</span>
+        </span>
+        
       </div>
     </div>
 </div>
