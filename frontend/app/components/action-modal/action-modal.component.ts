@@ -13,6 +13,11 @@ import { ConstantsService } from '../../services/constants.service';
 import { FormService } from '@geonature_common/form/form.service';
 import { DataFormService } from '@geonature_common/form/data-form.service';
 import { HarvestStoreService } from '../../services/store.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { ModuleService } from '@geonature/services/module.service';
+import { ExsituFormService } from '../../form/shared/exsitu-form.service';
+
 
 
 @Component({
@@ -33,6 +38,10 @@ export class ActionModalComponent implements OnInit {
     context: any = null;
     quantiteMaxDisponible: number = 0;
     public showInitialStockWarning: boolean = false;
+    public allowSubmitForGerminationMovement = false;
+    public currentModulePath: string
+    idMaterial: number | null = null;
+    public isInitialStorage = false;
 
 
     constructor(
@@ -46,7 +55,13 @@ export class ActionModalComponent implements OnInit {
         public constants: ConstantsService,
         private coreFormService: FormService,
         private _dfService: DataFormService,
-        public storeService: HarvestStoreService
+        public storeService: HarvestStoreService,
+        private cdr: ChangeDetectorRef,
+        public router: Router,
+        public moduleService: ModuleService,
+        public exsituFormService: ExsituFormService,
+
+
     ){
 
     }
@@ -74,6 +89,21 @@ export class ActionModalComponent implements OnInit {
         setTimeout(() => {
           this.fillForm(this.data.data);
         });
+        this.actionForm.get('id_storage_action')?.valueChanges.subscribe(() => {
+          this.evaluateEnableSubmit();
+        });
+        
+        this.actionForm.get('id_destination')?.valueChanges.subscribe(() => {
+          this.evaluateEnableSubmit();
+        });
+
+        this.moduleService.currentModule$.subscribe((module) => {
+          this.currentModulePath = module.module_path.toLowerCase();
+        });
+
+        this.idMaterial = this.exsituFormService.idMaterial
+        console.log(this.idMaterial)
+        
     }
 
     initForm(){
@@ -262,10 +292,18 @@ export class ActionModalComponent implements OnInit {
         this.showInternalField = codeNomenclature === this.constants.ACTION_CODES.MOVEMENT ? true : false
         this.showExternalField = codeNomenclature === this.constants.ACTION_CODES.DESTOCKING ? true : false
         this.updateValidatorsBasedOnAction(codeNomenclature)
-        const isInitialStorage = codeNomenclature === this.constants.ACTION_CODES.INITIAL_STORAGE;
-        if (!isInitialStorage && this.context && this.context.has_initial_stockage === false) {
-          this.showInitialStockageRequiredMessage();
+        this.isInitialStorage = codeNomenclature === this.constants.ACTION_CODES.INITIAL_STORAGE;
+
+        if (this.context?.has_initial_stockage === false) {
+          if (this.isInitialStorage) {
+            this.showInitialStockWarning = false; // autorisé
+          } else {
+            this.showInitialStockageRequiredMessage(); // interdit
+          }
+        } else {
+          this.showInitialStockWarning = false;
         }
+
       },
       error: (error) => {
         
@@ -373,4 +411,53 @@ export class ActionModalComponent implements OnInit {
   close(): void {
     this.dialogRef.close();
   }
+
+  evaluateEnableSubmit() {
+    const idStorageAction = this.actionForm.get('id_storage_action')?.value;
+    const idDestination = this.actionForm.get('id_destination')?.value;
+  
+    if (!idStorageAction || !idDestination) {
+      this.allowSubmitForGerminationMovement = false;
+      return;
+    }
+  
+    // Récupère les codes nomenclature à partir des IDs
+    this.api.getCodesNomenclature(idStorageAction).subscribe(codeAction => {
+      this.api.getCodesNomenclature(idDestination).subscribe(codeDestination => {
+        this.allowSubmitForGerminationMovement =
+          codeAction === this.constants.ACTION_CODES.MOVEMENT &&
+          codeDestination === 'tdg';
+          this.cdr.detectChanges();
+      });
+    });
+  }
+  submetAndResetForm() {
+    const finalForm = this.formatDataForm();
+  
+    this.api.addAction(this.data.data.id_material, finalForm).subscribe({
+      next: (response) => {
+        const idStorage = response.id_storage; // Assure-toi que ton backend retourne bien ça
+
+        this._commonService.translateToaster('info', 'Action ajoutée avec succès');
+        this.initForm(); // Réinitialise le formulaire
+        this.loadContext(); // 👈 Ajoute ceci ici
+      
+        this.initForm(); // Réinitialise le formulaire
+
+        this.evaluateEnableSubmit(); // Réévalue si le bouton doit rester activé
+        this.dialogRef.close(true); // Ferme la modale
+        this.exsituFormService.idStorage = idStorage; // <- stocke dans le service
+        this.exsituFormService.id_storage.next(idStorage);
+        this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/germination-table`]);
+
+      },
+      
+      error: (err) => {
+        console.error(err);
+        this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de l\'action');
+      }
+    });
+  }
+  
+  
 }

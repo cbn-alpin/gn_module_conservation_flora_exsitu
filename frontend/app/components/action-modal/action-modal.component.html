@@ -192,14 +192,26 @@
       Retour
     </button>
     <button
+      mat-button
+      class="button-success"
+      [disabled]="!allowSubmitForGerminationMovement"
+      matTooltip="Ajouter et créer une nouvelle action"
+      (click)="submetAndResetForm()"
+    >
+      Ajouter et créer
+      <mat-icon style="vertical-align: middle">add</mat-icon>
+    </button>
+    <button
       mat-button [mat-dialog-close]="true"
       matTooltip="Enregistrer cette action"
       class="button-success"
       (click)="submetData()"
       [disabled]="!actionForm.valid || showInitialStockWarning"
+
     >
       Enregistrer
       <mat-icon style="vertical-align: middle">save</mat-icon>
     </button>
   </div>
 </mat-dialog-actions>
+
