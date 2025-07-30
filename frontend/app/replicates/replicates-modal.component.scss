@@ -1,0 +1,38 @@
+.replicate-table {
+    width: 100%; // occupe toute la largeur
+    border-collapse: collapse;
+    margin-top: 10px;
+  
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+      font-size: 13px;
+    }
+  
+    th:first-child, td:first-child {
+      text-align: left;
+      font-weight: bold;
+      background-color: #f9f9f9;
+      width: 20%;
+    }
+  }
+  
+  mat-form-field.replicate-input {
+    width: 100%;
+    max-width: 60px;
+    margin: 0 auto;
+  
+    .mat-form-field-wrapper,
+    .mat-form-field-flex {
+      padding: 0;
+    }
+  
+    .mat-input-element {
+      padding: 4px;
+      font-size: 13px;
+      text-align: center;
+    }
+  }
+  
+  
