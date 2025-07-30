@@ -30,6 +30,34 @@ background-color: #ffffff;
   }
 }
 
+
+
+
+.mat-mdc-button:not(:disabled) {
+  color: #fff;
+}
+
+.left {
+  position: absolute;
+  left: 0;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+table tr.mat-row {
+  cursor: pointer;
+}
+
+table tr.mat-row:hover {
+  background-color: #f1f1f1;
+}
+
 .header-with-button {
   display: flex;
   align-items: center;
@@ -45,9 +73,9 @@ background-color: #ffffff;
 }
 
 .gray-button {
-  background-color: #66BB6A !important;
-  color: #fff !important;
-  border: 1px solid #45A049 !important;
+  background-color: #66BB6A;
+  color: #fff;
+  border: 1px solid #45A049;
   border-radius: 4px;
   padding: 6px 12px;
   font-weight: 500;
@@ -58,11 +86,13 @@ background-color: #ffffff;
   background-color: #45A049;
 }
 
-
-
 .clickable-row {
   cursor: pointer;
 }
+
+
+
+
 
 
 

@@ -1,52 +1,97 @@
 <mat-card>
   <mat-card-header class="header-with-button">
-    <button mat-button class="gray-button" (click)="addFicheViability()">
-      <mat-icon>add</mat-icon> Ajouter une fiche de viabilité
+    <button mat-button class="gray-button" (click)="addFicheGermination()">
+      <mat-icon>add</mat-icon> Ajouter un TV
     </button>
-  
     <div class="title-wrapper">
       <mat-card-title>Fiche de Viabilité</mat-card-title>
     </div>
   </mat-card-header>
-  
+
   <mat-card-content>
     <table mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="numSemis">
-        <th mat-header-cell *matHeaderCellDef>N° Semis</th>
-        <td mat-cell *matCellDef="let element">{{element.numSemis}}</td>
+
+
+      <!-- N° test de germination -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef>N° test de Viabilité</th>
+        <td mat-cell *matCellDef="let element">{{ element.code }}</td>
       </ng-container>
-      <ng-container matColumnDef="numSemence">
-        <th mat-header-cell *matHeaderCellDef>N° Semence</th>
-        <td mat-cell *matCellDef="let element">{{element.numSemence}}</td>
+
+      <!-- % germination
+      <ng-container matColumnDef="germination_rate">
+        <th mat-header-cell *matHeaderCellDef>% germination</th>
+        <td mat-cell *matCellDef="let element">{{ element.germination_rate || '-' }}</td>
+      </ng-container> -->
+
+      <!-- Date de début -->
+      <ng-container matColumnDef="meta_create_date">
+        <th mat-header-cell *matHeaderCellDef>Date de début</th>
+        <td mat-cell *matCellDef="let element">{{ element.meta_create_date | date:'shortDate' }}</td>
       </ng-container>
-      <ng-container matColumnDef="dateDebut">
-        <th mat-header-cell *matHeaderCellDef>Date début</th>
-        <td mat-cell *matCellDef="let element">{{element.dateDebut | date}}</td>
+
+      <!-- Nombre de graines -->
+      <ng-container matColumnDef="seed_initial_count">
+        <th mat-header-cell *matHeaderCellDef>Nb de graines</th>
+        <td mat-cell *matCellDef="let element">{{ element.seed_initial_count }}</td>
       </ng-container>
-      <ng-container matColumnDef="dateFin">
-        <th mat-header-cell *matHeaderCellDef>Date fin</th>
-        <td mat-cell *matCellDef="let element">{{element.dateFin | date}}</td>
+
+      <!-- Régime thermo/photo -->
+      <!-- <ng-container matColumnDef="photo_thermo_regime">
+        <th mat-header-cell *matHeaderCellDef>Régime thermo-photo</th>
+        <td mat-cell *matCellDef="let element">
+          <span *ngIf="element.thermoPhoto">{{ element.thermoPhoto }}</span>
+        </td>
+      </ng-container> -->
+
+        <!-- Traitement -->
+        <ng-container matColumnDef="traitement">
+          <th mat-header-cell *matHeaderCellDef> Traitement </th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="element.traitement">{{ element.traitement }}</span>
+            <span *ngIf="!element.traitement">-</span>
+          </td>
+        </ng-container>
+      
+      
+      
+      <!-- Prétraitement -->
+      <ng-container matColumnDef="pre_treatment">
+        <th mat-header-cell *matHeaderCellDef>Prétraitement</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            [checked]="element.pre_treatment === true"
+            (change)="onChangePreTreatment(element, $event.checked)">
+            Oui
+          </mat-checkbox>
+        </td>
       </ng-container>
-      <ng-container matColumnDef="replicate">
-        <th mat-header-cell *matHeaderCellDef>Réplicats</th>
-        <td mat-cell *matCellDef="let element">{{element.replicate}}</td>
-      </ng-container>
-      <ng-container matColumnDef="levage">
+
+    
+    
+
+      
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Action</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button [matMenuTriggerFor]="menu"  (click)="$event.stopPropagation()">
-            <mat-icon>more_vert</mat-icon> <!-- icône des 3 points -->
+          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
           </button>
       
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="onView(element)">
-              <mat-icon>visibility</mat-icon>
-              <span>Voir</span>
+            <button mat-menu-item (click)="onAddAction(element)">
+              <mat-icon>add</mat-icon>
+              <span>Ajouter une action</span>
             </button>
+      
             <button mat-menu-item (click)="onEdit(element)">
               <mat-icon>edit</mat-icon>
               <span>Éditer</span>
             </button>
+      
             <button mat-menu-item (click)="onDelete(element)">
               <mat-icon>delete</mat-icon>
               <span>Supprimer</span>
@@ -54,12 +99,15 @@
           </mat-menu>
         </td>
       </ng-container>
+      
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"  class="clickable-row"  (click)="onRowClick(row)"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="onRowClick(row)">
+      </tr>
     </table>
-    <div class="no-data " *ngIf="dataSource.data.length === 0">
-      Aucun test de viabilité enregistré
+
+    <div class="no-data" *ngIf="dataSource.data.length === 0">
+      Aucun test de germination enregistré
     </div>
   </mat-card-content>
 </mat-card>
