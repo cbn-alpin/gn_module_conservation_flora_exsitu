@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class DataService {
+  
   private moduleBaseUrl: string;
 
   constructor(
@@ -166,4 +167,134 @@ export class DataService {
     return this.api.delete(`${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idStorage}`);
   }
 
+  addTest(id_material: number, testData: any): Observable<any> {
+    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${id_material}/tests`, testData);
+  }  
+  getTestsByMaterial(id_material: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${id_material}/tests`);
+  }
+  
+  
+  getTestCodeParent(id_material: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${id_material}/tests/code-autocomplete`);
+  }
+  createTest(data: any, id_material: number): Observable<any> {
+    return this.api.post(`${this.moduleBaseUrl}/materials/${id_material}/tests`, data);
+  }
+  
+  getTestById(id_test: number): Observable<any> {
+    return this.api.get<any>(`${this.moduleBaseUrl}/tests/${id_test}`);
+  }
+
+
+  
+  
+  getDefaultTestType(): Observable<{ id_test_type: number }> {
+    return this.api.get<{ id_test_type: number }>(
+      `${this.moduleBaseUrl}/tests/default-id-test-type`
+    );
+  }
+  getTestWithLabels(id_test: number): Observable<any> {
+    return this.api.get<any>(`${this.moduleBaseUrl}/tests/${id_test}/with-labels`);
+  }
+
+  getTestByCode(code) {
+    return this.api.get<any>(`${this.moduleBaseUrl}/tests/code/${code}`);
+  }
+  
+  getActionByCode(code) {
+    return this.api.get<any>(`${this.moduleBaseUrl}/actions/code/${code}`);
+  }
+
+  
+  
+  deleteTest(id_material: number, id_test: number): Observable<any> {
+    return this.api.delete(`${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`).pipe(
+      map(() => {
+        // ✅ Message intégré ici
+        alert('Test supprimé avec succès'); // ou toaster si tu veux
+        return { deleted: true };
+      })
+    );
+  }
+
+  updateTest(id_material: number, id_test: number, testData: any): Observable<any> {
+    return this.api.put(`${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`, testData);
+  }
+  getTestWithLabelsById(id_test: number): Observable<any> {
+    return this.api.get<any>(`${this.moduleBaseUrl}/tests/${id_test}/with-labels`);
+  }
+
+  createAction(data: any): Observable<any> {
+    return this.api.post<any>(`${this.moduleBaseUrl}/actions`, data);
+  }
+   
+  getActionWithLabels(id_action: number): Observable<any> {
+    return this.api.get<any>(
+      `${this.moduleBaseUrl}/actions/${id_action}/with-labels`
+    );
+  }
+  
+  updateAction(id_action: number, data: any): Observable<any> {
+    return this.api.put<any>(`${this.moduleBaseUrl}/actions/${id_action}`, data);
+  }
+  
+  getAction(id_action: number): Observable<any> {
+    return this.api.get<any>(`${this.moduleBaseUrl}/actions/${id_action}`);
+  }
+  
+  
+  addActionByTest(id_test: number, actionData: any): Observable<any> {
+    return this.api.post(`${this.moduleBaseUrl}/tests/${id_test}/actions`, actionData);
+  }
+  
+  getActionsByTest(id_test: number): Observable<any[]> {
+    console.log('📡 Requête vers le backend avec id_test:', id_test);
+
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/tests/${id_test}/actions`);
+  }
+  
+  getActionbyCode(id_action: number): Observable<any> {
+    return this.api.get(`${this.moduleBaseUrl}/actions/code/${id_action}`);
+  }
+  
+  deleteaction(id_action: number): Observable<any> {
+    return this.api.delete(`${this.moduleBaseUrl}/actions/${id_action}`);
+  }
+
+  
+  getNomenclatureDetails(id_nomenclature: number): Observable<any> {
+    return this.api.get<any>(`${this.moduleBaseUrl}/actions/code/${id_nomenclature}`);
+  }
+  getActionReplicates(id_action: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/actions/${id_action}/replicates`);
+  }
+
+  getThermoPhotoRegime(id_test: number): Observable<any> {
+    return this.api.get(`${this.moduleBaseUrl}/thermo-photo/${id_test}`);
+  }
+  
+  updateTestPreTreatment(id_test: number, pre_treatment: boolean) {
+    return this.api.put(`${this.moduleBaseUrl}/tests/${id_test}/pre-treatment`, { pre_treatment });
+  }
+  
+  getReplicateDatesByTest(id_test: number): Observable<string[]> {
+    return this.api.get<string[]>(`${this.moduleBaseUrl}/tests/${id_test}/replicate-dates`);
+  }
+  
+  getGerminationPercent(id_test: number) {
+    return this.api.get<{ percent: number }>(`${this.moduleBaseUrl}/test/${id_test}/germination-percent`
+    );
+  }
+
+  updateTestIndicators(id_test: number, indicators: { delay: number; period: number; percent: number }) {
+    return this.api.patch(`${this.moduleBaseUrl}/test/${id_test}/indicators`, indicators);
+  }
+
+  getTreatmentByTest(id_test: number): Observable<{ treatment_label: string }> {
+    return this.api.get<{ treatment_label: string }>(`${this.moduleBaseUrl}/tests/${id_test}/treatment`);
+  }
+  
+  
+  
 }
