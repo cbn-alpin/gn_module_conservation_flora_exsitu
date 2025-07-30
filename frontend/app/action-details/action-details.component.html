@@ -167,6 +167,26 @@
         <div class="field-block"><label>Heures obscurité :</label><span>{{ germinationForm.get('hour_count_shadow')?.value }}</span></div>
       </div>
 
+      <div *ngIf="code === 'synth'">
+        <h3 class="section-subtitle">Synthèse du suivi</h3>
+      
+        <div class="field-block">
+          <label>Total graines germées :</label>
+          <span>{{ germinationForm.get('total_count_germinated')?.value ?? '–' }}</span>
+        </div>
+      
+        <div class="field-block">
+          <label>Total graines mortes :</label>
+          <span>{{ germinationForm.get('total_count_dead')?.value ?? '–' }}</span>
+        </div>
+      
+        <div class="field-block">
+          <label>Total graines non germées :</label>
+          <span>{{ germinationForm.get('total_count_viable')?.value ?? '–' }}</span>
+        </div>
+      </div>
+      
+
       <!-- Infos générales -->
       <div class="field-block" *ngIf="code && code !== 'svr'">
         <label>Date début :</label>

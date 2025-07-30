@@ -44,7 +44,6 @@ export class ActionDetailsComponent implements OnChanges {
   germinationIndicatorsByReplicat: {
     [replicatCode: string]: { delay: number | null; period: number | null; percent: number }
   } = {};
-  
 
   constructor(
     private fb: FormBuilder,
@@ -60,10 +59,10 @@ export class ActionDetailsComponent implements OnChanges {
       nbViables: [null],
       nbRepiques: [null],
       nbMortes: [null],
-      totalGermes: [null],
-      totalViables: [null],
       totalRepiques: [null],
-      totalMortes: [null],
+      total_count_germinated: [null],
+      total_count_dead: [null],
+      total_count_viable: [null],
       id_water_type: [null],
       duration_water: [null],
       duration_chemical_liquid: [null],
@@ -91,7 +90,6 @@ export class ActionDetailsComponent implements OnChanges {
         console.log("✅ Action chargée :", action);
         this.action = action;
 
-        // Libellés à afficher
         this.labels = {
           id_action_type: action.label_action_type,
           id_actor: action.label_actor,
@@ -102,13 +100,14 @@ export class ActionDetailsComponent implements OnChanges {
           id_water_type: action.label_water_type,
           id_scarification_type: action.label_scarification_type,
           id_scarification_mecanique: action.label_scarification_mecanique,
+          total_count_germinated: action.total_count_germinated,
+          total_count_dead: action.total_count_dead,
+          total_count_viable: action.total_count_viable,
           id_tool: action.label_tool,
         };
 
-        // Patch des champs du formulaire
         this.patchForm(action);
 
-        // Détection du code d'action
         if (action.id_action_type) {
           this.getActionByCode(action.id_action_type, 'code');
         }
@@ -117,28 +116,21 @@ export class ActionDetailsComponent implements OnChanges {
           this.getActionByCode(action.id_scarification_type, 'scarification');
         }
 
-        // Réplicats si suivi
-        if (action.replicates?.length && action.label_action_type?.toLowerCase().includes('suivi')) {
-          this.replicates = action.replicates;
+        if (action.replicates?.length) {
+          this.replicates = action.replicates.filter(r => r.code !== 'synth');
           this.replicateLabels = this.getReplicateLabels(this.replicates);
           this.replicatesGrouped = this.groupReplicatesByDate(this.replicates);
           this.calculateGerminationIndicators();
-          const indicators = this.germinationIndicators;
-
-            if (indicators && this.action?.id_test) {
-              this.api.updateTestIndicators(this.action.id_test, indicators).subscribe({
-                next: () => {
-                  console.log("✅ Indicateurs stockés dans la base :", indicators);
-                },
-                error: (err) => {
-                  console.error("❌ Erreur lors de l'enregistrement des indicateurs :", err);
-                }
-              });
-            }
- 
-          
         }
-        
+        const synthReplicate = action.replicates.find(r => r.code === 'synth');
+        if (synthReplicate) {
+          this.germinationForm.patchValue({
+            total_count_germinated: synthReplicate.total_count_germinated,
+            total_count_dead: synthReplicate.total_count_dead,
+            total_count_viable: synthReplicate.total_count_viable,
+          });
+        }
+
       }
     });
   }
@@ -158,147 +150,25 @@ export class ActionDetailsComponent implements OnChanges {
     });
   }
 
-  calculateGerminationIndicators(): void {
-    if (!this.replicatesGrouped?.length) return;
-  
-    const germinationDates: Date[] = [];
-  
-    for (const group of this.replicatesGrouped) {
-      if (!group.date) continue;
-      const germinated = group.replicates.reduce((sum, r) => sum + (r.count_germinated || 0), 0);
-      if (germinated > 0) {
-        germinationDates.push(group.date);
-      }
-    }
-  
-    const startDate = new Date(this.germinationForm.get('date_start')?.value);
-  
-    // Délai germinatif
-    const delay = germinationDates.length
-      ? Math.max(0, Math.floor((germinationDates[0].getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
-      : null;
-  
-    // Période germinative
-    let period: number | null = null;
-
-    if (germinationDates.length >= 2) {
-      const first = germinationDates[0].getTime();
-      const last = germinationDates[germinationDates.length - 1].getTime();
-      const diffDays = Math.floor((last - first) / (1000 * 60 * 60 * 24));
-      period = diffDays === 0 ? 1 : diffDays;
-    } else if (germinationDates.length === 1) {
-      period = 1;
-    }
-  
-    // % Germination
-    const totals = this.getReplicateTotals().grandTotal;
-    const percent = totals.germinated && (totals.germinated + totals.dead + totals.viable)
-      ? Math.round((totals.germinated / (totals.germinated + totals.dead + totals.viable)) * 100)
-      : 0;
-  
-    this.germinationIndicators = {
-      delay: delay ?? 0,
-      period: period ?? 0,
-      percent
-    };
-
-    this.germinationIndicatorsByReplicat = {};
-
-for (const code of this.replicateLabels) {
-  const germinationDates: Date[] = [];
-  let total_germinated = 0;
-  let total_dead = 0;
-  let total_viable = 0;
-
-  for (const group of this.replicatesGrouped) {
-    const rep = group.replicates.find(r => r.code === code);
-    if (rep) {
-      const g = rep.count_germinated || 0;
-      const d = rep.count_dead || 0;
-      const v = rep.count_viable || 0;
-
-      if (g > 0 && group.date) {
-        germinationDates.push(group.date);
-      }
-
-      total_germinated += g;
-      total_dead += d;
-      total_viable += v;
-    }
-  }
-
-  const startDate = new Date(this.germinationForm.get('date_start')?.value);
-
-  const delay = germinationDates.length
-    ? Math.max(0, Math.floor((germinationDates[0].getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
-    : null;
-
-  let period: number | null = null;
-  if (germinationDates.length >= 2) {
-    const first = germinationDates[0].getTime();
-    const last = germinationDates[germinationDates.length - 1].getTime();
-    const diffDays = Math.floor((last - first) / (1000 * 60 * 60 * 24));
-    period = diffDays === 0 ? 1 : diffDays;
-  } else if (germinationDates.length === 1) {
-    period = 1;
-  }
-
-  const percent = (total_germinated + total_dead + total_viable) > 0
-    ? Math.round((total_germinated / (total_germinated + total_dead + total_viable)) * 100)
-    : 0;
-
-  this.germinationIndicatorsByReplicat[code] = {
-    delay,
-    period,
-    percent
-  };
-}
-
-  }
-  
   patchForm(action: any): void {
-    this.germinationForm.patchValue({
-      id_action_type: action.id_action_type,
-      id_actor: action.id_actor,
-      date_start: action.date_start,
-      date_end: action.date_end,
-      remarks: action.remarks,
-      nbGermes: action.nbGermes,
-      nbViables: action.nbViables,
-      nbRepiques: action.nbRepiques,
-      nbMortes: action.nbMortes,
-      totalGermes: action.totalGermes,
-      totalViables: action.totalViables,
-      totalRepiques: action.totalRepiques,
-      totalMortes: action.totalMortes,
-      id_water_type: action.id_water_type,
-      duration_water: action.duration_water,
-      duration_chemical_liquid: action.duration_chemical_liquid,
-      id_chemical_liquid: action.id_chemical_liquid,
-      id_liquid_treatment: action.id_liquid_treatment,
-      concentration_chemical_liquid: action.concentration_chemical_liquid,
-      temperature_light: action.temperature_light,
-      temperature_shadow: action.temperature_shadow,
-      hour_count_light: action.hour_count_light,
-      hour_count_shadow: action.hour_count_shadow,
-      id_scarification_type: action.id_scarification_type,
-      id_tool: action.id_tool,
-    });
+    this.germinationForm.patchValue(action);
   }
 
   getReplicateLabels(replicates: any[]): string[] {
-    const set = new Set(replicates.map(r => r.code));
+    const set = new Set(replicates.map(r => r.code).filter(code => code !== 'synth'));
     return Array.from(set).sort();
   }
 
   groupReplicatesByDate(replicates: any[]): ReplicateGroup[] {
     const groupedByDate: { [date: string]: any[] } = {};
-    replicates.forEach(rep => {
-      const rawDate = rep.date ? new Date(rep.date) : null;
-      const key = rawDate ? rawDate.toISOString().split('T')[0] : 'inconnue';
-      if (!groupedByDate[key]) groupedByDate[key] = [];
-      groupedByDate[key].push(rep);
-    });
+    replicates
+      .filter(rep => rep.code !== 'synth')
+      .forEach(rep => {
+        const rawDate = rep.date ? new Date(rep.date) : null;
+        const key = rawDate ? rawDate.toISOString().split('T')[0] : 'inconnue';
+        if (!groupedByDate[key]) groupedByDate[key] = [];
+        groupedByDate[key].push(rep);
+      });
 
     const result: ReplicateGroup[] = [];
 
@@ -307,6 +177,7 @@ for (const code of this.replicateLabels) {
       const grouped: { [code: string]: any } = {};
       reps.forEach(rep => grouped[rep.code] = rep);
       const replicateArray = this.replicateLabels.map(code => grouped[code] || {});
+
       const total_germinated = replicateArray.reduce((sum, r) => sum + (r.count_germinated || 0), 0);
       const total_dead = replicateArray.reduce((sum, r) => sum + (r.count_dead || 0), 0);
       const total_viable = replicateArray.reduce((sum, r) => sum + (r.count_viable || 0), 0);
@@ -329,6 +200,8 @@ for (const code of this.replicateLabels) {
 
     for (const rep of this.replicates) {
       const code = rep.code;
+      if (code === 'synth') continue;
+
       if (!totalsByRep[code]) {
         totalsByRep[code] = { germinated: 0, dead: 0, viable: 0 };
       }
@@ -359,7 +232,95 @@ for (const code of this.replicateLabels) {
   getReplicateIndicator(code: string, key: 'delay' | 'period' | 'percent'): number | null {
     return this.germinationIndicatorsByReplicat[code]?.[key] ?? null;
   }
-  
+
+  calculateGerminationIndicators(): void {
+    if (!this.replicatesGrouped?.length) return;
+
+    const germinationDates: Date[] = [];
+
+    for (const group of this.replicatesGrouped) {
+      if (!group.date) continue;
+      const germinated = group.replicates.reduce((sum, r) => sum + (r.count_germinated || 0), 0);
+      if (germinated > 0) {
+        germinationDates.push(group.date);
+      }
+    }
+
+    const startDate = new Date(this.germinationForm.get('date_start')?.value);
+
+    const delay = germinationDates.length
+      ? Math.max(0, Math.floor((germinationDates[0].getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
+      : null;
+
+    let period: number | null = null;
+    if (germinationDates.length >= 2) {
+      const first = germinationDates[0].getTime();
+      const last = germinationDates[germinationDates.length - 1].getTime();
+      const diffDays = Math.floor((last - first) / (1000 * 60 * 60 * 24));
+      period = diffDays === 0 ? 1 : diffDays;
+    } else if (germinationDates.length === 1) {
+      period = 1;
+    }
+
+    const totals = this.getReplicateTotals().grandTotal;
+    const percent = totals.germinated && (totals.germinated + totals.dead + totals.viable)
+      ? Math.round((totals.germinated / (totals.germinated + totals.dead + totals.viable)) * 100)
+      : 0;
+
+    this.germinationIndicators = {
+      delay: delay ?? 0,
+      period: period ?? 0,
+      percent
+    };
+
+    this.germinationIndicatorsByReplicat = {};
+
+    for (const code of this.replicateLabels) {
+      const germinationDates: Date[] = [];
+      let total_germinated = 0;
+      let total_dead = 0;
+      let total_viable = 0;
+
+      for (const group of this.replicatesGrouped) {
+        const rep = group.replicates.find(r => r.code === code);
+        if (rep) {
+          const g = rep.count_germinated || 0;
+          const d = rep.count_dead || 0;
+          const v = rep.count_viable || 0;
+
+          if (g > 0 && group.date) {
+            germinationDates.push(group.date);
+          }
+
+          total_germinated += g;
+          total_dead += d;
+          total_viable += v;
+        }
+      }
+
+      const delay = germinationDates.length
+        ? Math.max(0, Math.floor((germinationDates[0].getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
+        : null;
+
+      let period: number | null = null;
+      if (germinationDates.length >= 2) {
+        const first = germinationDates[0].getTime();
+        const last = germinationDates[germinationDates.length - 1].getTime();
+        const diffDays = Math.floor((last - first) / (1000 * 60 * 60 * 24));
+        period = diffDays === 0 ? 1 : diffDays;
+      } else if (germinationDates.length === 1) {
+        period = 1;
+      }
+
+      const percent = (total_germinated + total_dead + total_viable) > 0
+        ? Math.round((total_germinated / (total_germinated + total_dead + total_viable)) * 100)
+        : 0;
+
+      this.germinationIndicatorsByReplicat[code] = {
+        delay,
+        period,
+        percent
+      };
+    }
+  }
 }
-
-
