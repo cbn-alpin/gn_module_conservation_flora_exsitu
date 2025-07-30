@@ -1,3 +1,4 @@
+from urllib import request
 from geonature.utils.env import db
 from sqlalchemy.exc import SQLAlchemyError
 from pypnusershub.db.models import User
@@ -15,15 +16,20 @@ import json
 from sqlalchemy import and_
 from sqlalchemy.sql import text
 from functools import cached_property
+from sqlalchemy import Boolean
 
 
 from .models import(
+    TAction,
+    TActionReplicate,
     THarvest,
     TMaterial,
     CorHarvestObserver,
     CorMaterialTaxon,
     TMaterielSeed,
-    TStorage
+    TSowing,
+    TStorage,
+    TTest
 )
 
 
@@ -736,4 +742,880 @@ class StorageRepository:
             if new_quantity > current_quantity:
                 raise ValueError(f"Quantité demandée ({new_quantity}) supérieure au stock disponible ({current_quantity}).")
 
+
+# class TestRepository:
+#     def create(self, data):
+#         try:
+#             test = TTest(**data)
+#             db.session.add(test)
+#             db.session.flush()  # Permet de récupérer test.id_test
+#             db.session.commit()
+#             return test
+#         except Exception as e:
+#             db.session.rollback()
+#             raise e
+
+# from sqlalchemy.exc import SQLAlchemyError
+# from .models import TSowing
+# from geonature.utils.env import db
+
+# class SowingRepository:
+#     def create(self, data):
+#         try:
+#             sowing = TSowing(**data)
+#             db.session.add(sowing)
+#             db.session.commit()
+#             return sowing
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+#     def get_by_id(self, id_sowing):
+#         return TSowing.query.get(id_sowing)
+
+#     def list_by_material(self, id_material):
+#         return TSowing.query.filter_by(id_material=id_material).all()
+
+#     def update(self, id_sowing, data):
+#         sowing = TSowing.query.get(id_sowing)
+#         if not sowing:
+#             return None
+#         try:
+#             for key, value in data.items():
+#                 if hasattr(sowing, key):
+#                     setattr(sowing, key, value)
+#             db.session.commit()
+#             return sowing
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+#     def delete(self, id_sowing):
+#         sowing = TSowing.query.get(id_sowing)
+#         if not sowing:
+#             return False
+#         try:
+#             db.session.delete(sowing)
+#             db.session.commit()
+#             return True
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+
+# from flask import g
+# from ..models import TTest
+# from geonature.utils.env import db
+
+
+# class TestRepository:
+
+#     def create(self, data):
+#         # Convertir les objets nomenclatures en IDs si besoin
+#         for field in ["id_test_type", "id_support", "id_substrate"]:
+#             if isinstance(data.get(field), dict):
+#                 data[field] = data[field].get("id_nomenclature")
+
+#         # Convertir les champs additionnels
+#         additional = data.pop("additional_data", {})
+#         if additional and isinstance(additional, dict):
+#             data["additional_data"] = {"program": additional.get("program")}
+#         else:
+#             data["additional_data"] = None
+
+#         # Informations système
+#         data["meta_create_by"] = g.current_user.id_role
+
+#         # Création de l’objet
+#         test = TTest(**data)
+#         db.session.add(test)
+#         db.session.commit()
+#         return test
+
+
+# class TestRepository:
+#     def create(self, data):
+#         try:
+#             test = TTest(**data)
+#             db.session.add(test)
+#             db.session.commit()
+#             return test
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+#     def update(self, id_test, data):
+#         test = TTest.query.get(id_test)
+#         if not test:
+#             return None
+
+#         try:
+#             for key, value in data.items():
+#                 if hasattr(test, key):
+#                     setattr(test, key, value)
+
+#             db.session.commit()
+#             return test
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+#     def get_one(self, id_test):
+#         return TTest.query.get(id_test)
+
+#     def delete(self, id_test):
+#         try:
+#             test = self.get_one(id_test)
+#             if not test:
+#                 return False
+
+#             db.session.delete(test)
+#             db.session.commit()
+#             return True
+
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+
+class SowingRepository:
+    def create(self, data):
+        try:
+            sowing = TSowing(**data)
+            db.session.add(sowing)
+            db.session.commit()
+            return sowing
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+    def get_by_id(self, id_sowing):
+        return TSowing.query.get(id_sowing)
+
+    def list_by_material(self, id_material):
+        return TSowing.query.filter_by(id_material=id_material).all()
+
+    def update(self, id_sowing, data):
+        sowing = TSowing.query.get(id_sowing)
+        if not sowing:
+            return None
+        try:
+            for key, value in data.items():
+                if hasattr(sowing, key):
+                    setattr(sowing, key, value)
+            db.session.commit()
+            return sowing
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+    def delete(self, id_sowing):
+        sowing = TSowing.query.get(id_sowing)
+        if not sowing:
+            return False
+        try:
+            db.session.delete(sowing)
+            db.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+
+class TestRepository:
+    def create(self, data):
+        try:
+            # Extraire le code parent, s’il est fourni
+            code_parent = data.pop("code_parent", None)
+
+            if code_parent:
+                parent_test = TTest.query.filter_by(code=code_parent).first()
+                data["code_parent"] = parent_test.code if parent_test else None
+
+            # Extraire et isoler les données additionnelles
+            additional_data = data.pop("additional_data", None)
+
+            # Créer l’instance du test
+            if additional_data:
+                test = TTest(**data, additional_data=additional_data)
+            else:
+                print("Data reçue pour TTest :", data)
+
+                test = TTest(**data)
+
+            # Ajouter à la session et commit
+            db.session.add(test)
+            db.session.commit()
+
+            return True, test
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+    def get_test_by_id(self, id_test):
+        test = TTest.query.get(id_test)
+        return test
+    def get_test_by_mnemonique(self, mnemonique):
+        test = TTest.query.get(mnemonique)
+        return test
+    
+    def get_test_with_labels_by_id(self,id_test: int):
+        TestType = aliased(TNomenclatures)
+        Substrate = aliased(TNomenclatures)
+        Support = aliased(TNomenclatures)
+        Actor = aliased(User)
+        Creator = aliased(User)
+        Material = aliased(TMaterial)
+        Storage = aliased(TStorage)
+        Place = aliased(TNomenclatures)
+
+
+        query = (
+            db.session.query(
+                TTest,
+                TestType.label_default.label("test_type_label"),
+                Substrate.label_default.label("substrate_label"),
+                Support.label_default.label("support_label"),
+                Actor.nom_role.label("nom_actor"),
+                Actor.prenom_role.label("prenom_actor"),
+                Creator.nom_role.label("nom_creator"),
+                Creator.prenom_role.label("prenom_creator"),
+                Material.code_material.label("material_label"),
+                Place.label_default.label("place_label"),
+                Storage.quantity.label("storage_quantity"),
+
+            )
+            .outerjoin(TestType, TTest.id_test_type == TestType.id_nomenclature)
+            .outerjoin(Substrate, TTest.id_substrate == Substrate.id_nomenclature)
+            .outerjoin(Support, TTest.id_support == Support.id_nomenclature)
+            .outerjoin(Actor, TTest.id_actor == Actor.id_role)
+            .outerjoin(Creator, TTest.meta_create_by == Creator.id_role)
+            .outerjoin(Material, TTest.id_material == Material.id_material)
+            .outerjoin(Storage, TTest.id_storage == Storage.id_storage)
+            .outerjoin(Place, Storage.id_place == Place.id_nomenclature)
+
+            .filter(TTest.id_test == id_test)
+            .first()
+        )
+
+        if not query:
+            return None
+
+        (
+            test,
+            test_type_label,
+            substrate_label,
+            support_label,
+            nom_actor,
+            prenom_actor,
+            nom_creator,
+            prenom_creator,
+            material_label,
+            place_label,
+
+            storage_quantity
+
+
+        ) = query
+
+        data = test.to_dic()
+        data["test_type_label"] = test_type_label
+        data["substrate_label"] = substrate_label
+        data["support_label"] = support_label
+        data["actor_label"] = f"{prenom_actor} {nom_actor}".strip() if nom_actor else None
+        data["created_by_label"] = f"{prenom_creator} {nom_creator}".strip() if nom_creator else None
+        data["material_label"] = material_label
+        data["storage_label"] = (
+            f"{place_label} – {storage_quantity} graines"
+            if place_label and storage_quantity is not None else None
+        )
+        return data
+    
+
+
+    def get_test_by_cd_nomenclature(self, cd_nomenclature: str):
+        return (
+            db.session.query(TTest)
+            .join(TNomenclatures, TTest.id_test_type == TNomenclatures.id_nomenclature)
+            .filter(TNomenclatures.cd_nomenclature == cd_nomenclature)
+            .first()
+        )
+    def update(self, id_test, data):
+        test = TTest.query.get(id_test)
+        if not test:
+            raise ValueError("Test non trouvé")
+
+        code_parent = data.pop("code_parent", None)
+        if code_parent:
+            parent = TTest.query.filter_by(code=code_parent).first()
+            test.code_parent = parent.code if parent else None
+
+        additional_data = data.get("additional_data")
+        if additional_data:
+            test.additional_data = additional_data
+
+        for key, value in data.items():
+            if hasattr(test, key):
+                setattr(test, key, value)
+
+        db.session.commit()
+        return test   
+    
+    def update_pre_treatment(id_test):
+        body = request.get_json()
+        value = body.get("pre_treatment")
+        test = db.session.get(TTest, id_test)
+        if not test:
+            return {"error": "Test introuvable"}, 404
+        if not test.additional_data:
+            test.additional_data = {}
+        test.additional_data["pre_treatment"] = value
+        db.session.commit()
+        return {"success": True}
+    
+    def get_tests_by_material(id_material: int):
+        ActionType = aliased(TNomenclatures)
+        Liquid = aliased(TNomenclatures)
+
+        subquery_treatment = (
+            db.session.query(
+                TAction.id_test.label("id_test"),
+                Liquid.label_default.label("treatment_label"),
+                db.func.row_number().over(
+                    partition_by=TAction.id_test,
+                    order_by=TAction.meta_create_date.desc()
+                ).label("row_num")
+            )
+            .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(Liquid, TAction.id_liquid_treatment == Liquid.id_nomenclature)
+            .filter(ActionType.cd_nomenclature == "tra")
+            .subquery()
+        )
+
+        query = (
+            db.session.query(
+                TTest,
+                TMaterial.code_material.label("code_material"),
+                subquery_treatment.c.treatment_label
+            )
+            .join(TMaterial, TMaterial.id_material == TTest.id_material)
+            .outerjoin(
+                subquery_treatment,
+                db.and_(
+                    TTest.id_test == subquery_treatment.c.id_test,
+                    subquery_treatment.c.row_num == 1  
+                )
+            )
+            .filter(TTest.id_material == id_material)
+        )
+
+        results = []
+        for test, code_material, treatment in query.all():
+            test_dict = test.to_dic()
+            test_dict["code_material"] = code_material
+            test_dict["germination_rate"] = test.germination_rate
+            test_dict["treatment_label"] = treatment  # ✅ ajout indispensable
+
+            results.append(test_dict)
+
+        return results
+
+            
+
+
+
+
+
+class ActionRepository:
+   
+    def create(self, data):
+        try:
+            # Extraire le code parent s’il existe
+            code_parent = data.pop("code_parent", None)
+            if code_parent:
+                parent_test = TAction.query.filter_by(code=code_parent).first()
+                data["code_parent"] = parent_test.code if parent_test else None
+
+            # Séparer les données de réplicats et données additionnelles
+            replicates = data.pop("replicates", None)
+            additional_data = data.pop("additional_data", None)
+
+            # Créer l'action principale
+            action = TAction(**data, additional_data=additional_data or {})
+            db.session.add(action)
+            db.session.flush()  # Nécessaire pour récupérer action.id_action
+
+            # Récupérer le type d'action
+            action_type = TNomenclatures.query.get(data["id_action_type"])
+            action_code = action_type.cd_nomenclature if action_type else None
+
+            # 📌 Réplicats individuels (svr)
+            if action_code == 'svr' and isinstance(replicates, dict):
+                for i in range(len(replicates.get("germes", []))):
+                    rep = TActionReplicate(
+                        id_action=action.id_action,
+                        code=chr(65 + i),  # A, B, C...
+                        count_germinated=replicates["germes"][i],
+                        count_dead=replicates["mortes"][i],
+                        count_viable=replicates["non_germes"][i],
+                        count_transplanted=None,
+                        total_count_germinated=None,
+                        total_count_dead=None,
+                        total_count_viable=None,
+                        total_count_transplanted=None
+                    )
+                    db.session.add(rep)
+
+
+            # 📌 Synthèse de suivi (synth)
+            elif action_code == 'synth' and isinstance(replicates, dict):
+                rep = TActionReplicate(
+                    id_action=action.id_action,
+                    code='synth',
+                    count_germinated=None,
+                    count_dead=None,
+                    count_viable=None,
+                    count_transplanted=None,
+                    total_count_germinated=replicates.get("total_count_germinated"),
+                    total_count_dead=replicates.get("total_count_dead"),
+                    total_count_viable=replicates.get("total_count_viable"),
+                    total_count_transplanted=None
+                )
+                db.session.add(rep)
+
+            db.session.commit()
+            return True, action
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+
+    def get_nomenclature_details_by_id(self, id_nomenclature: int):
+        n = (
+            db.session.query(TNomenclatures)
+            .filter(TNomenclatures.id_nomenclature == id_nomenclature)
+            .first()
+        )
+
+        if not n:
+            return None
+
+        return {
+            "id_nomenclature": n.id_nomenclature,
+            "cd_nomenclature": n.cd_nomenclature,
+            "mnemonique": n.mnemonique,
+            "id_type": n.id_type,
+            "label_default": n.label_default
+        }
+    
+    def get_actions_by_id_test(self, id_test: int):
+        ActionType = aliased(TNomenclatures)
+        Actor = aliased(User)
+        
+
+        query = (
+            db.session.query(
+                TAction.id_action,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.meta_create_date,
+                ActionType.label_default.label("label_action_type"),
+                Actor.nom_role.label("nom_actor"),
+                Actor.prenom_role.label("prenom_actor")
+            )
+            .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(Actor, TAction.id_actor == Actor.id_role)
+            .filter(TAction.id_test == id_test)
+            .order_by(TAction.meta_create_date.desc())
+        )
+
+        results = query.all()
+
+        return [
+            {
+                "id_action": row.id_action,
+                "date_start": row.date_start.isoformat() if row.date_start else None,
+                "date_end": row.date_end.isoformat() if row.date_end else None,
+                "meta_create_date": row.meta_create_date.isoformat() if row.meta_create_date else None,
+                "label_action_type": row.label_action_type,
+                "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip()
+            }
+            for row in results
+        ]
+    def get_action_with_labels_by_id(self, id_action: int):
+        ActionType = aliased(TNomenclatures)
+        Scarification = aliased(TNomenclatures)
+        ScarificationMec = aliased(TNomenclatures)
+        Tool = aliased(TNomenclatures)
+        WaterType = aliased(TNomenclatures)
+        Chemical = aliased(TNomenclatures)
+        Actor = aliased(User)
+        SterilizationLiquid = aliased(TNomenclatures)
+        SterilizationProduct = aliased(TNomenclatures)
+        LiquidTreatment = aliased(TNomenclatures)
+
+        query = (
+            db.session.query(
+                TAction,
+                ActionType.label_default.label("label_action_type"),
+                Scarification.label_default.label("label_scarification_type"),
+                ScarificationMec.label_default.label("label_scarification_mecanique"),
+                Tool.label_default.label("label_tool"),
+                WaterType.label_default.label("label_water_type"),
+                Chemical.label_default.label("label_chemical_liquid"),
+                Actor.nom_role.label("nom_actor"),
+                SterilizationLiquid.label_default.label("label_sterilization_liquid"),
+                SterilizationProduct.label_default.label("label_sterilization_product"),
+                LiquidTreatment.label_default.label("label_liquid_treatment"),
+
+                Actor.prenom_role.label("prenom_actor")
+            )
+            .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(Scarification, TAction.id_scarification_type == Scarification.id_nomenclature)
+            .outerjoin(ScarificationMec, TAction.id_scarification_mecanique == ScarificationMec.id_nomenclature)
+            .outerjoin(Tool, TAction.id_tool == Tool.id_nomenclature)
+            .outerjoin(WaterType, TAction.id_water_type == WaterType.id_nomenclature)
+            .outerjoin(Chemical, TAction.id_chemical_liquid == Chemical.id_nomenclature)
+            .outerjoin(SterilizationLiquid, TAction.id_sterilization_liquid == SterilizationLiquid.id_nomenclature)
+            .outerjoin(SterilizationProduct, TAction.id_sterilization_product == SterilizationProduct.id_nomenclature)
+            .outerjoin(LiquidTreatment, TAction.id_liquid_treatment == LiquidTreatment.id_nomenclature)
+
+            .outerjoin(Actor, TAction.id_actor == Actor.id_role)
+
+            .filter(TAction.id_action == id_action)
+            .first()
+        )
+
+        if not query:
+            return None
+
+        (
+            action,
+            label_action_type,
+            label_scarification_type,
+            label_scarification_mecanique,
+            label_tool,
+            label_water_type,
+            label_chemical_liquid,
+            label_sterilization_liquid,
+            label_sterilization_product,
+            label_liquid_treatment,
+            nom_actor,
+            prenom_actor,
+        ) = query
+
+        data = action.to_dic()
+        data["label_action_type"] = label_action_type
+        data["label_scarification_type"] = label_scarification_type
+        data["label_scarification_mecanique"] = label_scarification_mecanique
+        data["label_tool"] = label_tool
+        data["label_water_type"] = label_water_type
+        data["label_chemical_liquid"] = label_chemical_liquid
+        data["label_sterilization_liquid"] = label_sterilization_liquid
+        data["label_sterilization_product"] = label_sterilization_product
+        data["label_liquid_treatment"] = label_liquid_treatment
+
+        data["label_actor"] = f"{prenom_actor} {nom_actor}".strip() if nom_actor else None
+
+        # Étape 1 : Récupérer l'id_test de cette action
+        id_test = action.id_test
+
+        # Étape 2 : Récupérer toutes les actions ayant ce même id_test
+        actions_same_test = (
+            db.session.query(TAction.id_action, TAction.date_start)
+            .filter(TAction.id_test == id_test)
+            .all()
+        )
+        actions_by_id = {a.id_action: a.date_start for a in actions_same_test}
+
+        # Étape 3 : Récupérer tous les réplicats associés à ces actions
+        all_replicates = (
+            db.session.query(TActionReplicate)
+            .filter(TActionReplicate.id_action.in_(actions_by_id.keys()))
+            .order_by(TActionReplicate.id_action, TActionReplicate.code)
+            .all()
+        )
+
+        # Étape 4 : Associer à chaque réplicat la date de son action
+        replicates_with_dates = []
+        for r in all_replicates:
+            rep_dict = r.to_dict()
+            date = actions_by_id.get(r.id_action)
+            rep_dict["date"] = date.isoformat() if date else None
+            replicates_with_dates.append(rep_dict)
+
+        # Étape 5 : Ajouter à la réponse finale
+        data["replicates"] = replicates_with_dates
+
+        return data
+
+    def get_replicates_by_action(self, id_action: int):
+        replicates = (
+            db.session.query(TActionReplicate)
+            .filter_by(id_action=id_action)
+            .order_by(TActionReplicate.code)
+            .all()
+        )
+        return [r.to_dict() for r in replicates]
+    
+
+    def get_thermo_photo_by_test(self, id_test: int):
+        action = (
+            db.session.query(TAction)
+            .filter(
+                TAction.id_test == id_test,
+                TAction.temperature_light.isnot(None),
+                TAction.temperature_shadow.isnot(None),
+                TAction.hour_count_light.isnot(None),
+                TAction.hour_count_shadow.isnot(None)
+            )
+            .order_by(TAction.meta_create_date.desc())  # ou date_start si besoin
+            .first()
+        )
+
+        if not action:
+            return None
+
+        return {
+            "temperature_light": action.temperature_light,
+            "temperature_shadow": action.temperature_shadow,
+            "hour_count_light": action.hour_count_light,
+            "hour_count_shadow": action.hour_count_shadow
+        }
+    def get_replicate_dates_by_test(self, id_test: int):
+        ActionType = aliased(TNomenclatures)
+
+        results = (
+            db.session.query(TAction.date_start)
+            .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .filter(
+                TAction.id_test == id_test,
+                ActionType.cd_nomenclature == "svr"
+            )
+            .all()
+        )
+        return [r.date_start.isoformat() for r in results if r.date_start]
+
+
+    def get_tests_by_material(id_material: int):
+        ActionType = aliased(TNomenclatures)
+        Liquid = aliased(TNomenclatures)
+
+        subquery_treatment = (
+            db.session.query(
+                TAction.id_test.label("id_test"),
+                Liquid.label_default.label("treatment_label"),
+                db.func.row_number().over(
+                    partition_by=TAction.id_test,
+                    order_by=TAction.meta_create_date.desc()
+                ).label("row_num")
+            )
+            .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(Liquid, TAction.id_liquid_treatment == Liquid.id_nomenclature)
+            .filter(ActionType.cd_nomenclature == "tra")
+            .subquery()
+        )
+
+        query = (
+            db.session.query(
+                TTest,
+                TMaterial.code_material,
+                subquery_treatment.c.treatment_label
+            )
+            .join(TMaterial, TMaterial.id_material == TTest.id_material)
+            .outerjoin(
+                subquery_treatment,
+                db.and_(
+                    TTest.id_test == subquery_treatment.c.id_test,
+                    subquery_treatment.c.row_num == 1
+                )
+            )
+            .filter(TTest.id_material == id_material)
+        )
+
+        results = []
+        for test, code_material, treatment_label in query.all():
+            test_dict = test.to_dic()
+            test_dict["code_material"] = code_material
+            test_dict["treatment_label"] = treatment_label  # 🟡 C’EST CETTE CLÉ QUI DOIT APPARAÎTRE
+            print("🧪 Test:", test.code, "Traitement:", treatment_label)
+            results.append(test_dict)
+
+        return results
+    
+
+    def get_treatment_by_test(self, id_test: int):
+        ActionType = aliased(TNomenclatures)
+        Liquid = aliased(TNomenclatures)
+
+        query = (
+            db.session.query(
+                TAction.id_action,
+                TAction.meta_create_date,
+                Liquid.label_default.label("treatment_label")
+            )
+            .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(Liquid, TAction.id_liquid_treatment == Liquid.id_nomenclature)
+            .filter(
+                TAction.id_test == id_test,
+                ActionType.cd_nomenclature == 'tra',
+                TAction.id_liquid_treatment.isnot(None)
+            )
+            .order_by(TAction.meta_create_date.desc())
+            .first()
+        )
+
+        if not query:
+            return None
+
+        return {
+            "id_action": query.id_action,
+            "treatment_label": query.treatment_label
+        }
+    
+    def update(self, id_action: int, data: dict):
+        action = TAction.query.get(id_action)
+        if not action:
+            raise ValueError("Action introuvable")
+
+        # Récupérer le code de l'action (tra, scar, svr, etc.)
+        action_type = TNomenclatures.query.get(data.get("id_action_type"))
+        action_code = action_type.cd_nomenclature if action_type else None
+
+        # Supprimer les anciens réplicats s’il y en a
+        db.session.query(TActionReplicate).filter_by(id_action=id_action).delete()
+
+        # Réplicats individuels (svr)
+        if action_code == "svr":
+            replicates = data.pop("replicates", None)
+            if replicates and isinstance(replicates, dict):
+                for i in range(len(replicates.get("germes", []))):
+                    rep = TActionReplicate(
+                        id_action=id_action,
+                        code=chr(65 + i),  # A, B, C, ...
+                        count_germinated=replicates["germes"][i],
+                        count_dead=replicates["mortes"][i],
+                        count_viable=replicates["non_germes"][i],
+                        count_transplanted=None,
+                        total_count_germinated=None,
+                        total_count_dead=None,
+                        total_count_viable=None,
+                        total_count_transplanted=None
+                    )
+                    db.session.add(rep)
+
+        # Synthèse (synth)
+        elif action_code == "synth":
+            replicates = data.pop("replicates", None)
+            if replicates and isinstance(replicates, dict):
+                rep = TActionReplicate(
+                    id_action=id_action,
+                    code="synth",
+                    count_germinated=None,
+                    count_dead=None,
+                    count_viable=None,
+                    count_transplanted=None,
+                    total_count_germinated=replicates.get("total_count_germinated"),
+                    total_count_dead=replicates.get("total_count_dead"),
+                    total_count_viable=replicates.get("total_count_viable"),
+                    total_count_transplanted=None
+                )
+                db.session.add(rep)
+
+        # Données additionnelles
+        additional_data = data.pop("additional_data", None)
+        if additional_data is not None:
+            action.additional_data = additional_data
+
+        # Mise à jour des champs standards
+        for key, value in data.items():
+            if hasattr(action, key):
+                setattr(action, key, value)
+
+        db.session.commit()
+        return action
+
+
+
+class ActionReplicateRepository:
+    def create(self, data):
+        try:
+            code_parent = data.pop("code_parent", None)
+            if code_parent:
+                parent_test = TAction.query.filter_by(code=code_parent).first()
+                data["code_parent"] = parent_test.code if parent_test else None
+
+            additional_data = data.pop("additional_data", None)
+            replicates = data.pop("replicates", None)
+
+            # Créer l'action principale
+            action = TAction(**data, additional_data=additional_data or {})
+            db.session.add(action)
+            db.session.flush()  # Pour avoir l'id_action
+
+            # Déterminer le code d'action (ex: 'svr', 'synth')
+            action_type = TNomenclatures.query.get(data["id_action_type"])
+            action_code = action_type.cd_nomenclature if action_type else None
+
+            # ✅ Suivi par réplicat
+            if action_code == "svr" and isinstance(replicates, dict):
+                germes = replicates.get("germes", [])
+                mortes = replicates.get("mortes", [])
+                non_germes = replicates.get("non_germes", [])
+                last_replicate = replicates.get("last_replicate", False)
+
+                for i in range(len(germes)):
+                    rep = TActionReplicate(
+                        id_action=action.id_action,
+                        code=chr(65 + i),  # A, B, C, ...
+                        count_germinated=germes[i],
+                        count_dead=mortes[i],
+                        count_viable=non_germes[i],
+                        count_transplanted=None,
+                        total_count_germinated=None,
+                        total_count_dead=None,
+                        total_count_viable=None,
+                        total_count_transplanted=None,
+                        last_replicate=True if last_replicate and i == len(germes) - 1 else False
+                    )
+                    db.session.add(rep)
+
+            # ✅ Synthèse de suivi
+            elif action_code == "synth" and isinstance(replicates, dict):
+                rep = TActionReplicate(
+                    id_action=action.id_action,
+                    code="synth",
+                    count_germinated=None,
+                    count_dead=None,
+                    count_viable=None,
+                    count_transplanted=None,
+                    total_count_germinated=replicates.get("total_count_germinated"),
+                    total_count_dead=replicates.get("total_count_dead"),
+                    total_count_viable=replicates.get("total_count_viable"),
+                    total_count_transplanted=None,
+                    last_replicate=None  
+                )
+                db.session.add(rep)
+
+            db.session.commit()
+            # 🔁 Charger les réplicats associés à l'action créée
+            replicates_rows = (
+                db.session.query(TActionReplicate)
+                .filter_by(id_action=action.id_action)
+                .order_by(TActionReplicate.code)
+                .all()
+            )
+
+            # ✅ Retourne l'action + les réplicats
+            return {
+                "action": action.to_dict(),
+                "replicates": [r.to_dict() for r in replicates_rows],
+                "message": "Action créée"
+            }
+
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
 
