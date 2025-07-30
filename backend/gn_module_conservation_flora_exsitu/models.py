@@ -520,8 +520,11 @@ class TTest(db.Model):
 
     id_test = db.Column(db.Integer, primary_key=True, unique=True)
     id_test_parent = db.Column(
-        db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="NULL")
+      db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_material.id_material",
+            ondelete="NULL"
+        ),
     )
     id_material = db.Column(
         db.Integer,
@@ -536,12 +539,10 @@ class TTest(db.Model):
     id_storage = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="NULL"),
-        nullable=False
     )
     id_test_type = db.Column(
         db.Integer,
         db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
-        nullable=False
     )
     code = db.Column(db.String(50))
     seed_initial_count = db.Column(db.Integer)
@@ -563,7 +564,7 @@ class TTest(db.Model):
     )
     meta_create_date = db.Column(
         db.DateTime,
-        nullable=False,
+        #nullable=False,
         default=datetime.utcnow,
         server_default=sa.func.now()
     )
@@ -572,6 +573,42 @@ class TTest(db.Model):
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
     )
     meta_update_date = db.Column(db.DateTime, onupdate=sa.func.now())
+    germination_rate = db.Column(db.Float) 
+    germination_delay = db.Column(db.Integer)
+    germination_period = db.Column(db.Integer)
+ 
+
+    photo_thermo_regime = db.Column(db.String(100))
+    last_test = db.Column(db.Boolean, default=False)
+    pre_treatment = db.Column(db.Boolean, default=False)
+    def to_dic(self):
+        return {
+            "id_test": self.id_test,
+            "id_material": self.id_material,
+            "id_test_type": self.id_test_type,
+            "id_actor": self.id_actor,
+            "code": self.code,
+            "id_test_parent": self.id_test_parent,
+            "remarks": self.remarks,
+            "replicate_count": self.replicate_count,
+            "seed_initial_count": self.seed_initial_count,
+            "id_support": self.id_support,
+            "id_substrate": self.id_substrate,
+            "additional_data": self.additional_data,
+            "meta_create_by": self.meta_create_by,
+            "meta_create_date": self.meta_create_date.isoformat() if self.meta_create_date else None,
+            "meta_update_date": self.meta_update_date.isoformat() if self.meta_update_date else None,
+            "id_storage": self.id_storage,
+            "germination_rate": self.germination_rate,
+            "germination_delay": self.germination_delay,
+            "germination_period": self.germination_period,
+            "photo_thermo_regime": self.photo_thermo_regime,
+            "last_test": self.last_test,
+            "pre_treatment": self.pre_treatment,
+
+
+        }
+    
 
 @serializable
 class TSowing(db.Model):
@@ -660,7 +697,11 @@ class TSowing(db.Model):
             "id_sowing_method": self.id_sowing_method,
             "depth": self.depth,
             "initial_count": self.initial_count,
-            "replicate_count": self.replicate_count
+            "replicate_count": self.replicate_count,
+            "remarks": self.remarks,
+            "additional_data": self.additional_data,
+
+
         }
 @serializable
 class TAction(db.Model):
@@ -711,6 +752,28 @@ class TAction(db.Model):
     concentration_chemical_liquid = db.Column(db.Integer)
     remarks = db.Column(db.Text)
     additional_data = db.Column(JSONB)
+    id_scarification_mecanique = db.Column(
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        )
+    id_tool = db.Column(
+    db.Integer,
+    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+    )
+    id_sterilization_product = db.Column(
+    db.Integer,
+    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+    )
+    id_sterilization_liquid = db.Column(
+    db.Integer,
+    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+    )
+    id_liquid_treatment = db.Column(
+    db.Integer,
+    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+    )
+    
+
 
     meta_create_by = db.Column(
         db.Integer,
@@ -737,6 +800,7 @@ class TAction(db.Model):
             "id_actor": self.id_actor,
             "id_action_type": self.id_action_type,
             "id_scarification_type": self.id_scarification_type,
+            "id_scarification_mecanique": self.id_scarification_mecanique,
             "temperature_light": self.temperature_light,
             "temperature_shadow": self.temperature_shadow,
             "hour_count_light": self.hour_count_light,
@@ -745,7 +809,15 @@ class TAction(db.Model):
             "duration_water": self.duration_water,
             "id_chemical_liquid": self.id_chemical_liquid,
             "duration_chemical_liquid": self.duration_chemical_liquid,
-            "concentration_chemical_liquid": self.concentration_chemical_liquid
+            "concentration_chemical_liquid": self.concentration_chemical_liquid,
+            "remarks": self.remarks,
+            "id_tool": self.id_tool,
+            "id_sterilization_product": self.id_sterilization_product,
+            "id_sterilization_liquid": self.id_sterilization_liquid,
+            "id_liquid_treatment": self.id_liquid_treatment,
+            "additional_data": self.additional_data,
+
+
         }
 
 @serializable
@@ -768,3 +840,21 @@ class TActionReplicate(db.Model):
     total_count_germinated = db.Column(db.Integer)
     total_count_transplanted = db.Column(db.Integer)
     total_count_dead = db.Column(db.Integer)
+    last_replicate = db.Column(db.Boolean, default=False)
+
+    def to_dict(self):
+        return {
+            "id_action_replicate": self.id_action_replicate,
+            "id_action": self.id_action,
+            "code": self.code,
+            "count_viable": self.count_viable,
+            "count_germinated": self.count_germinated,
+            "count_transplanted": self.count_transplanted,
+            "count_dead": self.count_dead,
+            "total_count_viable": self.total_count_viable,
+            "total_count_germinated": self.total_count_germinated,
+            "total_count_transplanted": self.total_count_transplanted,
+            "total_count_dead": self.total_count_dead,
+            "last_replicate": self.last_replicate,
+        }
+    
