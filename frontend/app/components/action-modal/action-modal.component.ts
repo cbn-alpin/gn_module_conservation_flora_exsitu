@@ -426,7 +426,7 @@ export class ActionModalComponent implements OnInit {
       this.api.getCodesNomenclature(idDestination).subscribe(codeDestination => {
         this.allowSubmitForGerminationMovement =
           codeAction === this.constants.ACTION_CODES.MOVEMENT &&
-          codeDestination === 'tdg';
+          (codeDestination === 'tdg' || codeDestination === 'tsv'); 
           this.cdr.detectChanges();
       });
     });
@@ -436,28 +436,43 @@ export class ActionModalComponent implements OnInit {
   
     this.api.addAction(this.data.data.id_material, finalForm).subscribe({
       next: (response) => {
-        const idStorage = response.id_storage; // Assure-toi que ton backend retourne bien ça
-
+        const idStorage = response.id_storage;
+  
         this._commonService.translateToaster('info', 'Action ajoutée avec succès');
-        this.initForm(); // Réinitialise le formulaire
-        this.loadContext(); // 👈 Ajoute ceci ici
-      
-        this.initForm(); // Réinitialise le formulaire
-
-        this.evaluateEnableSubmit(); // Réévalue si le bouton doit rester activé
-        this.dialogRef.close(true); // Ferme la modale
-        this.exsituFormService.idStorage = idStorage; // <- stocke dans le service
+        this.dialogRef.close(true);
+  
+        this.exsituFormService.idStorage = idStorage;
         this.exsituFormService.id_storage.next(idStorage);
-        this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/germination-table`]);
-
+  
+        const idDestination = finalForm.id_destination;
+  
+        if (!idDestination) {
+          return; 
+        }
+  
+        // On récupère le code nomenclature pour rediriger dynamiquement
+        this.api.getCodesNomenclature(idDestination).subscribe((destinationCode: string) => {
+          const basePath = `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}`;
+          let targetPath = '';
+  
+          if (destinationCode === 'tdg') {
+            targetPath = `${basePath}/germination-table`;
+          } else if (destinationCode === 'tsv') {
+            targetPath = `${basePath}/viability-table`;
+          }
+  
+          if (targetPath) {
+            this.router.navigate([targetPath]);
+          }
+        });
       },
-      
       error: (err) => {
         console.error(err);
         this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de l\'action');
       }
     });
   }
+  
   
   
 }
