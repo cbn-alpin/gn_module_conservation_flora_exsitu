@@ -13,6 +13,7 @@
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="true"
+          [customData]="actionTypes"
           codeNomenclatureType="CFE_ACTION_TYPE"
           [parentFormControl]="germinationForm.controls.id_action_type"
         ></pnx-nomenclature>
@@ -267,8 +268,9 @@
             *ngIf="code === 'svr' || code === 'synth'"
             [replicatesForm]="replicatesForm"
             [replicateLabels]="replicateLabels"
+            [replicates_for_form]="replicates_for_form"
             [code]="code"
-          ></app-replicates-modal>
+            ></app-replicates-modal>
           
           </div>
          

@@ -33,6 +33,9 @@ export class ActionComponent implements OnInit {
   public idTest: number;
   replicateCount : any;
   germinationForm: FormGroup;
+  
+  replicates_for_form: any = null;
+
   replicates: any[] = [];
   dataSource = new MatTableDataSource<Action>([]);
   displayedColumns: string[] = [
@@ -43,6 +46,7 @@ export class ActionComponent implements OnInit {
     'replicate',
     'levage'
   ];
+  public isGermination: boolean =  true;
 
   actions = ['Suivi Test', 'Stérilisation', 'Scarification', 'Stratification', 'Traitement'];
   code: any = '';
@@ -53,6 +57,7 @@ export class ActionComponent implements OnInit {
   replicatesForm: FormGroup;
   replicateLabels: string[] = [];
   replicateDatesUsed: string[] = [];
+  public actionTypes: any[] = [];
 
 
   constructor(
@@ -115,9 +120,7 @@ export class ActionComponent implements OnInit {
     this.observers_list_code = this.cfg.getObsCode();
     this.idTest = this.dialogData?.id_test ?? null;
   
-    this.additionalDataForm = this.germinationForm.get('additional_data') as FormGroup;
-    this.formsDefinition = this.cfg.getModuleConfigExsitu()['harvest_form']['additional_data'];
-  
+    // Ajout des champs supplémentaires dynamiques
     if (this.formsDefinition && this.additionalDataForm) {
       this.formsDefinition.forEach(field => {
         const fieldName = field.attribut_name;
@@ -125,6 +128,15 @@ export class ActionComponent implements OnInit {
       });
     }
   
+    // Initialiser le formulaire de réplicats
+    this.replicatesForm = this.fb.group({
+      germes: this.fb.array([]),
+      mortes: this.fb.array([]),
+      nonGermes: this.fb.array([]),
+      last_replicate: [false]
+    });
+  
+    // Suivi de l’action type (tra, scar, svr...)
     this.germinationForm.controls['id_action_type']?.valueChanges.subscribe(value => {
       if (value) {
         const codeId = value.id_nomenclature || value;
@@ -134,6 +146,7 @@ export class ActionComponent implements OnInit {
       }
     });
   
+    // Suivi du type de scarification
     this.germinationForm.controls['id_scarification_type']?.valueChanges.subscribe(value => {
       if (value) {
         const id = value.id_nomenclature || value;
@@ -149,15 +162,7 @@ export class ActionComponent implements OnInit {
       }
     });
   
-    // Initialiser le formulaire de réplicats
-    this.replicatesForm = this.fb.group({
-      germes: this.fb.array([]),
-      mortes: this.fb.array([]),
-      nonGermes: this.fb.array([]),
-      last_replicate: [false]
-    });
-  
-    // MODE ÉDITION
+    // Mode édition
     if (this.dialogData?.edit) {
       const action = this.dialogData.action;
       const code = this.dialogData.code;
@@ -178,33 +183,22 @@ export class ActionComponent implements OnInit {
       if (action?.id_scarification_type) {
         const scarTypeCode = action.id_scarification_type.id_nomenclature || action.id_scarification_type;
         this.getActionByCode(scarTypeCode);
+      } else {
+        this.getActionByCode(code);
       }
   
-      console.log("🧪 idTest à l'ouverture :", this.idTest);
-  
-      // ✅ PRÉ-REMPLISSAGE DES RÉPLICATS
-      if (code === 'svr' && action.replicates) {
-        const { germes = [], mortes = [], non_germes = [], last_replicate } = action.replicates;
-  
-        this.initReplicateFields(germes.length);
-  
-        germes.forEach((val, i) => {
-          (this.replicatesForm.get('germes') as FormArray).at(i)?.setValue(val);
-        });
-        mortes.forEach((val, i) => {
-          (this.replicatesForm.get('mortes') as FormArray).at(i)?.setValue(val);
-        });
-        non_germes.forEach((val, i) => {
-          (this.replicatesForm.get('nonGermes') as FormArray).at(i)?.setValue(val);
-        });
-  
-        this.replicatesForm.get('last_replicate')?.setValue(last_replicate ?? false);
+      // Charger les réplicats après le code
+      if (this.dialogData?.id_action) {
+        this.loadReplicatesForForm(this.dialogData.id_action);
+      } else {
+        console.warn("⚠️ id_action manquant, impossible de charger les réplicats");
       }
-    }
+          }
   
     if (this.idTest) {
       this.loadTestDetails();
     }
+  
   }
   
   
@@ -228,7 +222,6 @@ export class ActionComponent implements OnInit {
       next: (result) => {
         this.code = result.cd_nomenclature;
         if (this.code === 'svr') {
-          console.log("hii" , this.replicateCount)
           this.initReplicateFields(this.replicateCount);
           this.loadReplicateDates(); 
 
@@ -285,19 +278,34 @@ export class ActionComponent implements OnInit {
 
   onSubmit(): void {
     if (!this.germinationForm.valid) return;
-
+  
     const finalForm = this.formatDataFormAction();
-
-    this.api.addActionByTest(this.idTest, finalForm).subscribe({
-      next: (res) => {
-        console.log('✅ Action enregistrée :', res);
-        this.dialogRef.close(res); 
-      },
-      error: (err) => {
-        console.error("❌ Erreur lors de la création de l'action :", err);
-      }
-    });
+  
+    if (this.dialogData?.edit && this.dialogData?.id_action) {
+      this.api.updateActionData(this.dialogData.id_action, finalForm).subscribe({
+        next: (res) => {
+          console.log('✅ Action mise à jour :', res);
+          this.dialogRef.close(res); 
+        },
+        error: (err) => {
+          console.error("❌ Erreur lors de la modification de l'action :", err);
+        }
+      });
+    } else {
+      // création
+      this.api.addActionByTest(this.idTest, finalForm).subscribe({
+        next: (res) => {
+          console.log('✅ Action créée :', res);
+          this.dialogRef.close(res); 
+        },
+        error: (err) => {
+          console.error("❌ Erreur lors de la création de l'action :", err);
+        }
+      });
+    }
+    
   }
+  
 
   private formatDataFormAction() {
     const rawForm = JSON.parse(JSON.stringify(this.germinationForm.value));
@@ -390,13 +398,31 @@ export class ActionComponent implements OnInit {
       String.fromCharCode(65 + i)
     );
   
+    // Crée les FormArray s'ils n'existent pas
+    if (!this.replicatesForm.contains('germes')) {
+      this.replicatesForm.addControl('germes', this.fb.array([]));
+    }
+    if (!this.replicatesForm.contains('mortes')) {
+      this.replicatesForm.addControl('mortes', this.fb.array([]));
+    }
+    if (!this.replicatesForm.contains('nonGermes')) {
+      this.replicatesForm.addControl('nonGermes', this.fb.array([]));
+    }
+  
+    // Crée les champs synthèse si besoin
+    if (!this.replicatesForm.contains('total_count_germinated')) {
+      this.replicatesForm.addControl('total_count_germinated', this.fb.control(null));
+    }
+    if (!this.replicatesForm.contains('total_count_dead')) {
+      this.replicatesForm.addControl('total_count_dead', this.fb.control(null));
+    }
+    if (!this.replicatesForm.contains('total_count_viable')) {
+      this.replicatesForm.addControl('total_count_viable', this.fb.control(null));
+    }
+  
     const germes = this.replicatesForm.get('germes') as FormArray;
     const mortes = this.replicatesForm.get('mortes') as FormArray;
     const nonGermes = this.replicatesForm.get('nonGermes') as FormArray;
-    this.replicatesForm.addControl('total_count_germinated', this.fb.control(null));
-    this.replicatesForm.addControl('total_count_dead', this.fb.control(null));
-    this.replicatesForm.addControl('total_count_viable', this.fb.control(null));
-
   
     germes.clear();
     mortes.clear();
@@ -408,6 +434,7 @@ export class ActionComponent implements OnInit {
       nonGermes.push(this.fb.control(''));
     }
   }
+  
 
   loadReplicateDates(): void {
     if (!this.idTest) return;
@@ -422,6 +449,22 @@ export class ActionComponent implements OnInit {
       }
     });
   }
+
+  loadReplicatesForForm(idAction: number): void {
+    this.api.getActionReplicate(idAction).subscribe({
+      next: (replicates) => {
+        console.log("✅ Réplicats chargés :", replicates);
+        this.replicates_for_form = replicates;
+  
+        // ✅ Met ici le log une fois que les données sont bien chargées
+        console.log("📥 Données reçues :", this.replicates_for_form);
+      },
+      error: (err) => {
+        console.error("❌ Erreur lors du chargement des réplicats :", err);
+      }
+    });
+  }
+  
   
   
 isReplicateDateUsed(): boolean {

@@ -294,6 +294,13 @@ export class DataService {
   getTreatmentByTest(id_test: number): Observable<{ treatment_label: string }> {
     return this.api.get<{ treatment_label: string }>(`${this.moduleBaseUrl}/tests/${id_test}/treatment`);
   }
+  getActionReplicate(id_action: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/actions/${id_action}/replicates`);
+  }
+  
+  updateActionData(id_action: number, data: any): Observable<any> {
+    return this.api.put(`${this.moduleBaseUrl}/actions/${id_action}/update`, data);
+  }
   
   
   
