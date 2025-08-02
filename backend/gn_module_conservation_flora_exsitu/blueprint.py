@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
 from .repositories import SowingRepository, TestRepository , ActionRepository
-from .models import TSowing, TTest, TAction
+from .models import TSowing, TTest, TAction,TActionReplicate
 from utils_flask_sqla.response import json_resp
 from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository, StorageRepository
 from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed, TStorage
@@ -38,7 +38,7 @@ from werkzeug.utils import secure_filename
 from pathlib import Path
 from datetime import datetime
 
-from .repositories import TestRepository
+from .repositories import TestRepository,ActionReplicateRepository
 
 
 blueprint = Blueprint("conservation_flora_exsitu", __name__)
@@ -1798,32 +1798,6 @@ def get_nomenclature_details(id_nomenclature):
 
     return details
 
-
-# @blueprint.route("/tests/<int:id_test>/actions/code-autocomplete", methods=["GET"])
-# @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-# def get_actions_by_test(id_test):
-#     action = db.session.query(TAction).filter_by(id_test=id_test).all()
-#     return jsonify([
-#         {"id_action": m.id_action, "code": m.code}
-#         for m in action
-#     ])
-# @blueprint.route("/tests/<int:id_test>/actions", methods=["GET"])
-# @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-# def get_all_action_by_test(id_test):
-#     action = db.session.query(TAction).filter_by(id_test=id_test).all()
-#     return jsonify([
-#         {
-#             "id_action": t.id_action,
-#             "code_test": t.test.code,
-#             "action_type_label": t.action_type.label_default if t.action_type else None,
-#             "date_start": t.date_start.isoformat() if t.date_start else None,
-#             "actor_label": (
-#                 f"{t.actor.prenom_role} {t.actor.nom_role}".strip()
-#                 if t.actor else None
-#             )
-#         } for t in action
-#     ])
-
 @blueprint.route("/tests/<int:id_test>/actions/code-autocomplete", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 def get_actions_code_autocomplete(id_test):
@@ -1832,26 +1806,6 @@ def get_actions_code_autocomplete(id_test):
         {"id_action": action.id_action, "code": action.code}
         for action in actions
     ])
-
-# @blueprint.route("/tests/<int:id_test>/actions", methods=["GET"])
-# @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-# def get_all_actions_by_test(id_test):
-#     actions = db.session.query(TAction).filter_by(id_test=id_test).all()
-
-#     return jsonify([
-#         {
-#             "id_action": action.id_action,
-#             "code_test": action.test.code if action.test else None,
-#             "label_action_type": action.action_type.label_default if action.action_type else None,
-#             "label_actor": (
-#                 f"{action.actor.prenom_role} {action.actor.nom_role}".strip()
-#                 if action.actor else None
-#             ),
-#             "date_start": action.date_start.isoformat() if action.date_start else None,
-#             "date_end": action.date_end.isoformat() if action.date_end else None
-#         }
-#         for action in actions
-#     ])
 
 
 @blueprint.route("/tests/<int:id_test>/actions", methods=["GET"])
@@ -1892,13 +1846,6 @@ def delete_actio(id_action):
         db.session.rollback()
         current_app.logger.error(f"Erreur lors de la suppression de l’action {id_action}: {e}")
         return {"error": "Erreur serveur lors de la suppression"}, 500
-
-
-@blueprint.route("/actions/<int:id_action>/replicates", methods=["GET"])
-def get_action_replicates(id_action):
-    repo = ActionRepository()
-    replicates = repo.get_replicates_by_action(id_action)
-    return jsonify(replicates)
 
 
 @blueprint.route("/thermo-photo/<int:id_test>", methods=["GET"])
@@ -1969,3 +1916,70 @@ def get_treatment_by_test_route(id_test):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@blueprint.route('/materials/<int:id_material>/tests/<int:id_test>/actions/<int:id_action>/replicates', methods=['PUT'])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+def update_replicate(id_material, id_test, id_action):
+    data = request.get_json()
+
+    # Vérifier que l'action existe et appartient au bon test
+    action = TAction.query.get(id_action)
+    if not action or action.id_test != id_test:
+        return jsonify({'error': 'Action non trouvée ou n’appartient pas à ce test'}), 404
+
+    try:
+        repo = ActionReplicateRepository()
+        updated_action = repo.update(id_action, data)
+        return jsonify({
+            'message': 'Réplicats mis à jour avec succès',
+            'id_action': updated_action.get("id_action")
+        }), 200
+
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
+
+    except Exception as e:
+        print(f"Erreur serveur : {e}")
+        return jsonify({'error': 'Erreur serveur'}), 500
+
+@blueprint.route("/actions/<int:id_action>/replicates", methods=["GET"])
+def get_action_replicates(id_action):
+    action = db.session.get(TAction, id_action)
+    if not action:
+        return jsonify({"error": "Action introuvable"}), 404
+
+    action_type = TNomenclatures.query.get(action.id_action_type)
+    code = action_type.cd_nomenclature if action_type else None
+
+    replicates = db.session.query(TActionReplicate).filter_by(id_action=id_action).order_by(TActionReplicate.code).all()
+
+    if code == "svr":
+        return jsonify({
+            "germes": [r.count_germinated for r in replicates],
+            "mortes": [r.count_dead for r in replicates],
+            "nonGermes": [r.count_viable for r in replicates],
+            "last_replicate": any(r.last_replicate for r in replicates)
+        })
+    elif code == "synth" and replicates:
+        r = replicates[0]
+        return jsonify({
+            "total_count_germinated": r.total_count_germinated,
+            "total_count_dead": r.total_count_dead,
+            "total_count_viable": r.total_count_viable
+        })
+    else:
+        return jsonify({})
+
+@blueprint.route("/actions/<int:id_action>/update", methods=["PUT"])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+def update_action_data(id_action):
+    data = request.get_json()
+
+    try:
+        repo = ActionRepository()
+        updated = repo.update(id_action, data)
+        return jsonify({"message": "Action mise à jour avec succès", "id_action": updated.id_action}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        print("Erreur serveur :", e)
+        return jsonify({"error": "Erreur serveur"}), 500

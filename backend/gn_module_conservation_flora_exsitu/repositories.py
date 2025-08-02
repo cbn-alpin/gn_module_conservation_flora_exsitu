@@ -876,44 +876,120 @@ class StorageRepository:
 #         except SQLAlchemyError as e:
 #             db.session.rollback()
 #             raise e
+# class SowingRepository:
+#     def create(self, data):
+#         try:
+#             sowing = TSowing(**data)
+#             db.session.add(sowing)
+#             db.session.commit()
+#             return sowing
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
 
+#     def get_by_id(self, id_sowing):
+#         return TSowing.query.get(id_sowing)
+
+#     def list_by_material(self, id_material):
+#         return TSowing.query.filter_by(id_material=id_material).all()
+
+#     def update(self, id_sowing, data):
+#         sowing = TSowing.query.get(id_sowing)
+#         if not sowing:
+#             return None
+#         try:
+#             for key, value in data.items():
+#                 if hasattr(sowing, key):
+#                     setattr(sowing, key, value)
+#             db.session.commit()
+#             return sowing
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
+
+#     def delete(self, id_sowing):
+#         sowing = TSowing.query.get(id_sowing)
+#         if not sowing:
+#             return False
+#         try:
+#             db.session.delete(sowing)
+#             db.session.commit()
+#             return True
+#         except SQLAlchemyError as e:
+#             db.session.rollback()
+#             raise e
 
 class SowingRepository:
-    def create(self, data):
+
+    def get_all_by_material(self, id_material: int):
         try:
-            sowing = TSowing(**data)
+            return TSowing.query.filter_by(id_material=id_material).all()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+    def get_by_id(self, id_sowing: int):
+        try:
+            return TSowing.query.get(id_sowing)
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+    def create(self, id_material: int, data: dict):
+        try:
+            data["id_material"] = id_material
+
+            container = data.pop("container", None)
+            substrate = data.pop("substrate", None)
+            additional_data = data.pop("additional_data", None)
+
+            sowing = TSowing(
+                **data,
+                container={"value": container} if isinstance(container, str) else container,
+                substrate={"value": substrate} if isinstance(substrate, str) else substrate,
+                additional_data=additional_data or {},
+                meta_create_date=datetime.utcnow()
+            )
+
             db.session.add(sowing)
             db.session.commit()
+
             return sowing
+
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
 
-    def get_by_id(self, id_sowing):
-        return TSowing.query.get(id_sowing)
-
-    def list_by_material(self, id_material):
-        return TSowing.query.filter_by(id_material=id_material).all()
-
-    def update(self, id_sowing, data):
-        sowing = TSowing.query.get(id_sowing)
-        if not sowing:
-            return None
+    def update(self, id_sowing: int, data: dict):
         try:
+            sowing = TSowing.query.get(id_sowing)
+            if not sowing:
+                raise ValueError("Semis non trouvé")
+
+            container = data.pop("container", None)
+            substrate = data.pop("substrate", None)
+            additional_data = data.pop("additional_data", None)
+
             for key, value in data.items():
-                if hasattr(sowing, key):
-                    setattr(sowing, key, value)
+                setattr(sowing, key, value)
+
+            sowing.container = {"value": container} if isinstance(container, str) else container
+            sowing.substrate = {"value": substrate} if isinstance(substrate, str) else substrate
+            sowing.additional_data = additional_data or {}
+            sowing.meta_update_date = datetime.utcnow()
+
             db.session.commit()
             return sowing
+
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
 
-    def delete(self, id_sowing):
-        sowing = TSowing.query.get(id_sowing)
-        if not sowing:
-            return False
+    def delete(self, id_sowing: int):
         try:
+            sowing = TSowing.query.get(id_sowing)
+            if not sowing:
+                return False
             db.session.delete(sowing)
             db.session.commit()
             return True
@@ -921,6 +997,45 @@ class SowingRepository:
             db.session.rollback()
             raise e
 
+    def get_with_labels_by_material(self, id_material: int):
+        try:
+            Location = aliased(TNomenclatures)
+            WateringMethod = aliased(TNomenclatures)
+            SowingMethod = aliased(TNomenclatures)
+            Actor = aliased(User)
+
+            query = (
+                db.session.query(
+                    TSowing,
+                    Location.label_default.label("label_location"),
+                    WateringMethod.label_default.label("label_watering"),
+                    SowingMethod.label_default.label("label_sowing"),
+                    Actor.nom_role.label("nom_actor"),
+                    Actor.prenom_role.label("prenom_actor")
+                )
+                .outerjoin(Location, TSowing.id_location == Location.id_nomenclature)
+                .outerjoin(WateringMethod, TSowing.id_watering_method == WateringMethod.id_nomenclature)
+                .outerjoin(SowingMethod, TSowing.id_sowing_method == SowingMethod.id_nomenclature)
+                .outerjoin(Actor, TSowing.id_actor == Actor.id_role)
+                .filter(TSowing.id_material == id_material)
+                .order_by(TSowing.meta_create_date.desc())
+            )
+
+            results = query.all()
+            return [
+                {
+                    **sowing.TSowing.to_dic(),
+                    "label_location": row.label_location,
+                    "label_watering": row.label_watering,
+                    "label_sowing": row.label_sowing,
+                    "nom_actor": row.nom_actor,
+                    "prenom_actor": row.prenom_actor
+                }
+                for row in results
+            ]
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
 
 class TestRepository:
     def create(self, data):
@@ -1243,6 +1358,7 @@ class ActionRepository:
             }
             for row in results
         ]
+    
     def get_action_with_labels_by_id(self, id_action: int):
         ActionType = aliased(TNomenclatures)
         Scarification = aliased(TNomenclatures)
@@ -1268,7 +1384,6 @@ class ActionRepository:
                 SterilizationLiquid.label_default.label("label_sterilization_liquid"),
                 SterilizationProduct.label_default.label("label_sterilization_product"),
                 LiquidTreatment.label_default.label("label_liquid_treatment"),
-
                 Actor.prenom_role.label("prenom_actor")
             )
             .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
@@ -1280,9 +1395,7 @@ class ActionRepository:
             .outerjoin(SterilizationLiquid, TAction.id_sterilization_liquid == SterilizationLiquid.id_nomenclature)
             .outerjoin(SterilizationProduct, TAction.id_sterilization_product == SterilizationProduct.id_nomenclature)
             .outerjoin(LiquidTreatment, TAction.id_liquid_treatment == LiquidTreatment.id_nomenclature)
-
             .outerjoin(Actor, TAction.id_actor == Actor.id_role)
-
             .filter(TAction.id_action == id_action)
             .first()
         )
@@ -1315,13 +1428,10 @@ class ActionRepository:
         data["label_sterilization_liquid"] = label_sterilization_liquid
         data["label_sterilization_product"] = label_sterilization_product
         data["label_liquid_treatment"] = label_liquid_treatment
-
         data["label_actor"] = f"{prenom_actor} {nom_actor}".strip() if nom_actor else None
 
-        # Étape 1 : Récupérer l'id_test de cette action
+        # Récupérer tous les réplicats du test pour affichage
         id_test = action.id_test
-
-        # Étape 2 : Récupérer toutes les actions ayant ce même id_test
         actions_same_test = (
             db.session.query(TAction.id_action, TAction.date_start)
             .filter(TAction.id_test == id_test)
@@ -1329,7 +1439,6 @@ class ActionRepository:
         )
         actions_by_id = {a.id_action: a.date_start for a in actions_same_test}
 
-        # Étape 3 : Récupérer tous les réplicats associés à ces actions
         all_replicates = (
             db.session.query(TActionReplicate)
             .filter(TActionReplicate.id_action.in_(actions_by_id.keys()))
@@ -1337,7 +1446,6 @@ class ActionRepository:
             .all()
         )
 
-        # Étape 4 : Associer à chaque réplicat la date de son action
         replicates_with_dates = []
         for r in all_replicates:
             rep_dict = r.to_dict()
@@ -1345,10 +1453,21 @@ class ActionRepository:
             rep_dict["date"] = date.isoformat() if date else None
             replicates_with_dates.append(rep_dict)
 
-        # Étape 5 : Ajouter à la réponse finale
         data["replicates"] = replicates_with_dates
 
+        # ➕ Récupérer les données spécifiques à la modification
+        replicate_data = self.get_replicate_data_for_edit(id_action)
+
+        if replicate_data:
+            if "replicates_for_form" in replicate_data:
+                data["replicates_for_form"] = replicate_data["replicates_for_form"]
+            else:
+                data["total_count_germinated"] = replicate_data.get("total_count_germinated")
+                data["total_count_dead"] = replicate_data.get("total_count_dead")
+                data["total_count_viable"] = replicate_data.get("total_count_viable")
+
         return data
+
 
     def get_replicates_by_action(self, id_action: int):
         replicates = (
@@ -1535,6 +1654,41 @@ class ActionRepository:
 
         db.session.commit()
         return action
+        
+    def get_replicate_data_for_edit(self, id_action: int):
+        replicates = (
+            db.session.query(TActionReplicate)
+            .filter(TActionReplicate.id_action == id_action)
+            .all()
+        )
+
+        if not replicates:
+            return None
+
+        # Distinction entre suivi réplicats et synthèse
+        if len(replicates) > 1:
+            # Type "svr"
+            data = {
+                "replicates_for_form": [
+                    {
+                        "count_germes": rep.count_germinated,
+                        "count_mortes": rep.count_dead,
+                        "count_non_germes": rep.count_viable,
+                        "last_replicate": rep.last_replicate
+                    }
+                    for rep in replicates
+                ]
+            }
+        else:
+            # Type "synth"
+            rep = replicates[0]
+            data = {
+                "total_count_germinated": rep.total_count_germinated,
+                "total_count_dead": rep.total_count_dead,
+                "total_count_viable": rep.total_count_viable
+            }
+
+        return data
 
 
 
@@ -1619,3 +1773,70 @@ class ActionReplicateRepository:
             db.session.rollback()
             raise e
 
+     
+    def update(self, id_action: int, data: dict):
+        action = TAction.query.get(id_action)
+        if not action:
+            raise ValueError("Action introuvable")
+
+        # Récupérer le code de l'action (tra, scar, svr, etc.)
+        action_type = TNomenclatures.query.get(data.get("id_action_type"))
+        action_code = action_type.cd_nomenclature if action_type else None
+
+        # Mettre à jour les champs simples de TAction
+        additional_data = data.get("additional_data")
+        if additional_data:
+            action.additional_data = additional_data
+
+        for key, value in data.items():
+            if hasattr(action, key):
+                setattr(action, key, value)
+
+        # Supprimer les anciens réplicats liés à cette action
+        db.session.query(TActionReplicate).filter_by(id_action=id_action).delete()
+
+        # Récupérer les nouveaux réplicats
+        replicates = data.pop("replicates", None)
+
+        # Réplicats individuels (svr)
+        if action_code == "svr" and isinstance(replicates, dict):
+            germes = replicates.get("germes", [])
+            mortes = replicates.get("mortes", [])
+            non_germes = replicates.get("nonGermes", [])
+            last_replicate = replicates.get("last_replicate", False)
+
+            for i in range(len(germes)):
+                rep = TActionReplicate(
+                    id_action=id_action,
+                    code=chr(65 + i),  # A, B, C, ...
+                    count_germinated=germes[i],
+                    count_dead=mortes[i],
+                    count_viable=non_germes[i],
+                    count_transplanted=None,
+                    total_count_germinated=None,
+                    total_count_dead=None,
+                    total_count_viable=None,
+                    total_count_transplanted=None,
+                    last_replicate=True if last_replicate and i == len(germes) - 1 else False
+                )
+                db.session.add(rep)
+
+        # Synthèse de suivi (synth)
+        elif action_code == "synth" and isinstance(replicates, dict):
+            rep = TActionReplicate(
+                id_action=id_action,
+                code="synth",
+                count_germinated=None,
+                count_dead=None,
+                count_viable=None,
+                count_transplanted=None,
+                total_count_germinated=replicates.get("total_count_germinated"),
+                total_count_dead=replicates.get("total_count_dead"),
+                total_count_viable=replicates.get("total_count_viable"),
+                total_count_transplanted=None,
+                last_replicate=None
+            )
+            db.session.add(rep)
+
+        db.session.commit()
+        return action.to_dict()
