@@ -433,6 +433,40 @@ export class ActionModalComponent implements OnInit {
   }
   submetAndResetForm() {
     const finalForm = this.formatDataForm();
+
+    if (this.edit) {
+      this.api.upAction(this.data.data.id_material, this.data.data.id_storage, finalForm).subscribe({
+        next: () => {
+          this._commonService.translateToaster('info', 'Action modifiée avec succès');
+          this.dialogRef.close(true);
+  
+          const idDestination = finalForm.id_destination;
+          if (!idDestination) return;
+  
+          this.api.getCodesNomenclature(idDestination).subscribe((destinationCode: string) => {
+            const basePath = `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}`;
+            let targetPath = '';
+  
+            if (destinationCode === 'tdg') {
+              targetPath = `${basePath}/germination-table`;
+            } else if (destinationCode === 'tsv') {
+              targetPath = `${basePath}/viability-table`;
+            }
+  
+            if (targetPath) {
+              this.router.navigate([targetPath]);
+            }
+          });
+        },
+        error: (err) => {
+          console.error(err);
+          this._commonService.translateToaster('warning', 'Erreur lors de la modification de l\'action');
+        }
+      });
+  
+      return;
+    }
+  
   
     this.api.addAction(this.data.data.id_material, finalForm).subscribe({
       next: (response) => {
