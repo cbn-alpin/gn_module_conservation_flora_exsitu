@@ -181,6 +181,8 @@ def downgrade():
     delete_nomenclatures("CFE_TREATMENT_PRODUCT")
     delete_nomenclatures("CFE_SCARIFICATION_MEC")
     delete_nomenclatures("CFE_STERILIZATION_PRODUCT")
+    delete_nomenclatures("CFE_ACTION_VIA_TYPE")
+
     delete_nomenclatures("CFE_STERILIZATION_LIQUID")
     delete_nomenclatures("CFE_LIQUID_TREATMENT")
 

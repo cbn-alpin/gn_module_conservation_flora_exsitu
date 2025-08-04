@@ -570,6 +570,19 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     'conservation_flora_exsitu'
 );
 
+-- Create the "CFE_ACTION_VIA_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_ACTION_VIA_TYPE',
+    'Type d’action viabilité',
+    'Nomenclature des types d’actions spécifiques aux tests de viabilité.',
+    'Type d’action viabilité',
+    'Nomenclature des types d’actions spécifiques aux tests de viabilité.',
+    'CBNA'
+);
+
+
 
 -- --------------------------------------------------------------------------------
 -- COMMONS

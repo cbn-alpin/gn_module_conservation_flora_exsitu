@@ -159,6 +159,7 @@ CFE_INTERNAL_DESTINATION;sem;semis;Semis;Semis;Semis;Semis;conservation_flora_ex
 CFE_INTERNAL_DESTINATION;cult;culture;Culture;Culture;Culture;Culture;conservation_flora_exsitu;.003
 CFE_INTERNAL_DESTINATION;carp;carpotheque;Carpothèque;Carpothèque;Carpothèque;Carpothèque;conservation_flora_exsitu;.004
 CFE_INTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.005
+CFE_INTERNAL_DESTINATION;tsv;testDeViabilite;Test de Viabilité;Test de Viabilité;Test de Viabilité;Test de Viabilité;conservation_flora_exsitu;
 CFE_EXTERNAL_DESTINATION;dap;donAPartenaire;Don à partenaire;Don à partenaire;Don à partenaire;Don à partenaire;conservation_flora_exsitu;.001
 CFE_EXTERNAL_DESTINATION;aut;autre;Autre;Autre;Autre;Autre;conservation_flora_exsitu;.002
 CFE_STORAGE_ACTION;sti;stockageInitial;Stockage initial;Stockage initial;Stockage initial;Stockage initial;conservation_flora_exsitu;.001
@@ -251,3 +252,7 @@ CFE_LIQUID_TREATMENT;nitp;nitratedepotassium;nitrate de potassium (KNO3);nitrate
 CFE_LIQUID_TREATMENT;stri;strigolactone GR24;strigolactone (GR24);strigolactone (GR24);strigolactone (GR24);strigolactone (GR24);conservation_flora_exsitu;.009
 CFE_LIQUID_TREATMENT;poh3;potentielhydrique:-0.3mpa;Potentiel hydrique : -0.3 mpa;Solution simulant un potentiel hydrique de -0.3 mégapascal pour les tests de germination;Potentiel hydrique : -0.3 mpa;Solution simulant un potentiel hydrique de -0.3 mégapascal pour les tests de germination;conservation_flora_exsitu;.0012
 CFE_LIQUID_TREATMENT;poh6;potentielhydrique:-0.6mpa;Potentiel hydrique : -0.6 mpa;Solution simulant un potentiel hydrique de -0.6 mégapascal pour les tests de germination;Potentiel hydrique : -0.6 mpa;Solution simulant un potentiel hydrique de -0.6 mégapascal pour les tests de germination;conservation_flora_exsitu;.0013
+CFE_ACTION_VIA_TYPE;scar;scarification;Scarification;"Procédé qui consiste à endommager le tégument de la graine afin de laisser passer l'eau; nécessaire à la germination";Scarification;"Procédé qui consiste à endommager le tégument de la graine afin de laisser passer l'eau; nécessaire à la germination";conservation_flora_exsitu;.002
+CFE_ACTION_VIA_TYPE;tra;traitement;Traitement;Conditions de température et de luminosité utilisées pour la germination;Traitement;Conditions de température et de luminosité utilisées pour la germination;conservation_flora_exsitu;.004
+CFE_ACTION_VIA_TYPE;svr;suiviReplicats;Suivi réplicats;Relevé périodique des évènements au sein des répétitions;Suivi réplicats;Relevé périodique des évènements au sein des répétitions;conservation_flora_exsitu;.005
+CFE_ACTION_VIA_TYPE;synth;syntheseSuivi;Synthèse du suivi;Résumé global de l'évolution observée sur les réplicats et les actions menées;Synthèse du suivi;Résumé global de l'évolution observée sur les réplicats et les actions menées;conservation_flora_exsitu;.006
