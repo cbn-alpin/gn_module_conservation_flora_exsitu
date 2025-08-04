@@ -33,7 +33,7 @@ export class ActionComponent implements OnInit {
   public idTest: number;
   replicateCount : any;
   germinationForm: FormGroup;
-  
+  codeNomenclatureType: any
   replicates_for_form: any = null;
 
   replicates: any[] = [];
@@ -119,7 +119,19 @@ export class ActionComponent implements OnInit {
     this.dataSource.data = [];
     this.observers_list_code = this.cfg.getObsCode();
     this.idTest = this.dialogData?.id_test ?? null;
+    const url = this.router.url;
+
+    if (url.includes('viability')) {
+      this.codeNomenclatureType = 'CFE_ACTION_VIA_TYPE';
+    } else if (url.includes('germination')) {
+      this.codeNomenclatureType = 'CFE_ACTION_TYPE';
+    } else {
+      this.codeNomenclatureType = 'CFE_ACTION_TYPE'; // fallback par défaut
+    }
   
+    console.log("📍 Type d'action détecté :", this.codeNomenclatureType);
+  
+    
     // Ajout des champs supplémentaires dynamiques
     if (this.formsDefinition && this.additionalDataForm) {
       this.formsDefinition.forEach(field => {

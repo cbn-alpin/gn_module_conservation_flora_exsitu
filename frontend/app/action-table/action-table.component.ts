@@ -57,6 +57,7 @@ export class ActionTableComponent implements OnInit, OnChanges {
     if (this.idTest) {
       this.loadActions();
     }
+    
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['idTest'] && changes['idTest'].currentValue) {
@@ -78,8 +79,8 @@ export class ActionTableComponent implements OnInit, OnChanges {
         this.dataSource.data = actions.map(action => ({
           id_action: action.id_action,
           date_start: action.date_start,
-          label_action_type: action.label_action_type,  // ⚠️ corrige ici
-          label_actor: action.label_actor,              // ⚠️ corrige ici
+          label_action_type: action.label_action_type,  
+          label_actor: action.label_actor,              
           meta_create_date: action.meta_create_date
         })).sort((a, b) => {
           const dateA = new Date(a.meta_create_date).getTime();
@@ -130,6 +131,7 @@ export class ActionTableComponent implements OnInit, OnChanges {
                 action: actionFull,
                 edit: true,
                 code, 
+                id_action: actionFull.id_action,  
                 hideTypeField: true 
               }
             });
