@@ -48,7 +48,8 @@
   </div>
 
   <!-- Synthèse du suivi (si code = 'synth') -->
-  <div *ngIf="code === 'synth'">
+    <div *ngIf="code === 'synth' && replicatesForm.get('total_count_germinated')">
+
     <h3 class="section-subtitle">Synthèse du suivi</h3>
 
     <div class="form-row">

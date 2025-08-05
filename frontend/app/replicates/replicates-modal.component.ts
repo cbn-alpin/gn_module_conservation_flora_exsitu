@@ -43,6 +43,7 @@ export class ReplicatesModalComponent implements OnInit, OnChanges {
       const mortes = this.replicates_for_form?.mortes || [];
       const nonGermes = this.replicates_for_form?.nonGermes || [];
       const last = this.replicates_for_form?.last_replicate ?? false;
+      console.log("🌱 Valeurs germes injectées :", germes);
 
       this.replicatesForm.setControl('germes', this.fb.array(germes.map(val => this.fb.control(val))));
       this.replicatesForm.setControl('mortes', this.fb.array(mortes.map(val => this.fb.control(val))));
@@ -56,26 +57,25 @@ export class ReplicatesModalComponent implements OnInit, OnChanges {
     }
 
     if (this.code === 'synth') {
-      // Ajouter les contrôles si non présents
-      if (!this.replicatesForm.contains('total_count_germinated')) {
-        this.replicatesForm.addControl('total_count_germinated', this.fb.control(null));
-      }
-      if (!this.replicatesForm.contains('total_count_dead')) {
-        this.replicatesForm.addControl('total_count_dead', this.fb.control(null));
-      }
-      if (!this.replicatesForm.contains('total_count_viable')) {
-        this.replicatesForm.addControl('total_count_viable', this.fb.control(null));
-      }
+  // Ajoute les contrôles
+  if (!this.replicatesForm.contains('total_count_germinated')) {
+    this.replicatesForm.addControl('total_count_germinated', this.fb.control(null));
+  }
+  if (!this.replicatesForm.contains('total_count_dead')) {
+    this.replicatesForm.addControl('total_count_dead', this.fb.control(null));
+  }
+  if (!this.replicatesForm.contains('total_count_viable')) {
+    this.replicatesForm.addControl('total_count_viable', this.fb.control(null));
+  }
+
+  // Maintenant patcher les valeurs
+  this.replicatesForm.get('total_count_germinated')?.setValue(this.replicates_for_form?.total_count_germinated ?? null);
+  this.replicatesForm.get('total_count_dead')?.setValue(this.replicates_for_form?.total_count_dead ?? null);
+  this.replicatesForm.get('total_count_viable')?.setValue(this.replicates_for_form?.total_count_viable ?? null);
+}
+
     
-      // Remplir les valeurs
-      this.replicatesForm.patchValue({
-        total_count_germinated: this.replicates_for_form?.total_count_germinated ?? null,
-        total_count_dead: this.replicates_for_form?.total_count_dead ?? null,
-        total_count_viable: this.replicates_for_form?.total_count_viable ?? null,
-      });
-    }
-    
-    
+
 
     console.log("📦 Code action :", this.code);
     console.log("📥 Données pré-remplies :", this.replicates_for_form);
