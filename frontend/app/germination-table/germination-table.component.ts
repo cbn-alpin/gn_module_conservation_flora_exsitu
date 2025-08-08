@@ -6,6 +6,7 @@ import { GerminationComponent } from '../germination/germination.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
 import { ActionComponent } from '../action/action.component';
+import { ActivatedRoute } from '@angular/router';
 
 export interface Germination {
   numSemis: string;
@@ -32,6 +33,8 @@ export class GerminationTableComponent implements OnInit {
     private dialog: MatDialog,
     public exsituFormService: ExsituFormService,
     private api: DataService,
+    private route: ActivatedRoute,  // <= ajout
+
   ) {}
 
   dataSource = new MatTableDataSource<any>();
@@ -52,8 +55,27 @@ export class GerminationTableComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.loadTests();
-    this.getTestByCode(this.codeT);
+    this.route.queryParams.subscribe(params => {
+      this.getTestByCode(this.codeT);
+      this.loadTests();
+      
+      
+      if (params['openModal'] === 'true') {
+        setTimeout(() => {
+          this.dialog.open(GerminationComponent, {
+            width: '900px',
+            height: '90vh'
+          });
+  
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {},
+            replaceUrl: true
+          });
+        }, 10); 
+      }
+    });    
+    
 
   }
   getTestByCode(code :any): void {

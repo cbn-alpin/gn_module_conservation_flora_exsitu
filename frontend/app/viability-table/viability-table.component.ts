@@ -8,7 +8,8 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
 import { ActionComponent } from '../action/action.component';
 
- 
+import { ActivatedRoute } from '@angular/router';
+
   interface Viability {
     numSemis: string;
     numSemence: string;
@@ -32,6 +33,7 @@ import { ActionComponent } from '../action/action.component';
        private dialog: MatDialog,
        public exsituFormService: ExsituFormService,
        private api: DataService,
+       private route: ActivatedRoute,  
      ) {}
    
      dataSource = new MatTableDataSource<any>();
@@ -54,7 +56,26 @@ import { ActionComponent } from '../action/action.component';
        this.loadTests();
        this.getTestByCode(this.codeT);
 
+
+       this.route.queryParams.subscribe(params => {
+             if (params['openModal'] === 'true') {
+               setTimeout(() => {
+                 this.dialog.open(ViabilityComponent, {
+                   width: '900px',
+                   height: '90vh'
+                 });
+           
+                 // Nettoie l'URL
+                 this.router.navigate([], {
+                   relativeTo: this.route,
+                   queryParams: {},
+                   replaceUrl: true
+                 });
+               }, 0);
+             }
+           });
      }
+
      getTestByCode(code :any): void {
       this.api.getActionByCode(code).subscribe({
         next: (test) => {
@@ -148,6 +169,7 @@ import { ActionComponent } from '../action/action.component';
      }
    
      onAddAction(element: any): void {
+      // console.log("test")
        const idTest = element?.id_test ?? null;
        const idMaterial = element?.id_material ?? null;
    
@@ -156,8 +178,10 @@ import { ActionComponent } from '../action/action.component';
          height: '90vh',
          data: {
            id_material: idMaterial,
-           id_test: idTest
-         }
+           id_test: idTest,
+          //  isGermination: false  ,
+          //  edit: true,
+          }
        });
    
        dialogRef.afterClosed().subscribe(result => {

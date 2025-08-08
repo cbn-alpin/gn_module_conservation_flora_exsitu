@@ -454,7 +454,11 @@ export class ActionModalComponent implements OnInit {
             }
   
             if (targetPath) {
-              this.router.navigate([targetPath]);
+              this.dialogRef.close(); 
+
+              setTimeout(() => {
+                this.router.navigateByUrl(`${targetPath}?openModal=true`);
+              }, 10);
             }
           });
         },
@@ -496,7 +500,11 @@ export class ActionModalComponent implements OnInit {
           }
   
           if (targetPath) {
-            this.router.navigate([targetPath]);
+            this.dialogRef.close();  // ferme la modale
+
+            setTimeout(() => {
+              this.router.navigateByUrl(`${targetPath}?openModal=true`);
+            }, 10);
           }
         });
       },
