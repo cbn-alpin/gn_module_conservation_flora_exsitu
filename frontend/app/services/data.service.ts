@@ -282,15 +282,6 @@ export class DataService {
     return this.api.get<string[]>(`${this.moduleBaseUrl}/tests/${id_test}/replicate-dates`);
   }
   
-  getGerminationPercent(id_test: number) {
-    return this.api.get<{ percent: number }>(`${this.moduleBaseUrl}/test/${id_test}/germination-percent`
-    );
-  }
-
-  updateTestIndicators(id_test: number, indicators: { delay: number; period: number; percent: number }) {
-    return this.api.patch(`${this.moduleBaseUrl}/test/${id_test}/indicators`, indicators);
-  }
-
   getTreatmentByTest(id_test: number): Observable<{ treatment_label: string }> {
     return this.api.get<{ treatment_label: string }>(`${this.moduleBaseUrl}/tests/${id_test}/treatment`);
   }
@@ -300,6 +291,13 @@ export class DataService {
   
   updateActionData(id_action: number, data: any): Observable<any> {
     return this.api.put(`${this.moduleBaseUrl}/actions/${id_action}/update`, data);
+  }
+  getGerminationPercent(id_test: number) {
+    return this.api.get<{ percent: number }>(`${this.moduleBaseUrl}/test/${id_test}/germination-percent`);
+  }
+  
+  updateTestIndicators(id_test: number, indicators: { delay: number; period: number; percent: number }) {
+    return this.api.patch(`${this.moduleBaseUrl}/test/${id_test}/indicators`, indicators);
   }
   
   

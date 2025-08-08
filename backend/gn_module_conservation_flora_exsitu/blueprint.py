@@ -1473,118 +1473,6 @@ def delete_action(id_material, id_storage):
         db.session.rollback()
         return jsonify({'error': 'Erreur lors de la suppression'}), 500
 
-
-# @blueprint.route('/materials/<int:id_material>/tests', methods=['POST'])
-# @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-# @json_resp
-# def create_germination(id_material):
-#     """Créer un test de germination"""
-#     data = request.get_json()
-
-#     material = TMaterial.query.get(id_material)
-#     if not material:
-#         return jsonify({'error': 'Matériel non trouvé'}), 404
-
-#     data["id_material"] = id_material
-#     data["meta_create_by"] = g.current_user.id_role
-
-#     try:
-#         test = TestRepository().create(data)
-#         return {"message": "Test créé avec succès", "id_test": test.id_test}, 201
-#     except ValueError as ve:
-#         return jsonify({"error": str(ve)}), 400
-#     except Exception:
-#         return jsonify({"error": "Erreur serveur"}), 500
-# from dateutil.parser import isoparse
-
-
-# @blueprint.route("/materials/<int:id_material>/germinations", methods=["POST"])
-# @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-# @json_resp
-# def create_germination(id_material):
-#     """Création d'un test de germination (TTest)"""
-
-#     data = request.get_json()
-    
-#     # Vérifie que le matériel existe
-#     material = TMaterial.query.get(id_material)
-#     if not material:
-#         return jsonify({"error": "Matériel non trouvé"}), 404
-
-#     # Rattache le matériel et l'utilisateur
-#     data["id_material"] = id_material
-#     data["meta_create_by"] = g.current_user.id_role
-
-#     # Conversion de certains noms Angular vers les bons noms SQLAlchemy si besoin
-#     # (déjà bien alignés ici)
-
-#     try:
-#         repo = TestRepository()
-#         germination = repo.create(data)
-#         return {
-#             "message": "Test de germination enregistré",
-#             "germination": germination.to_dic()
-#         }, 201
-#     except ValueError as ve:
-#         return jsonify({"error": str(ve)}), 400
-#     except Exception as e:
-#         print(str(e))
-#         return jsonify({"error": "Erreur interne du serveur"}), 500
-
-
-# @blueprint.route("/materials/<int:id_material>/testts", methods=["POST"])
-# @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
-# @json_resp
-# def create_ttest(id_material):
-#     data = request.get_json()
-#     material = TMaterial.query.get(id_material)
-#     if not material:
-#         return {'error': 'Matériel non trouvé'}, 404 
-#     data["id_material"] = id_material
-#     data["meta_create_by"] = g.current_user.id_role
-
-#     repo = TestRepository()
-#     test = repo.create(data)
-#     return {"message": "Test créé", "test": test.to_dic()}
-
-# @blueprint.route("/tests/<int:id_test>", methods=["PUT"])
-# @permissions.check_cruved_scope("U", module_code=MODULE_CODE)
-# @json_resp
-# def update_test(id_test):
-#     data = request.get_json()
-#     data["meta_update_by"] = g.current_user.id_role
-
-#     repo = TestRepository()
-#     test = repo.update(id_test, data)
-
-#     if not test:
-#         return {"error": "Test non trouvé"}, 404
-
-#     return {"message": "Test mis à jour", "test": test.to_dic()}, 200
-# @blueprint.route("/tests/<int:id_test>", methods=["GET"])
-# @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
-# @json_resp
-# def get_test(id_test):
-#     repo = TestRepository()
-#     test = repo.get_one(id_test)
-
-#     if not test:
-#         return {"error": "Test non trouvé"}, 404
-
-#     return test.to_dic(), 200
-# @blueprint.route("/tests/<int:id_test>", methods=["DELETE"])
-# @permissions.check_cruved_scope("D", module_code=MODULE_CODE)
-# @json_resp
-# def delete_test(id_test):
-#     repo = TestRepository()
-#     deleted = repo.delete(id_test)
-
-#     if not deleted:
-#         return {"error": "Test non trouvé"}, 404
-
-#     return {"message": "Test supprimé"}, 200
-
-
 from dateutil.parser import isoparse
 @blueprint.route("/materials/<int:id_material>/sowings", methods=["POST"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
@@ -1594,7 +1482,6 @@ def create_sowing(id_material):
     data["id_material"] = id_material
     data["meta_create_by"] = g.current_user.id_role
 
-    # Parser les dates ISO vers datetime
     data["start_date"] = isoparse(data["start_date"]) if data.get("start_date") else None
     data["end_date"] = isoparse(data["end_date"]) if data.get("end_date") else None
 
@@ -1603,7 +1490,6 @@ def create_sowing(id_material):
     return {"message": "Semis enregistré", "sowing": sowing.to_dic()}, 201
 
 
-# Récupérer tous les semis
 @blueprint.route("/sowings", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @json_resp
@@ -1631,10 +1517,6 @@ def list_sowings_by_material(id_material):
     repo = SowingRepository()
     sowings = repo.list_by_material(id_material)
     return [s.to_dic() for s in sowings]
-
-
-
-
 
 
 @blueprint.route("/materials/<int:id_material>/tests", methods=["POST"])
@@ -1731,7 +1613,6 @@ def update_test(id_material, id_test):
         return jsonify({'error': str(ve)}), 400
     except Exception as e:
         return jsonify({'error': 'Erreur serveur'}), 500
-
 
 
 
@@ -1870,7 +1751,7 @@ def update_pre_treatment(id_test):
 @blueprint.route("/materials/<int:id_material>/tests", methods=["GET"])
 def get_tests_by_material_route(id_material):
     results = get_tests_by_material(id_material)
-    return jsonify(results)  # ✅ OBLIGATOIRE
+    return jsonify(results)  
 
 
 
@@ -1983,3 +1864,58 @@ def update_action_data(id_action):
     except Exception as e:
         print("Erreur serveur :", e)
         return jsonify({"error": "Erreur serveur"}), 500
+
+
+
+@blueprint.route("/test/<int:id_test>/germination-percent", methods=["GET"])
+def get_germination_percent(id_test):
+    test = TTest.query.get(id_test)
+    if not test:
+        return jsonify({"error": "Test non trouvé"}), 404
+
+    svr_nomenclature = TNomenclatures.query.filter_by(cd_nomenclature='svr').first()
+    if not svr_nomenclature:
+        return jsonify({"error": "Type d’action 'svr' introuvable"}), 404
+
+    actions = TAction.query.filter_by(id_test=id_test, id_action_type=svr_nomenclature.id_nomenclature).all()
+    action_ids = [a.id_action for a in actions]
+    if not action_ids:
+        return jsonify({"percent": None})
+
+    # Calcule le total des graines germées
+    total_germinated = db.session.query(
+        func.sum(TActionReplicate.count_germinated)
+    ).filter(
+        TActionReplicate.id_action.in_(action_ids)
+    ).scalar() or 0
+
+    # Calcule le total des graines (germées + mortes + non germées)
+    total_seeds = db.session.query(
+        func.sum(
+            (TActionReplicate.count_germinated or 0) +
+            (TActionReplicate.count_dead or 0) +
+            (TActionReplicate.count_viable or 0)
+        )
+    ).filter(
+        TActionReplicate.id_action.in_(action_ids)
+    ).scalar() or 0
+
+    if total_seeds == 0:
+        return jsonify({"percent": None})
+
+    percent = (total_germinated / total_seeds) * 100
+
+    return jsonify({"percent": round(percent, 1)})
+
+
+@blueprint.route("/test/<int:id_test>/indicators", methods=["PATCH"])
+def update_test_indicators(id_test):
+    test = TTest.query.get(id_test)
+    if not test:
+        return jsonify({"error": "Test introuvable"}), 404
+
+    data = request.get_json()
+    test.germination_rate = data.get("percent")  
+
+    db.session.commit()
+    return jsonify({"message": "Indicateurs mis à jour"})

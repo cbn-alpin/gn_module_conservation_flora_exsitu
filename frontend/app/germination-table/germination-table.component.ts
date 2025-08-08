@@ -1,12 +1,11 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { GerminationComponent } from '../germination/germination.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
 import { ActionComponent } from '../action/action.component';
-import { ActivatedRoute } from '@angular/router';
 
 export interface Germination {
   numSemis: string;
@@ -25,18 +24,8 @@ export interface Germination {
 export class GerminationTableComponent implements OnInit {
   idMaterial: number | null = null;
   idStorage: number | null = null;
-  codeT: any= 'ger'
-  idGermination:any;
-
-  constructor(
-    public router: Router,
-    private dialog: MatDialog,
-    public exsituFormService: ExsituFormService,
-    private api: DataService,
-    private route: ActivatedRoute,  // <= ajout
-
-  ) {}
-
+  codeT: any = 'ger';
+  idGermination: any;
   dataSource = new MatTableDataSource<any>();
 
   @Output() view = new EventEmitter<Germination>();
@@ -49,56 +38,61 @@ export class GerminationTableComponent implements OnInit {
     'meta_create_date',
     'seed_initial_count',
     'photo_thermo_regime',
-    'treatment',   
+    'treatment',
     'pre_treatment',
     'actions'
   ];
+
+  constructor(
+    public router: Router,
+    private dialog: MatDialog,
+    public exsituFormService: ExsituFormService,
+    private api: DataService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.getTestByCode(this.codeT);
       this.loadTests();
-      
-      
+
       if (params['openModal'] === 'true') {
         setTimeout(() => {
           this.dialog.open(GerminationComponent, {
             width: '900px',
             height: '90vh'
           });
-  
+
           this.router.navigate([], {
             relativeTo: this.route,
             queryParams: {},
             replaceUrl: true
           });
-        }, 10); 
+        }, 10);
       }
-    });    
-    
-
+    });
   }
-  getTestByCode(code :any): void {
+
+  getTestByCode(code: any): void {
     this.api.getActionByCode(code).subscribe({
       next: (test) => {
-        this.idGermination=test.id_nomenclature
-        
+        this.idGermination = test.id_nomenclature;
       },
       error: (err) => {
         console.error("Erreur lors du chargement du code :", err);
       }
     });
   }
-  loadTests(): void {
+
+  async loadTests(): Promise<void> {
     const id = this.exsituFormService.idMaterial;
     if (!id) {
       console.warn("⚠️ Aucun idMaterial trouvé !");
       return;
     }
-  
+
     this.api.getTestsByMaterial(id).subscribe({
       next: async (tests) => {
-        // 1. Charger l'id du type de test 'germination'
         try {
           const testType = await this.api.getActionByCode(this.codeT).toPromise();
           this.idGermination = testType.id_nomenclature;
@@ -106,47 +100,36 @@ export class GerminationTableComponent implements OnInit {
           console.error("❌ Erreur lors du chargement du type de test :", err);
           return;
         }
-  
-        // 2. Filtrer les tests selon le type
+
         const filteredTests = tests.filter(t => t.id_test_type === this.idGermination);
-  
-        // 3. Mapper les tests avec champs affichage
-        const mappedTests = filteredTests.map(t => ({
-          ...t,
-          thermoPhoto: '',
-          treatment: '-'
+
+        const mappedTests = await Promise.all(filteredTests.map(async (t) => {
+          t.thermoPhoto = '';
+          t.treatment = '-';
+
+          try {
+            const res = await this.api.getTreatmentByTest(t.id_test).toPromise();
+            t.treatment = res?.treatment_label ?? '-';
+          } catch {}
+
+          try {
+            const regime = await this.api.getThermoPhotoRegime(t.id_test).toPromise();
+            const { temperature_light, temperature_shadow, hour_count_light, hour_count_shadow } = regime || {};
+            if (
+              temperature_light != null &&
+              temperature_shadow != null &&
+              hour_count_light != null &&
+              hour_count_shadow != null
+            ) {
+              t.thermoPhoto = `${temperature_light}°C/${temperature_shadow}°C — ${hour_count_light}hL/${hour_count_shadow}hO`;
+            }
+          } catch {}
+
+          await this.loadAndUpdateIndicators(t);
+
+          return t;
         }));
-  
-        // 4. Charger les traitements et régimes
-        await Promise.all(
-          mappedTests.map(async test => {
-            try {
-              const res = await this.api.getTreatmentByTest(test.id_test).toPromise();
-              test.treatment = res?.treatment_label ?? '-';
-            } catch (e) {
-              console.warn("⚠️ Erreur traitement pour test", test.id_test, e);
-              test.treatment = '-';
-            }
-  
-            try {
-              const regime = await this.api.getThermoPhotoRegime(test.id_test).toPromise();
-              const { temperature_light, temperature_shadow, hour_count_light, hour_count_shadow } = regime || {};
-              if (
-                temperature_light != null &&
-                temperature_shadow != null &&
-                hour_count_light != null &&
-                hour_count_shadow != null
-              ) {
-                test.thermoPhoto = `${temperature_light}°C/${temperature_shadow}°C — ${hour_count_light}hL/${hour_count_shadow}hO`;
-              } else {
-                test.thermoPhoto = '';
-              }
-            } catch (e) {
-              test.thermoPhoto = '';
-            }
-          })
-        );
-  
+
         this.dataSource.data = mappedTests.sort((a, b) =>
           new Date(b.meta_create_date).getTime() - new Date(a.meta_create_date).getTime()
         );
@@ -157,9 +140,26 @@ export class GerminationTableComponent implements OnInit {
       }
     });
   }
-  
-  
-  
+
+  async loadAndUpdateIndicators(test: any): Promise<void> {
+    try {
+      const response = await this.api.getGerminationPercent(test.id_test).toPromise();
+      const percent = response?.percent ?? null;
+
+      if (percent !== null) {
+        test.germination_rate = percent;
+
+        await this.api.updateTestIndicators(test.id_test, {
+          percent,
+          delay: null,
+          period: null
+        }).toPromise();
+      }
+    } catch (error) {
+      console.error(`Erreur lors du calcul ou de la mise à jour du % pour test ${test.id_test}`, error);
+    }
+  }
+
   onChangePreTreatment(element: any, value: boolean): void {
     this.api.updateTestPreTreatment(element.id_test, value).subscribe({
       next: () => {
