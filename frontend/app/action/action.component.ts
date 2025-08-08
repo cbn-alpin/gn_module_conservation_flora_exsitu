@@ -208,22 +208,40 @@ export class ActionComponent implements OnInit {
 
   addNewAction(): void {
     if (!this.germinationForm.valid) return;
+  
     const finalForm = this.formatDataFormAction();
-
+  
     this.api.addActionByTest(this.idTest, finalForm).subscribe({
       next: (res) => {
         this.actionAdded.emit(res);
+  
+        // Reset des formulaires
         this.germinationForm.reset();
         this.additionalDataForm.reset();
+        this.replicatesForm.reset();
+  
+        // Réinitialiser les champs dynamiques
+        this.replicatesForm = this.fb.group({
+          germes: this.fb.array([]),
+          mortes: this.fb.array([]),
+          nonGermes: this.fb.array([]),
+          last_replicate: [false]
+        });
+  
+        this.replicates_for_form = null;
+        this.code = '';
+        this.codeId = null;
+        this.scarTypeCode = '';
+  
+        // Réactiver le champ type d'action
         this.germinationForm.patchValue({ id_actor: [], id_action_type: null });
         this.germinationForm.get('id_action_type')?.enable();
         this.hideTypeField = false;
-        this.code = '';
       },
       error: (err) => console.error("Erreur ajout action :", err)
     });
   }
-
+  
   onSubmit(): void {
     if (!this.germinationForm.valid) return;
     const finalForm = this.formatDataFormAction();

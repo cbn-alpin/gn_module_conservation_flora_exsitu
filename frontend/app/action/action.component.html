@@ -19,6 +19,19 @@
         ></pnx-nomenclature>
       </div>
 
+
+      <div  *ngIf="code">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Date de début</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="date_start">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+          <div *ngIf="isReplicateDateUsed()" class="alert alert-warning">
+            ⚠️ Une action de type "Suivi réplicat" existe déjà pour cette date.
+          </div>
+      </div>
       
      <!-- Stérilisation -->
       <div *ngIf="code === 'ster'">
@@ -222,19 +235,7 @@
 
                 <!-- Afficher ces champs seulement si un type d'action est sélectionné -->
         <div  *ngIf="code">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Date de début</mat-label>
-              <input matInput [matDatepicker]="startPicker" formControlName="date_start">
-              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-              <mat-datepicker #startPicker></mat-datepicker>
-            </mat-form-field>
-            <div *ngIf="isReplicateDateUsed()" class="alert alert-warning">
-              ⚠️ Une action de type "Suivi réplicat" existe déjà pour cette date.
-            </div>
-            
-
-            
+      
           </div>
           <div class="form-row">
             <div class="form-group half-width">
