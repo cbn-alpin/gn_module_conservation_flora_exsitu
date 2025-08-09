@@ -182,8 +182,14 @@ mat-card-content,
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+
 .return-button {
-  margin: 20px 0 10px 10px; /* haut, droite, bas, gauche */
+  // margin: 20px 0 10px 10px; /* haut, droite, bas, gauche */
+
+  position: fixed;
+  top: 280px;
+  left: 20px;
+  z-index: 1000;
 }
 .return-button button {
   font-weight: bold;
@@ -193,8 +199,5 @@ mat-card-content,
 .return-button button:hover {
   background-color: #d21919;
 }
-
-
-
 
 
