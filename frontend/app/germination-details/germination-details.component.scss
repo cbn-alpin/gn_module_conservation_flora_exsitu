@@ -182,15 +182,17 @@ mat-card-content,
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-
 .return-button {
-  // margin: 20px 0 10px 10px; /* haut, droite, bas, gauche */
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 24px;
+  margin-bottom: 8px;
 
-  position: fixed;
-  top: 280px;
-  left: 20px;
-  z-index: 1000;
+  position: relative;
+  top: 0;
 }
+
+
 .return-button button {
   font-weight: bold;
   background-color: #d21919;
