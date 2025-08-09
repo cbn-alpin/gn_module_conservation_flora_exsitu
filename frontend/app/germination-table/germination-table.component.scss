@@ -109,10 +109,10 @@ table tr.mat-row:hover {
 }
 
 
+::ng-deep .text-green {
+  color: green;
+}
 
-
-
-
-
-
-
+::ng-deep .text-red {
+  color: red;
+}
