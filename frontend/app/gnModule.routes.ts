@@ -15,6 +15,7 @@ import { SeedDetailsComponent } from './seed-details/seed-details.component';
 import { GerminationDetailsComponent } from './germination-details/germination-details.component';
 import { SemisDetailsComponent } from './semis-details/semis-details.component';
 import { ViabilityDetailsComponent } from './viability-details/viability-details.component';
+import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
 
 export const routes: Routes = [
     {
@@ -74,15 +75,15 @@ export const routes: Routes = [
                 component: ViabilityTableComponent,
             },
             {
-                path: 'harvest/:id_harvest/material/:idMaterial/germination-details',
+                path: 'harvest/:id_harvest/material/:idMaterial/germination-details/:id_test',
                 component: GerminationDetailsComponent,
-            }, 
+            },  
             {
-                path: 'harvest/:id_harvest/material/:idMaterial/semis-details',
+                path: 'harvest/:id_harvest/material/:idMaterial/semis-details/:id_test',
                 component: SemisDetailsComponent,
             },
             {
-                path: 'harvest/:id_harvest/material/:idMaterial/viability-details',
+                path: 'harvest/:id_harvest/material/:idMaterial/viability-details/:id_test',
                 component: ViabilityDetailsComponent,
             },
         ]
