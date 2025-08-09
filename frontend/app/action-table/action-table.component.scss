@@ -90,6 +90,9 @@ table tr.mat-row:hover {
 .clickable-row {
   cursor: pointer;
 }
+::ng-deep .text-red {
+  color: red !important;
+}
 
 
 
