@@ -1,4 +1,3 @@
-
 import { ExtraOptions, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { routes } from './gnModule.routes';
@@ -41,8 +40,6 @@ import { MaterialModalComponent } from './components/material-modal/material-mod
 import { StockManagementService } from './stock-management/stock-management.service';
 import { SeedDetailsComponent } from './seed-details/seed-details.component';
 import { SemisComponent } from './semis/semis.component';
-
-
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -56,8 +53,6 @@ import { GerminationComponent } from './germination/germination.component';
 import { GerminationTableComponent } from './germination-table/germination-table.component';
 import { ViabilityComponent } from './viability/viability.component';
 import { ViabilityTableComponent } from './viability-table/viability-table.component';
-
-
 import { MatMenuModule } from '@angular/material/menu';
 import { GerminationDetailsComponent } from './germination-details/germination-details.component';
 import { ActionTableComponent } from './action-table/action-table.component';
@@ -65,7 +60,12 @@ import { ActionComponent } from './action/action.component';
 import { ActionDetailsComponent } from './action-details/action-details.component';
 import { SemisDetailsComponent } from './semis-details/semis-details.component';
 import { ViabilityDetailsComponent } from './viability-details/viability-details.component';
-
+import { SemisService } from './semis/semis.service';
+import { GerminationFormService } from './germination/germination-form.service';
+import { SemisTableService } from './semis-table/semis-table.service';
+import { ReplicatesModalComponent } from './replicates/replicates-modal.component';
+import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
+import { ViabilityFormService } from './viability/viability-form.service';
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -88,8 +88,7 @@ export const routingConfiguration: ExtraOptions = {
     GerminationComponent,
     GerminationTableComponent,
     ViabilityComponent,
-    ViabilityTableComponent
-,
+    ViabilityTableComponent,
     SeddDescriptionComponent,
     StockManagementComponent,
     ActionsStockComponent,
@@ -98,16 +97,14 @@ export const routingConfiguration: ExtraOptions = {
     ConfirmDialogComponent,
     MaterialModalComponent,
     SeedDetailsComponent,
-    
-
-
     GerminationDetailsComponent,
     ActionTableComponent,
     ActionComponent,
     ActionDetailsComponent,
     SemisDetailsComponent,
     ViabilityDetailsComponent,
-
+    ReplicatesModalComponent,
+    FollowupDetailsComponent,
   ],
   providers: [
     HarvestStoreService, 
@@ -123,6 +120,10 @@ export const routingConfiguration: ExtraOptions = {
     DialogService,
     ConfigService,
     StockManagementService,
+    SemisService,
+    GerminationFormService,
+    SemisTableService,
+    ViabilityFormService,
   ],
   imports: [
     RouterModule.forChild(routes),
@@ -136,7 +137,6 @@ export const routingConfiguration: ExtraOptions = {
     MatPaginatorModule,
     MatSortModule,
     MatButtonModule,
-
     ReactiveFormsModule,
     FormsModule,
     MatFormFieldModule,
