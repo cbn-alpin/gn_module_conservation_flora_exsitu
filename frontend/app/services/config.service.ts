@@ -65,4 +65,8 @@ export class ConfigService {
     getPriorityFloraBackendUrl() {
         return `${this.config.API_ENDPOINT}/${this.config.CONSERVATION_FLORA_EXSITU.module_code_pf.toLowerCase()}`;
     }
+
+    getNomenclatureListByCodeType(codeType: string): any[] {
+        return this.config.nomenclatures?.[codeType] || [];
+    }
 }
