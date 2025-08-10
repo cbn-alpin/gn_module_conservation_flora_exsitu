@@ -11,6 +11,7 @@ export class ExsituFormService{
     currentTab: string = 'harvest';
     idHarvest: number = null
     mode:string = 'add'
+    isGermination:any
     harvest: any
     materials: any
     idMaterialChange = new BehaviorSubject<number>(null);
@@ -27,7 +28,7 @@ export class ExsituFormService{
     public editionMode: BehaviorSubject<boolean> = new BehaviorSubject(false);
     public params = new HttpParams()
               .set('page', 1)
-              .set('limit', 10);
+              .set('limit', 10);             
 
     constructor(
         private dataService: DataService

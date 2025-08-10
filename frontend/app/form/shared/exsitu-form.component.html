@@ -45,10 +45,10 @@
             <!-- Test de germination -->
             <a 
                 class="tablinks"
-                [class.disabled]="!idStorage"
+                [class.disabled]="!idMaterial"
 
                 [ngClass]="{ active: exsituFormService.currentTab === 'germination-table' }"
-                (click)="idStorage ? goToTab('germination-table') : null"
+                (click)="idMaterial ? goToTab('germination-table') : null"
             >
                 <mat-icon class="example-tab-icon">spa</mat-icon>
                 Test de germination
@@ -57,10 +57,10 @@
 
             <!-- Semis -->
             <a class="tablinks"
-                [class.disabled]="!idStorage"
+                [class.disabled]="!idMaterial"
 
                 [ngClass]="{ active: exsituFormService.currentTab === 'semis-table' }"
-                (click)="idStorage ? goToTab('semis-table') : null">
+                (click)="idMaterial ? goToTab('semis-table') : null">
                 <mat-icon class="example-tab-icon">semis</mat-icon>
                 Semis
             </a>
@@ -68,9 +68,9 @@
 
             
             <a class="tablinks"
-                [class.disabled]="!idStorage"
+                [class.disabled]="!idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'viability-table' }"
-                (click)="idStorage ? goToTab('viability-table') : null">
+                (click)="idMaterial ? goToTab('viability-table') : null">
                 <mat-icon class="example-tab-icon">sp</mat-icon>
                 Test de Viabilité
             </a>

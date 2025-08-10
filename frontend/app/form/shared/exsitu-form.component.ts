@@ -87,9 +87,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           //   this.router.navigate([`${this.currentModulePath}/form/germination-table`]);// Redirection si l'ID de récolte est absent
           // }
         }
-        else if (tab === 'viability-table') {
-          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/viability-table`]);
-        }
+        
     }
 
     updateTabAndIdsFromUrl(url: string) {      
@@ -319,5 +317,6 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.urlSub.unsubscribe();
     }
 
+    
     
 }
