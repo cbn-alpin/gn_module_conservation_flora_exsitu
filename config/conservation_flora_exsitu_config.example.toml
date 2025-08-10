@@ -17,3 +17,13 @@ default_dataset = 1
         type_widget = "text"
         attribut_label = "Programme"
         attribut_name = "program"
+[germination_form]
+    [[germination_form.additional_data]]
+        type_widget = "text"
+        attribut_label = "Programme"
+        attribut_name = "program"
+[semis_form]
+    [[semis_form.additional_data]]
+        type_widget = "text"
+        attribut_label = "Programme"
+        attribut_name = "program"
