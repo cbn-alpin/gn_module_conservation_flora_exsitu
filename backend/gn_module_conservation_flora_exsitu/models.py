@@ -685,6 +685,7 @@ class TSowing(db.Model):
             "id_sowing": self.id_sowing,
             "id_material": self.id_material,
             "id_storage": self.id_storage,
+            "id_test":self.id_test,
             "code": self.code,
             "id_actor": self.id_actor,
             "start_date": self.start_date.isoformat() if self.start_date else None,

@@ -29,3 +29,5 @@ class GnModuleSchemaConf(Schema):
     stock_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
     action_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
     default_dataset = fields.Integer(load_default=1)
+    germination_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))
+    semis_form = fields.Nested(FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({}))

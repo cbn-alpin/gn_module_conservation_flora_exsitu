@@ -743,182 +743,6 @@ class StorageRepository:
                 raise ValueError(f"Quantité demandée ({new_quantity}) supérieure au stock disponible ({current_quantity}).")
 
 
-# class TestRepository:
-#     def create(self, data):
-#         try:
-#             test = TTest(**data)
-#             db.session.add(test)
-#             db.session.flush()  # Permet de récupérer test.id_test
-#             db.session.commit()
-#             return test
-#         except Exception as e:
-#             db.session.rollback()
-#             raise e
-
-# from sqlalchemy.exc import SQLAlchemyError
-# from .models import TSowing
-# from geonature.utils.env import db
-
-# class SowingRepository:
-#     def create(self, data):
-#         try:
-#             sowing = TSowing(**data)
-#             db.session.add(sowing)
-#             db.session.commit()
-#             return sowing
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-#     def get_by_id(self, id_sowing):
-#         return TSowing.query.get(id_sowing)
-
-#     def list_by_material(self, id_material):
-#         return TSowing.query.filter_by(id_material=id_material).all()
-
-#     def update(self, id_sowing, data):
-#         sowing = TSowing.query.get(id_sowing)
-#         if not sowing:
-#             return None
-#         try:
-#             for key, value in data.items():
-#                 if hasattr(sowing, key):
-#                     setattr(sowing, key, value)
-#             db.session.commit()
-#             return sowing
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-#     def delete(self, id_sowing):
-#         sowing = TSowing.query.get(id_sowing)
-#         if not sowing:
-#             return False
-#         try:
-#             db.session.delete(sowing)
-#             db.session.commit()
-#             return True
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-
-# from flask import g
-# from ..models import TTest
-# from geonature.utils.env import db
-
-
-# class TestRepository:
-
-#     def create(self, data):
-#         # Convertir les objets nomenclatures en IDs si besoin
-#         for field in ["id_test_type", "id_support", "id_substrate"]:
-#             if isinstance(data.get(field), dict):
-#                 data[field] = data[field].get("id_nomenclature")
-
-#         # Convertir les champs additionnels
-#         additional = data.pop("additional_data", {})
-#         if additional and isinstance(additional, dict):
-#             data["additional_data"] = {"program": additional.get("program")}
-#         else:
-#             data["additional_data"] = None
-
-#         # Informations système
-#         data["meta_create_by"] = g.current_user.id_role
-
-#         # Création de l’objet
-#         test = TTest(**data)
-#         db.session.add(test)
-#         db.session.commit()
-#         return test
-
-
-# class TestRepository:
-#     def create(self, data):
-#         try:
-#             test = TTest(**data)
-#             db.session.add(test)
-#             db.session.commit()
-#             return test
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-#     def update(self, id_test, data):
-#         test = TTest.query.get(id_test)
-#         if not test:
-#             return None
-
-#         try:
-#             for key, value in data.items():
-#                 if hasattr(test, key):
-#                     setattr(test, key, value)
-
-#             db.session.commit()
-#             return test
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-#     def get_one(self, id_test):
-#         return TTest.query.get(id_test)
-
-#     def delete(self, id_test):
-#         try:
-#             test = self.get_one(id_test)
-#             if not test:
-#                 return False
-
-#             db.session.delete(test)
-#             db.session.commit()
-#             return True
-
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-# class SowingRepository:
-#     def create(self, data):
-#         try:
-#             sowing = TSowing(**data)
-#             db.session.add(sowing)
-#             db.session.commit()
-#             return sowing
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-#     def get_by_id(self, id_sowing):
-#         return TSowing.query.get(id_sowing)
-
-#     def list_by_material(self, id_material):
-#         return TSowing.query.filter_by(id_material=id_material).all()
-
-#     def update(self, id_sowing, data):
-#         sowing = TSowing.query.get(id_sowing)
-#         if not sowing:
-#             return None
-#         try:
-#             for key, value in data.items():
-#                 if hasattr(sowing, key):
-#                     setattr(sowing, key, value)
-#             db.session.commit()
-#             return sowing
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
-#     def delete(self, id_sowing):
-#         sowing = TSowing.query.get(id_sowing)
-#         if not sowing:
-#             return False
-#         try:
-#             db.session.delete(sowing)
-#             db.session.commit()
-#             return True
-#         except SQLAlchemyError as e:
-#             db.session.rollback()
-#             raise e
-
 class SowingRepository:
 
     def get_all_by_material(self, id_material: int):
@@ -1036,6 +860,15 @@ class SowingRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+        
+    def list_by_material(self, id_material: int):
+        try:
+            return TSowing.query.filter_by(id_material=id_material).all()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+        
+
 
 class TestRepository:
     def create(self, data):
@@ -1374,6 +1207,7 @@ class ActionRepository:
         query = (
             db.session.query(
                 TAction,
+                ActionType.cd_nomenclature.label("code_action"),
                 ActionType.label_default.label("label_action_type"),
                 Scarification.label_default.label("label_scarification_type"),
                 ScarificationMec.label_default.label("label_scarification_mecanique"),
@@ -1405,6 +1239,7 @@ class ActionRepository:
 
         (
             action,
+            code_action,
             label_action_type,
             label_scarification_type,
             label_scarification_mecanique,
@@ -1430,34 +1265,54 @@ class ActionRepository:
         data["label_liquid_treatment"] = label_liquid_treatment
         data["label_actor"] = f"{prenom_actor} {nom_actor}".strip() if nom_actor else None
 
-        # Récupérer tous les réplicats du test pour affichage
-        id_test = action.id_test
-        actions_same_test = (
-            db.session.query(TAction.id_action, TAction.date_start)
-            .filter(TAction.id_test == id_test)
-            .all()
-        )
-        actions_by_id = {a.id_action: a.date_start for a in actions_same_test}
+        code = code_action
 
-        all_replicates = (
-            db.session.query(TActionReplicate)
-            .filter(TActionReplicate.id_action.in_(actions_by_id.keys()))
-            .order_by(TActionReplicate.id_action, TActionReplicate.code)
-            .all()
-        )
+        # ✅ 1. Si action = synth, récupérer SEULEMENT le réplicat synth de cette action
+        if code == 'synth':
+            synth_replicate = (
+                db.session.query(TActionReplicate)
+                .filter(
+                    TActionReplicate.id_action == id_action,
+                    TActionReplicate.code == 'synth'
+                )
+                .first()
+            )
+            if synth_replicate:
+                data["total_count_germinated"] = synth_replicate.count_germinated
+                data["total_count_dead"] = synth_replicate.count_dead
+                data["total_count_viable"] = synth_replicate.count_viable
+                data["replicates"] = [synth_replicate.to_dict()]
+            else:
+                data["replicates"] = []
 
-        replicates_with_dates = []
-        for r in all_replicates:
-            rep_dict = r.to_dict()
-            date = actions_by_id.get(r.id_action)
-            rep_dict["date"] = date.isoformat() if date else None
-            replicates_with_dates.append(rep_dict)
+        else:
+            # ✅ 2. Sinon (svr ou autre), logique EXISTANTE : récupérer tous les réplicats du test
+            id_test = action.id_test
+            actions_same_test = (
+                db.session.query(TAction.id_action, TAction.date_start)
+                .filter(TAction.id_test == id_test)
+                .all()
+            )
+            actions_by_id = {a.id_action: a.date_start for a in actions_same_test}
 
-        data["replicates"] = replicates_with_dates
+            all_replicates = (
+                db.session.query(TActionReplicate)
+                .filter(TActionReplicate.id_action.in_(actions_by_id.keys()))
+                .order_by(TActionReplicate.id_action, TActionReplicate.code)
+                .all()
+            )
 
-        # ➕ Récupérer les données spécifiques à la modification
+            replicates_with_dates = []
+            for r in all_replicates:
+                rep_dict = r.to_dict()
+                date = actions_by_id.get(r.id_action)
+                rep_dict["date"] = date.isoformat() if date else None
+                replicates_with_dates.append(rep_dict)
+
+            data["replicates"] = replicates_with_dates
+
+        # ➕ Données pour édition
         replicate_data = self.get_replicate_data_for_edit(id_action)
-
         if replicate_data:
             if "replicates_for_form" in replicate_data:
                 data["replicates_for_form"] = replicate_data["replicates_for_form"]
@@ -1467,7 +1322,6 @@ class ActionRepository:
                 data["total_count_viable"] = replicate_data.get("total_count_viable")
 
         return data
-
 
     def get_replicates_by_action(self, id_action: int):
         replicates = (
@@ -1689,8 +1543,8 @@ class ActionRepository:
             }
 
         return data
-
-
+    
+  
 
 class ActionReplicateRepository:
     def create(self, data):
@@ -1840,3 +1694,4 @@ class ActionReplicateRepository:
 
         db.session.commit()
         return action.to_dict()
+

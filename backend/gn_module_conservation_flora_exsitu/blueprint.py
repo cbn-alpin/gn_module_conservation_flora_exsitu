@@ -1478,18 +1478,15 @@ from dateutil.parser import isoparse
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
 def create_sowing(id_material):
-    data = request.get_json()
-    data["id_material"] = id_material
-    data["meta_create_by"] = g.current_user.id_role
-
-    data["start_date"] = isoparse(data["start_date"]) if data.get("start_date") else None
-    data["end_date"] = isoparse(data["end_date"]) if data.get("end_date") else None
-
-    repo = SowingRepository()
-    sowing = repo.create(data)
-    return {"message": "Semis enregistré", "sowing": sowing.to_dic()}, 201
-
-
+    try:
+        data = request.get_json(silent=True) or {}
+        repo = SowingRepository()              # ⬅️ instance !
+        sowing = repo.create(id_material, data)  # ⬅️ on passe 'data'
+        return jsonify(sowing.to_dic()), 201
+    except Exception as e:
+        current_app.logger.exception("create_sowing failed")
+        return jsonify({"error": str(e)}), 400
+    
 @blueprint.route("/sowings", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @json_resp

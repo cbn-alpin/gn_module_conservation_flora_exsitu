@@ -240,6 +240,7 @@ CREATE TABLE "t_sowing" (
     "id_sowing" SERIAL NOT NULL UNIQUE,
     "id_material" INTEGER NOT NULL,
     "id_storage" INTEGER NOT NULL,
+    "id_test" INTEGER,
     "code" VARCHAR(50),
     "id_actor" INTEGER NOT NULL,
     "start_date" TIMESTAMP NOT NULL,
@@ -477,6 +478,9 @@ ADD FOREIGN KEY("id_material") REFERENCES "t_material"("id_material")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_sowing"
 ADD FOREIGN KEY("id_storage") REFERENCES "t_storage"("id_storage")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE "t_sowing"
+ADD FOREIGN KEY("id_test") REFERENCES "t_test"("id_test")
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE "t_sowing"
 ADD FOREIGN KEY("id_actor") REFERENCES utilisateurs.t_roles(id_role)
