@@ -5,14 +5,15 @@
   import { MatDialog } from '@angular/material/dialog';
 import { SemisComponent } from '../semis/semis.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { SemisService } from '../semis/semis.service';
+import { SemisTableService } from './semis-table.service';
 
   export interface Semis {
-    numSemis: string;
-    numSemence: string;
-    dateDebut: Date;
-    dateFin: Date;
-    replicate: number;
-    levage: number;
+    code: any;
+    start_date: any;
+    end_date: any;
+    id_sowing_method: any;
+    replicate_count: any;
   }
   
   @Component({
@@ -22,44 +23,39 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
   })
   export class SemisTableComponent  implements OnInit  {
     idMaterial: number | null = null;
-
-
-    ngOnInit(): void {
-
-      this.dataSource.data = [
-        {
-          numSemis: 'SEM-001',
-          numSemence: 'En poquets',
-          dateDebut: new Date('2024-03-01'),
-          dateFin: new Date('2024-03-20'),
-          replicate: 5,
-          levage:5
-        }
-       
-      ];
-  }
-  
-  constructor(
-          public router: Router,
-          private dialog: MatDialog,
-           public exsituFormService: ExsituFormService,
-      ){
-  
-      }
+    sowings:any;
     @Input() dataSource = new MatTableDataSource<Semis>();
     @Output() view = new EventEmitter<Semis>();
     @Output() edit = new EventEmitter<Semis>();
     @Output() delete = new EventEmitter<Semis>();
   
     displayedColumns: string[] = [
-      'numSemis',
-      'numSemence',
-      'dateDebut',
-      'dateFin',
-      'replicate',
-      'levage'
+      'code',
+      'start_date',
+      'end_date',
+      'id_sowing_method',
+      'replicate_count',
     ];
+  constructor(
+          public router: Router,
+          private dialog: MatDialog,
+           public exsituFormService: ExsituFormService,
+            private semisService: SemisTableService,
+      ){
   
+      }
+
+    ngOnInit(): void {
+      this.idMaterial = this.exsituFormService.idMaterial;
+    this.semisService.sowings$.subscribe((sowings) => {
+      this.dataSource.data = sowings;
+      console.log(this.dataSource.data)
+    });
+
+    // ⬇️ Déclenche le chargement côté service
+    this.semisService.loadSowings(this.idMaterial);
+  }
+    
     onView() {
       // this.view.emit(element);
       console.log("view")
@@ -91,12 +87,11 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
               const newEntry: Semis = {
-                numSemis: result.numeroSemis,
-                numSemence: result.numeroSemence,
-                dateDebut: result.dateDebut,
-                dateFin: result.dateFin,
-                replicate: 0, // tu peux aussi prendre de result si ton formulaire le fournit
-                levage: 0     // idem
+                code: result.code,
+                start_date: result.start_date,
+                end_date: result.end_date,
+                id_sowing_method: result.id_sowing_method,
+                replicate_count: result.replicate_count, // tu peux aussi prendre de result si ton formulaire le fournit
               };
         
               this.dataSource.data = [...this.dataSource.data, newEntry];
