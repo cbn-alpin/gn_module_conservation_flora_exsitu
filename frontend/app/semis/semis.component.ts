@@ -1,104 +1,185 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { SemisService } from './semis.service';
+import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { DataService } from '../services/data.service';
+import { ConfigService } from '../services/config.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
-interface Semis {
-  numSemis: string;
-  numSemence: string;
-  dateDebut: Date;
-  dateFin: Date;
-  replicate: number;
-  levage: number;
-}
 @Component({
   selector: 'app-semis',
   templateUrl: './semis.component.html',
   styleUrls: ['./semis.component.scss']
 })
 export class SemisComponent implements OnInit {
+  public semisForm: FormGroup;
 
-  semisForm: FormGroup;
-  dataSource = new MatTableDataSource<Semis>([]);
-  displayedColumns: string[] = [
-    'numSemis',
-    'numSemence',
-    'dateDebut',
-    'dateFin',
-    'replicate',
-    'levage'
-  ];
+  public observers_list_code: any;
+  public idMaterial!: number;
+  public idStorage: number | null = null;
 
-  constructor(private fb: FormBuilder,public dialogRef: MatDialogRef<SemisComponent>) {
+  // pour le <pnx-dynamic-form-generator>
+  public additionalDataForm!: FormGroup;
+  public formsDefinition: any[] = [];
+
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<SemisComponent>,
+    private semisService: SemisService,
+    private exsituFormService: ExsituFormService,
+    private dataService: DataService,
+    private cfg: ConfigService,
+    private toast: CommonService,
+    @Inject(MAT_DIALOG_DATA) public modalData: any
+  ) {
+    // Form calqué sur Germination (noms adaptés Semis)
     this.semisForm = this.fb.group({
       code: ['', Validators.required],
-      datededebut: ['', Validators.required],
-      datedefin: ['', Validators.required],
-      modeSemis: [''],
-      arrosage: [''],
-      profondeur: [''],
-      contenant: [''],
-      substrat: [''],
-      idLocation: [null, Validators.required],
-      specificationLocation: [''],
-      idMaterial: [null, Validators.required],
-      idStorage: [null],
-      idActor: [null],
-      initialCount: [0],
-      replicateCount: [0],
+      start_date: ['', Validators.required],
+      end_date: ['', Validators.required],
+
+      id_actor: [''],                         // <pnx-observers> renvoie un tableau
+      id_watering_method: [null, Validators.required],
+      id_sowing_method:   [null, Validators.required],
+      id_substrate:       [null],             // ⚠️ id_substrate (number), pas "substrate" string
+
+      container: [''],
+      depth: [null],
+      id_location: [null, Validators.required],
+      specification_location: [''],
+
+      initial_count:   [null, Validators.required],
+      replicate_count: [1,    [Validators.required, Validators.min(1)]],
+
       remarks: [''],
-      program: [''],
-      replicats: this.fb.array([this.createReplicat()])
+      additional_data: this.fb.group({})      // contiendra program + champs dynamiques
     });
   }
-  get replicats(): FormArray {
-    return this.semisForm.get('replicats') as FormArray;
-  }
-
-
-  get replicatsControls() {
-    return (this.semisForm.get('replicats') as FormArray).controls;
-  }
-
-  createReplicat(): FormGroup {
-    return this.fb.group({
-      date: [''],
-      plantulesLevees: [0],
-      plantulesMortes: [0],
-      plantulesRepiques: [0],
-      grainesSemees: [0]
-    });
-  }
-
-  addReplicat(): void {
-    (this.semisForm.get('replicats') as FormArray).push(this.createReplicat());
-  }
-  
 
   ngOnInit(): void {
-    this.dataSource.data = [];
-  }
+    // IDs contexte
+    this.idMaterial = this.exsituFormService.idMaterial;
+    this.exsituFormService.id_storage.subscribe(id => this.idStorage = id ?? null);
 
-  onDelete(){
+    // Observers
+    this.observers_list_code = this.cfg.getObsCode();
 
-  }
-  onView(){
-    
-  }
-  onEdit(){
-    
-  }
-  onSubmit() {
-    if (this.semisForm.valid) {
-      const formData = this.semisForm.value;
-      console.log('Formulaire soumis :', formData);
-      this.dialogRef.close(formData); // ferme le modal et renvoie les données
+    // additional_data dynamique (même principe que Germination)
+    this.additionalDataForm = this.semisForm.get('additional_data') as FormGroup;
+    this.formsDefinition = this.cfg.getModuleConfigExsitu()?.['harvest_form']?.['additional_data'] ?? [];
+    this.formsDefinition.forEach(field => {
+      const name = field.attribut_name;
+      if (!this.additionalDataForm.contains(name)) {
+        this.additionalDataForm.addControl(name, this.fb.control(''));
+      }
+    });
+
+    // Mode édition
+    if (this.modalData?.edit && this.modalData?.test) {
+      this.patchForm(this.modalData.test);
     }
   }
 
-  onCancel(){
-    this.dialogRef.close();
+  // Patch en mode édition (comme Germination)
+  patchForm(data: any): void {
+    this.semisForm.patchValue({
+      code: data.code || '',
+      start_date: data.start_date || '',
+      end_date: data.end_date || '',
 
+      id_actor: data.id_actor ? [{ id_role: data.id_actor }] : [],
+
+      id_watering_method: data.id_watering_method ?? null,
+      id_sowing_method:   data.id_sowing_method   ?? null,
+      id_substrate:       data.id_substrate       ?? null,
+
+      container: data.container || '',
+      depth: data.depth ?? null,
+      id_location: data.id_location ?? null,
+      specification_location: data.specification_location || '',
+
+      initial_count: data.initial_count ?? null,
+      replicate_count: data.replicate_count ?? 1,
+
+      remarks: data.remarks || ''
+    });
+
+    // Patch additional_data si présent
+    if (data.additional_data && this.additionalDataForm) {
+      Object.keys(data.additional_data).forEach(key => {
+        if (this.additionalDataForm.contains(key)) {
+          this.additionalDataForm.get(key)?.patchValue(data.additional_data[key]);
+        }
+      });
+    }
   }
 
+  // Mise en forme des données avant POST/PUT (comme Germination)
+  private formatFormData(): any {
+    const raw = this.semisForm.value;
+    const payload: any = { ...raw };
+
+    // Nettoyage additional_data : on ne garde que les champs non vides
+    if (payload.additional_data) {
+      const cleaned: any = {};
+      Object.keys(payload.additional_data).forEach(k => {
+        const v = payload.additional_data[k];
+        if (v !== null && v !== undefined && v !== '') cleaned[k] = v;
+      });
+      if (Object.keys(cleaned).length) payload.additional_data = cleaned;
+      else delete payload.additional_data;
+    }
+
+    // Observers → id_role
+    if (Array.isArray(raw.id_actor) && raw.id_actor.length > 0) {
+      payload.id_actor = raw.id_actor[0]?.id_role ?? null;
+    } else {
+      payload.id_actor = null;
+    }
+
+    // Contexte
+    payload.id_material = this.idMaterial;
+    payload.id_storage  = this.idStorage;
+
+    // Petites gardes-fous
+    if (!payload.replicate_count) payload.replicate_count = 1;
+    if (!payload.end_date) delete payload.end_date; // facultatif si non requis côté back
+
+    return payload;
+  }
+
+  onSubmit(): void {
+    if (this.semisForm.invalid) return;
+
+    const finalForm = this.formatFormData();
+
+    if (!this.idMaterial) {
+      console.error('idMaterial est manquant !');
+      return;
+    }
+
+    // Update vs Create (même logique que Germination)
+    if (this.modalData?.edit && this.modalData?.test?.id_sowing) {
+      this.semisService.updateSowing(this.idMaterial, this.modalData.test.id_sowing, finalForm).subscribe({
+        next: (res) => {
+          this.toast.translateToaster('success', 'Semis mis à jour avec succès');
+          this.dialogRef.close(res);
+        },
+        error: (err) => console.error('Erreur update semis :', err)
+      });
+    } else {
+      this.semisService.addSowing(this.idMaterial, finalForm).subscribe({
+        next: (res) => {
+          this.toast.translateToaster('info', 'Semis créé avec succès');
+          this.dialogRef.close(res);
+        },
+        error: (err) => console.error('Erreur création semis :', err)
+      });
+    }
+  }
+
+  onCancel(): void {
+    this.dialogRef.close();
+  }
 }
