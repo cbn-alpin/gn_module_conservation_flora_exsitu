@@ -300,6 +300,17 @@ export class DataService {
     return this.api.patch(`${this.moduleBaseUrl}/test/${id_test}/indicators`, indicators);
   }
   
-  
+  addSowing(idMaterial: number, actionData: any): Observable<any> {
+    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings`, actionData);
+  }
+
+  updateSowing(idMaterial: number, idSowing: number, actionData: any): Observable<any> {
+    return this.api.put<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`, actionData);
+  }
+
+  getSowingsByMaterial(idMaterial: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings`);
+  }
+
   
 }
