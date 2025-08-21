@@ -45,6 +45,8 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
          console.log(this.currentModulePath)
         this.urlSub = this.router.events.subscribe(() => {
           this.updateTabAndIdsFromUrl(this.router.url);
+          this.forceTabFromOpenFlag(this.router.url); 
+
 
         });
         this.exsituFormService.id_storage.subscribe(id => {
@@ -317,6 +319,36 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.urlSub.unsubscribe();
     }
 
-    
+    private forceTabFromOpenFlag(url: string) {
+      try {
+        // On veut lire le query param 'open' depuis l'URL actuelle
+        // Exemple: .../germination-table?open=tdg
+        const dummyBase = 'http://local'; // requis par URL() pour parser correctement
+        const u = new URL(url, dummyBase);
+        const openFlag = u.searchParams.get('open'); // 'tdg' | 'tsv' | 'semis' | null
+
+        if (!openFlag) return;
+
+        // On bascule l’onglet SANS toucher aux autres logiques existantes
+        if (openFlag === 'tdg') {
+          // on ne renomme PAS tes onglets : on utilise ceux que tu as déjà
+          this.exsituFormService.currentTab = 'germination-table';
+        } else if (openFlag === 'tsv') {
+          this.exsituFormService.currentTab = 'viability-table';
+        } else if (openFlag === 'semis') {
+          this.exsituFormService.currentTab = 'semis-table';
+        }
+
+        // petit délai pour laisser le DOM/routeur se stabiliser
+        setTimeout(() => {
+          // si tu as un BehaviorSubject pour notifier l’UI, décommente :
+          // this.exsituFormService.current_tab?.next?.(this.exsituFormService.currentTab);
+          this.calcCardContentHeight(); // optionnel : recalc layout si utile
+        }, 0);
+      } catch {
+        // pas bloquant
+      }
+    }
+
     
 }

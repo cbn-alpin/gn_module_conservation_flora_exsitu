@@ -431,82 +431,60 @@ export class ActionModalComponent implements OnInit {
       });
     });
   }
+  
+
   submetAndResetForm() {
     const finalForm = this.formatDataForm();
+
+    const goToTargetAndOpenModal = (idDestination: number | null | undefined) => {
+      if (!idDestination) return;
+
+      this.api.getCodesNomenclature(idDestination).subscribe((destinationCode: string) => {
+        const basePath = `/${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}`;
+        let targetPath = '';
+        let openFlag = '';
+
+        if (destinationCode === 'tdg') {
+          targetPath = `${basePath}/germination-table`;
+          openFlag = 'tdg';
+        } else if (destinationCode === 'tsv') {
+          targetPath = `${basePath}/viability-table`;
+          openFlag = 'tsv';
+        }
+
+        if (targetPath) {
+          this.dialogRef.close(true); // ferme UNE seule fois
+          setTimeout(() => {
+            // ⚠️ on passe open=tdg | open=tsv
+            this.router.navigateByUrl(`${targetPath}?open=${openFlag}`);
+          }, 10);
+        }
+      });
+    };
 
     if (this.edit) {
       this.api.upAction(this.data.data.id_material, this.data.data.id_storage, finalForm).subscribe({
         next: () => {
           this._commonService.translateToaster('info', 'Action modifiée avec succès');
-          this.dialogRef.close(true);
-  
-          const idDestination = finalForm.id_destination;
-          if (!idDestination) return;
-  
-          this.api.getCodesNomenclature(idDestination).subscribe((destinationCode: string) => {
-            const basePath = `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}`;
-            let targetPath = '';
-  
-            if (destinationCode === 'tdg') {
-              targetPath = `${basePath}/germination-table`;
-            } else if (destinationCode === 'tsv') {
-              targetPath = `${basePath}/viability-table`;
-            }
-  
-            if (targetPath) {
-              this.dialogRef.close(); 
-
-              setTimeout(() => {
-                this.router.navigateByUrl(`${targetPath}?openModal=true`);
-              }, 10);
-            }
-          });
+          goToTargetAndOpenModal(finalForm.id_destination);
         },
         error: (err) => {
           console.error(err);
           this._commonService.translateToaster('warning', 'Erreur lors de la modification de l\'action');
         }
       });
-  
       return;
     }
-  
-  
+
     this.api.addAction(this.data.data.id_material, finalForm).subscribe({
       next: (response) => {
-        const idStorage = response.id_storage;
-  
-        this._commonService.translateToaster('info', 'Action ajoutée avec succès');
-        this.dialogRef.close(true);
-  
-        this.exsituFormService.idStorage = idStorage;
-        this.exsituFormService.id_storage.next(idStorage);
-  
-        const idDestination = finalForm.id_destination;
-  
-        if (!idDestination) {
-          return; 
+        const idStorage = response?.id_storage;
+        if (idStorage) {
+          this.exsituFormService.idStorage = idStorage;
+          this.exsituFormService.id_storage.next(idStorage);
         }
-  
-        // On récupère le code nomenclature pour rediriger dynamiquement
-        this.api.getCodesNomenclature(idDestination).subscribe((destinationCode: string) => {
-          const basePath = `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}`;
-          let targetPath = '';
-  
-          if (destinationCode === 'tdg') {
-            targetPath = `${basePath}/germination-table`;
-          } else if (destinationCode === 'tsv') {
-            targetPath = `${basePath}/viability-table`;
-          }
-  
-          if (targetPath) {
-            this.dialogRef.close();  // ferme la modale
-
-            setTimeout(() => {
-              this.router.navigateByUrl(`${targetPath}?openModal=true`);
-            }, 10);
-          }
-        });
+        this._commonService.translateToaster('info', 'Action ajoutée avec succès');
+        goToTargetAndOpenModal(finalForm.id_destination);
       },
       error: (err) => {
         console.error(err);
@@ -514,7 +492,8 @@ export class ActionModalComponent implements OnInit {
       }
     });
   }
-  
+
+    
   
   
 }

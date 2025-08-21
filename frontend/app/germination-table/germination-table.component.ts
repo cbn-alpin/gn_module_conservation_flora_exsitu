@@ -56,13 +56,17 @@ export class GerminationTableComponent implements OnInit {
       this.getTestByCode(this.codeT);
       this.loadTests();
 
-      if (params['openModal'] === 'true') {
+      if (params['open'] === 'tdg') {
         setTimeout(() => {
+          // ferme toute modale résiduelle au cas où
+          this.dialog.closeAll();
+
           this.dialog.open(GerminationComponent, {
             width: '900px',
             height: '90vh'
           });
 
+          // Nettoyer l’URL pour éviter les réouvertures
           this.router.navigate([], {
             relativeTo: this.route,
             queryParams: {},
@@ -72,6 +76,7 @@ export class GerminationTableComponent implements OnInit {
       }
     });
   }
+
 
   getTestByCode(code: any): void {
     this.api.getActionByCode(code).subscribe({

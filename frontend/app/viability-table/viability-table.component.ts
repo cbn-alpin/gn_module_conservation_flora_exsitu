@@ -53,28 +53,28 @@ import { ActivatedRoute } from '@angular/router';
      ];
    
      ngOnInit(): void {
-       this.loadTests();
-       this.getTestByCode(this.codeT);
+      this.route.queryParams.subscribe(params => {
+        this.loadTests();
 
+        if (params['open'] === 'tsv') {
+          setTimeout(() => {
+            this.dialog.closeAll(); // sécurité
 
-       this.route.queryParams.subscribe(params => {
-             if (params['openModal'] === 'true') {
-               setTimeout(() => {
-                 this.dialog.open(ViabilityComponent, {
-                   width: '900px',
-                   height: '90vh'
-                 });
-           
-                 // Nettoie l'URL
-                 this.router.navigate([], {
-                   relativeTo: this.route,
-                   queryParams: {},
-                   replaceUrl: true
-                 });
-               }, 0);
-             }
-           });
-     }
+            this.dialog.open(ViabilityComponent, {
+              width: '900px',
+              height: '90vh'
+            });
+
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: {},
+              replaceUrl: true
+            });
+          }, 10);
+        }
+      });
+    }
+
 
      getTestByCode(code :any): void {
       this.api.getActionByCode(code).subscribe({
