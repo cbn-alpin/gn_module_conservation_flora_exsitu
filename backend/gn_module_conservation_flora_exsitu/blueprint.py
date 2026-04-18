@@ -1480,12 +1480,13 @@ from dateutil.parser import isoparse
 def create_sowing(id_material):
     try:
         data = request.get_json(silent=True) or {}
-        repo = SowingRepository()              # ⬅️ instance !
-        sowing = repo.create(id_material, data)  # ⬅️ on passe 'data'
-        return jsonify(sowing.to_dic()), 201
+        data["meta_create_by"] = g.current_user.id_role   # SLIM
+        repo = SowingRepository()
+        sowing = repo.create(id_material, data)
+        return {"message": "Semis créé avec succès", "sowing": sowing.to_dic()}, 201
     except Exception as e:
         current_app.logger.exception("create_sowing failed")
-        return jsonify({"error": str(e)}), 400
+        return {"error": str(e)}, 400
     
 @blueprint.route("/sowings", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
