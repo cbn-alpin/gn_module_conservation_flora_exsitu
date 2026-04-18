@@ -49,13 +49,13 @@
         </pnx-nomenclature>
       </div>
 
-      <!-- Substrat -->
+      <!-- Substrat (SLIM ERREUR NOMENCLATURE, CFE_TEST_SUBSTRATE => CFE_SOWING_SUBSTRATE)-->
       <div class="form-group">
         <small>Substrat</small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"
-          codeNomenclatureType="CFE_TEST_SUBSTRATE"
+          codeNomenclatureType="CFE_SOWING_SUBSTRATE" 
           [parentFormControl]="semisForm.controls.id_substrate">
         </pnx-nomenclature>
       </div>
@@ -127,12 +127,13 @@
         </pnx-dynamic-form-generator>
       </div>
 
-      <!-- Boutons (pleine largeur) -->
+      <!-- Boutons (pleine largeur) SLIM ERREUR DOUBLE ENREGISTREMENT, SUPP DU (click)="onSubmit()" car double submite -->
+      <!-- SLIM ERREUR Pas comme le cancel puisque le button ne soumet pas le formulaire -->
       <div class="form-actions dual-buttons sticky-actions full-width">
         <button mat-button class="cancel-button with-border" type="button" (click)="onCancel()">
           <mat-icon>close</mat-icon> Annuler
         </button>
-        <button mat-button class="save-button with-border" type="submit" (click)="onSubmit()">
+        <button mat-button class="save-button with-border" type="submit">
           <mat-icon>save</mat-icon> Enregistrer
         </button>
       </div>

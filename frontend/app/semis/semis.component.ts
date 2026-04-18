@@ -146,6 +146,17 @@ export class SemisComponent implements OnInit {
     if (!payload.replicate_count) payload.replicate_count = 1;
     if (!payload.end_date) delete payload.end_date; // facultatif si non requis côté back
 
+    // SLIM ERREUR : Correction importante : transformer id_substrate en substrate
+    if (
+      payload.id_substrate !== null &&
+      payload.id_substrate !== undefined &&
+      payload.id_substrate !== ''
+    ) {
+      payload.substrate = { id_nomenclature: payload.id_substrate };
+    }
+    delete payload.id_substrate;
+    // END SLIM ERREUR
+
     return payload;
   }
 
