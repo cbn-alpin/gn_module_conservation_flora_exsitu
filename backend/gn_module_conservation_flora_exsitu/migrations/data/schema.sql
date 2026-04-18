@@ -239,7 +239,7 @@ CREATE TABLE "t_test" (
 CREATE TABLE "t_sowing" (
     "id_sowing" SERIAL NOT NULL UNIQUE,
     "id_material" INTEGER NOT NULL,
-    "id_storage" INTEGER NOT NULL,
+    "id_storage" INTEGER, -- SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
     "id_test" INTEGER,
     "code" VARCHAR(50),
     "id_actor" INTEGER NOT NULL,
