@@ -629,7 +629,7 @@ class TSowing(db.Model):
     id_storage = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="SET NULL"),
-        nullable=False
+        nullable=True # SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
     )
     code = db.Column(db.String(50))
     id_actor = db.Column(
