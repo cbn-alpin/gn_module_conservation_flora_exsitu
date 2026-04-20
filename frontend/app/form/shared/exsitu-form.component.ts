@@ -49,6 +49,9 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
         });
+        this.updateTabAndIdsFromUrl(this.router.url);
+        this.forceTabFromOpenFlag(this.router.url);
+
         this.exsituFormService.id_storage.subscribe(id => {
           this.idStorage = id;
         });
@@ -77,18 +80,16 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/stock`
           ]);
         }
-        else if (tab === 'semis' && this.exsituFormService.idHarvest && this.idMaterial) {
+        else if (tab === 'semis-table' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/semis-table`]);
-          
         }
-        else if (tab === 'germination-table') {
-          console.log("here")
+        else if (tab === 'germination-table' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/germination-table`]);
-
-          // if (!this.exsituFormService.idHarvest) {
-          //   this.router.navigate([`${this.currentModulePath}/form/germination-table`]);// Redirection si l'ID de récolte est absent
-          // }
         }
+        else if (tab === 'viability-table' && this.exsituFormService.idHarvest && this.idMaterial) {
+          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/viability-table`]);
+        }
+                          
         
     }
 
