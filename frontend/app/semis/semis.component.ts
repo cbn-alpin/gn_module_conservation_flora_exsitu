@@ -37,7 +37,7 @@ export class SemisComponent implements OnInit {
     this.semisForm = this.fb.group({
       code: ['', Validators.required],
       start_date: ['', Validators.required],
-      end_date: ['', Validators.required],
+      end_date: [''],
 
       id_actor: [''],                         // <pnx-observers> renvoie un tableau
       id_watering_method: [null, Validators.required],
