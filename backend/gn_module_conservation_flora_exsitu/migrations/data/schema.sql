@@ -241,7 +241,7 @@ CREATE TABLE "t_sowing" (
     "id_material" INTEGER NOT NULL,
     "id_storage" INTEGER, -- SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
     "id_test" INTEGER,
-    "code" VARCHAR(50),
+    "code" VARCHAR(50) NOT NULL,
     "id_actor" INTEGER NOT NULL,
     "start_date" TIMESTAMP NOT NULL,
     "end_date" TIMESTAMP,

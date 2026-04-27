@@ -613,7 +613,33 @@ class TTest(db.Model):
 @serializable
 class TSowing(db.Model):
     __tablename__ = 't_sowing'
-    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+    __table_args__ = (
+        db.UniqueConstraint(
+            "code",
+            name="uq_t_sowing_code"
+    ),
+        db.CheckConstraint(
+            r"code ~ '^S[0-9]{4}_[0-9]{4}$'",
+            name="ck_t_sowing_code_format"
+        ),
+        db.CheckConstraint(
+            "end_date IS NULL OR end_date > start_date",
+            name="ck_t_sowing_end_date_after_start_date"
+        ),
+        db.CheckConstraint(
+            "depth IS NULL OR depth > 0",
+            name="ck_t_sowing_depth_positive"
+        ),
+        db.CheckConstraint(
+            "initial_count IS NULL OR initial_count > 0",
+            name="ck_t_sowing_initial_count_positive"
+        ),
+        db.CheckConstraint(
+            "replicate_count IS NULL OR replicate_count > 0",
+            name="ck_t_sowing_replicate_count_positive"
+        ),
+        {"schema": "pr_conservation_flora_exsitu"}
+    )
 
     id_sowing = db.Column(db.Integer, primary_key=True, unique=True)
 
@@ -631,7 +657,7 @@ class TSowing(db.Model):
         db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="SET NULL"),
         nullable=True # SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
     )
-    code = db.Column(db.String(50))
+    code = db.Column(db.String(50), nullable=False)
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
