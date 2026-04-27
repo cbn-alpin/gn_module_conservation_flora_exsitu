@@ -70,7 +70,7 @@
       <!-- Profondeur -->
       <mat-form-field appearance="outline">
         <mat-label>Profondeur (mm)</mat-label>
-        <input matInput type="number" formControlName="depth">
+        <input matInput type="number" formControlName="depth" min="1">
       </mat-form-field>
 
       <!-- Mode d'arrosage -->
@@ -87,13 +87,13 @@
       <!-- Nombre de graines semées -->
       <mat-form-field appearance="outline">
         <mat-label>Nombre de graines semées</mat-label>
-        <input matInput type="number" formControlName="initial_count" required>
+        <input matInput type="number" formControlName="initial_count" required min="1">
       </mat-form-field>
 
       <!-- Nombre de réplicats -->
       <mat-form-field appearance="outline">
         <mat-label>Nombre de réplicats</mat-label>
-        <input matInput type="number" formControlName="replicate_count" required>
+        <input matInput type="number" formControlName="replicate_count" required min="1">
       </mat-form-field>
 
       <!-- Localisation -->

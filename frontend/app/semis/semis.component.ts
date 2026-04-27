@@ -45,11 +45,11 @@ export class SemisComponent implements OnInit {
       id_substrate:       [null],             // ⚠️ id_substrate (number), pas "substrate" string
 
       container: [''],
-      depth: [null],
+      depth: [null, Validators.min(1)],
       id_location: [null, Validators.required],
       specification_location: [''],
 
-      initial_count:   [null, Validators.required],
+      initial_count:   [null, [Validators.required, Validators.min(1)]],
       replicate_count: [1,    [Validators.required, Validators.min(1)]],
 
       remarks: [''],
