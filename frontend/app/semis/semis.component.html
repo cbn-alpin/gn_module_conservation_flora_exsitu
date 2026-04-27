@@ -25,6 +25,9 @@
       <mat-form-field appearance="outline">
         <mat-label>Date de fin</mat-label>
         <input matInput type="date" formControlName="end_date">
+        <mat-error *ngIf="semisForm.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
+          La date de fin doit être postérieure à la date de début.
+        </mat-error>
       </mat-form-field>
 
       <!-- Personne ayant effectué le semis -->

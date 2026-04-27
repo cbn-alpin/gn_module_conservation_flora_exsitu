@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SemisService } from './semis.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
@@ -54,8 +54,19 @@ export class SemisComponent implements OnInit {
 
       remarks: [''],
       additional_data: this.fb.group({})      // contiendra program + champs dynamiques
-    });
+    }, { validators: this.dateRangeValidator });
   }
+
+  dateRangeValidator(control: AbstractControl): ValidationErrors | null {
+  const startDate = control.get('start_date')?.value;
+  const endDate = control.get('end_date')?.value;
+
+  if (startDate && endDate && startDate >= endDate) {
+    return { dateRangeInvalid: true };
+  }
+
+  return null;
+}
 
   ngOnInit(): void {
     // IDs contexte
