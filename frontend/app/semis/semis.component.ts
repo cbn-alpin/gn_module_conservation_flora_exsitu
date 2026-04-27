@@ -39,13 +39,13 @@ export class SemisComponent implements OnInit {
       start_date: ['', Validators.required],
       end_date: [''],
 
-      id_actor: [''],                         // <pnx-observers> renvoie un tableau
+      id_actor: [[], Validators.required],                         // <pnx-observers> renvoie un tableau
       id_watering_method: [null, Validators.required],
       id_sowing_method:   [null, Validators.required],
-      id_substrate:       [null],             // ⚠️ id_substrate (number), pas "substrate" string
+      id_substrate:       [null, Validators.required],           // ⚠️ id_substrate (number), pas "substrate" string
 
-      container: [''],
-      depth: [null, Validators.min(1)],
+      container: ['', Validators.required],
+      depth: [null, [Validators.required, Validators.min(1)]],
       id_location: [null, Validators.required],
       specification_location: [''],
 
@@ -86,11 +86,16 @@ export class SemisComponent implements OnInit {
       }
     });
 
-    // Mode édition
+        // Mode édition
     if (this.modalData?.edit && this.modalData?.test) {
       this.patchForm(this.modalData.test);
+    } else {
+      this.semisForm.markAllAsTouched();
+      this.semisForm.updateValueAndValidity();
     }
   }
+
+  
 
   // Patch en mode édition (comme Germination)
   patchForm(data: any): void {
