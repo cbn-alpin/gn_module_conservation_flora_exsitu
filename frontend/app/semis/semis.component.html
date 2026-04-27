@@ -1,15 +1,15 @@
 <mat-card>
-  <mat-card-header class="header-with-button">
-    <div class="title-wrapper">
+  <mat-card-header class="header-with-button centered-header">
+    <div class="title-wrapper centered-title">
       <mat-card-title>Fiche de Semis</mat-card-title>
     </div>
   </mat-card-header>
 
   <mat-card-content>
     <form [formGroup]="semisForm" class="semis-form" (ngSubmit)="onSubmit()">
-      
-      <!-- Numéro de semis -->
-      <mat-form-field appearance="outline">
+
+      <!-- Ligne 1 : Numéro de semis -->
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Numéro de Semis</mat-label>
         <input
           matInput
@@ -20,7 +20,7 @@
           matTooltipPosition="below">
       </mat-form-field>
 
-      <!-- Date de début -->
+      <!-- Ligne 2 : Date de début / Date de fin -->
       <mat-form-field appearance="outline">
         <mat-label>Date de début</mat-label>
         <input
@@ -32,7 +32,6 @@
           matTooltipPosition="below">
       </mat-form-field>
 
-      <!-- Date de fin -->
       <mat-form-field appearance="outline">
         <mat-label>Date de fin</mat-label>
         <input
@@ -46,20 +45,7 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Personne ayant effectué le semis -->
-      <div class="form-group">
-        <small>Personne ayant effectué le semis</small>
-        <pnx-observers
-          [bindAllItem]="true"
-          [parentFormControl]="semisForm.controls.id_actor"
-          [codeList]="observers_list_code"
-          [multiSelect]="true"
-          matTooltip="Personne effectuant le semis."
-          matTooltipPosition="below">
-        </pnx-observers>
-      </div>
-
-      <!-- Méthode -->
+      <!-- Ligne 3 : Méthode / Substrat -->
       <div class="form-group">
         <small>Méthode</small>
         <pnx-nomenclature
@@ -72,7 +58,6 @@
         </pnx-nomenclature>
       </div>
 
-      <!-- Substrat -->
       <div class="form-group">
         <small>Substrat</small>
         <pnx-nomenclature
@@ -85,7 +70,7 @@
         </pnx-nomenclature>
       </div>
 
-      <!-- Contenant -->
+      <!-- Ligne 4 : Contenant / Profondeur -->
       <mat-form-field appearance="outline">
         <mat-label>Contenant</mat-label>
         <input
@@ -95,7 +80,6 @@
           matTooltipPosition="below">
       </mat-form-field>
 
-      <!-- Profondeur -->
       <mat-form-field appearance="outline">
         <mat-label>Profondeur (mm)</mat-label>
         <input
@@ -107,7 +91,7 @@
           matTooltipPosition="below">
       </mat-form-field>
 
-      <!-- Mode d'arrosage -->
+      <!-- Ligne 5 : Mode d'arrosage / Personne ayant effectué le semis -->
       <div class="form-group">
         <small>Mode d'arrosage</small>
         <pnx-nomenclature
@@ -120,7 +104,19 @@
         </pnx-nomenclature>
       </div>
 
-      <!-- Nombre de graines semées -->
+      <div class="form-group">
+        <small>Personne ayant effectué le semis</small>
+        <pnx-observers
+          [bindAllItem]="true"
+          [parentFormControl]="semisForm.controls.id_actor"
+          [codeList]="observers_list_code"
+          [multiSelect]="true"
+          matTooltip="Personne effectuant le semis."
+          matTooltipPosition="below">
+        </pnx-observers>
+      </div>
+
+      <!-- Ligne 6 : Nombre de graines semées / Nombre de réplicats -->
       <mat-form-field appearance="outline">
         <mat-label>Nombre de graines semées</mat-label>
         <input
@@ -133,7 +129,6 @@
           matTooltipPosition="below">
       </mat-form-field>
 
-      <!-- Nombre de réplicats -->
       <mat-form-field appearance="outline">
         <mat-label>Nombre de réplicats</mat-label>
         <input
@@ -146,7 +141,7 @@
           matTooltipPosition="below">
       </mat-form-field>
 
-      <!-- Localisation -->
+      <!-- Ligne 7 : Localisation / Précision sur la localisation -->
       <div class="form-group">
         <small>Localisation</small>
         <pnx-nomenclature
@@ -159,8 +154,7 @@
         </pnx-nomenclature>
       </div>
 
-      <!-- Précision sur la localisation -->
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="align-with-form-group">
         <mat-label>Précision sur la localisation</mat-label>
         <input
           matInput
