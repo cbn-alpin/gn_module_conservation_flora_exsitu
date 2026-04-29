@@ -1,7 +1,7 @@
 <mat-card>
   <mat-card-header class="header-with-button centered-header">
     <div class="title-wrapper centered-title">
-      <mat-card-title>Fiche de Semis</mat-card-title>
+      <mat-card-title>Fiche de Semis :</mat-card-title>
     </div>
   </mat-card-header>
 
@@ -47,7 +47,7 @@
 
       <!-- Ligne 3 : Méthode / Substrat -->
       <div class="form-group">
-        <small>Méthode</small>
+        <small>Méthode <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"
@@ -59,7 +59,7 @@
       </div>
 
       <div class="form-group">
-        <small>Substrat</small>
+        <small>Substrat <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"
@@ -76,6 +76,7 @@
         <input
           matInput
           formControlName="container"
+          required
           matTooltip="Contenant dans lequel se trouvent les graines pour les semis."
           matTooltipPosition="below">
       </mat-form-field>
@@ -86,6 +87,7 @@
           matInput
           type="number"
           formControlName="depth"
+          required
           min="1"
           matTooltip="Profondeur du semis. Unité : millimètre (mm)."
           matTooltipPosition="below">
@@ -93,7 +95,7 @@
 
       <!-- Ligne 5 : Mode d'arrosage / Personne ayant effectué le semis -->
       <div class="form-group">
-        <small>Mode d'arrosage</small>
+        <small>Mode d'arrosage <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"
@@ -105,7 +107,7 @@
       </div>
 
       <div class="form-group">
-        <small>Personne ayant effectué le semis</small>
+        <small>Personne ayant effectué le semis <span class="required-star">*</span></small>
         <pnx-observers
           [bindAllItem]="true"
           [parentFormControl]="semisForm.controls.id_actor"
@@ -143,7 +145,7 @@
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->
       <div class="form-group">
-        <small>Localisation</small>
+        <small>Localisation <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"

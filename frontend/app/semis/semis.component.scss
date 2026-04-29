@@ -219,3 +219,28 @@ mat-form-field,
 .align-with-form-group {
   margin-top: 26px;
 }
+
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.38) !important;
+}
+
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: inherit !important;
+}
+
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid input,
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid textarea {
+  color: inherit !important;
+  caret-color: inherit !important;
+}
+
+.required-star {
+  color: #f44336;
+}
+
+:host ::ng-deep .mat-mdc-form-field-required-marker {
+  color: #f44336 !important;
+  margin-left: 4px;
+}
