@@ -14,7 +14,8 @@ import { CommonService } from '@geonature_common/service/common.service';
 })
 export class SemisComponent implements OnInit {
   public semisForm: FormGroup;
-
+  public formSubmitted = false;
+  public shakeCodeField = false;
   public observers_list_code: any;
   public idMaterial!: number;
   public idStorage: number | null = null;
@@ -39,34 +40,34 @@ export class SemisComponent implements OnInit {
       start_date: ['', Validators.required],
       end_date: [''],
 
-      id_actor: [[], Validators.required],                         // <pnx-observers> renvoie un tableau
+      id_actor: [[], Validators.required], // <pnx-observers> renvoie un tableau
       id_watering_method: [null, Validators.required],
-      id_sowing_method:   [null, Validators.required],
-      id_substrate:       [null, Validators.required],           // ⚠️ id_substrate (number), pas "substrate" string
+      id_sowing_method: [null, Validators.required],
+      id_substrate: [null, Validators.required], // ⚠️ id_substrate (number), pas "substrate" string
 
       container: ['', Validators.required],
       depth: [null, [Validators.required, Validators.min(1)]],
       id_location: [null, Validators.required],
       specification_location: [''],
 
-      initial_count:   [null, [Validators.required, Validators.min(1)]],
-      replicate_count: [1,    [Validators.required, Validators.min(1)]],
+      initial_count: [null, [Validators.required, Validators.min(1)]],
+      replicate_count: [1, [Validators.required, Validators.min(1)]],
 
       remarks: [''],
-      additional_data: this.fb.group({})      // contiendra program + champs dynamiques
+      additional_data: this.fb.group({}) // contiendra program + champs dynamiques
     }, { validators: this.dateRangeValidator });
   }
 
   dateRangeValidator(control: AbstractControl): ValidationErrors | null {
-  const startDate = control.get('start_date')?.value;
-  const endDate = control.get('end_date')?.value;
+    const startDate = control.get('start_date')?.value;
+    const endDate = control.get('end_date')?.value;
 
-  if (startDate && endDate && startDate >= endDate) {
-    return { dateRangeInvalid: true };
+    if (startDate && endDate && startDate >= endDate) {
+      return { dateRangeInvalid: true };
+    }
+
+    return null;
   }
-
-  return null;
-}
 
   ngOnInit(): void {
     // IDs contexte
@@ -86,7 +87,7 @@ export class SemisComponent implements OnInit {
       }
     });
 
-        // Mode édition
+    // Mode édition
     if (this.modalData?.edit && this.modalData?.test) {
       this.patchForm(this.modalData.test);
     } else {
@@ -94,8 +95,6 @@ export class SemisComponent implements OnInit {
       this.semisForm.updateValueAndValidity();
     }
   }
-
-  
 
   // Patch en mode édition (comme Germination)
   patchForm(data: any): void {
@@ -107,8 +106,8 @@ export class SemisComponent implements OnInit {
       id_actor: data.id_actor ? [{ id_role: data.id_actor }] : [],
 
       id_watering_method: data.id_watering_method ?? null,
-      id_sowing_method:   data.id_sowing_method   ?? null,
-      id_substrate:       data.id_substrate       ?? null,
+      id_sowing_method: data.id_sowing_method ?? null,
+      id_substrate: data.id_substrate ?? null,
 
       container: data.container || '',
       depth: data.depth ?? null,
@@ -143,8 +142,11 @@ export class SemisComponent implements OnInit {
         const v = payload.additional_data[k];
         if (v !== null && v !== undefined && v !== '') cleaned[k] = v;
       });
-      if (Object.keys(cleaned).length) payload.additional_data = cleaned;
-      else delete payload.additional_data;
+      if (Object.keys(cleaned).length) {
+        payload.additional_data = cleaned;
+      } else {
+        delete payload.additional_data;
+      }
     }
 
     // Observers → id_role
@@ -156,13 +158,13 @@ export class SemisComponent implements OnInit {
 
     // Contexte
     payload.id_material = this.idMaterial;
-    payload.id_storage  = this.idStorage;
+    payload.id_storage = this.idStorage;
 
     // Petites gardes-fous
     if (!payload.replicate_count) payload.replicate_count = 1;
     if (!payload.end_date) delete payload.end_date; // facultatif si non requis côté back
 
-    // SLIM ERREUR : Correction importante : transformer id_substrate en substrate
+    // Correction importante : transformer id_substrate en substrate
     if (
       payload.id_substrate !== null &&
       payload.id_substrate !== undefined &&
@@ -171,13 +173,42 @@ export class SemisComponent implements OnInit {
       payload.substrate = { id_nomenclature: payload.id_substrate };
     }
     delete payload.id_substrate;
-    // END SLIM ERREUR
 
     return payload;
   }
 
+  private triggerCodeFieldShake(): void {
+    this.shakeCodeField = false;
+
+    setTimeout(() => {
+      this.shakeCodeField = true;
+
+      setTimeout(() => {
+        this.shakeCodeField = false;
+      }, 400);
+    }, 0);
+  }
+
+  public hasControlError(controlName: string, errorCode: string): boolean {
+    return this.formSubmitted && !!this.semisForm.get(controlName)?.hasError(errorCode);
+  }
+
+  public hasDateRangeError(): boolean {
+    return this.formSubmitted && !!this.semisForm.hasError('dateRangeInvalid');
+  }
+
   onSubmit(): void {
-    if (this.semisForm.invalid) return;
+    this.formSubmitted = true;
+
+    if (this.semisForm.invalid) {
+      this.semisForm.markAllAsTouched();
+
+      if (this.semisForm.get('code')?.invalid) {
+        this.triggerCodeFieldShake();
+      }
+
+      return;
+    }
 
     const finalForm = this.formatFormData();
 

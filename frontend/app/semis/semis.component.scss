@@ -198,22 +198,17 @@ mat-form-field,
   margin-top: 8px;
 }
 
-@media (max-width: 768px) {
-  .semis-form {
-    grid-template-columns: 1fr;
-  }
+.dates-block {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 
-  .full-width {
-    grid-column: auto;
-  }
-
-  .left-panel,
-  .right-panel {
-    max-width: 100%;
-    flex: 1 1 100%;
-  }
-
-  
+.dates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+  align-items: start;
 }
 
 .align-with-form-group {
@@ -243,4 +238,78 @@ mat-form-field,
 :host ::ng-deep .mat-mdc-form-field-required-marker {
   color: #f44336 !important;
   margin-left: 4px;
+}
+
+.shake-wrapper {
+  display: block;
+}
+
+:host ::ng-deep .shake-field .mat-mdc-text-field-wrapper {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
+@keyframes shake-field-animation {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+/* Messages d’erreur custom : base */
+.custom-error-message,
+.dates-error {
+  color: #f44336;
+  font-size: 12px;
+  line-height: 1.25;
+  margin-top: 4px;
+  margin-bottom: 0;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Même marge que les erreurs Angular Material pour les champs en form-group */
+.form-group .custom-error-message {
+  padding-left: 19.5px;
+}
+
+/* Messages liés aux dates / blocs pleine largeur */
+.dates-block .custom-error-message,
+.dates-error,
+.full-width .custom-error-message {
+  padding-left: 4px;
+}
+
+/* Marge des mat-error Angular Material */
+:host ::ng-deep .semis-form .mat-mdc-form-field-subscript-wrapper {
+  min-height: 18px;
+  padding-left: 15px !important;
+  padding-right: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .semis-form,
+  .dates-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+  .align-with-form-group {
+    margin-top: 0;
+  }
+
+  .left-panel,
+  .right-panel {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+}
+
+:host ::ng-deep .semis-form .mat-mdc-form-field.start-date-required.mat-form-field-invalid .mdc-notched-outline__leading {
+  border-color: #f44336 !important;
 }

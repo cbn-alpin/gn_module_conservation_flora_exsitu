@@ -9,7 +9,7 @@
     <form [formGroup]="semisForm" class="semis-form" (ngSubmit)="onSubmit()">
 
       <!-- Ligne 1 : Numéro de semis -->
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width shake-wrapper" [class.shake-field]="shakeCodeField">
         <mat-label>Numéro de Semis</mat-label>
         <input
           matInput
@@ -18,32 +18,51 @@
           placeholder="Ex : S2026_0001"
           matTooltip="Code alphanumérique identifiant le semis.&#10;Ex : S2026_0001 (S = semis, 2026 = année, 0001 = n° d’ordre)"
           matTooltipPosition="below">
+
+        <mat-error *ngIf="hasControlError('code', 'required')">
+          Le numéro de semis est obligatoire.
+        </mat-error>
+
+        <mat-error *ngIf="hasControlError('code', 'pattern')">
+          Le numéro de semis doit respecter le format SAAAA_NNNN (ex. : S2026_0001).
+        </mat-error>
       </mat-form-field>
 
       <!-- Ligne 2 : Date de début / Date de fin -->
-      <mat-form-field appearance="outline">
-        <mat-label>Date de début</mat-label>
-        <input
-          matInput
-          type="date"
-          formControlName="start_date"
-          required
-          matTooltip="Date de début du semis."
-          matTooltipPosition="below">
-      </mat-form-field>
+      <div class="dates-block full-width">
+        <div class="dates-grid">
+          <mat-form-field appearance="outline" class="start-date-required">
+            <mat-label>Date de début</mat-label>
+            <input
+              matInput
+              type="date"
+              formControlName="start_date"
+              required
+              matTooltip="Date de début du semis."
+              matTooltipPosition="below">
 
-      <mat-form-field appearance="outline">
-        <mat-label>Date de fin</mat-label>
-        <input
-          matInput
-          type="date"
-          formControlName="end_date"
-          matTooltip="Date de fin du semis."
-          matTooltipPosition="below">
-        <mat-error *ngIf="semisForm.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
+            <mat-error *ngIf="hasControlError('start_date', 'required')">
+              La date de début est obligatoire.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date de fin</mat-label>
+            <input
+              matInput
+              type="date"
+              formControlName="end_date"
+              matTooltip="Date de fin du semis."
+              matTooltipPosition="below">
+          </mat-form-field>
+        </div>
+
+        <div
+          class="custom-error-message dates-error"
+          *ngIf="hasDateRangeError() && semisForm.get('end_date')?.value">
           La date de fin doit être postérieure à la date de début.
-        </mat-error>
-      </mat-form-field>
+        </div>
+      </div>
 
       <!-- Ligne 3 : Méthode / Substrat -->
       <div class="form-group">
@@ -56,6 +75,10 @@
           matTooltip="Méthode de semis appliquée."
           matTooltipPosition="below">
         </pnx-nomenclature>
+
+        <div class="custom-error-message" *ngIf="hasControlError('id_sowing_method', 'required')">
+          La méthode est obligatoire.
+        </div>
       </div>
 
       <div class="form-group">
@@ -68,6 +91,10 @@
           matTooltip="Composition en pourcentage du substrat du semis."
           matTooltipPosition="below">
         </pnx-nomenclature>
+
+        <div class="custom-error-message" *ngIf="hasControlError('id_substrate', 'required')">
+          Le substrat est obligatoire.
+        </div>
       </div>
 
       <!-- Ligne 4 : Contenant / Profondeur -->
@@ -79,6 +106,10 @@
           required
           matTooltip="Contenant dans lequel se trouvent les graines pour les semis."
           matTooltipPosition="below">
+
+        <mat-error *ngIf="hasControlError('container', 'required')">
+          Le contenant est obligatoire.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -91,6 +122,14 @@
           min="1"
           matTooltip="Profondeur du semis. Unité : millimètre (mm)."
           matTooltipPosition="below">
+
+        <mat-error *ngIf="hasControlError('depth', 'required')">
+          La profondeur est obligatoire.
+        </mat-error>
+
+        <mat-error *ngIf="hasControlError('depth', 'min')">
+          La profondeur doit être supérieure à 0.
+        </mat-error>
       </mat-form-field>
 
       <!-- Ligne 5 : Mode d'arrosage / Personne ayant effectué le semis -->
@@ -104,6 +143,10 @@
           matTooltip="Mode d’arrosage appliqué."
           matTooltipPosition="below">
         </pnx-nomenclature>
+
+        <div class="custom-error-message" *ngIf="hasControlError('id_watering_method', 'required')">
+          Le mode d’arrosage est obligatoire.
+        </div>
       </div>
 
       <div class="form-group">
@@ -116,6 +159,10 @@
           matTooltip="Personne effectuant le semis."
           matTooltipPosition="below">
         </pnx-observers>
+
+        <div class="custom-error-message" *ngIf="hasControlError('id_actor', 'required')">
+          La personne ayant effectué le semis est obligatoire.
+        </div>
       </div>
 
       <!-- Ligne 6 : Nombre de graines semées / Nombre de réplicats -->
@@ -129,6 +176,14 @@
           min="1"
           matTooltip="Nombre de graines semées."
           matTooltipPosition="below">
+
+        <mat-error *ngIf="hasControlError('initial_count', 'required')">
+          Le nombre de graines semées est obligatoire.
+        </mat-error>
+
+        <mat-error *ngIf="hasControlError('initial_count', 'min')">
+          Le nombre de graines semées doit être supérieur à 0.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -141,6 +196,14 @@
           min="1"
           matTooltip="Nombre de réplicats. Valeur par défaut : 1."
           matTooltipPosition="below">
+
+        <mat-error *ngIf="hasControlError('replicate_count', 'required')">
+          Le nombre de réplicats est obligatoire.
+        </mat-error>
+
+        <mat-error *ngIf="hasControlError('replicate_count', 'min')">
+          Le nombre de réplicats doit être supérieur à 0.
+        </mat-error>
       </mat-form-field>
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->
@@ -154,6 +217,10 @@
           matTooltip="Lieu de stockage des semis."
           matTooltipPosition="below">
         </pnx-nomenclature>
+
+        <div class="custom-error-message" *ngIf="hasControlError('id_location', 'required')">
+          La localisation est obligatoire.
+        </div>
       </div>
 
       <mat-form-field appearance="outline" class="align-with-form-group">
