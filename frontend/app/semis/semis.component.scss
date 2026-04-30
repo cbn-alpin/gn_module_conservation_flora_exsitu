@@ -313,3 +313,7 @@ mat-form-field,
 :host ::ng-deep .semis-form .mat-mdc-form-field.start-date-required.mat-form-field-invalid .mdc-notched-outline__leading {
   border-color: #f44336 !important;
 }
+
+.shake-group-field {
+  animation: shake-field-animation 0.35s ease-in-out;
+}

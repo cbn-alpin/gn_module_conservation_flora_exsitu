@@ -16,6 +16,18 @@ export class SemisComponent implements OnInit {
   public semisForm: FormGroup;
   public formSubmitted = false;
   public shakeCodeField = false;
+  public shakeStartDateField = false;
+  public shakeEndDateField = false;
+  public shakeDepthField = false;
+  public shakeContainerField = false;
+  public shakeMethodField = false;
+  public shakeSubstrateField = false;
+  public shakeWateringField = false;
+  public shakeActorField = false;
+  public shakeLocationField = false;
+  public shakeInitialCountField = false;
+  public shakeReplicateCountField = false;
+
   public observers_list_code: any;
   public idMaterial!: number;
   public idStorage: number | null = null;
@@ -189,6 +201,138 @@ export class SemisComponent implements OnInit {
     }, 0);
   }
 
+  private triggerStartDateFieldShake(): void {
+  this.shakeStartDateField = false;
+
+  setTimeout(() => {
+    this.shakeStartDateField = true;
+
+    setTimeout(() => {
+      this.shakeStartDateField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerEndDateFieldShake(): void {
+  this.shakeEndDateField = false;
+
+  setTimeout(() => {
+    this.shakeEndDateField = true;
+
+    setTimeout(() => {
+      this.shakeEndDateField = false;
+    }, 400);
+  }, 0);
+}
+
+  private triggerDepthFieldShake(): void {
+  this.shakeDepthField = false;
+
+  setTimeout(() => {
+    this.shakeDepthField = true;
+
+    setTimeout(() => {
+      this.shakeDepthField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerContainerFieldShake(): void {
+  this.shakeContainerField = false;
+
+  setTimeout(() => {
+    this.shakeContainerField = true;
+
+    setTimeout(() => {
+      this.shakeContainerField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerMethodFieldShake(): void {
+  this.shakeMethodField = false;
+
+  setTimeout(() => {
+    this.shakeMethodField = true;
+
+    setTimeout(() => {
+      this.shakeMethodField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerSubstrateFieldShake(): void {
+  this.shakeSubstrateField = false;
+
+  setTimeout(() => {
+    this.shakeSubstrateField = true;
+
+    setTimeout(() => {
+      this.shakeSubstrateField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerWateringFieldShake(): void {
+  this.shakeWateringField = false;
+
+  setTimeout(() => {
+    this.shakeWateringField = true;
+
+    setTimeout(() => {
+      this.shakeWateringField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerActorFieldShake(): void {
+  this.shakeActorField = false;
+
+  setTimeout(() => {
+    this.shakeActorField = true;
+
+    setTimeout(() => {
+      this.shakeActorField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerLocationFieldShake(): void {
+  this.shakeLocationField = false;
+
+  setTimeout(() => {
+    this.shakeLocationField = true;
+
+    setTimeout(() => {
+      this.shakeLocationField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerInitialCountFieldShake(): void {
+  this.shakeInitialCountField = false;
+
+  setTimeout(() => {
+    this.shakeInitialCountField = true;
+
+    setTimeout(() => {
+      this.shakeInitialCountField = false;
+    }, 400);
+  }, 0);
+}
+
+private triggerReplicateCountFieldShake(): void {
+  this.shakeReplicateCountField = false;
+
+  setTimeout(() => {
+    this.shakeReplicateCountField = true;
+
+    setTimeout(() => {
+      this.shakeReplicateCountField = false;
+    }, 400);
+  }, 0);
+}
+
   public hasControlError(controlName: string, errorCode: string): boolean {
     return this.formSubmitted && !!this.semisForm.get(controlName)?.hasError(errorCode);
   }
@@ -197,15 +341,81 @@ export class SemisComponent implements OnInit {
     return this.formSubmitted && !!this.semisForm.hasError('dateRangeInvalid');
   }
 
+  public isSubmittedValid(controlName: string): boolean {
+  const control = this.semisForm.get(controlName);
+  return !!(this.formSubmitted && control && control.valid);
+}
+
+public isStartDateValidated(): boolean {
+  return !!(
+    this.formSubmitted &&
+    this.semisForm.get('start_date')?.valid &&
+    !this.semisForm.hasError('dateRangeInvalid')
+  );
+}
+
+public isEndDateValidated(): boolean {
+  return !!(
+    this.formSubmitted &&
+    this.semisForm.get('end_date')?.value &&
+    !this.semisForm.hasError('dateRangeInvalid')
+  );
+}
+
   onSubmit(): void {
     this.formSubmitted = true;
 
-    if (this.semisForm.invalid) {
-      this.semisForm.markAllAsTouched();
+      if (this.semisForm.invalid) {
+        this.semisForm.markAllAsTouched();
 
       if (this.semisForm.get('code')?.invalid) {
         this.triggerCodeFieldShake();
       }
+
+      if (this.semisForm.get('start_date')?.hasError('required')) {
+        this.triggerStartDateFieldShake();
+      }
+
+      if (this.semisForm.hasError('dateRangeInvalid')) {
+        this.triggerStartDateFieldShake();
+        this.triggerEndDateFieldShake();
+      }
+
+      if (this.semisForm.get('depth')?.invalid) {
+        this.triggerDepthFieldShake();
+      }
+
+      if (this.semisForm.get('container')?.invalid) {
+        this.triggerContainerFieldShake();
+      }
+
+      if (this.semisForm.get('id_sowing_method')?.invalid) {
+        this.triggerMethodFieldShake();
+      }
+
+      if (this.semisForm.get('id_substrate')?.invalid) {
+        this.triggerSubstrateFieldShake();
+      }
+
+        if (this.semisForm.get('id_watering_method')?.invalid) {
+          this.triggerWateringFieldShake();
+        }
+
+        if (this.semisForm.get('id_actor')?.invalid) {
+          this.triggerActorFieldShake();
+        }
+
+        if (this.semisForm.get('id_location')?.invalid) {
+          this.triggerLocationFieldShake();
+        }
+
+        if (this.semisForm.get('initial_count')?.invalid) {
+          this.triggerInitialCountFieldShake();
+        }
+
+        if (this.semisForm.get('replicate_count')?.invalid) {
+          this.triggerReplicateCountFieldShake();
+        }
 
       return;
     }
@@ -235,9 +445,12 @@ export class SemisComponent implements OnInit {
         error: (err) => console.error('Erreur création semis :', err)
       });
     }
+
+    
   }
 
   onCancel(): void {
     this.dialogRef.close();
   }
 }
+

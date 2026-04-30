@@ -19,11 +19,11 @@
           matTooltip="Code alphanumérique identifiant le semis.&#10;Ex : S2026_0001 (S = semis, 2026 = année, 0001 = n° d’ordre)"
           matTooltipPosition="below">
 
-        <mat-error *ngIf="hasControlError('code', 'required')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('required')">
           Le numéro de semis est obligatoire.
         </mat-error>
 
-        <mat-error *ngIf="hasControlError('code', 'pattern')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('pattern')">
           Le numéro de semis doit respecter le format SAAAA_NNNN (ex. : S2026_0001).
         </mat-error>
       </mat-form-field>
@@ -31,7 +31,7 @@
       <!-- Ligne 2 : Date de début / Date de fin -->
       <div class="dates-block full-width">
         <div class="dates-grid">
-          <mat-form-field appearance="outline" class="start-date-required">
+          <mat-form-field appearance="outline" class="start-date-required shake-wrapper" [class.shake-field]="shakeStartDateField">
             <mat-label>Date de début</mat-label>
             <input
               matInput
@@ -41,12 +41,12 @@
               matTooltip="Date de début du semis."
               matTooltipPosition="below">
 
-            <mat-error *ngIf="hasControlError('start_date', 'required')">
+            <mat-error *ngIf="formSubmitted && semisForm.get('start_date')?.hasError('required')">
               La date de début est obligatoire.
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeEndDateField">
             <mat-label>Date de fin</mat-label>
             <input
               matInput
@@ -59,13 +59,13 @@
 
         <div
           class="custom-error-message dates-error"
-          *ngIf="hasDateRangeError() && semisForm.get('end_date')?.value">
+          *ngIf="formSubmitted && semisForm.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
           La date de fin doit être postérieure à la date de début.
         </div>
       </div>
 
       <!-- Ligne 3 : Méthode / Substrat -->
-      <div class="form-group">
+      <div class="form-group" [class.shake-group-field]="shakeMethodField">
         <small>Méthode <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
@@ -76,12 +76,12 @@
           matTooltipPosition="below">
         </pnx-nomenclature>
 
-        <div class="custom-error-message" *ngIf="hasControlError('id_sowing_method', 'required')">
+        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_sowing_method')?.hasError('required')">
           La méthode est obligatoire.
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" [class.shake-group-field]="shakeSubstrateField">
         <small>Substrat <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
@@ -92,13 +92,13 @@
           matTooltipPosition="below">
         </pnx-nomenclature>
 
-        <div class="custom-error-message" *ngIf="hasControlError('id_substrate', 'required')">
+        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_substrate')?.hasError('required')">
           Le substrat est obligatoire.
         </div>
       </div>
 
       <!-- Ligne 4 : Contenant / Profondeur -->
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeContainerField">
         <mat-label>Contenant</mat-label>
         <input
           matInput
@@ -107,12 +107,12 @@
           matTooltip="Contenant dans lequel se trouvent les graines pour les semis."
           matTooltipPosition="below">
 
-        <mat-error *ngIf="hasControlError('container', 'required')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('container')?.hasError('required')">
           Le contenant est obligatoire.
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeDepthField">
         <mat-label>Profondeur (mm)</mat-label>
         <input
           matInput
@@ -123,17 +123,17 @@
           matTooltip="Profondeur du semis. Unité : millimètre (mm)."
           matTooltipPosition="below">
 
-        <mat-error *ngIf="hasControlError('depth', 'required')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('depth')?.hasError('required')">
           La profondeur est obligatoire.
         </mat-error>
 
-        <mat-error *ngIf="hasControlError('depth', 'min')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('depth')?.hasError('min')">
           La profondeur doit être supérieure à 0.
         </mat-error>
       </mat-form-field>
 
       <!-- Ligne 5 : Mode d'arrosage / Personne ayant effectué le semis -->
-      <div class="form-group">
+      <div class="form-group" [class.shake-group-field]="shakeWateringField">
         <small>Mode d'arrosage <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
@@ -144,12 +144,12 @@
           matTooltipPosition="below">
         </pnx-nomenclature>
 
-        <div class="custom-error-message" *ngIf="hasControlError('id_watering_method', 'required')">
+        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_watering_method')?.hasError('required')">
           Le mode d’arrosage est obligatoire.
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" [class.shake-group-field]="shakeActorField">
         <small>Personne ayant effectué le semis <span class="required-star">*</span></small>
         <pnx-observers
           [bindAllItem]="true"
@@ -160,13 +160,13 @@
           matTooltipPosition="below">
         </pnx-observers>
 
-        <div class="custom-error-message" *ngIf="hasControlError('id_actor', 'required')">
+        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_actor')?.hasError('required')">
           La personne ayant effectué le semis est obligatoire.
         </div>
       </div>
 
       <!-- Ligne 6 : Nombre de graines semées / Nombre de réplicats -->
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeInitialCountField">
         <mat-label>Nombre de graines semées</mat-label>
         <input
           matInput
@@ -177,16 +177,16 @@
           matTooltip="Nombre de graines semées."
           matTooltipPosition="below">
 
-        <mat-error *ngIf="hasControlError('initial_count', 'required')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('initial_count')?.hasError('required')">
           Le nombre de graines semées est obligatoire.
         </mat-error>
 
-        <mat-error *ngIf="hasControlError('initial_count', 'min')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('initial_count')?.hasError('min')">
           Le nombre de graines semées doit être supérieur à 0.
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeReplicateCountField">
         <mat-label>Nombre de réplicats</mat-label>
         <input
           matInput
@@ -197,17 +197,17 @@
           matTooltip="Nombre de réplicats. Valeur par défaut : 1."
           matTooltipPosition="below">
 
-        <mat-error *ngIf="hasControlError('replicate_count', 'required')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('replicate_count')?.hasError('required')">
           Le nombre de réplicats est obligatoire.
         </mat-error>
 
-        <mat-error *ngIf="hasControlError('replicate_count', 'min')">
+        <mat-error *ngIf="formSubmitted && semisForm.get('replicate_count')?.hasError('min')">
           Le nombre de réplicats doit être supérieur à 0.
         </mat-error>
       </mat-form-field>
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->
-      <div class="form-group">
+      <div class="form-group" [class.shake-group-field]="shakeLocationField">
         <small>Localisation <span class="required-star">*</span></small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
@@ -218,7 +218,7 @@
           matTooltipPosition="below">
         </pnx-nomenclature>
 
-        <div class="custom-error-message" *ngIf="hasControlError('id_location', 'required')">
+        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_location')?.hasError('required')">
           La localisation est obligatoire.
         </div>
       </div>
