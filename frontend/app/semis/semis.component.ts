@@ -48,7 +48,7 @@ export class SemisComponent implements OnInit {
   ) {
     // Form calqué sur Germination (noms adaptés Semis)
     this.semisForm = this.fb.group({
-      code: ['', [Validators.required, Validators.pattern(/^S\d{4}_\d{4}$/)]],
+      code: ['', [Validators.required, Validators.pattern(/^S\d{4}_\d{4}$/), this.sowingSequenceValidator]],
       start_date: ['', Validators.required],
       end_date: [''],
 
@@ -70,6 +70,22 @@ export class SemisComponent implements OnInit {
     }, { validators: this.dateRangeValidator });
   }
 
+  sowingSequenceValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+
+  if (!value || typeof value !== 'string') {
+    return null;
+  }
+
+  const match = value.match(/^S\d{4}_(\d{4})$/);
+
+  if (!match) {
+    return null;
+  }
+
+  return match[1] === '0000' ? { sowingSequenceInvalid: true } : null;
+}
+
   dateRangeValidator(control: AbstractControl): ValidationErrors | null {
   const startDate = control.get('start_date')?.value;
   const endDate = control.get('end_date')?.value;
@@ -83,7 +99,7 @@ export class SemisComponent implements OnInit {
   }
 
   const startDateControl = control.get('start_date');
-  const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_\d{4}$/) : null;
+  const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_(?!0000)\d{4}$/) : null;
 
   let startYear: string | null = null;
 

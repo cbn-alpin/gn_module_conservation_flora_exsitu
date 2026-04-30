@@ -30,6 +30,10 @@
   <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('codeYearMismatch')">
     L’année du semis doit correspondre à la date de début.
   </mat-error>
+
+  <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('sowingSequenceInvalid')">
+  Le numéro d’ordre du semis ne peut pas être 0000.
+</mat-error>
 </mat-form-field>
       
 
