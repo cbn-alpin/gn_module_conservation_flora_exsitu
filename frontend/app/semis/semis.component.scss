@@ -310,12 +310,13 @@ mat-form-field,
   }
 }
 
-:host ::ng-deep .semis-form .mat-mdc-form-field.start-date-required.mat-form-field-invalid .mdc-notched-outline__leading {
-  border-color: #f44336 !important;
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+:host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.38) !important;
 }
 
 .shake-group-field {
   animation: shake-field-animation 0.35s ease-in-out;
 }
-
 
