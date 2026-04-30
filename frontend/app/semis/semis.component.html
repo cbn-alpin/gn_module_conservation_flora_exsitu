@@ -10,23 +10,28 @@
 
       <!-- Ligne 1 : Numéro de semis -->
       <mat-form-field appearance="outline" class="full-width shake-wrapper" [class.shake-field]="shakeCodeField">
-        <mat-label>Numéro de Semis</mat-label>
-        <input
-          matInput
-          formControlName="code"
-          required
-          placeholder="Ex : S2026_0001"
-          matTooltip="Code alphanumérique identifiant le semis.&#10;Ex : S2026_0001 (S = semis, 2026 = année, 0001 = n° d’ordre)"
-          matTooltipPosition="below">
+  <mat-label>Numéro de Semis</mat-label>
+  <input
+    matInput
+    formControlName="code"
+    required
+    placeholder="Ex : S2026_0001"
+    matTooltip="Code alphanumérique identifiant le semis.&#10;Ex : S2026_0001 (S = semis, 2026 = année, 0001 = n° d’ordre)"
+    matTooltipPosition="below">
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('required')">
-          Le numéro de semis est obligatoire.
-        </mat-error>
+  <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('required')">
+    Le numéro de semis est obligatoire.
+  </mat-error>
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('pattern')">
-          Le numéro de semis doit respecter le format SAAAA_NNNN (ex. : S2026_0001).
-        </mat-error>
-      </mat-form-field>
+  <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('pattern')">
+    Le numéro de semis doit respecter le format SAAAA_NNNN (ex. : S2026_0001).
+  </mat-error>
+
+  <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('codeYearMismatch')">
+    L’année du semis doit correspondre à la date de début.
+  </mat-error>
+</mat-form-field>
+      
 
       <!-- Ligne 2 : Date de début / Date de fin -->
       <div class="dates-block full-width">
@@ -43,6 +48,10 @@
 
             <mat-error *ngIf="formSubmitted && semisForm.get('start_date')?.hasError('required')">
               La date de début est obligatoire.
+            </mat-error>
+
+            <mat-error *ngIf="formSubmitted && semisForm.get('start_date')?.hasError('codeYearMismatch')">
+              L’année du semis doit correspondre à l’année de début.
             </mat-error>
           </mat-form-field>
 

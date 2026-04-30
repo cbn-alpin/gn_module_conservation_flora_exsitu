@@ -71,15 +71,62 @@ export class SemisComponent implements OnInit {
   }
 
   dateRangeValidator(control: AbstractControl): ValidationErrors | null {
-    const startDate = control.get('start_date')?.value;
-    const endDate = control.get('end_date')?.value;
+  const startDate = control.get('start_date')?.value;
+  const endDate = control.get('end_date')?.value;
+  const codeControl = control.get('code');
+  const code = codeControl?.value;
 
-    if (startDate && endDate && startDate >= endDate) {
-      return { dateRangeInvalid: true };
-    }
+  const errors: ValidationErrors = {};
 
-    return null;
+  if (startDate && endDate && startDate >= endDate) {
+    errors['dateRangeInvalid'] = true;
   }
+
+  const startDateControl = control.get('start_date');
+  const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_\d{4}$/) : null;
+
+  let startYear: string | null = null;
+
+  if (typeof startDate === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+      startYear = startDate.slice(0, 4);
+    } else {
+      const frenchDateMatch = startDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (frenchDateMatch) {
+        startYear = frenchDateMatch[3];
+      }
+    }
+  }
+
+  if (!startYear && startDate) {
+    const parsedDate = new Date(startDate);
+    if (!isNaN(parsedDate.getTime())) {
+      startYear = parsedDate.getFullYear().toString();
+    }
+  }
+
+  const hasCodeYearMismatch = !!(codeMatch && startYear && codeMatch[1] !== startYear);
+
+[codeControl, startDateControl].forEach((fieldControl) => {
+  if (!fieldControl) return;
+
+  const currentErrors = { ...(fieldControl.errors || {}) };
+
+  if (hasCodeYearMismatch) {
+    if (!currentErrors['codeYearMismatch']) {
+      fieldControl.setErrors({
+        ...currentErrors,
+        codeYearMismatch: true
+      });
+    }
+  } else if (currentErrors['codeYearMismatch']) {
+    delete currentErrors['codeYearMismatch'];
+    fieldControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+  }
+});
+
+  return Object.keys(errors).length ? errors : null;
+}
 
   ngOnInit(): void {
     // IDs contexte
@@ -375,6 +422,14 @@ public isEndDateValidated(): boolean {
       if (this.semisForm.get('start_date')?.hasError('required')) {
         this.triggerStartDateFieldShake();
       }
+
+      if (
+  this.semisForm.get('code')?.hasError('codeYearMismatch') ||
+  this.semisForm.get('start_date')?.hasError('codeYearMismatch')
+) {
+  this.triggerCodeFieldShake();
+  this.triggerStartDateFieldShake();
+}
 
       if (this.semisForm.hasError('dateRangeInvalid')) {
         this.triggerStartDateFieldShake();

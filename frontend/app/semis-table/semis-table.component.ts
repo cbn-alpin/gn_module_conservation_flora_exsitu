@@ -85,16 +85,8 @@ import { SemisTableService } from './semis-table.service';
           });
         
           dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-              const newEntry: Semis = {
-                code: result.code,
-                start_date: result.start_date,
-                end_date: result.end_date,
-                id_sowing_method: result.id_sowing_method,
-                replicate_count: result.replicate_count, // tu peux aussi prendre de result si ton formulaire le fournit
-              };
-        
-              this.dataSource.data = [...this.dataSource.data, newEntry];
+            if (result && this.idMaterial) {
+              this.semisService.loadSowings(this.idMaterial); // SLIM ERROR : recharger la liste après création
             }
           });
         }
