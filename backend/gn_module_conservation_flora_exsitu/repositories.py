@@ -848,14 +848,14 @@ class SowingRepository:
             results = query.all()
             return [
                 {
-                    **sowing.TSowing.to_dic(),
-                    "label_location": row.label_location,
-                    "label_watering": row.label_watering,
-                    "label_sowing": row.label_sowing,
-                    "nom_actor": row.nom_actor,
-                    "prenom_actor": row.prenom_actor
+                    **sowing.to_dic(),
+                    "label_location": label_location,
+                    "label_watering": label_watering,
+                    "label_sowing": label_sowing,
+                    "nom_actor": nom_actor,
+                    "prenom_actor": prenom_actor
                 }
-                for row in results
+                for sowing, label_location, label_watering, label_sowing, nom_actor, prenom_actor in results
             ]
         except SQLAlchemyError as e:
             db.session.rollback()
