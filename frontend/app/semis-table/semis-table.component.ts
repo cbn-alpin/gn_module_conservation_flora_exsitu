@@ -35,6 +35,7 @@ import { SemisTableService } from './semis-table.service';
       'end_date',
       'id_sowing_method',
       'replicate_count',
+      'actions',
     ];
   constructor(
           public router: Router,
