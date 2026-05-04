@@ -72,6 +72,8 @@
               class="actions-trigger-red"
               [matMenuTriggerFor]="menu"
               (click)="$event.stopPropagation()"
+              (menuOpened)="setActiveActionRow(element)"
+              (menuClosed)="clearActiveActionRow()"
             >
               <mat-icon>more_vert</mat-icon>
             </button>
@@ -92,7 +94,12 @@
 
         <!-- Lignes -->
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="onRowClick(row)">
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns;"
+          class="clickable-row"
+          [class.action-row-active]="isActionRowActive(row)"
+        >
         </tr>
       </table>
     </ng-container>

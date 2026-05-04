@@ -37,6 +37,21 @@ import { SemisTableService } from './semis-table.service';
       'replicate_count',
       'actions',
     ];
+
+    public activeActionRowId: number | null = null;
+
+    public setActiveActionRow(row: any): void {
+      this.activeActionRowId = row.id_sowing;
+    }
+
+    public clearActiveActionRow(): void {
+      this.activeActionRowId = null;
+    }
+
+    public isActionRowActive(row: any): boolean {
+      return this.activeActionRowId === row.id_sowing;
+    }
+
   constructor(
           public router: Router,
           private dialog: MatDialog,

@@ -83,7 +83,7 @@ background-color: #ffffff;
 }
 
 .sowing-code-year {
-  color: #42a5f5;
+  color: #1e88e5;
   font-weight: 600;
 }
 
@@ -107,4 +107,9 @@ background-color: #ffffff;
 
 .delete-action-red mat-icon {
   color: #f44336 !important;
+}
+
+:host ::ng-deep .mat-mdc-row.clickable-row:hover .mat-mdc-cell,
+:host ::ng-deep .mat-mdc-row.clickable-row.action-row-active .mat-mdc-cell {
+  background-color: rgb(235, 250, 235) !important;
 }
