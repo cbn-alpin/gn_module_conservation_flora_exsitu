@@ -619,10 +619,6 @@ class TSowing(db.Model):
             name="uq_t_sowing_code"
     ),
         db.CheckConstraint(
-            r"code ~ '^S[0-9]{4}_[0-9]{4}$'",
-            name="ck_t_sowing_code_format"
-        ),
-        db.CheckConstraint(
             "end_date IS NULL OR end_date > start_date",
             name="ck_t_sowing_end_date_after_start_date"
         ),

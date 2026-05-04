@@ -23,17 +23,15 @@
     Le numéro de semis est obligatoire.
   </mat-error>
 
-  <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('pattern')">
-    Le numéro de semis doit respecter le format SAAAA_NNNN (ex. : S2026_0001).
-  </mat-error>
+  <small class="custom-helper-message">Format standard conseillé : SAAAA_NNNN.</small>
 
   <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('codeYearMismatch')">
     L’année du semis doit correspondre à la date de début.
   </mat-error>
 
   <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('sowingSequenceInvalid')">
-  Le numéro d’ordre du semis ne peut pas être 0000.
-</mat-error>
+    Le numéro d’ordre du semis ne peut pas être 0000.
+  </mat-error>
 </mat-form-field>
       
 

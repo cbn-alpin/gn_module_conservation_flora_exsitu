@@ -48,7 +48,7 @@ export class SemisComponent implements OnInit {
   ) {
     // Form calqué sur Germination (noms adaptés Semis)
     this.semisForm = this.fb.group({
-      code: ['', [Validators.required, Validators.pattern(/^S\d{4}_\d{4}$/), this.sowingSequenceValidator]],
+      code: ['', [Validators.required, this.sowingSequenceValidator]],
       start_date: ['', Validators.required],
       end_date: [''],
 

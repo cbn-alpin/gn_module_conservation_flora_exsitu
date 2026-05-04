@@ -261,7 +261,6 @@ CREATE TABLE "t_sowing" (
     "meta_update_by" INTEGER,
     "meta_update_date" TIMESTAMP,
     CONSTRAINT "uq_t_sowing_code" UNIQUE ("code"),
-    CONSTRAINT "ck_t_sowing_code_format" CHECK ("code" ~ '^S[0-9]{4}_[0-9]{4}$'),
     CONSTRAINT "ck_t_sowing_end_date_after_start_date" CHECK ("end_date" IS NULL OR "end_date" > "start_date"),
     CONSTRAINT "ck_t_sowing_depth_positive" CHECK ("depth" IS NULL OR "depth" > 0),
     CONSTRAINT "ck_t_sowing_initial_count_positive" CHECK ("initial_count" IS NULL OR "initial_count" > 0),

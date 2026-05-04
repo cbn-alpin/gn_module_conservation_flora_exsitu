@@ -52,6 +52,10 @@ import { SemisTableService } from './semis-table.service';
       return this.activeActionRowId === row.id_sowing;
     }
 
+    public isStandardSowingCode(code: any): boolean {
+      return typeof code === 'string' && /^S\d{4}_\d{4}$/.test(code);
+    }
+    
   constructor(
           public router: Router,
           private dialog: MatDialog,
