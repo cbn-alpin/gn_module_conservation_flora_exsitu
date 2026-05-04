@@ -23,7 +23,7 @@
         <!-- Méthode -->
         <ng-container matColumnDef="id_sowing_method">
           <th mat-header-cell *matHeaderCellDef>Méthode</th>
-          <td mat-cell *matCellDef="let element">{{ element.id_sowing_method }}</td>
+          <td mat-cell *matCellDef="let element">{{ element.label_sowing || element.id_sowing_method }}</td>
         </ng-container>
 
         <!-- Date début -->

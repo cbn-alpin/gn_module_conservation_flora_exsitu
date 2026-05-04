@@ -1513,8 +1513,7 @@ def get_sowing_by_id(id_sowing):
 @json_resp
 def list_sowings_by_material(id_material):
     repo = SowingRepository()
-    sowings = repo.list_by_material(id_material)
-    return [s.to_dic() for s in sowings]
+    return repo.get_with_labels_by_material(id_material)
 
 
 @blueprint.route("/materials/<int:id_material>/tests", methods=["POST"])
