@@ -6,6 +6,7 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
 import { ConfigService } from '../services/config.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-semis',
@@ -32,7 +33,6 @@ export class SemisComponent implements OnInit {
   public idMaterial!: number;
   public idStorage: number | null = null;
 
-  // pour le <pnx-dynamic-form-generator>
   public additionalDataForm!: FormGroup;
   public formsDefinition: any[] = [];
 
@@ -44,18 +44,18 @@ export class SemisComponent implements OnInit {
     private dataService: DataService,
     private cfg: ConfigService,
     private toast: CommonService,
+    private dialogService: DialogService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
-    // Form calqué sur Germination (noms adaptés Semis)
     this.semisForm = this.fb.group({
       code: ['', [Validators.required, this.sowingSequenceValidator]],
       start_date: ['', Validators.required],
       end_date: [''],
 
-      id_actor: [[], Validators.required], // <pnx-observers> renvoie un tableau
+      id_actor: [[], Validators.required],
       id_watering_method: [null, Validators.required],
       id_sowing_method: [null, Validators.required],
-      id_substrate: [null, Validators.required], // ⚠️ id_substrate (number), pas "substrate" string
+      id_substrate: [null, Validators.required],
 
       container: ['', Validators.required],
       depth: [null, [Validators.required, Validators.min(1)]],
@@ -66,93 +66,90 @@ export class SemisComponent implements OnInit {
       replicate_count: [1, [Validators.required, Validators.min(1)]],
 
       remarks: [''],
-      additional_data: this.fb.group({}) // contiendra program + champs dynamiques
+      additional_data: this.fb.group({})
     }, { validators: this.dateRangeValidator });
   }
 
   sowingSequenceValidator(control: AbstractControl): ValidationErrors | null {
-  const value = control.value;
+    const value = control.value;
 
-  if (!value || typeof value !== 'string') {
-    return null;
+    if (!value || typeof value !== 'string') {
+      return null;
+    }
+
+    const match = value.match(/^S\d{4}_(\d{4})$/);
+
+    if (!match) {
+      return null;
+    }
+
+    return match[1] === '0000' ? { sowingSequenceInvalid: true } : null;
   }
-
-  const match = value.match(/^S\d{4}_(\d{4})$/);
-
-  if (!match) {
-    return null;
-  }
-
-  return match[1] === '0000' ? { sowingSequenceInvalid: true } : null;
-}
 
   dateRangeValidator(control: AbstractControl): ValidationErrors | null {
-  const startDate = control.get('start_date')?.value;
-  const endDate = control.get('end_date')?.value;
-  const codeControl = control.get('code');
-  const code = codeControl?.value;
+    const startDate = control.get('start_date')?.value;
+    const endDate = control.get('end_date')?.value;
+    const codeControl = control.get('code');
+    const code = codeControl?.value;
 
-  const errors: ValidationErrors = {};
+    const errors: ValidationErrors = {};
 
-  if (startDate && endDate && startDate >= endDate) {
-    errors['dateRangeInvalid'] = true;
-  }
+    if (startDate && endDate && startDate >= endDate) {
+      errors['dateRangeInvalid'] = true;
+    }
 
-  const startDateControl = control.get('start_date');
-  const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_(?!0000)\d{4}$/) : null;
+    const startDateControl = control.get('start_date');
+    const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_(?!0000)\d{4}$/) : null;
 
-  let startYear: string | null = null;
+    let startYear: string | null = null;
 
-  if (typeof startDate === 'string') {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
-      startYear = startDate.slice(0, 4);
-    } else {
-      const frenchDateMatch = startDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if (frenchDateMatch) {
-        startYear = frenchDateMatch[3];
+    if (typeof startDate === 'string') {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+        startYear = startDate.slice(0, 4);
+      } else {
+        const frenchDateMatch = startDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (frenchDateMatch) {
+          startYear = frenchDateMatch[3];
+        }
       }
     }
-  }
 
-  if (!startYear && startDate) {
-    const parsedDate = new Date(startDate);
-    if (!isNaN(parsedDate.getTime())) {
-      startYear = parsedDate.getFullYear().toString();
+    if (!startYear && startDate) {
+      const parsedDate = new Date(startDate);
+      if (!isNaN(parsedDate.getTime())) {
+        startYear = parsedDate.getFullYear().toString();
+      }
     }
+
+    const hasCodeYearMismatch = !!(codeMatch && startYear && codeMatch[1] !== startYear);
+
+    [codeControl, startDateControl].forEach((fieldControl) => {
+      if (!fieldControl) return;
+
+      const currentErrors = { ...(fieldControl.errors || {}) };
+
+      if (hasCodeYearMismatch) {
+        if (!currentErrors['codeYearMismatch']) {
+          fieldControl.setErrors({
+            ...currentErrors,
+            codeYearMismatch: true
+          });
+        }
+      } else if (currentErrors['codeYearMismatch']) {
+        delete currentErrors['codeYearMismatch'];
+        fieldControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+      }
+    });
+
+    return Object.keys(errors).length ? errors : null;
   }
-
-  const hasCodeYearMismatch = !!(codeMatch && startYear && codeMatch[1] !== startYear);
-
-[codeControl, startDateControl].forEach((fieldControl) => {
-  if (!fieldControl) return;
-
-  const currentErrors = { ...(fieldControl.errors || {}) };
-
-  if (hasCodeYearMismatch) {
-    if (!currentErrors['codeYearMismatch']) {
-      fieldControl.setErrors({
-        ...currentErrors,
-        codeYearMismatch: true
-      });
-    }
-  } else if (currentErrors['codeYearMismatch']) {
-    delete currentErrors['codeYearMismatch'];
-    fieldControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
-  }
-});
-
-  return Object.keys(errors).length ? errors : null;
-}
 
   ngOnInit(): void {
-    // IDs contexte
     this.idMaterial = this.exsituFormService.idMaterial;
     this.exsituFormService.id_storage.subscribe(id => this.idStorage = id ?? null);
 
-    // Observers
     this.observers_list_code = this.cfg.getObsCode();
 
-    // additional_data dynamique (même principe que Germination)
     this.additionalDataForm = this.semisForm.get('additional_data') as FormGroup;
     this.formsDefinition = this.cfg.getModuleConfigExsitu()?.['harvest_form']?.['additional_data'] ?? [];
     this.formsDefinition.forEach(field => {
@@ -162,7 +159,6 @@ export class SemisComponent implements OnInit {
       }
     });
 
-    // Mode édition
     if (this.modalData?.edit && this.modalData?.test) {
       this.patchForm(this.modalData.test);
     } else {
@@ -171,7 +167,6 @@ export class SemisComponent implements OnInit {
     }
   }
 
-  // Patch en mode édition (comme Germination)
   patchForm(data: any): void {
     this.semisForm.patchValue({
       code: data.code || '',
@@ -195,7 +190,6 @@ export class SemisComponent implements OnInit {
       remarks: data.remarks || ''
     });
 
-    // Patch additional_data si présent
     if (data.additional_data && this.additionalDataForm) {
       Object.keys(data.additional_data).forEach(key => {
         if (this.additionalDataForm.contains(key)) {
@@ -205,12 +199,10 @@ export class SemisComponent implements OnInit {
     }
   }
 
-  // Mise en forme des données avant POST/PUT (comme Germination)
   private formatFormData(): any {
     const raw = this.semisForm.value;
     const payload: any = { ...raw };
 
-    // Nettoyage additional_data : on ne garde que les champs non vides
     if (payload.additional_data) {
       const cleaned: any = {};
       Object.keys(payload.additional_data).forEach(k => {
@@ -224,22 +216,18 @@ export class SemisComponent implements OnInit {
       }
     }
 
-    // Observers → id_role
     if (Array.isArray(raw.id_actor) && raw.id_actor.length > 0) {
       payload.id_actor = raw.id_actor[0]?.id_role ?? null;
     } else {
       payload.id_actor = null;
     }
 
-    // Contexte
     payload.id_material = this.idMaterial;
     payload.id_storage = this.idStorage;
 
-    // Petites gardes-fous
     if (!payload.replicate_count) payload.replicate_count = 1;
-    if (!payload.end_date) delete payload.end_date; // facultatif si non requis côté back
+    if (!payload.end_date) delete payload.end_date;
 
-    // Correction importante : transformer id_substrate en substrate
     if (
       payload.id_substrate !== null &&
       payload.id_substrate !== undefined &&
@@ -265,136 +253,136 @@ export class SemisComponent implements OnInit {
   }
 
   private triggerStartDateFieldShake(): void {
-  this.shakeStartDateField = false;
-
-  setTimeout(() => {
-    this.shakeStartDateField = true;
+    this.shakeStartDateField = false;
 
     setTimeout(() => {
-      this.shakeStartDateField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeStartDateField = true;
 
-private triggerEndDateFieldShake(): void {
-  this.shakeEndDateField = false;
+      setTimeout(() => {
+        this.shakeStartDateField = false;
+      }, 400);
+    }, 0);
+  }
 
-  setTimeout(() => {
-    this.shakeEndDateField = true;
+  private triggerEndDateFieldShake(): void {
+    this.shakeEndDateField = false;
 
     setTimeout(() => {
-      this.shakeEndDateField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeEndDateField = true;
+
+      setTimeout(() => {
+        this.shakeEndDateField = false;
+      }, 400);
+    }, 0);
+  }
 
   private triggerDepthFieldShake(): void {
-  this.shakeDepthField = false;
-
-  setTimeout(() => {
-    this.shakeDepthField = true;
+    this.shakeDepthField = false;
 
     setTimeout(() => {
-      this.shakeDepthField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeDepthField = true;
 
-private triggerContainerFieldShake(): void {
-  this.shakeContainerField = false;
+      setTimeout(() => {
+        this.shakeDepthField = false;
+      }, 400);
+    }, 0);
+  }
 
-  setTimeout(() => {
-    this.shakeContainerField = true;
-
-    setTimeout(() => {
-      this.shakeContainerField = false;
-    }, 400);
-  }, 0);
-}
-
-private triggerMethodFieldShake(): void {
-  this.shakeMethodField = false;
-
-  setTimeout(() => {
-    this.shakeMethodField = true;
+  private triggerContainerFieldShake(): void {
+    this.shakeContainerField = false;
 
     setTimeout(() => {
-      this.shakeMethodField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeContainerField = true;
 
-private triggerSubstrateFieldShake(): void {
-  this.shakeSubstrateField = false;
+      setTimeout(() => {
+        this.shakeContainerField = false;
+      }, 400);
+    }, 0);
+  }
 
-  setTimeout(() => {
-    this.shakeSubstrateField = true;
-
-    setTimeout(() => {
-      this.shakeSubstrateField = false;
-    }, 400);
-  }, 0);
-}
-
-private triggerWateringFieldShake(): void {
-  this.shakeWateringField = false;
-
-  setTimeout(() => {
-    this.shakeWateringField = true;
+  private triggerMethodFieldShake(): void {
+    this.shakeMethodField = false;
 
     setTimeout(() => {
-      this.shakeWateringField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeMethodField = true;
 
-private triggerActorFieldShake(): void {
-  this.shakeActorField = false;
+      setTimeout(() => {
+        this.shakeMethodField = false;
+      }, 400);
+    }, 0);
+  }
 
-  setTimeout(() => {
-    this.shakeActorField = true;
-
-    setTimeout(() => {
-      this.shakeActorField = false;
-    }, 400);
-  }, 0);
-}
-
-private triggerLocationFieldShake(): void {
-  this.shakeLocationField = false;
-
-  setTimeout(() => {
-    this.shakeLocationField = true;
+  private triggerSubstrateFieldShake(): void {
+    this.shakeSubstrateField = false;
 
     setTimeout(() => {
-      this.shakeLocationField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeSubstrateField = true;
 
-private triggerInitialCountFieldShake(): void {
-  this.shakeInitialCountField = false;
+      setTimeout(() => {
+        this.shakeSubstrateField = false;
+      }, 400);
+    }, 0);
+  }
 
-  setTimeout(() => {
-    this.shakeInitialCountField = true;
-
-    setTimeout(() => {
-      this.shakeInitialCountField = false;
-    }, 400);
-  }, 0);
-}
-
-private triggerReplicateCountFieldShake(): void {
-  this.shakeReplicateCountField = false;
-
-  setTimeout(() => {
-    this.shakeReplicateCountField = true;
+  private triggerWateringFieldShake(): void {
+    this.shakeWateringField = false;
 
     setTimeout(() => {
-      this.shakeReplicateCountField = false;
-    }, 400);
-  }, 0);
-}
+      this.shakeWateringField = true;
+
+      setTimeout(() => {
+        this.shakeWateringField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerActorFieldShake(): void {
+    this.shakeActorField = false;
+
+    setTimeout(() => {
+      this.shakeActorField = true;
+
+      setTimeout(() => {
+        this.shakeActorField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerLocationFieldShake(): void {
+    this.shakeLocationField = false;
+
+    setTimeout(() => {
+      this.shakeLocationField = true;
+
+      setTimeout(() => {
+        this.shakeLocationField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerInitialCountFieldShake(): void {
+    this.shakeInitialCountField = false;
+
+    setTimeout(() => {
+      this.shakeInitialCountField = true;
+
+      setTimeout(() => {
+        this.shakeInitialCountField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerReplicateCountFieldShake(): void {
+    this.shakeReplicateCountField = false;
+
+    setTimeout(() => {
+      this.shakeReplicateCountField = true;
+
+      setTimeout(() => {
+        this.shakeReplicateCountField = false;
+      }, 400);
+    }, 0);
+  }
 
   public hasControlError(controlName: string, errorCode: string): boolean {
     return this.formSubmitted && !!this.semisForm.get(controlName)?.hasError(errorCode);
@@ -405,31 +393,31 @@ private triggerReplicateCountFieldShake(): void {
   }
 
   public isSubmittedValid(controlName: string): boolean {
-  const control = this.semisForm.get(controlName);
-  return !!(this.formSubmitted && control && control.valid);
-}
+    const control = this.semisForm.get(controlName);
+    return !!(this.formSubmitted && control && control.valid);
+  }
 
-public isStartDateValidated(): boolean {
-  return !!(
-    this.formSubmitted &&
-    this.semisForm.get('start_date')?.valid &&
-    !this.semisForm.hasError('dateRangeInvalid')
-  );
-}
+  public isStartDateValidated(): boolean {
+    return !!(
+      this.formSubmitted &&
+      this.semisForm.get('start_date')?.valid &&
+      !this.semisForm.hasError('dateRangeInvalid')
+    );
+  }
 
-public isEndDateValidated(): boolean {
-  return !!(
-    this.formSubmitted &&
-    this.semisForm.get('end_date')?.value &&
-    !this.semisForm.hasError('dateRangeInvalid')
-  );
-}
+  public isEndDateValidated(): boolean {
+    return !!(
+      this.formSubmitted &&
+      this.semisForm.get('end_date')?.value &&
+      !this.semisForm.hasError('dateRangeInvalid')
+    );
+  }
 
   onSubmit(): void {
     this.formSubmitted = true;
 
-      if (this.semisForm.invalid) {
-        this.semisForm.markAllAsTouched();
+    if (this.semisForm.invalid) {
+      this.semisForm.markAllAsTouched();
 
       if (this.semisForm.get('code')?.invalid) {
         this.triggerCodeFieldShake();
@@ -440,12 +428,12 @@ public isEndDateValidated(): boolean {
       }
 
       if (
-  this.semisForm.get('code')?.hasError('codeYearMismatch') ||
-  this.semisForm.get('start_date')?.hasError('codeYearMismatch')
-) {
-  this.triggerCodeFieldShake();
-  this.triggerStartDateFieldShake();
-}
+        this.semisForm.get('code')?.hasError('codeYearMismatch') ||
+        this.semisForm.get('start_date')?.hasError('codeYearMismatch')
+      ) {
+        this.triggerCodeFieldShake();
+        this.triggerStartDateFieldShake();
+      }
 
       if (this.semisForm.hasError('dateRangeInvalid')) {
         this.triggerStartDateFieldShake();
@@ -468,60 +456,76 @@ public isEndDateValidated(): boolean {
         this.triggerSubstrateFieldShake();
       }
 
-        if (this.semisForm.get('id_watering_method')?.invalid) {
-          this.triggerWateringFieldShake();
-        }
+      if (this.semisForm.get('id_watering_method')?.invalid) {
+        this.triggerWateringFieldShake();
+      }
 
-        if (this.semisForm.get('id_actor')?.invalid) {
-          this.triggerActorFieldShake();
-        }
+      if (this.semisForm.get('id_actor')?.invalid) {
+        this.triggerActorFieldShake();
+      }
 
-        if (this.semisForm.get('id_location')?.invalid) {
-          this.triggerLocationFieldShake();
-        }
+      if (this.semisForm.get('id_location')?.invalid) {
+        this.triggerLocationFieldShake();
+      }
 
-        if (this.semisForm.get('initial_count')?.invalid) {
-          this.triggerInitialCountFieldShake();
-        }
+      if (this.semisForm.get('initial_count')?.invalid) {
+        this.triggerInitialCountFieldShake();
+      }
 
-        if (this.semisForm.get('replicate_count')?.invalid) {
-          this.triggerReplicateCountFieldShake();
-        }
+      if (this.semisForm.get('replicate_count')?.invalid) {
+        this.triggerReplicateCountFieldShake();
+      }
 
       return;
     }
 
-    const finalForm = this.formatFormData();
+    this.dialogService
+      .confirmDialog({
+        message: this.modalData?.edit
+          ? 'Étes vous certain de vouloir modifier ce semis ?'
+          : 'Étes vous certain de vouloir enregistrer ce semis ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
 
-    if (!this.idMaterial) {
-      console.error('idMaterial est manquant !');
-      return;
-    }
+        const finalForm = this.formatFormData();
 
-    // Update vs Create (même logique que Germination)
-    if (this.modalData?.edit && this.modalData?.test?.id_sowing) {
-      this.semisService.updateSowing(this.idMaterial, this.modalData.test.id_sowing, finalForm).subscribe({
-        next: (res) => {
-          this.toast.translateToaster('success', 'Semis mis à jour avec succès');
-          this.dialogRef.close(res);
-        },
-        error: (err) => console.error('Erreur update semis :', err)
+        if (!this.idMaterial) {
+          console.error('idMaterial est manquant !');
+          return;
+        }
+
+        if (this.modalData?.edit && this.modalData?.test?.id_sowing) {
+          this.semisService.updateSowing(this.idMaterial, this.modalData.test.id_sowing, finalForm).subscribe({
+            next: (res) => {
+              this.toast.translateToaster('success', 'Semis mis à jour avec succès');
+              this.dialogRef.close(res);
+            },
+            error: (err) => console.error('Erreur update semis :', err)
+          });
+        } else {
+          this.semisService.addSowing(this.idMaterial, finalForm).subscribe({
+            next: (res) => {
+              this.toast.translateToaster('info', 'Semis créé avec succès');
+              this.dialogRef.close(res);
+            },
+            error: (err) => console.error('Erreur création semis :', err)
+          });
+        }
       });
-    } else {
-      this.semisService.addSowing(this.idMaterial, finalForm).subscribe({
-        next: (res) => {
-          this.toast.translateToaster('info', 'Semis créé avec succès');
-          this.dialogRef.close(res);
-        },
-        error: (err) => console.error('Erreur création semis :', err)
-      });
-    }
-
-    
   }
 
   onCancel(): void {
-    this.dialogRef.close();
+    this.dialogService
+      .confirmDialog({
+        message: 'Étes vous certain de vouloir annuler ?'
+      })
+      .subscribe((yes) => {
+        if (yes) {
+          this.dialogRef.close();
+        }
+      });
   }
 }
-
