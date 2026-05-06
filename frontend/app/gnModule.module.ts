@@ -4,7 +4,8 @@ import { routes } from './gnModule.routes';
 import { GN2CommonModule } from '@geonature_common/GN2Common.module';
 import { HarvestStoreService } from './services/store.service';
 import { DataService } from './services/data.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
 import { MaterialFormComponent } from './material/material-form/material-form.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { MaterialFormService } from './material/material-form/material-form.service';
@@ -47,7 +48,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { SemisTableComponent } from './semis-table/semis-table.component';
 import { GerminationComponent } from './germination/germination.component';
 import { GerminationTableComponent } from './germination-table/germination-table.component';
@@ -70,6 +71,7 @@ import { ViabilityFormService } from './viability/viability-form.service';
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
   };
+registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
@@ -82,14 +84,12 @@ export const routingConfiguration: ExtraOptions = {
     HarvestFilterComponent,
     HarvestMapComponent,
     TaxonModalComponent,
-    ConfirmDialogComponent,
     SemisComponent ,
     SemisTableComponent,
     GerminationComponent,
     GerminationTableComponent,
     ViabilityComponent,
     ViabilityTableComponent,
-    SeddDescriptionComponent,
     StockManagementComponent,
     ActionsStockComponent,
     ActionModalComponent,
@@ -109,7 +109,6 @@ export const routingConfiguration: ExtraOptions = {
   providers: [
     HarvestStoreService, 
     DataService,
-    MaterialFormService,
     ExsituFormService,
     MaterialFormService,
     MaterialListService,
@@ -124,6 +123,7 @@ export const routingConfiguration: ExtraOptions = {
     GerminationFormService,
     SemisTableService,
     ViabilityFormService,
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
   ],
   imports: [
     RouterModule.forChild(routes),
@@ -143,7 +143,6 @@ export const routingConfiguration: ExtraOptions = {
     MatInputModule,
     MatSelectModule,
     MatCardModule,
-    MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatMenuModule,

@@ -49,8 +49,8 @@ export class SemisComponent implements OnInit {
   ) {
     this.semisForm = this.fb.group({
       code: ['', [Validators.required, this.sowingSequenceValidator]],
-      start_date: ['', Validators.required],
-      end_date: [''],
+      start_date: [null, Validators.required],
+      end_date: [null],
 
       id_actor: [[], Validators.required],
       id_watering_method: [null, Validators.required],
@@ -170,8 +170,8 @@ export class SemisComponent implements OnInit {
   patchForm(data: any): void {
     this.semisForm.patchValue({
       code: data.code || '',
-      start_date: data.start_date || '',
-      end_date: data.end_date || '',
+      start_date: data.start_date ? new Date(data.start_date) : null,
+      end_date: data.end_date ? new Date(data.end_date) : null,
 
       id_actor: data.id_actor ? [{ id_role: data.id_actor }] : [],
 
@@ -237,6 +237,14 @@ export class SemisComponent implements OnInit {
     }
     delete payload.id_substrate;
 
+    if (payload.start_date instanceof Date && !isNaN(payload.start_date.getTime())) {
+      payload.start_date = payload.start_date.toISOString().slice(0, 10);
+    }
+
+    if (payload.end_date instanceof Date && !isNaN(payload.end_date.getTime())) {
+      payload.end_date = payload.end_date.toISOString().slice(0, 10);
+    }
+    
     return payload;
   }
 
