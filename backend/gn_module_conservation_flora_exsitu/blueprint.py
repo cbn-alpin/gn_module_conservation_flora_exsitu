@@ -1515,6 +1515,17 @@ def list_sowings_by_material(id_material):
     repo = SowingRepository()
     return repo.get_with_labels_by_material(id_material)
 
+@blueprint.route("/materials/<int:id_material>/sowings/<int:id_sowing>", methods=["DELETE"])
+@permissions.check_cruved_scope("D", module_code=MODULE_CODE)
+@json_resp
+def delete_sowing(id_material, id_sowing):
+    repo = SowingRepository()
+    deleted = repo.delete(id_sowing)
+
+    if not deleted:
+        return {"error": "Semis non trouvé"}, 404
+
+    return {"message": "Semis supprimé avec succès"}, 200
 
 @blueprint.route("/materials/<int:id_material>/tests", methods=["POST"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)

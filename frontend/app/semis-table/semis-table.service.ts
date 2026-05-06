@@ -36,6 +36,9 @@ export class SemisTableService {
     });
   }
 
+  deleteSowing(idMaterial: number, idSowing: number): Observable<any> {
+    return this.api.delete<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`);
+  }
   
 
 }

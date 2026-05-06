@@ -308,6 +308,10 @@ export class DataService {
     return this.api.put<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`, actionData);
   }
 
+  deleteSowing(idMaterial: number, idSowing: number): Observable<any> {
+    return this.api.delete<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`);
+  }
+  
   getSowingsByMaterial(idMaterial: number): Observable<any[]> {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings`);
   }

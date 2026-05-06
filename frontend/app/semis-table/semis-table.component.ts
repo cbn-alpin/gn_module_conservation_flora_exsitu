@@ -7,6 +7,7 @@ import { SemisComponent } from '../semis/semis.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { SemisService } from '../semis/semis.service';
 import { SemisTableService } from './semis-table.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
   export interface Semis {
     code: any;
@@ -59,8 +60,9 @@ import { SemisTableService } from './semis-table.service';
   constructor(
           public router: Router,
           private dialog: MatDialog,
-           public exsituFormService: ExsituFormService,
-            private semisService: SemisTableService,
+          public exsituFormService: ExsituFormService,
+          private semisService: SemisTableService,
+          private dialogService: DialogService,
       ){
   
       }
@@ -87,11 +89,27 @@ import { SemisTableService } from './semis-table.service';
   
     }
   
-    onDelete() {
-      // this.delete.emit(element);
-      console.log("delete")
-  
+    onDelete(element: any) {
+      if (!this.idMaterial || !element?.id_sowing) {
+        return;
+      }
+
+      this.dialogService
+        .confirmDialog({ message: 'Étes vous certain de vouloir supprimer ce semis ?' })
+        .subscribe((yes) => {
+          if (yes) {
+            this.semisService.deleteSowing(this.idMaterial!, element.id_sowing).subscribe({
+              next: () => {
+                this.semisService.loadSowings(this.idMaterial!);
+              },
+              error: (err) => {
+                console.error('Erreur lors de la suppression du semis :', err);
+              }
+            });
+          }
+        });
     }
+
     onRowClick(): void {
       // const id = row.id; // ou row.numSemis si tu veux baser sur numSemis
        console.log('Ligne cliquée, ID:');
