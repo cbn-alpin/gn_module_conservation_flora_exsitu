@@ -1527,6 +1527,20 @@ def delete_sowing(id_material, id_sowing):
 
     return {"message": "Semis supprimé avec succès"}, 200
 
+@blueprint.route("/materials/<int:id_material>/sowings/<int:id_sowing>", methods=["PUT"])
+@permissions.check_cruved_scope("U", module_code=MODULE_CODE)
+@json_resp
+def update_sowing(id_material, id_sowing):
+    repo = SowingRepository()
+    data = request.get_json()
+
+    sowing = repo.update(id_sowing, data)
+
+    if not sowing:
+        return {"error": "Semis non trouvé"}, 404
+
+    return sowing.to_dic(), 200
+
 @blueprint.route("/materials/<int:id_material>/tests", methods=["POST"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp

@@ -83,10 +83,29 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
       console.log("view")
     }
   
-    onEdit() {
-      // this.edit.emit(element);
-      console.log("edit")
-  
+    onEdit(element: any) {
+      const normalizedSemis = {
+        ...element,
+        id_substrate: element?.substrate?.id_nomenclature ?? element?.id_substrate ?? null,
+        container: element?.container?.value ?? element?.container ?? '',
+        start_date: element?.start_date ? element.start_date.slice(0, 10) : '',
+        end_date: element?.end_date ? element.end_date.slice(0, 10) : ''
+      };
+
+      const dialogRef = this.dialog.open(SemisComponent, {
+        width: '900px',
+        height: '90vh',
+        data: {
+          edit: true,
+          test: normalizedSemis
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result && this.idMaterial) {
+          this.semisService.loadSowings(this.idMaterial);
+        }
+      });
     }
   
     onDelete(element: any) {
