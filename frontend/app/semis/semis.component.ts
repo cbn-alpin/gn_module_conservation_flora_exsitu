@@ -32,6 +32,7 @@ export class SemisComponent implements OnInit {
   public observers_list_code: any;
   public idMaterial!: number;
   public idStorage: number | null = null;
+  public existingSowings: any[] = [];
 
   public additionalDataForm!: FormGroup;
   public formsDefinition: any[] = [];
@@ -144,6 +145,73 @@ export class SemisComponent implements OnInit {
     return Object.keys(errors).length ? errors : null;
   }
 
+  private handleSowingSaveError(err: any): void {
+    const backendError = err?.error?.error || '';
+
+    if (typeof backendError === 'string' && backendError.includes('uq_t_sowing_code')) {
+      this.setDuplicateCodeError();
+      return;
+    }
+
+    console.error('Erreur semis :', err);
+  }
+
+  private setDuplicateCodeError(): void {
+    const codeControl = this.semisForm.get('code');
+
+    if (codeControl) {
+      codeControl.setErrors({
+        ...(codeControl.errors || {}),
+        duplicateCode: true
+      });
+      codeControl.markAsTouched();
+      codeControl.markAsDirty();
+    }
+
+    this.formSubmitted = true;
+    this.triggerCodeFieldShake();
+  }
+
+  private isDuplicateSowingCode(existingSowings: any[], currentCode: string): boolean {
+    const normalizedCode = (currentCode || '').trim();
+    const currentSowingId = this.modalData?.edit ? this.modalData?.test?.id_sowing : null;
+
+    return existingSowings.some((sowing: any) => {
+      const existingCode = (sowing?.code || '').trim();
+      const existingId = sowing?.id_sowing ?? null;
+
+      return existingCode === normalizedCode && existingId !== currentSowingId;
+    });
+  }
+
+  private validateDuplicateCode(currentCode?: string): void {
+    const codeControl = this.semisForm.get('code');
+    if (!codeControl) return;
+
+    const normalizedCode = (currentCode ?? codeControl.value ?? '').trim();
+    const currentErrors = { ...(codeControl.errors || {}) };
+
+    if (!normalizedCode) {
+      if (currentErrors['duplicateCode']) {
+        delete currentErrors['duplicateCode'];
+        codeControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+      }
+      return;
+    }
+
+    const isDuplicate = this.isDuplicateSowingCode(this.existingSowings, normalizedCode);
+
+    if (isDuplicate) {
+      codeControl.setErrors({
+        ...currentErrors,
+        duplicateCode: true
+      });
+    } else if (currentErrors['duplicateCode']) {
+      delete currentErrors['duplicateCode'];
+      codeControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+    }
+  }
+
   ngOnInit(): void {
     this.idMaterial = this.exsituFormService.idMaterial;
     this.exsituFormService.id_storage.subscribe(id => this.idStorage = id ?? null);
@@ -165,6 +233,23 @@ export class SemisComponent implements OnInit {
       this.semisForm.markAllAsTouched();
       this.semisForm.updateValueAndValidity();
     }
+
+    if (this.idMaterial) {
+      this.semisService.getSowingsByMaterial(this.idMaterial).subscribe({
+      next: (sowings) => {
+        this.existingSowings = sowings || [];
+        this.validateDuplicateCode();
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des semis existants :', err);
+        this.existingSowings = [];
+      }
+    });
+  }
+
+  this.semisForm.get('code')?.valueChanges.subscribe((value) => {
+    this.validateDuplicateCode(value);
+  });
   }
 
   patchForm(data: any): void {
@@ -244,7 +329,7 @@ export class SemisComponent implements OnInit {
     if (payload.end_date instanceof Date && !isNaN(payload.end_date.getTime())) {
       payload.end_date = payload.end_date.toISOString().slice(0, 10);
     }
-    
+
     return payload;
   }
 
@@ -487,42 +572,56 @@ export class SemisComponent implements OnInit {
       return;
     }
 
-    this.dialogService
-      .confirmDialog({
-        message: this.modalData?.edit
-          ? 'Étes vous certain de vouloir modifier ce semis ?'
-          : 'Étes vous certain de vouloir enregistrer ce semis ?'
-      })
-      .subscribe((yes) => {
-        if (!yes) {
+    if (!this.idMaterial) {
+      console.error('idMaterial est manquant !');
+      return;
+    }
+
+    const currentCode = this.semisForm.get('code')?.value;
+
+    this.semisService.getSowingsByMaterial(this.idMaterial).subscribe({
+      next: (existingSowings) => {
+        if (this.isDuplicateSowingCode(existingSowings || [], currentCode)) {
+          this.setDuplicateCodeError();
           return;
         }
 
-        const finalForm = this.formatFormData();
+        this.dialogService
+          .confirmDialog({
+            message: this.modalData?.edit
+              ? 'Étes vous certain de vouloir modifier ce semis ?'
+              : 'Étes vous certain de vouloir enregistrer ce semis ?'
+          })
+          .subscribe((yes) => {
+            if (!yes) {
+              return;
+            }
 
-        if (!this.idMaterial) {
-          console.error('idMaterial est manquant !');
-          return;
-        }
+            const finalForm = this.formatFormData();
 
-        if (this.modalData?.edit && this.modalData?.test?.id_sowing) {
-          this.semisService.updateSowing(this.idMaterial, this.modalData.test.id_sowing, finalForm).subscribe({
-            next: (res) => {
-              this.toast.translateToaster('success', 'Semis mis à jour avec succès');
-              this.dialogRef.close(res);
-            },
-            error: (err) => console.error('Erreur update semis :', err)
+            if (this.modalData?.edit && this.modalData?.test?.id_sowing) {
+              this.semisService.updateSowing(this.idMaterial!, this.modalData.test.id_sowing, finalForm).subscribe({
+                next: (res) => {
+                  this.toast.translateToaster('success', 'Semis mis à jour avec succès');
+                  this.dialogRef.close(res);
+                },
+                error: (err) => this.handleSowingSaveError(err)
+              });
+            } else {
+              this.semisService.addSowing(this.idMaterial!, finalForm).subscribe({
+                next: (res) => {
+                  this.toast.translateToaster('info', 'Semis créé avec succès');
+                  this.dialogRef.close(res);
+                },
+                error: (err) => this.handleSowingSaveError(err)
+              });
+            }
           });
-        } else {
-          this.semisService.addSowing(this.idMaterial, finalForm).subscribe({
-            next: (res) => {
-              this.toast.translateToaster('info', 'Semis créé avec succès');
-              this.dialogRef.close(res);
-            },
-            error: (err) => console.error('Erreur création semis :', err)
-          });
-        }
-      });
+      },
+      error: (err) => {
+        console.error('Erreur lors de la vérification du code semis :', err);
+      }
+    });
   }
 
   onCancel(): void {

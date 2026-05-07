@@ -23,6 +23,10 @@
     Le numéro de semis est obligatoire.
   </mat-error>
 
+  <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('duplicateCode')">
+    Code déjà utilisé.
+  </mat-error>
+
   <small class="custom-helper-message">Format standard conseillé : SAAAA_NNNN.</small>
 
   <mat-error *ngIf="formSubmitted && semisForm.get('code')?.hasError('codeYearMismatch')">
