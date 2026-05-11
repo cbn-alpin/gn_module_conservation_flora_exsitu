@@ -637,7 +637,11 @@ class TSowing(db.Model):
         {"schema": "pr_conservation_flora_exsitu"}
     )
 
-    id_sowing = db.Column(db.Integer, primary_key=True, unique=True)
+    id_sowing = db.Column(
+        db.Integer, 
+        primary_key=True, 
+        unique=True
+        )
 
     id_material = db.Column(
         db.Integer,
@@ -653,11 +657,14 @@ class TSowing(db.Model):
         db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="SET NULL"),
         nullable=True # SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
     )
-    code = db.Column(db.String(50), nullable=False)
+    code = db.Column(
+        db.String(50), 
+        nullable=False
+        )
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
-        nullable=False
+        nullable=True
     )
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime)

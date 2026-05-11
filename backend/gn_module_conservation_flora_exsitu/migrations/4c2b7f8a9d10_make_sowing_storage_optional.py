@@ -27,6 +27,15 @@ def upgrade():
 
     op.alter_column(
         't_sowing',
+        'id_actor',
+        existing_type=sa.Integer(),
+        nullable=True,
+        schema='pr_conservation_flora_exsitu'
+
+    )
+
+    op.alter_column(
+        't_sowing',
         'code',
         existing_type=sa.String(length=50),
         nullable=False,
@@ -110,6 +119,14 @@ def downgrade():
         'code',
         existing_type=sa.String(length=50),
         nullable=True,
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    op.alter_column(
+        't_sowing',
+        'id_actor',
+        existing_type=sa.Integer(),
+        nullable=False,
         schema='pr_conservation_flora_exsitu'
     )
 

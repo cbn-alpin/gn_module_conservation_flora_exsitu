@@ -136,14 +136,9 @@
           matInput
           type="number"
           formControlName="depth"
-          required
           min="1"
           matTooltip="Profondeur du semis. Unité : millimètre (mm)."
           matTooltipPosition="below">
-
-        <mat-error *ngIf="formSubmitted && semisForm.get('depth')?.hasError('required')">
-          La profondeur est obligatoire.
-        </mat-error>
 
         <mat-error *ngIf="formSubmitted && semisForm.get('depth')?.hasError('min')">
           La profondeur doit être supérieure à 0.
@@ -152,7 +147,7 @@
 
       <!-- Ligne 5 : Mode d'arrosage / Personne ayant effectué le semis -->
       <div class="form-group" [class.shake-group-field]="shakeWateringField">
-        <small>Mode d'arrosage <span class="required-star">*</span></small>
+        <small>Mode d'arrosage</small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"
@@ -161,14 +156,10 @@
           matTooltip="Mode d’arrosage appliqué."
           matTooltipPosition="below">
         </pnx-nomenclature>
-
-        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_watering_method')?.hasError('required')">
-          Le mode d’arrosage est obligatoire.
-        </div>
       </div>
 
       <div class="form-group" [class.shake-group-field]="shakeActorField">
-        <small>Personne ayant effectué le semis <span class="required-star">*</span></small>
+        <small>Personne ayant effectué le semis</small>
         <pnx-observers
           [bindAllItem]="true"
           [parentFormControl]="semisForm.controls.id_actor"
@@ -177,10 +168,6 @@
           matTooltip="Personne effectuant le semis."
           matTooltipPosition="below">
         </pnx-observers>
-
-        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_actor')?.hasError('required')">
-          La personne ayant effectué le semis est obligatoire.
-        </div>
       </div>
 
       <!-- Ligne 6 : Nombre de graines semées / Nombre de réplicats -->
@@ -226,7 +213,7 @@
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->
       <div class="form-group" [class.shake-group-field]="shakeLocationField">
-        <small>Localisation <span class="required-star">*</span></small>
+        <small>Localisation</small>
         <pnx-nomenclature
           keyValue="id_nomenclature"
           [bindAllItem]="false"
@@ -235,10 +222,6 @@
           matTooltip="Lieu de stockage des semis."
           matTooltipPosition="below">
         </pnx-nomenclature>
-
-        <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_location')?.hasError('required')">
-          La localisation est obligatoire.
-        </div>
       </div>
 
       <mat-form-field appearance="outline" class="align-with-form-group">

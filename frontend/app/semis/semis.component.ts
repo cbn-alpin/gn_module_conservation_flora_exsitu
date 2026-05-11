@@ -53,14 +53,14 @@ export class SemisComponent implements OnInit {
       start_date: [null, Validators.required],
       end_date: [null],
 
-      id_actor: [[], Validators.required],
-      id_watering_method: [null, Validators.required],
+      id_actor: [[]],
+      id_watering_method: [null],
       id_sowing_method: [null, Validators.required],
       id_substrate: [null, Validators.required],
 
       container: ['', Validators.required],
-      depth: [null, [Validators.required, Validators.min(1)]],
-      id_location: [null, Validators.required],
+      depth: [null, [Validators.min(1)]],
+      id_location: [null],
       specification_location: [''],
 
       initial_count: [null, [Validators.required, Validators.min(1)]],
