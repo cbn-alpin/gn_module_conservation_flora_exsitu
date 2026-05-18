@@ -828,6 +828,7 @@ class SowingRepository:
             SowingMethod = aliased(TNomenclatures)
             Substrate = aliased(TNomenclatures)
             Actor = aliased(User)
+            Material = aliased(TMaterial)
 
             query = (
                 db.session.query(
@@ -837,7 +838,8 @@ class SowingRepository:
                     SowingMethod.label_default.label("label_sowing"),
                     Substrate.label_default.label("label_substrate"),
                     Actor.nom_role.label("nom_actor"),
-                    Actor.prenom_role.label("prenom_actor")
+                    Actor.prenom_role.label("prenom_actor"),
+                    Material.code_material.label("code_material")
                 )
                 .outerjoin(Location, TSowing.id_location == Location.id_nomenclature)
                 .outerjoin(WateringMethod, TSowing.id_watering_method == WateringMethod.id_nomenclature)
@@ -847,6 +849,7 @@ class SowingRepository:
                     cast(TSowing.substrate["id_nomenclature"].astext, Integer) == Substrate.id_nomenclature
                 )
                 .outerjoin(Actor, TSowing.id_actor == Actor.id_role)
+                .outerjoin(Material, TSowing.id_material == Material.id_material)
                 .filter(TSowing.id_material == id_material)
                 .order_by(TSowing.meta_create_date.desc())
             )
@@ -860,9 +863,10 @@ class SowingRepository:
                     "label_sowing": label_sowing,
                     "label_substrate": label_substrate,
                     "nom_actor": nom_actor,
-                    "prenom_actor": prenom_actor
+                    "prenom_actor": prenom_actor,
+                    "code_material": code_material
                 }
-                for sowing, label_location, label_watering, label_sowing, label_substrate, nom_actor, prenom_actor in results
+                for sowing, label_location, label_watering, label_sowing, label_substrate, nom_actor, prenom_actor, code_material in results
             ]
         except SQLAlchemyError as e:
             db.session.rollback()

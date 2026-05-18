@@ -101,7 +101,7 @@ export class SemisDetailsComponent implements OnInit {
   patchFormFromSowing(sowing: any): void {
     this.sowingForm.patchValue({
       code: sowing.code || '-',
-      id_material: sowing.id_material ?? '-',
+      id_material: sowing.code_material || '-',
       id_storage: sowing.id_storage ?? '-',
       id_actor: sowing.nom_actor && sowing.prenom_actor ? `${sowing.prenom_actor} ${sowing.nom_actor}` : '-',
       start_date: sowing.start_date || '-',

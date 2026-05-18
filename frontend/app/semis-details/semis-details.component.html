@@ -16,7 +16,7 @@
 
         <div class="form-row">
           <div class="half-width">
-            <strong>Matériel végétal :</strong> {{ sowingForm.get('id_material')?.value }}
+            <strong>Numéro de récolte :</strong> {{ sowingForm.get('id_material')?.value }}
           </div>
           <div class="half-width">
             <strong>Effectué par :</strong> {{ sowingForm.get('id_actor')?.value }}
@@ -34,10 +34,10 @@
 
         <div class="form-row">
           <div class="half-width">
-            <strong>Date de début :</strong> {{ sowingForm.get('start_date')?.value }}
+            <strong>Date de début :</strong> {{ sowingForm.get('start_date')?.value !== '-' ? (sowingForm.get('start_date')?.value | date:'dd/MM/yyyy') : '-' }}
           </div>
           <div class="half-width">
-            <strong>Date de fin :</strong> {{ sowingForm.get('end_date')?.value }}
+            <strong>Date de fin :</strong> {{ sowingForm.get('end_date')?.value !== '-' ? (sowingForm.get('end_date')?.value | date:'dd/MM/yyyy') : '-' }}
           </div>
         </div>
 
