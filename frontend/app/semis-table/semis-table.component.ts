@@ -14,7 +14,9 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
     start_date: any;
     end_date: any;
     id_sowing_method: any;
-    replicate_count: any;
+    substrate: any;
+    label_sowing?: any;
+    label_substrate?: any;
   }
   
   @Component({
@@ -32,10 +34,12 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
   
     displayedColumns: string[] = [
       'code',
+      'emergence_rate',
       'start_date',
       'end_date',
+      'duration',
       'id_sowing_method',
-      'replicate_count',
+      'substrate',
       'actions',
     ];
 
@@ -52,6 +56,35 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
     public isActionRowActive(row: any): boolean {
       return this.activeActionRowId === row.id_sowing;
     }
+
+    public getEmergenceRateDisplay(_element: any): string {
+      return '-';
+    }
+
+    public getDurationInDays(startDate: any, endDate: any): string {
+      if (!startDate || !endDate) {
+        return '-';
+      }
+    
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return '-';
+      }
+
+      const diffMs = end.getTime() - start.getTime();
+
+      if (diffMs < 0) {
+        return '-';
+      }
+
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const dayLabel = diffDays === 1 ? 'jour' : 'jours';
+
+      return `${diffDays} ${dayLabel}`;
+  }
+
 
     public isStandardSowingCode(code: any): boolean {
       return typeof code === 'string' && /^S\d{4}_\d{4}$/.test(code);
@@ -129,12 +162,25 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
         });
     }
 
-    onRowClick(): void {
-      // const id = row.id; // ou row.numSemis si tu veux baser sur numSemis
-       console.log('Ligne cliquée, ID:');
-       // Par exemple : router.navigate
-       this.router.navigate([`/conservation_flora_exsitu/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/semis-details`]);
-     }
+    onRowClick(row: any): void {
+      const idSowing = row?.id_sowing;
+      const idMaterial = this.exsituFormService.idMaterial;
+      const idHarvest = this.exsituFormService.idHarvest;
+
+      if (!idSowing || !idMaterial || !idHarvest) {
+        return;
+      }
+
+      this.router.navigate([
+        '/conservation_flora_exsitu/form/harvest',
+        idHarvest,
+        'material',
+        idMaterial,
+        'semis-details',
+        idSowing
+      ]);
+    }
+    
      addFicheSemis() {
           const dialogRef = this.dialog.open(SemisComponent, {
             width: '900px',

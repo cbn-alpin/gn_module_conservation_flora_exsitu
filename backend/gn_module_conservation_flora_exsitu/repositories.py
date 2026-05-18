@@ -11,7 +11,7 @@ from sqlalchemy.orm import aliased
 from flask import jsonify
 from ref_geo.models import LAreas, BibAreasTypes
 from apptax.taxonomie.models import Taxref
-from sqlalchemy import func
+from sqlalchemy import func, cast, Integer
 import json
 from sqlalchemy import and_
 from sqlalchemy.sql import text
@@ -826,6 +826,7 @@ class SowingRepository:
             Location = aliased(TNomenclatures)
             WateringMethod = aliased(TNomenclatures)
             SowingMethod = aliased(TNomenclatures)
+            Substrate = aliased(TNomenclatures)
             Actor = aliased(User)
 
             query = (
@@ -834,12 +835,17 @@ class SowingRepository:
                     Location.label_default.label("label_location"),
                     WateringMethod.label_default.label("label_watering"),
                     SowingMethod.label_default.label("label_sowing"),
+                    Substrate.label_default.label("label_substrate"),
                     Actor.nom_role.label("nom_actor"),
                     Actor.prenom_role.label("prenom_actor")
                 )
                 .outerjoin(Location, TSowing.id_location == Location.id_nomenclature)
                 .outerjoin(WateringMethod, TSowing.id_watering_method == WateringMethod.id_nomenclature)
                 .outerjoin(SowingMethod, TSowing.id_sowing_method == SowingMethod.id_nomenclature)
+                .outerjoin(
+                    Substrate,
+                    cast(TSowing.substrate["id_nomenclature"].astext, Integer) == Substrate.id_nomenclature
+                )
                 .outerjoin(Actor, TSowing.id_actor == Actor.id_role)
                 .filter(TSowing.id_material == id_material)
                 .order_by(TSowing.meta_create_date.desc())
@@ -852,10 +858,11 @@ class SowingRepository:
                     "label_location": label_location,
                     "label_watering": label_watering,
                     "label_sowing": label_sowing,
+                    "label_substrate": label_substrate,
                     "nom_actor": nom_actor,
                     "prenom_actor": prenom_actor
                 }
-                for sowing, label_location, label_watering, label_sowing, nom_actor, prenom_actor in results
+                for sowing, label_location, label_watering, label_sowing, label_substrate, nom_actor, prenom_actor in results
             ]
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -1544,7 +1551,39 @@ class ActionRepository:
 
         return data
     
-  
+    def get_actions_by_id_sowing(self, id_sowing: int):
+        ActionType = aliased(TNomenclatures)
+        Actor = aliased(User)
+
+        query = (
+            db.session.query(
+                TAction.id_action,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.meta_create_date,
+                ActionType.label_default.label("label_action_type"),
+                Actor.nom_role.label("nom_actor"),
+                Actor.prenom_role.label("prenom_actor")
+            )
+            .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(Actor, TAction.id_actor == Actor.id_role)
+            .filter(TAction.id_sowing == id_sowing)
+            .order_by(TAction.meta_create_date.desc())
+        )
+
+        results = query.all()
+
+        return [
+            {
+                "id_action": row.id_action,
+                "date_start": row.date_start.isoformat() if row.date_start else None,
+                "date_end": row.date_end.isoformat() if row.date_end else None,
+                "meta_create_date": row.meta_create_date.isoformat() if row.meta_create_date else None,
+                "label_action_type": row.label_action_type,
+                "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip()
+            }
+            for row in results
+        ]
 
 class ActionReplicateRepository:
     def create(self, data):

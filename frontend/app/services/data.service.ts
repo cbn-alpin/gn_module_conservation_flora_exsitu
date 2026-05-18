@@ -316,5 +316,9 @@ export class DataService {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings`);
   }
 
+  getActionsBySowing(idSowing: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/sowings/${idSowing}/actions`);
+  }
+
   
 }

@@ -1541,6 +1541,17 @@ def update_sowing(id_material, id_sowing):
 
     return sowing.to_dic(), 200
 
+@blueprint.route("/sowings/<int:id_sowing>/actions", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def get_actions_by_id_sowing(id_sowing):
+    try:
+        repo = ActionRepository()
+        actions = repo.get_actions_by_id_sowing(id_sowing)
+        return jsonify(actions)
+    except Exception as e:
+        current_app.logger.error(f"Erreur lors du chargement des actions pour le semis {id_sowing}: {e}")
+        return jsonify({"error": "Erreur interne du serveur"}), 500
+
 @blueprint.route("/materials/<int:id_material>/tests", methods=["POST"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 @json_resp
