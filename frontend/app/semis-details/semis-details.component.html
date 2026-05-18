@@ -19,7 +19,7 @@
             <strong>Numéro de récolte :</strong> {{ sowingForm.get('id_material')?.value }}
           </div>
           <div class="half-width">
-            <strong>Effectué par :</strong> {{ sowingForm.get('id_actor')?.value }}
+            <strong>Stock utilisé :</strong> {{ sowingForm.get('id_storage')?.value }}
           </div>
         </div>
 
@@ -28,25 +28,18 @@
             <strong>Numéro de semis :</strong> {{ sowingForm.get('code')?.value }}
           </div>
           <div class="half-width">
-            <strong>Stock utilisé :</strong> {{ sowingForm.get('id_storage')?.value }}
+            <strong>Personne ayant effectué le semis :</strong> {{ sowingForm.get('id_actor')?.value }}
           </div>
         </div>
 
         <div class="form-row">
           <div class="half-width">
-            <strong>Date de début :</strong> {{ sowingForm.get('start_date')?.value !== '-' ? (sowingForm.get('start_date')?.value | date:'dd/MM/yyyy') : '-' }}
+            <strong>Date de début :</strong>
+            {{ sowingForm.get('start_date')?.value !== '-' ? (sowingForm.get('start_date')?.value | date:'dd/MM/yyyy') : '-' }}
           </div>
           <div class="half-width">
-            <strong>Date de fin :</strong> {{ sowingForm.get('end_date')?.value !== '-' ? (sowingForm.get('end_date')?.value | date:'dd/MM/yyyy') : '-' }}
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Nombre de graines semées :</strong> {{ sowingForm.get('initial_count')?.value }}
-          </div>
-          <div class="half-width">
-            <strong>Nombre de réplicats :</strong> {{ sowingForm.get('replicate_count')?.value }}
+            <strong>Date de fin :</strong>
+            {{ sowingForm.get('end_date')?.value !== '-' ? (sowingForm.get('end_date')?.value | date:'dd/MM/yyyy') : '-' }}
           </div>
         </div>
 
@@ -55,31 +48,40 @@
             <strong>Méthode :</strong> {{ sowingForm.get('id_sowing_method')?.value }}
           </div>
           <div class="half-width">
-            <strong>Mode d’arrosage :</strong> {{ sowingForm.get('id_watering_method')?.value }}
+            <strong>Substrat :</strong> {{ sowingForm.get('substrate')?.value }}
           </div>
         </div>
 
         <div class="form-row">
-          <div class="half-width">
-            <strong>Localisation :</strong> {{ sowingForm.get('id_location')?.value }}
-          </div>
-          <div class="half-width">
-            <strong>Précision sur la localisation :</strong> {{ sowingForm.get('specification_location')?.value }}
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Profondeur :</strong> {{ sowingForm.get('depth')?.value }}
-          </div>
           <div class="half-width">
             <strong>Contenant :</strong> {{ sowingForm.get('container')?.value }}
           </div>
+          <div class="half-width">
+            <strong>Profondeur :</strong> {{ sowingForm.get('depth')?.value }}
+          </div>
         </div>
 
         <div class="form-row">
           <div class="half-width">
-            <strong>Substrat :</strong> {{ sowingForm.get('substrate')?.value }}
+            <strong>Mode d’arrosage :</strong> {{ sowingForm.get('id_watering_method')?.value }}
+          </div>
+          <div class="half-width">
+            <strong>Nombre de graines semées :</strong> {{ sowingForm.get('initial_count')?.value }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="half-width">
+            <strong>Nombre de réplicats :</strong> {{ sowingForm.get('replicate_count')?.value }}
+          </div>
+          <div class="half-width">
+            <strong>Localisation :</strong> {{ sowingForm.get('id_location')?.value }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="half-width">
+            <strong>Précision sur la localisation :</strong> {{ sowingForm.get('specification_location')?.value }}
           </div>
           <div class="half-width">
             <strong>Programme :</strong> {{ sowingForm.get('additional_data')?.value?.program || '-' }}
@@ -88,7 +90,7 @@
 
         <div class="form-row">
           <div class="full-width">
-            <strong>Remarques :</strong> {{ sowingForm.get('remarks')?.value }}
+            <strong>Remarque :</strong> <i> {{ sowingForm.get('remarks')?.value }}</i>
           </div>
         </div>
 
