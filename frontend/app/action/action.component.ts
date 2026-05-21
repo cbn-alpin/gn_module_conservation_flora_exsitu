@@ -27,7 +27,8 @@ export class ActionComponent implements OnInit {
   public observers_list_code;
   public formsDefinition: any[] = [];
   public additionalDataForm: FormGroup;
-  public idTest: number;
+  public idTest: number | null = null;
+  public idSowing: number | null = null;
   replicateCount: number;
   germinationForm: FormGroup;
   codeNomenclatureType: string;
@@ -107,6 +108,7 @@ export class ActionComponent implements OnInit {
     this.dataSource.data = [];
     this.observers_list_code = this.cfg.getObsCode();
     this.idTest = this.dialogData?.id_test ?? null;
+    this.idSowing = this.dialogData?.id_sowing ?? null;
     const url = this.router.url;
 
     this.codeNomenclatureType = url.includes('viability') ? 'CFE_ACTION_VIA_TYPE' : 'CFE_ACTION_TYPE';
@@ -121,11 +123,23 @@ export class ActionComponent implements OnInit {
     this.germinationForm.get('id_action_type')?.valueChanges.subscribe(value => {
       const codeId = value?.id_nomenclature || value;
       this.codeId = codeId;
+
+      if (!codeId) {
+        this.code = '';
+        return;
+      }
+
       this.getActionByCode(codeId);
     });
 
     this.germinationForm.get('id_scarification_type')?.valueChanges.subscribe(value => {
       const id = value?.id_nomenclature || value;
+
+      if (!id) {
+        this.scarTypeCode = '';
+        return;
+      }
+
       this.api.getActionByCode(id).subscribe({
         next: (res) => {
           this.scarTypeCode = res.cd_nomenclature;
@@ -208,37 +222,38 @@ export class ActionComponent implements OnInit {
 
   addNewAction(): void {
     if (!this.germinationForm.valid) return;
-  
+
     const finalForm = this.formatDataFormAction();
-  
-    this.api.addActionByTest(this.idTest, finalForm).subscribe({
+
+    const request$ = this.idSowing
+      ? this.api.addActionBySowing(this.idSowing, finalForm)
+      : this.api.addActionByTest(this.idTest!, finalForm);
+
+    request$.subscribe({
       next: (res) => {
         this.actionAdded.emit(res);
-  
-        // Reset des formulaires
+
         this.germinationForm.reset();
         this.additionalDataForm.reset();
         this.replicatesForm.reset();
-  
-        // Réinitialiser les champs dynamiques
+
         this.replicatesForm = this.fb.group({
           germes: this.fb.array([]),
           mortes: this.fb.array([]),
           nonGermes: this.fb.array([]),
           last_replicate: [false]
         });
-  
+
         this.replicates_for_form = null;
         this.code = '';
         this.codeId = null;
         this.scarTypeCode = '';
-  
-        // Réactiver le champ type d'action
+
         this.germinationForm.patchValue({ id_actor: [], id_action_type: null });
         this.germinationForm.get('id_action_type')?.enable();
         this.hideTypeField = false;
       },
-      error: (err) => console.error("Erreur ajout action :", err)
+      error: (err) => console.error('Erreur ajout action :', err)
     });
   }
   
@@ -252,7 +267,11 @@ export class ActionComponent implements OnInit {
         error: (err) => console.error("Erreur modification action :", err)
       });
     } else {
-      this.api.addActionByTest(this.idTest, finalForm).subscribe({
+      const request$ = this.idSowing
+        ? this.api.addActionBySowing(this.idSowing, finalForm)
+        : this.api.addActionByTest(this.idTest!, finalForm);
+
+      request$.subscribe({
         next: (res) => this.dialogRef.close(res),
         error: (err) => console.error("Erreur création action :", err)
       });

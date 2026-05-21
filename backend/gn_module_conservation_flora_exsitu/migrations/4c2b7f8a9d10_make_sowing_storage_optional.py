@@ -77,6 +77,21 @@ def upgrade():
         schema='pr_conservation_flora_exsitu'
     )
 
+    op.alter_column(
+        't_test',
+        'id_actor',
+        existing_type=sa.Integer(),
+        nullable=True,
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    op.alter_column(
+        't_action',
+        'id_actor',
+        existing_type=sa.Integer(),
+        nullable=True,
+        schema='pr_conservation_flora_exsitu'
+    )
 
 def downgrade():
     op.drop_constraint(
@@ -133,6 +148,22 @@ def downgrade():
     op.alter_column(
         't_sowing',
         'id_storage',
+        existing_type=sa.Integer(),
+        nullable=False,
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    op.alter_column(
+        't_action',
+        'id_actor',
+        existing_type=sa.Integer(),
+        nullable=False,
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    op.alter_column(
+        't_test',
+        'id_actor',
         existing_type=sa.Integer(),
         nullable=False,
         schema='pr_conservation_flora_exsitu'

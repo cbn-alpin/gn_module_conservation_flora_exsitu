@@ -247,6 +247,10 @@ export class DataService {
   addActionByTest(id_test: number, actionData: any): Observable<any> {
     return this.api.post(`${this.moduleBaseUrl}/tests/${id_test}/actions`, actionData);
   }
+
+  addActionBySowing(id_sowing: number, actionData: any): Observable<any> {
+    return this.api.post(`${this.moduleBaseUrl}/sowings/${id_sowing}/actions`, actionData);
+  }
   
   getActionsByTest(id_test: number): Observable<any[]> {
     console.log('📡 Requête vers le backend avec id_test:', id_test);

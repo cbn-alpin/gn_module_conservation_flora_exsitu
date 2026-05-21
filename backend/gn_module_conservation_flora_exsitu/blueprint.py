@@ -1496,6 +1496,22 @@ def get_all_sowings():
     sowings = repo.find_all()
     return [s.to_dic() for s in sowings]
 
+@blueprint.route("/sowings/<int:id_sowing>/actions", methods=["POST"])
+@permissions.check_cruved_scope("C", module_code=MODULE_CODE)
+@json_resp
+def create_action_by_sowing(id_sowing):
+    data = request.get_json()
+
+    data['id_sowing'] = id_sowing
+    data["meta_create_by"] = g.current_user.id_role
+
+    repo = ActionRepository()
+    success, result = repo.create(data)
+
+    if not success:
+        return {"message": "Erreur lors de la création de l'action", "code": 400}
+
+    return {"message": "Action créée", "action": result.to_dic()}
 
 # Récupérer un semis par ID
 @blueprint.route("/sowings/<int:id_sowing>", methods=["GET"])

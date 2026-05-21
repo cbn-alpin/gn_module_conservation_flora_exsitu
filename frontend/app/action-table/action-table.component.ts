@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionComponent } from '../action/action.component';
 import { DataService } from '../services/data.service';
-import { ExsituFormService } from '../form/shared/exsitu-form.service';
 
 export interface Action {
   id_action: number;
@@ -28,7 +27,8 @@ export interface Action {
   styleUrls: ['./action-table.component.scss']
 })
 export class ActionTableComponent implements OnInit, OnChanges {
-  @Input() idTest: number;
+  @Input() idTest: number | null = null;
+  @Input() idSowing: number | null = null;
   @Input() dataSource = new MatTableDataSource<any>();
 
   @Output() view = new EventEmitter<Action>();
@@ -46,41 +46,61 @@ export class ActionTableComponent implements OnInit, OnChanges {
   constructor(
     public router: Router,
     private dialog: MatDialog,
-    public exsituFormService: ExsituFormService,
-    
     private api: DataService,
   ) {}
 
   ngOnInit(): void {
-    console.log(this.idTest)
-    // Chargement initial si idTest est déjà disponible
-    if (this.idTest) {
+    if (this.idSowing || this.idTest) {
       this.loadActions();
     }
-    
   }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['idTest'] && changes['idTest'].currentValue) {
-      this.loadActions(); // <== Appelle bien loadActions ici
+    if (
+      (changes['idSowing'] && changes['idSowing'].currentValue) ||
+      (changes['idTest'] && changes['idTest'].currentValue)
+    ) {
+      this.loadActions();
     }
   }
-  
 
-  /**
-   * Recharge les actions liées à un test
-   */
   loadActions(): void {
-    if (!this.idTest) return; // On garde la vérif
-  
-    this.api.getActionsByTest(this.exsituFormService.idTest).subscribe({
+    if (this.idSowing) {
+      this.api.getActionsBySowing(this.idSowing).subscribe({
+        next: (actions) => {
+          console.log('📦 Actions du semis reçues :', actions);
+
+          this.dataSource.data = actions.map(action => ({
+            id_action: action.id_action,
+            date_start: action.date_start,
+            label_action_type: action.label_action_type,
+            label_actor: action.label_actor,
+            meta_create_date: action.meta_create_date
+          })).sort((a, b) => {
+            const dateA = new Date(a.meta_create_date).getTime();
+            const dateB = new Date(b.meta_create_date).getTime();
+            return dateB - dateA;
+          });
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement des actions du semis :', err);
+          this.dataSource.data = [];
+        }
+      });
+      return;
+    }
+
+    if (!this.idTest) return;
+
+    this.api.getActionsByTest(this.idTest).subscribe({
       next: (actions) => {
-        console.log("📦 Actions reçues :", actions);
-  
+        console.log('📦 Actions du test reçues :', actions);
+
         this.dataSource.data = actions.map(action => ({
           id_action: action.id_action,
           date_start: action.date_start,
-          label_action_type: action.label_action_type,  
-          label_actor: action.label_actor,              
+          label_action_type: action.label_action_type,
+          label_actor: action.label_actor,
           meta_create_date: action.meta_create_date
         })).sort((a, b) => {
           const dateA = new Date(a.meta_create_date).getTime();
@@ -94,16 +114,12 @@ export class ActionTableComponent implements OnInit, OnChanges {
       }
     });
   }
-  
 
-  /**
-   * Ouvre le formulaire pour ajouter une action
-   */
   add(): void {
     const dialogRef = this.dialog.open(ActionComponent, {
       width: '900px',
       height: '90vh',
-      data: { id_test: this.idTest }
+      data: this.idSowing ? { id_sowing: this.idSowing } : { id_test: this.idTest }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -113,29 +129,26 @@ export class ActionTableComponent implements OnInit, OnChanges {
     });
   }
 
-  /**
-   * Édite une action existante
-   */
   onEdit(element: any): void {
     this.api.getActionWithLabels(element.id_action).subscribe({
       next: (actionFull) => {
         this.api.getNomenclatureDetails(actionFull.id_action_type).subscribe({
           next: (nomenclatureDetails) => {
             const code = nomenclatureDetails.cd_nomenclature;
-  
+
             const dialogRef = this.dialog.open(ActionComponent, {
               width: '900px',
               height: '90vh',
               data: {
-                id_test: this.idTest,
+                ...(this.idSowing ? { id_sowing: this.idSowing } : { id_test: this.idTest }),
                 action: actionFull,
                 edit: true,
-                code, 
-                id_action: actionFull.id_action,  
-                hideTypeField: true 
+                code,
+                id_action: actionFull.id_action,
+                hideTypeField: true
               }
             });
-  
+
             dialogRef.afterClosed().subscribe(result => {
               if (result) {
                 this.loadActions();
@@ -143,7 +156,7 @@ export class ActionTableComponent implements OnInit, OnChanges {
             });
           },
           error: (err) => {
-            console.error("❌ Erreur lors du chargement du code nomenclature :", err);
+            console.error('❌ Erreur lors du chargement du code nomenclature :', err);
           }
         });
       },
@@ -152,9 +165,7 @@ export class ActionTableComponent implements OnInit, OnChanges {
       }
     });
   }
-  
 
-  
   onDelete(action: Action): void {
     const confirmed = confirm(`Voulez-vous vraiment supprimer cette action ?`);
     if (!confirmed) return;
@@ -169,19 +180,14 @@ export class ActionTableComponent implements OnInit, OnChanges {
     });
   }
 
-  /**
-   * Gestion du clic sur une ligne
-   */
   onRowClick(action: Action): void {
     this.rowClicked.emit(action);
   }
 
- 
   refresh(): void {
     this.loadActions();
   }
 
-  
   onView(action: Action): void {
     this.view.emit(action);
   }

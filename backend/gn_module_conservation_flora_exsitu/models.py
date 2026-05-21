@@ -534,7 +534,7 @@ class TTest(db.Model):
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL"),
-        nullable=False
+        nullable=True
     )
     id_storage = db.Column(
         db.Integer,
@@ -754,7 +754,7 @@ class TAction(db.Model):
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
-        nullable=False
+        nullable=True
     )
     id_action_type = db.Column(
         db.Integer,
