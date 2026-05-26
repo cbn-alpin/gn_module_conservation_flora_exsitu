@@ -567,27 +567,39 @@ export class SemisComponent implements OnInit {
       return;
     }
 
-    this.semisForm.reset(this.initialFormState);
-    this.semisForm.markAsPristine();
-    this.semisForm.markAsUntouched();
-    this.semisForm.updateValueAndValidity();
+    this.dialogService
+      .confirmDialog({
+        message: this.modalData?.edit
+          ? 'Étes vous certain de vouloir réinitialiser les modifications de ce semis ?'
+          : 'Étes vous certain de vouloir réinitialiser cette fiche de semis ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
 
-    this.formSubmitted = false;
+        this.semisForm.reset(this.initialFormState);
+        this.semisForm.markAsPristine();
+        this.semisForm.markAsUntouched();
+        this.semisForm.updateValueAndValidity();
 
-    this.shakeCodeField = false;
-    this.shakeStartDateField = false;
-    this.shakeEndDateField = false;
-    this.shakeDepthField = false;
-    this.shakeContainerField = false;
-    this.shakeMethodField = false;
-    this.shakeSubstrateField = false;
-    this.shakeWateringField = false;
-    this.shakeActorField = false;
-    this.shakeLocationField = false;
-    this.shakeInitialCountField = false;
-    this.shakeReplicateCountField = false;
+        this.formSubmitted = false;
 
-    this.validateDuplicateCode(this.semisForm.get('code')?.value);
+        this.shakeCodeField = false;
+        this.shakeStartDateField = false;
+        this.shakeEndDateField = false;
+        this.shakeDepthField = false;
+        this.shakeContainerField = false;
+        this.shakeMethodField = false;
+        this.shakeSubstrateField = false;
+        this.shakeWateringField = false;
+        this.shakeActorField = false;
+        this.shakeLocationField = false;
+        this.shakeInitialCountField = false;
+        this.shakeReplicateCountField = false;
+
+        this.validateDuplicateCode(this.semisForm.get('code')?.value);
+      });
   }
 
   onSubmit(): void {
