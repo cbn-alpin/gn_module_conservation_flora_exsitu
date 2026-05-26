@@ -180,6 +180,25 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
         idSowing
       ]);
     }
+
+    onDetails(element: any): void {
+      const idSowing = element?.id_sowing;
+      const idMaterial = this.exsituFormService.idMaterial;
+      const idHarvest = this.exsituFormService.idHarvest;
+
+      if (!idSowing || !idMaterial || !idHarvest) {
+        return;
+      }
+
+      this.router.navigate([
+        '/conservation_flora_exsitu/form/harvest',
+        idHarvest,
+        'material',
+        idMaterial,
+        'semis-details',
+        idSowing
+      ]);
+    }
     
      addFicheSemis() {
           const dialogRef = this.dialog.open(SemisComponent, {
