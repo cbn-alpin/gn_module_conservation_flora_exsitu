@@ -614,7 +614,7 @@ export class SemisComponent implements OnInit {
             if (this.modalData?.edit && this.modalData?.test?.id_sowing) {
               this.semisService.updateSowing(this.idMaterial!, this.modalData.test.id_sowing, finalForm).subscribe({
                 next: (res) => {
-                  this.toast.translateToaster('success', 'Semis mis à jour avec succès');
+                  this.toast.translateToaster('info', `Semis ${currentCode} mis à jour avec succès`);
                   this.dialogRef.close(res);
                 },
                 error: (err) => this.handleSowingSaveError(err)
@@ -622,7 +622,7 @@ export class SemisComponent implements OnInit {
             } else {
               this.semisService.addSowing(this.idMaterial!, finalForm).subscribe({
                 next: (res) => {
-                  this.toast.translateToaster('info', 'Semis créé avec succès');
+                  this.toast.translateToaster('success', `Semis ${currentCode} créé avec succès`);
                   this.dialogRef.close(res);
                 },
                 error: (err) => this.handleSowingSaveError(err)
