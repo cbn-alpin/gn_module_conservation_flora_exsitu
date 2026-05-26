@@ -248,6 +248,10 @@ export class DataService {
     return this.api.post(`${this.moduleBaseUrl}/tests/${id_test}/actions`, actionData);
   }
 
+  getNomenclaturesByTypeCode(codeType: string): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/nomenclatures/${codeType}`);
+  }
+
   addActionBySowing(id_sowing: number, actionData: any): Observable<any> {
     return this.api.post(`${this.moduleBaseUrl}/sowings/${id_sowing}/actions`, actionData);
   }

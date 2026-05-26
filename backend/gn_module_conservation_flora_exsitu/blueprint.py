@@ -1557,6 +1557,40 @@ def update_sowing(id_material, id_sowing):
 
     return sowing.to_dic(), 200
 
+@blueprint.route("/nomenclatures/<string:code_type>", methods=["GET"])
+@permissions.check_cruved_scope("R", module_code=MODULE_CODE)
+def get_nomenclatures_by_code_type(code_type):
+    try:
+        id_type = db.session.execute(
+            text("SELECT ref_nomenclatures.get_id_nomenclature_type(:code_type)"),
+            {"code_type": code_type}
+        ).scalar()
+
+        if not id_type:
+            return jsonify([])
+
+        rows = (
+            db.session.query(
+                TNomenclatures.id_nomenclature,
+                TNomenclatures.label_default,
+                TNomenclatures.cd_nomenclature
+            )
+            .filter(TNomenclatures.id_type == id_type)
+            .all()
+        )
+
+        return jsonify([
+            {
+                "id_nomenclature": row.id_nomenclature,
+                "label_default": row.label_default,
+                "cd_nomenclature": row.cd_nomenclature
+            }
+            for row in rows
+        ])
+    except Exception as e:
+        current_app.logger.error(f"Erreur chargement nomenclatures {code_type}: {e}")
+        return jsonify({"error": "Erreur interne du serveur"}), 500
+
 @blueprint.route("/sowings/<int:id_sowing>/actions", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 def get_actions_by_id_sowing(id_sowing):

@@ -31,7 +31,6 @@ def upgrade():
         existing_type=sa.Integer(),
         nullable=True,
         schema='pr_conservation_flora_exsitu'
-
     )
 
     op.alter_column(
@@ -93,7 +92,34 @@ def upgrade():
         schema='pr_conservation_flora_exsitu'
     )
 
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Jardin alpin',
+            label_fr = 'Jardin alpin'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SOWING_LOCATION'
+        )
+        AND cd_nomenclature = 'jar';
+    """)
+
+
 def downgrade():
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Jardin',
+            label_fr = 'Jardin'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SOWING_LOCATION'
+        )
+        AND cd_nomenclature = 'jar';
+    """)
+
     op.drop_constraint(
         'ck_t_sowing_replicate_count_positive',
         't_sowing',

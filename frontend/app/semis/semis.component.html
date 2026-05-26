@@ -213,15 +213,18 @@
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->
       <div class="form-group" [class.shake-group-field]="shakeLocationField">
-        <small>Localisation</small>
-        <pnx-nomenclature
-          keyValue="id_nomenclature"
-          [bindAllItem]="false"
-          codeNomenclatureType="CFE_SOWING_LOCATION"
-          [parentFormControl]="semisForm.controls.id_location"
-          matTooltip="Lieu de stockage des semis."
-          matTooltipPosition="below">
-        </pnx-nomenclature>
+        <mat-form-field appearance="outline" class="align-with-form-group">
+          <mat-label>Localisation</mat-label>
+          <mat-select
+            formControlName="id_location"
+            matTooltip="Lieu de stockage des semis."
+            matTooltipPosition="below"
+          >
+            <mat-option *ngFor="let location of getOrderedSowingLocations()" [value]="location.id_nomenclature">
+              {{ location.label_default || location.label_fr }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
 
       <mat-form-field appearance="outline" class="align-with-form-group">

@@ -30,6 +30,16 @@ export class SemisComponent implements OnInit {
   public shakeReplicateCountField = false;
   private cancelDialogOpen = false;
   private initialFormState: any = null;
+  public sowingLocationOptions: any[] = [];
+
+  private readonly sowingLocationOrder = [
+    'Pleine terre',
+    'Serre',
+    'Chassis',
+    'Salle de culture',
+    'Jardin alpin',
+    'Autre'
+  ];
 
   public observers_list_code: any;
   public idMaterial!: number;
@@ -258,6 +268,37 @@ export class SemisComponent implements OnInit {
       this.onCancel();
     }
   });
+
+  this.dataService.getNomenclaturesByTypeCode('CFE_SOWING_LOCATION').subscribe({
+    next: (locations) => {
+      this.sowingLocationOptions = locations || [];
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des localisations de semis :', err);
+      this.sowingLocationOptions = [];
+    }
+  });
+
+  }
+
+  public getOrderedSowingLocations(): any[] {
+    const orderMap = new Map(
+      this.sowingLocationOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.sowingLocationOptions].sort((a, b) => {
+      const labelA = a?.label_default || '';
+      const labelB = b?.label_default || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
   }
 
   patchForm(data: any): void {
