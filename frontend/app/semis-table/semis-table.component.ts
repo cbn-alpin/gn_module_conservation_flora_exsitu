@@ -128,6 +128,7 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
       const dialogRef = this.dialog.open(SemisComponent, {
         width: '900px',
         height: '90vh',
+        disableClose: true,
         data: {
           edit: true,
           test: normalizedSemis
@@ -203,7 +204,8 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
      addFicheSemis() {
           const dialogRef = this.dialog.open(SemisComponent, {
             width: '900px',
-            height: '90vh'
+            height: '90vh',
+            disableClose: true
           });
         
           dialogRef.afterClosed().subscribe(result => {
