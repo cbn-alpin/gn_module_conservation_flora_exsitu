@@ -3,11 +3,12 @@
   import { MatTableDataSource } from '@angular/material/table';
   import { Router } from '@angular/router';
   import { MatDialog } from '@angular/material/dialog';
-import { SemisComponent } from '../semis/semis.component';
-import { ExsituFormService } from '../form/shared/exsitu-form.service';
-import { SemisService } from '../semis/semis.service';
-import { SemisTableService } from './semis-table.service';
-import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+  import { SemisComponent } from '../semis/semis.component';
+  import { ExsituFormService } from '../form/shared/exsitu-form.service';
+  import { SemisService } from '../semis/semis.service';
+  import { SemisTableService } from './semis-table.service';
+  import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+  import { CommonService } from '@geonature_common/service/common.service';
 
   export interface Semis {
     code: any;
@@ -96,8 +97,8 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
           public exsituFormService: ExsituFormService,
           private semisService: SemisTableService,
           private dialogService: DialogService,
+          private toast: CommonService,
       ){
-  
       }
 
     ngOnInit(): void {
@@ -153,6 +154,8 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
           if (yes) {
             this.semisService.deleteSowing(this.idMaterial!, element.id_sowing).subscribe({
               next: () => {
+                const currentCode = element?.code || '';
+                this.toast.translateToaster('error', `Semis ${currentCode} supprimé avec succès`);
                 this.semisService.loadSowings(this.idMaterial!);
               },
               error: (err) => {
