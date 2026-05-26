@@ -28,6 +28,7 @@ export class SemisComponent implements OnInit {
   public shakeLocationField = false;
   public shakeInitialCountField = false;
   public shakeReplicateCountField = false;
+  private cancelDialogOpen = false;
 
   public observers_list_code: any;
   public idMaterial!: number;
@@ -249,6 +250,17 @@ export class SemisComponent implements OnInit {
 
   this.semisForm.get('code')?.valueChanges.subscribe((value) => {
     this.validateDuplicateCode(value);
+  });
+
+  this.dialogRef.backdropClick().subscribe(() => {
+    this.onCancel();
+  });
+
+  this.dialogRef.keydownEvents().subscribe((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.onCancel();
+    }
   });
   }
 
@@ -625,11 +637,19 @@ export class SemisComponent implements OnInit {
   }
 
   onCancel(): void {
+    if (this.cancelDialogOpen) {
+      return;
+    }
+
+    this.cancelDialogOpen = true;
+
     this.dialogService
       .confirmDialog({
         message: 'Étes vous certain de vouloir annuler ?'
       })
       .subscribe((yes) => {
+        this.cancelDialogOpen = false;
+
         if (yes) {
           this.dialogRef.close();
         }
