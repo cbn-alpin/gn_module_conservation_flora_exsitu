@@ -29,6 +29,7 @@ export class SemisComponent implements OnInit {
   public shakeInitialCountField = false;
   public shakeReplicateCountField = false;
   private cancelDialogOpen = false;
+  private initialFormState: any = null;
 
   public observers_list_code: any;
   public idMaterial!: number;
@@ -228,12 +229,7 @@ export class SemisComponent implements OnInit {
       }
     });
 
-    if (this.modalData?.edit && this.modalData?.test) {
-      this.patchForm(this.modalData.test);
-    } else {
-      this.semisForm.markAllAsTouched();
-      this.semisForm.updateValueAndValidity();
-    }
+    this.initializeFormState();
 
     if (this.idMaterial) {
       this.semisService.getSowingsByMaterial(this.idMaterial).subscribe({
@@ -265,7 +261,7 @@ export class SemisComponent implements OnInit {
   }
 
   patchForm(data: any): void {
-    this.semisForm.patchValue({
+    const formState = {
       code: data.code || '',
       start_date: data.start_date ? new Date(data.start_date) : null,
       end_date: data.end_date ? new Date(data.end_date) : null,
@@ -284,8 +280,11 @@ export class SemisComponent implements OnInit {
       initial_count: data.initial_count ?? null,
       replicate_count: data.replicate_count ?? 1,
 
-      remarks: data.remarks || ''
-    });
+      remarks: data.remarks || '',
+      additional_data: {}
+    };
+
+    this.semisForm.reset(formState);
 
     if (data.additional_data && this.additionalDataForm) {
       Object.keys(data.additional_data).forEach(key => {
@@ -294,6 +293,9 @@ export class SemisComponent implements OnInit {
         }
       });
     }
+
+    this.semisForm.markAsPristine();
+    this.semisForm.markAsUntouched();
   }
 
   private formatFormData(): any {
@@ -516,6 +518,76 @@ export class SemisComponent implements OnInit {
       this.semisForm.get('end_date')?.value &&
       !this.semisForm.hasError('dateRangeInvalid')
     );
+  }
+
+  private buildEmptyFormState(): any {
+    const additionalData: any = {};
+
+    Object.keys(this.additionalDataForm.controls).forEach(key => {
+      additionalData[key] = '';
+    });
+
+    return {
+      code: '',
+      start_date: null,
+      end_date: null,
+      id_actor: [],
+      id_watering_method: null,
+      id_sowing_method: null,
+      id_substrate: null,
+      container: '',
+      depth: null,
+      id_location: null,
+      specification_location: '',
+      initial_count: null,
+      replicate_count: 1,
+      remarks: '',
+      additional_data: additionalData
+    };
+  }
+
+  private initializeFormState(): void {
+    if (this.modalData?.edit && this.modalData?.test) {
+      this.patchForm(this.modalData.test);
+
+      this.initialFormState = this.semisForm.getRawValue();
+      return;
+    }
+
+    const emptyState = this.buildEmptyFormState();
+    this.semisForm.reset(emptyState);
+    this.semisForm.markAsPristine();
+    this.semisForm.markAsUntouched();
+
+    this.initialFormState = this.semisForm.getRawValue();
+  }
+
+  onReset(): void {
+    if (!this.initialFormState) {
+      return;
+    }
+
+    this.semisForm.reset(this.initialFormState);
+    this.semisForm.markAsPristine();
+    this.semisForm.markAsUntouched();
+    this.semisForm.updateValueAndValidity();
+
+    this.formSubmitted = false;
+
+    this.shakeCodeField = false;
+    this.shakeStartDateField = false;
+    this.shakeEndDateField = false;
+    this.shakeDepthField = false;
+    this.shakeContainerField = false;
+    this.shakeMethodField = false;
+    this.shakeSubstrateField = false;
+    this.shakeWateringField = false;
+    this.shakeActorField = false;
+    this.shakeLocationField = false;
+    this.shakeInitialCountField = false;
+    this.shakeReplicateCountField = false;
+
+    this.validateDuplicateCode(this.semisForm.get('code')?.value);
   }
 
   onSubmit(): void {
