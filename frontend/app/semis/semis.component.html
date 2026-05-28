@@ -100,15 +100,18 @@
       </div>
 
       <div class="form-group" [class.shake-group-field]="shakeSubstrateField">
-        <small>Substrat <span class="required-star">*</span></small>
-        <pnx-nomenclature
-          keyValue="id_nomenclature"
-          [bindAllItem]="false"
-          codeNomenclatureType="CFE_SOWING_SUBSTRATE"
-          [parentFormControl]="semisForm.controls.id_substrate"
-          matTooltip="Composition en pourcentage du substrat du semis."
-          matTooltipPosition="below">
-        </pnx-nomenclature>
+        <mat-form-field appearance="outline" class="align-with-form-group">
+          <mat-label>Substrat</mat-label>
+          <mat-select
+            formControlName="id_substrate"
+            matTooltip="Composition en pourcentage du substrat du semis."
+            matTooltipPosition="below"
+          >
+            <mat-option *ngFor="let substrate of getOrderedSowingSubstrates()" [value]="substrate.id_nomenclature">
+              {{ substrate.label_default || substrate.label_fr }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
         <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_substrate')?.hasError('required')">
           Le substrat est obligatoire.
