@@ -54,6 +54,15 @@ export class SemisComponent implements OnInit {
     'Autre'
   ];
 
+  public sowingMethodOptions: any[] = [];
+
+  private readonly sowingMethodOrder = [
+    'Individuel',
+    'En poquets',
+    'En ligne',
+    'A la volée'
+  ];
+
   public observers_list_code: any;
   public idMaterial!: number;
   public idStorage: number | null = null;
@@ -302,6 +311,16 @@ export class SemisComponent implements OnInit {
     }
   });
 
+  this.dataService.getNomenclaturesByTypeCode('CFE_SOWING_METHOD').subscribe({
+    next: (methods) => {
+      this.sowingMethodOptions = methods || [];
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des méthodes de semis :', err);
+      this.sowingMethodOptions = [];
+    }
+  });
+
   }
 
   public getOrderedSowingLocations(): any[] {
@@ -330,6 +349,26 @@ export class SemisComponent implements OnInit {
     );
 
     return [...this.sowingSubstrateOptions].sort((a, b) => {
+      const labelA = a?.label_default || '';
+      const labelB = b?.label_default || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
+  }
+
+  public getOrderedSowingMethods(): any[] {
+    const orderMap = new Map(
+      this.sowingMethodOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.sowingMethodOptions].sort((a, b) => {
       const labelA = a?.label_default || '';
       const labelB = b?.label_default || '';
 

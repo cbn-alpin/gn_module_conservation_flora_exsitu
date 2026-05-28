@@ -84,15 +84,18 @@
 
       <!-- Ligne 3 : Méthode / Substrat -->
       <div class="form-group" [class.shake-group-field]="shakeMethodField">
-        <small>Méthode <span class="required-star">*</span></small>
-        <pnx-nomenclature
-          keyValue="id_nomenclature"
-          [bindAllItem]="false"
-          codeNomenclatureType="CFE_SOWING_METHOD"
-          [parentFormControl]="semisForm.controls.id_sowing_method"
-          matTooltip="Méthode de semis appliquée."
-          matTooltipPosition="below">
-        </pnx-nomenclature>
+        <mat-form-field appearance="outline" class="align-with-form-group">
+          <mat-label>Méthode</mat-label>
+          <mat-select
+            formControlName="id_sowing_method"
+            matTooltip="Méthode de semis appliquée."
+            matTooltipPosition="below"
+          >
+            <mat-option *ngFor="let method of getOrderedSowingMethods()" [value]="method.id_nomenclature">
+              {{ method.label_default || method.label_fr }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
         <div class="custom-error-message" *ngIf="formSubmitted && semisForm.get('id_sowing_method')?.hasError('required')">
           La méthode est obligatoire.
