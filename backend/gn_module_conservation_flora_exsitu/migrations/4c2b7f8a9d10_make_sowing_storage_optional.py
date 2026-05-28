@@ -105,6 +105,18 @@ def upgrade():
         AND cd_nomenclature = 'jar';
     """)
 
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Sol prélevé in-situ',
+            label_fr = 'Sol prélevé in-situ'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SOWING_SUBSTRATE'
+        )
+        AND label_default = 'Sol in situ';
+    """)
 
 def downgrade():
     op.execute("""
@@ -118,6 +130,19 @@ def downgrade():
             WHERE mnemonique = 'CFE_SOWING_LOCATION'
         )
         AND cd_nomenclature = 'jar';
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Sol in situ',
+            label_fr = 'Sol in situ'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SOWING_SUBSTRATE'
+        )
+        AND label_default = 'Sol prélevé in-situ';
     """)
 
     op.drop_constraint(

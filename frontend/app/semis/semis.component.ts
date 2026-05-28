@@ -41,6 +41,19 @@ export class SemisComponent implements OnInit {
     'Autre'
   ];
 
+  public sowingSubstrateOptions: any[] = [];
+
+  private readonly sowingSubstrateOrder = [
+    'Terreau',
+    'Tourbe',
+    'Terre de bruyère',
+    'Sable',
+    'Perlite',
+    'Vermiculite',
+    'Sol prélevé in-situ',
+    'Autre'
+  ];
+
   public observers_list_code: any;
   public idMaterial!: number;
   public idStorage: number | null = null;
@@ -279,6 +292,16 @@ export class SemisComponent implements OnInit {
     }
   });
 
+  this.dataService.getNomenclaturesByTypeCode('CFE_SOWING_SUBSTRATE').subscribe({
+    next: (substrates) => {
+      this.sowingSubstrateOptions = substrates || [];
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des substrats de semis :', err);
+      this.sowingSubstrateOptions = [];
+    }
+  });
+
   }
 
   public getOrderedSowingLocations(): any[] {
@@ -287,6 +310,26 @@ export class SemisComponent implements OnInit {
     );
 
     return [...this.sowingLocationOptions].sort((a, b) => {
+      const labelA = a?.label_default || '';
+      const labelB = b?.label_default || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
+  }
+
+  public getOrderedSowingSubstrates(): any[] {
+    const orderMap = new Map(
+      this.sowingSubstrateOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.sowingSubstrateOptions].sort((a, b) => {
       const labelA = a?.label_default || '';
       const labelB = b?.label_default || '';
 

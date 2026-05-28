@@ -196,7 +196,7 @@ CFE_SOWING_SUBSTRATE;tb;tourbe;Tourbe;Substance organique poreuse résultant de 
 CFE_SOWING_SUBSTRATE;pe;perlite;Perlite;Minéral issue d'une roche volcanique utilisé comme support de culture;Perlite;Minéral issue d'une roche volcanique utilisé comme support de culture;conservation_flora_exsitu;.005
 CFE_SOWING_SUBSTRATE;ve;vermiculite;Vermiculite;Minéral du groupe des phyllosilicates utilisé comme support de culture;Vermiculite;Minéral du groupe des phyllosilicates utilisé comme support de culture;conservation_flora_exsitu;.006
 CFE_SOWING_SUBSTRATE;tdb;terreDeBruyere;Terre de bruyère;"Terre issue de l'accumulation de matière organique peu active; composée de silice; de carbonate de chaux; d'humus ";Terre de bruyère;"Terre issue de l'accumulation de matière organique peu active; composée de silice; de carbonate de chaux; d'humus ";conservation_flora_exsitu;.003
-CFE_SOWING_SUBSTRATE;sis;solInSitu;Sol in situ;Sol issu d'un prélèvement sur site ;Sol in situ;Sol issu d'un prélèvement sur site ;conservation_flora_exsitu;.007
+CFE_SOWING_SUBSTRATE;sis;solInSitu;Sol prélevé in-situ;Sol issu d'un prélèvement sur site ;Sol prélevé in-situ;Sol issu d'un prélèvement sur site ;conservation_flora_exsitu;.007
 CFE_SOWING_SUBSTRATE;aut;autre;Autre;Substrat différent des substrats habituels;Autre;Substrat différent des substrats habituels;conservation_flora_exsitu;.008
 CFE_SOWING_CONTAINER;god;godet;Godet;Petit pot;Godet;Petit pot;conservation_flora_exsitu;.001
 CFE_SOWING_CONTAINER;pot;pot;Pot;Contenant dans lequel on cultive des plantes;Pot;Contenant dans lequel on cultive des plantes;conservation_flora_exsitu;.002
