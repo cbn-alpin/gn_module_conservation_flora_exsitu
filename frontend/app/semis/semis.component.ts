@@ -63,6 +63,13 @@ export class SemisComponent implements OnInit {
     'A la volée'
   ];
 
+  public sowingWateringOptions: any[] = [];
+
+  private readonly sowingWateringOrder = [
+    'Aspersion',
+    'Capillarité'
+  ];
+
   public observers_list_code: any;
   public idMaterial!: number;
   public idStorage: number | null = null;
@@ -321,6 +328,16 @@ export class SemisComponent implements OnInit {
     }
   });
 
+  this.dataService.getNomenclaturesByTypeCode('CFE_WATERING_METHOD').subscribe({
+    next: (wateringMethods) => {
+      this.sowingWateringOptions = wateringMethods || [];
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des modes d’arrosage :', err);
+      this.sowingWateringOptions = [];
+    }
+  });
+
   }
 
   public getOrderedSowingLocations(): any[] {
@@ -369,6 +386,26 @@ export class SemisComponent implements OnInit {
     );
 
     return [...this.sowingMethodOptions].sort((a, b) => {
+      const labelA = a?.label_default || '';
+      const labelB = b?.label_default || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
+  }
+
+  public getOrderedSowingWateringMethods(): any[] {
+    const orderMap = new Map(
+      this.sowingWateringOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.sowingWateringOptions].sort((a, b) => {
       const labelA = a?.label_default || '';
       const labelB = b?.label_default || '';
 

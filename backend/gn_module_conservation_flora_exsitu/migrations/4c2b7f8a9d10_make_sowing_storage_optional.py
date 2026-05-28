@@ -118,6 +118,16 @@ def upgrade():
         AND label_default = 'Sol in situ';
     """)
 
+    op.execute("""
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_WATERING_METHOD'
+        )
+        AND cd_nomenclature = 'aut';
+    """)
+
 def downgrade():
     op.execute("""
         UPDATE ref_nomenclatures.t_nomenclatures
@@ -219,3 +229,35 @@ def downgrade():
         nullable=False,
         schema='pr_conservation_flora_exsitu'
     )
+
+    op.execute("""
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'aut',
+            'autre',
+            'Autre',
+            'Méthode d''irrigation différente des méthodes habituelles',
+            'Autre',
+            'Méthode d''irrigation différente des méthodes habituelles',
+            'conservation_flora_exsitu',
+            '.003'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_WATERING_METHOD'
+            AND NOT EXISTS (
+                SELECT 1
+                FROM ref_nomenclatures.t_nomenclatures
+                WHERE id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+                AND cd_nomenclature = 'aut'
+        );
+    """)
