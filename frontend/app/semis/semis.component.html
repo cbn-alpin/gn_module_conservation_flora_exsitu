@@ -77,7 +77,7 @@
 
         <div
           class="custom-error-message dates-error"
-          *ngIf="formSubmitted && semisForm.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
+          *ngIf="formSubmitted && semisForm.get('start_date')?.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
           La date de fin doit être postérieure à la date de début.
         </div>
       </div>

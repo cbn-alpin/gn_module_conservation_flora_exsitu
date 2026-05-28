@@ -133,17 +133,18 @@ export class SemisComponent implements OnInit {
     const endDate = control.get('end_date')?.value;
     const codeControl = control.get('code');
     const code = codeControl?.value;
+    const startDateControl = control.get('start_date');
 
     const errors: ValidationErrors = {};
 
-    if (startDate && endDate && startDate >= endDate) {
+    const hasDateRangeInvalid = !!(startDate && endDate && startDate >= endDate);
+
+    if (hasDateRangeInvalid) {
       errors['dateRangeInvalid'] = true;
     }
 
-    const startDateControl = control.get('start_date');
-    const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_(?!0000)\d{4}$/) : null;
-
     let startYear: string | null = null;
+    const codeMatch = typeof code === 'string' ? code.match(/^S(\d{4})_(?!0000)\d{4}$/) : null;
 
     if (typeof startDate === 'string') {
       if (/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
@@ -165,23 +166,35 @@ export class SemisComponent implements OnInit {
 
     const hasCodeYearMismatch = !!(codeMatch && startYear && codeMatch[1] !== startYear);
 
-    [codeControl, startDateControl].forEach((fieldControl) => {
-      if (!fieldControl) return;
+    if (startDateControl) {
+      const currentErrors = { ...(startDateControl.errors || {}) };
 
-      const currentErrors = { ...(fieldControl.errors || {}) };
+      if (hasDateRangeInvalid) {
+        currentErrors['dateRangeInvalid'] = true;
+      } else {
+        delete currentErrors['dateRangeInvalid'];
+      }
 
       if (hasCodeYearMismatch) {
-        if (!currentErrors['codeYearMismatch']) {
-          fieldControl.setErrors({
-            ...currentErrors,
-            codeYearMismatch: true
-          });
-        }
-      } else if (currentErrors['codeYearMismatch']) {
+        currentErrors['codeYearMismatch'] = true;
+      } else {
         delete currentErrors['codeYearMismatch'];
-        fieldControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
       }
-    });
+
+      startDateControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+    }
+
+    if (codeControl) {
+      const currentErrors = { ...(codeControl.errors || {}) };
+
+      if (hasCodeYearMismatch) {
+        currentErrors['codeYearMismatch'] = true;
+      } else {
+        delete currentErrors['codeYearMismatch'];
+      }
+
+      codeControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+    }
 
     return Object.keys(errors).length ? errors : null;
   }
