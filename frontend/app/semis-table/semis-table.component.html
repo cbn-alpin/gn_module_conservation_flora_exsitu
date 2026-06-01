@@ -101,14 +101,14 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="onDetails(element)">
-                <mat-icon>visibility</mat-icon>
-                <span>Détails</span>
-              </button>
-
               <button mat-menu-item (click)="onEdit(element)">
                 <mat-icon>edit</mat-icon>
                 <span>Modifier</span>
+              </button>
+
+              <button mat-menu-item (click)="onDetails(element)">
+                <mat-icon>visibility</mat-icon>
+                <span>Détails/Action</span>
               </button>
 
               <button mat-menu-item class="delete-action-red" (click)="onDelete(element)">

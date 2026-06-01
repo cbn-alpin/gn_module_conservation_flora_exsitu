@@ -306,6 +306,14 @@ mat-form-field,
   animation: shake-field-animation 0.35s ease-in-out;
 }
 
+:host ::ng-deep .shake-error .mat-mdc-form-field-subscript-wrapper {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
+.shake-inline-error {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
 @keyframes shake-field-animation {
   0% { transform: translateX(0); }
   20% { transform: translateX(-6px); }

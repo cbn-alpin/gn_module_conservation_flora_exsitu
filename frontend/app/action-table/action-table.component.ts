@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionComponent } from '../action/action.component';
 import { DataService } from '../services/data.service';
+import { AfterViewInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
 
 export interface Action {
   id_action: number;
@@ -26,10 +28,14 @@ export interface Action {
   templateUrl: './action-table.component.html',
   styleUrls: ['./action-table.component.scss']
 })
-export class ActionTableComponent implements OnInit, OnChanges {
+export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() idTest: number | null = null;
   @Input() idSowing: number | null = null;
   @Input() dataSource = new MatTableDataSource<any>();
+  @Input() enablePagination = false;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  rowPerPage = 5;
 
   @Output() view = new EventEmitter<Action>();
   @Output() edit = new EventEmitter<Action>();
@@ -64,6 +70,12 @@ export class ActionTableComponent implements OnInit, OnChanges {
     }
   }
 
+  ngAfterViewInit(): void {
+    if (this.enablePagination && this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }
+
   loadActions(): void {
     if (this.idSowing) {
       this.api.getActionsBySowing(this.idSowing).subscribe({
@@ -81,6 +93,11 @@ export class ActionTableComponent implements OnInit, OnChanges {
             const dateB = new Date(b.meta_create_date).getTime();
             return dateB - dateA;
           });
+
+          if (this.enablePagination && this.paginator) {
+            this.dataSource.paginator = this.paginator;
+            this.paginator.firstPage();
+          }
         },
         error: (err) => {
           console.error('Erreur lors du chargement des actions du semis :', err);
@@ -107,6 +124,11 @@ export class ActionTableComponent implements OnInit, OnChanges {
           const dateB = new Date(b.meta_create_date).getTime();
           return dateB - dateA;
         });
+
+        if (this.enablePagination && this.paginator) {
+          this.dataSource.paginator = this.paginator;
+          this.paginator.firstPage();
+        }
       },
       error: (err) => {
         console.error('Erreur lors du chargement des actions :', err);

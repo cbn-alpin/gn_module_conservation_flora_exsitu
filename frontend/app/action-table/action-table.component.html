@@ -64,6 +64,13 @@
       </tr>
     </table>
 
+    <mat-paginator
+      *ngIf="enablePagination && dataSource.data.length > 0"
+      [pageSize]="rowPerPage"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      showFirstLastButtons>
+    </mat-paginator>
+
     <!-- Aucune donnée -->
     <div class="no-data" *ngIf="dataSource.data.length === 0">
       Aucune action enregistrée pour ce test.

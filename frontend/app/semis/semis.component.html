@@ -42,7 +42,11 @@
       <!-- Ligne 2 : Date de début / Date de fin -->
       <div class="dates-block full-width">
         <div class="dates-grid">
-          <mat-form-field appearance="outline" class="start-date-required shake-wrapper" [class.shake-field]="shakeStartDateField">
+          <mat-form-field
+            appearance="outline"
+            class="start-date-required shake-wrapper"
+            [class.shake-field]="shakeStartDateField"
+            [class.shake-error]="shakeStartDateField">
               <mat-label>Date de début</mat-label>
               <input
                 matInput
@@ -77,6 +81,7 @@
 
         <div
           class="custom-error-message dates-error"
+          [class.shake-inline-error]="shakeStartDateField || shakeEndDateField"
           *ngIf="formSubmitted && semisForm.get('start_date')?.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
           La date de fin doit être postérieure à la date de début.
         </div>
@@ -122,18 +127,22 @@
       </div>
 
       <!-- Ligne 4 : Contenant / Profondeur -->
-      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeContainerField">
-        <mat-label>Contenant</mat-label>
-        <input
-          matInput
-          formControlName="container"
-          required
-          matTooltip="Contenant dans lequel se trouvent les graines pour les semis."
-          matTooltipPosition="below">
+      <mat-form-field
+        appearance="outline"
+        class="shake-wrapper"
+        [class.shake-field]="shakeContainerField"
+        [class.shake-error]="shakeContainerField">
+          <mat-label>Contenant</mat-label>
+          <input
+            matInput
+            formControlName="container"
+            required
+            matTooltip="Contenant dans lequel se trouvent les graines pour les semis."
+            matTooltipPosition="below">
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('container')?.hasError('required')">
-          Le contenant est obligatoire.
-        </mat-error>
+          <mat-error *ngIf="formSubmitted && semisForm.get('container')?.hasError('required')">
+            Le contenant est obligatoire.
+          </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeDepthField">
@@ -180,44 +189,52 @@
       </div>
 
       <!-- Ligne 6 : Nombre de graines semées / Nombre de réplicats -->
-      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeInitialCountField">
-        <mat-label>Nombre de graines semées</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="initial_count"
-          required
-          min="1"
-          matTooltip="Nombre de graines semées."
-          matTooltipPosition="below">
+      <mat-form-field
+        appearance="outline"
+        class="shake-wrapper"
+        [class.shake-field]="shakeInitialCountField"
+        [class.shake-error]="shakeInitialCountField">
+          <mat-label>Nombre de graines semées</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="initial_count"
+            required
+            min="1"
+            matTooltip="Nombre de graines semées."
+            matTooltipPosition="below">
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('initial_count')?.hasError('required')">
-          Le nombre de graines semées est obligatoire.
-        </mat-error>
+          <mat-error *ngIf="formSubmitted && semisForm.get('initial_count')?.hasError('required')">
+            Le nombre de graines semées est obligatoire.
+          </mat-error>
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('initial_count')?.hasError('min')">
-          Le nombre de graines semées doit être supérieur à 0.
-        </mat-error>
+          <mat-error *ngIf="formSubmitted && semisForm.get('initial_count')?.hasError('min')">
+            Le nombre de graines semées doit être supérieur à 0.
+          </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="shake-wrapper" [class.shake-field]="shakeReplicateCountField">
-        <mat-label>Nombre de réplicats</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="replicate_count"
-          required
-          min="1"
-          matTooltip="Nombre de réplicats. Valeur par défaut : 1."
-          matTooltipPosition="below">
+      <mat-form-field
+        appearance="outline"
+        class="shake-wrapper"
+        [class.shake-field]="shakeReplicateCountField"
+        [class.shake-error]="shakeReplicateCountField">
+          <mat-label>Nombre de réplicats</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="replicate_count"
+            required
+            min="1"
+            matTooltip="Nombre de réplicats. Valeur par défaut : 1."
+            matTooltipPosition="below">
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('replicate_count')?.hasError('required')">
-          Le nombre de réplicats est obligatoire.
-        </mat-error>
+          <mat-error *ngIf="formSubmitted && semisForm.get('replicate_count')?.hasError('required')">
+            Le nombre de réplicats est obligatoire.
+          </mat-error>
 
-        <mat-error *ngIf="formSubmitted && semisForm.get('replicate_count')?.hasError('min')">
-          Le nombre de réplicats doit être supérieur à 0.
-        </mat-error>
+          <mat-error *ngIf="formSubmitted && semisForm.get('replicate_count')?.hasError('min')">
+            Le nombre de réplicats doit être supérieur à 0.
+          </mat-error>
       </mat-form-field>
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->

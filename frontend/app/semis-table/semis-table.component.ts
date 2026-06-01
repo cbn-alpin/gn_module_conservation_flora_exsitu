@@ -1,5 +1,5 @@
   
-  import { Component, Input, Output, EventEmitter,OnInit } from '@angular/core';
+  import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, ViewChild } from '@angular/core';
   import { MatTableDataSource } from '@angular/material/table';
   import { Router } from '@angular/router';
   import { MatDialog } from '@angular/material/dialog';
