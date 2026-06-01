@@ -76,14 +76,10 @@
                 matTooltipPosition="below">
               <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
+              <mat-error *ngIf="formSubmitted && semisForm.get('end_date')?.hasError('dateRangeInvalid')">
+                La date de fin doit être postérieure à la date de début.
+              </mat-error>
             </mat-form-field>
-        </div>
-
-        <div
-          class="custom-error-message dates-error"
-          [class.shake-inline-error]="shakeStartDateField || shakeEndDateField"
-          *ngIf="formSubmitted && semisForm.get('start_date')?.hasError('dateRangeInvalid') && semisForm.get('end_date')?.value">
-          La date de fin doit être postérieure à la date de début.
         </div>
       </div>
 

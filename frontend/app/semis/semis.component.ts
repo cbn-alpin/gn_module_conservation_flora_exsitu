@@ -134,6 +134,7 @@ export class SemisComponent implements OnInit {
     const codeControl = control.get('code');
     const code = codeControl?.value;
     const startDateControl = control.get('start_date');
+    const endDateControl = control.get('end_date');
 
     const errors: ValidationErrors = {};
 
@@ -169,12 +170,6 @@ export class SemisComponent implements OnInit {
     if (startDateControl) {
       const currentErrors = { ...(startDateControl.errors || {}) };
 
-      if (hasDateRangeInvalid) {
-        currentErrors['dateRangeInvalid'] = true;
-      } else {
-        delete currentErrors['dateRangeInvalid'];
-      }
-
       if (hasCodeYearMismatch) {
         currentErrors['codeYearMismatch'] = true;
       } else {
@@ -182,6 +177,18 @@ export class SemisComponent implements OnInit {
       }
 
       startDateControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+    }
+
+    if (endDateControl) {
+      const currentErrors = { ...(endDateControl.errors || {}) };
+
+      if (hasDateRangeInvalid) {
+        currentErrors['dateRangeInvalid'] = true;
+      } else {
+        delete currentErrors['dateRangeInvalid'];
+      }
+
+      endDateControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
     }
 
     if (codeControl) {
