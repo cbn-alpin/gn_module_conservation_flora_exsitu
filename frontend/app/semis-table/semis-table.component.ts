@@ -9,6 +9,7 @@
   import { SemisTableService } from './semis-table.service';
   import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
   import { CommonService } from '@geonature_common/service/common.service';
+  import { MatPaginator } from '@angular/material/paginator';
 
   export interface Semis {
     code: any;
@@ -25,10 +26,12 @@
     templateUrl: './semis-table.component.html',
     styleUrls: ['./semis-table.component.scss']
   })
-  export class SemisTableComponent  implements OnInit  {
+  export class SemisTableComponent implements OnInit, AfterViewInit {
     idMaterial: number | null = null;
     sowings:any;
     @Input() dataSource = new MatTableDataSource<Semis>();
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    rowPerPage = 5;
     @Output() view = new EventEmitter<Semis>();
     @Output() edit = new EventEmitter<Semis>();
     @Output() delete = new EventEmitter<Semis>();
@@ -106,11 +109,20 @@
     this.semisService.sowings$.subscribe((sowings) => {
       this.dataSource.data = sowings;
       console.log(this.dataSource.data)
+
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+        this.paginator.firstPage();
+      }
     });
 
-    // ⬇️ Déclenche le chargement côté service
-    this.semisService.loadSowings(this.idMaterial);
-  }
+      // ⬇️ Déclenche le chargement côté service
+      this.semisService.loadSowings(this.idMaterial);
+    }
+
+    ngAfterViewInit(): void {
+      this.dataSource.paginator = this.paginator;
+    }
     
     onView() {
       // this.view.emit(element);
