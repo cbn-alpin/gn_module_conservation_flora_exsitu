@@ -27,7 +27,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
@@ -67,6 +67,29 @@ import { SemisTableService } from './semis-table/semis-table.service';
 import { ReplicatesModalComponent } from './replicates/replicates-modal.component';
 import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
 import { ViabilityFormService } from './viability/viability-form.service';
+
+export function getFrenchPaginatorIntl(): MatPaginatorIntl {
+  const paginatorIntl = new MatPaginatorIntl();
+
+  paginatorIntl.itemsPerPageLabel = 'Éléments par page :';
+  paginatorIntl.nextPageLabel = 'Page suivante';
+  paginatorIntl.previousPageLabel = 'Page précédente';
+  paginatorIntl.firstPageLabel = 'Première page';
+  paginatorIntl.lastPageLabel = 'Dernière page';
+
+  paginatorIntl.getRangeLabel = (page: number, pageSize: number, length: number) => {
+    if (length === 0 || pageSize === 0) {
+      return `0 sur ${length}`;
+    }
+
+    const startIndex = page * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, length);
+
+    return `${startIndex + 1} – ${endIndex} sur ${length}`;
+  };
+
+  return paginatorIntl;
+}
 
 export const routingConfiguration: ExtraOptions = {
     paramsInheritanceStrategy: 'always'
@@ -124,6 +147,7 @@ registerLocaleData(localeFr);
     SemisTableService,
     ViabilityFormService,
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    { provide: MatPaginatorIntl, useFactory: getFrenchPaginatorIntl },
   ],
   imports: [
     RouterModule.forChild(routes),
