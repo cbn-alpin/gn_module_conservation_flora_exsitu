@@ -6,6 +6,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ConfigService } from '../services/config.service';
 import { DataService } from '../services/data.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 interface Action {
   numSemis: string;
@@ -48,6 +49,7 @@ export class ActionComponent implements OnInit {
   replicateLabels: string[] = [];
   replicateDatesUsed: string[] = [];
   public actionTypes: any[] = [];
+  private cancelDialogOpen = false;
 
   constructor(
     private fb: FormBuilder,
@@ -57,7 +59,8 @@ export class ActionComponent implements OnInit {
     public api: DataService,
     private route: ActivatedRoute,
     @Inject(MAT_DIALOG_DATA) public dialogData: any,
-    private exsituFormService: ExsituFormService
+    private exsituFormService: ExsituFormService,
+    private dialogService: DialogService
   ) {
     this.additionalDataForm = this.fb.group({});
 
@@ -403,6 +406,22 @@ export class ActionComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.dialogRef.close();
+    if (this.cancelDialogOpen) {
+      return;
+    }
+
+    this.cancelDialogOpen = true;
+
+    this.dialogService
+      .confirmDialog({
+        message: 'Étes vous certain de vouloir annuler ?'
+      })
+      .subscribe((yes) => {
+        this.cancelDialogOpen = false;
+
+        if (yes) {
+          this.dialogRef.close();
+        }
+      });
   }
 }
