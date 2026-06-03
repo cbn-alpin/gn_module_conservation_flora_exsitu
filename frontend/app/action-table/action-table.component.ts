@@ -141,6 +141,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     const dialogRef = this.dialog.open(ActionComponent, {
       width: '900px',
       height: '90vh',
+      disableClose: true,
       data: this.idSowing ? { id_sowing: this.idSowing } : { id_test: this.idTest }
     });
 
@@ -161,6 +162,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
             const dialogRef = this.dialog.open(ActionComponent, {
               width: '900px',
               height: '90vh',
+              disableClose: true,
               data: {
                 ...(this.idSowing ? { id_sowing: this.idSowing } : { id_test: this.idTest }),
                 action: actionFull,

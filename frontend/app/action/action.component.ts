@@ -114,6 +114,17 @@ export class ActionComponent implements OnInit {
     this.idSowing = this.dialogData?.id_sowing ?? null;
     const url = this.router.url;
 
+    this.dialogRef.backdropClick().subscribe(() => {
+      this.onCancel();
+    });
+
+    this.dialogRef.keydownEvents().subscribe((event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.onCancel();
+      }
+    });
+
     this.codeNomenclatureType = url.includes('viability') ? 'CFE_ACTION_VIA_TYPE' : 'CFE_ACTION_TYPE';
     console.log("📍 Type d'action détecté :", this.codeNomenclatureType);
 
