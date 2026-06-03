@@ -45,8 +45,14 @@
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="onEdit(element)">
               <mat-icon>edit</mat-icon>
-              <span>Éditer</span>
+              <span>Modifier</span>
             </button>
+
+            <button mat-menu-item (click)="onRowClick(element)">
+              <mat-icon style="color: #FFA726;">visibility</mat-icon>
+              <span>Détails</span>
+            </button>
+
             <button mat-menu-item color="warn" (click)="onDelete(element)">
               <mat-icon color="warn">delete</mat-icon>
               <span class="text-red">Supprimer</span>
