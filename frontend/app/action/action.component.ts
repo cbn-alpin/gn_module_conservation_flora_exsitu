@@ -50,6 +50,12 @@ export class ActionComponent implements OnInit {
   replicateDatesUsed: string[] = [];
   public actionTypes: any[] = [];
   private cancelDialogOpen = false;
+  private initialActionFormState: any = null;
+  private initialReplicatesFormState: any = null;
+  private initialCode = '';
+  private initialCodeId: any = null;
+  private initialScarTypeCode = '';
+  private initialHideTypeField = false;
 
   constructor(
     private fb: FormBuilder,
@@ -183,6 +189,8 @@ export class ActionComponent implements OnInit {
           this.code = result.cd_nomenclature;
           this.codeId = result.id_nomenclature;
 
+          this.storeInitialFormState();
+
           if (this.code === 'svr') {
             this.initReplicateFields(this.replicateCount);
             this.loadReplicateDates();
@@ -199,6 +207,10 @@ export class ActionComponent implements OnInit {
           }
         }
       });
+    }
+
+    if (!this.dialogData?.edit) {
+      this.storeInitialFormState();
     }
 
     if (this.idTest) {
@@ -427,6 +439,56 @@ export class ActionComponent implements OnInit {
     if (!selectedDate || this.dialogData?.edit) return false;
     const isoDate = new Date(selectedDate).toISOString().slice(0, 10);
     return this.code === 'svr' && this.replicateDatesUsed.includes(isoDate);
+  }
+
+  private storeInitialFormState(): void {
+    this.initialActionFormState = this.germinationForm.getRawValue();
+    this.initialReplicatesFormState = this.replicatesForm.getRawValue();
+
+    this.initialCode = this.code;
+    this.initialCodeId = this.codeId;
+    this.initialScarTypeCode = this.scarTypeCode;
+    this.initialHideTypeField = this.hideTypeField;
+  }
+
+  onReset(): void {
+    if (!this.initialActionFormState) {
+      return;
+    }
+
+    this.dialogService
+      .confirmDialog({
+        message: this.dialogData?.edit
+          ? 'Étes vous certain de vouloir réinitialiser les modifications de cette action ?'
+          : 'Étes vous certain de vouloir réinitialiser cette action ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        this.code = this.initialCode;
+        this.codeId = this.initialCodeId;
+        this.scarTypeCode = this.initialScarTypeCode;
+        this.hideTypeField = this.initialHideTypeField;
+
+        this.germinationForm.reset(this.initialActionFormState);
+        this.replicatesForm.reset(this.initialReplicatesFormState);
+
+        if (this.initialHideTypeField) {
+          this.germinationForm.get('id_action_type')?.disable();
+        } else {
+          this.germinationForm.get('id_action_type')?.enable();
+        }
+
+        this.germinationForm.markAsPristine();
+        this.germinationForm.markAsUntouched();
+        this.germinationForm.updateValueAndValidity();
+
+        this.replicatesForm.markAsPristine();
+        this.replicatesForm.markAsUntouched();
+        this.replicatesForm.updateValueAndValidity();
+      });
   }
 
   onCancel(): void {

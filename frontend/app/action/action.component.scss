@@ -174,3 +174,16 @@ mat-form-field {
   width: 100%;
   box-sizing: border-box;
 }
+
+.reset-button {
+  background-color: #8e24aa;
+  color: white;
+}
+
+.reset-button:hover {
+  background-color: #6a1b9a;
+}
+
+.reset-button .mat-icon {
+  color: #fff !important;
+}
