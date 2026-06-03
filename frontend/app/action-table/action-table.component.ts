@@ -12,8 +12,11 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionComponent } from '../action/action.component';
 import { DataService } from '../services/data.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { CommonService } from '@geonature_common/service/common.service';
 import { AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+
 
 export interface Action {
   id_action: number;
@@ -31,6 +34,7 @@ export interface Action {
 export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() idTest: number | null = null;
   @Input() idSowing: number | null = null;
+  @Input() sowingCode: string = '';
   @Input() dataSource = new MatTableDataSource<any>();
   @Input() enablePagination = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -53,6 +57,8 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     public router: Router,
     private dialog: MatDialog,
     private api: DataService,
+    private dialogService: DialogService,
+    private toast: CommonService
   ) {}
 
   ngOnInit(): void {
@@ -191,17 +197,31 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   onDelete(action: Action): void {
-    const confirmed = confirm(`Voulez-vous vraiment supprimer cette action ?`);
-    if (!confirmed) return;
+    this.dialogService
+      .confirmDialog({ message: 'Étes vous certain de vouloir supprimer cette action ?' })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
 
-    this.api.deleteaction(action.id_action).subscribe({
-      next: () => {
-        this.loadActions();
-      },
-      error: (err) => {
-        console.error('Erreur lors de la suppression :', err);
-      }
-    });
+        this.api.deleteaction(action.id_action).subscribe({
+          next: () => {
+            const currentSowingCode = this.sowingCode || '';
+            const currentActionType = action?.label_action_type || '';
+            const actionLabel = `${currentSowingCode} - ${currentActionType}`.trim();
+
+            this.toast.translateToaster(
+              'error',
+              `Action ${actionLabel} supprimée avec succès`
+            );
+
+            this.loadActions();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression de l’action :', err);
+          }
+        });
+      });
   }
 
   onRowClick(action: Action): void {
