@@ -15,7 +15,7 @@
       <ng-container matColumnDef="date_start">
         <th mat-header-cell *matHeaderCellDef>Début</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.date_start | date:'shortDate' }}
+          {{ element.date_start ? (element.date_start | date:'dd/MM/yyyy') : '-' }}
         </td>
       </ng-container>
 
