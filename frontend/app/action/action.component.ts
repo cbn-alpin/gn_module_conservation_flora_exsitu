@@ -273,23 +273,36 @@ export class ActionComponent implements OnInit {
   
   onSubmit(): void {
     if (!this.germinationForm.valid) return;
-    const finalForm = this.formatDataFormAction();
 
-    if (this.dialogData?.edit && this.dialogData?.id_action) {
-      this.api.updateActionData(this.dialogData.id_action, finalForm).subscribe({
-        next: (res) => this.dialogRef.close(res),
-        error: (err) => console.error("Erreur modification action :", err)
-      });
-    } else {
-      const request$ = this.idSowing
-        ? this.api.addActionBySowing(this.idSowing, finalForm)
-        : this.api.addActionByTest(this.idTest!, finalForm);
+    this.dialogService
+      .confirmDialog({
+        message: this.dialogData?.edit
+          ? 'Étes vous certain de vouloir modifier cette action ?'
+          : 'Étes vous certain de vouloir enregistrer cette action ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
 
-      request$.subscribe({
-        next: (res) => this.dialogRef.close(res),
-        error: (err) => console.error("Erreur création action :", err)
+        const finalForm = this.formatDataFormAction();
+
+        if (this.dialogData?.edit && this.dialogData?.id_action) {
+          this.api.updateActionData(this.dialogData.id_action, finalForm).subscribe({
+            next: (res) => this.dialogRef.close(res),
+            error: (err) => console.error("Erreur modification action :", err)
+          });
+        } else {
+          const request$ = this.idSowing
+            ? this.api.addActionBySowing(this.idSowing, finalForm)
+            : this.api.addActionByTest(this.idTest!, finalForm);
+
+          request$.subscribe({
+            next: (res) => this.dialogRef.close(res),
+            error: (err) => console.error("Erreur création action :", err)
+          });
+        }
       });
-    }
   }
 
   private formatDataFormAction() {
