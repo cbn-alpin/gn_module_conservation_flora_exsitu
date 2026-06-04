@@ -893,7 +893,7 @@ export class SemisComponent implements OnInit {
               this.semisService.updateSowing(this.idMaterial!, this.modalData.test.id_sowing, finalForm).subscribe({
                 next: (res) => {
                   this.toast.translateToaster(
-                    'info',
+                    'success',
                     `Semis ${this.toBoldText(currentCode)} mis à jour avec succès`
                   );
                   this.dialogRef.close(res);
@@ -935,6 +935,25 @@ export class SemisComponent implements OnInit {
         this.cancelDialogOpen = false;
 
         if (yes) {
+          const currentCode = this.semisForm.get('code')?.value || this.initialFormState?.code || '';
+
+          if (this.modalData?.edit) {
+            this.toast.translateToaster(
+              'info',
+              `Semis ${this.toBoldText(currentCode)} non modifié`
+            );
+          } else if (currentCode) {
+            this.toast.translateToaster(
+              'info',
+              `Semis ${this.toBoldText(currentCode)} non créé`
+            );
+          } else {
+            this.toast.translateToaster(
+              'info',
+              'Création du semis annulée'
+            );
+          }
+
           this.dialogRef.close();
         }
       });
