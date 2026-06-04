@@ -300,21 +300,15 @@ export class ActionComponent implements OnInit {
   }
 
   private formatDateForToaster(value: any): string {
-    if (!value) {
+    const formattedDate = this.formatDateForApi(value);
+
+    if (!formattedDate) {
       return '-';
     }
 
-    const date = new Date(value);
+    const [year, month, day] = formattedDate.split('-');
 
-    if (Number.isNaN(date.getTime())) {
-      return '-';
-    }
-
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    return `${day}/${month}/${year}`;
   }
 
   private getActionSuccessLabel(): string {
@@ -379,8 +373,34 @@ export class ActionComponent implements OnInit {
       });
   }
 
+  private formatDateForApi(value: any): string | null {
+    if (!value) {
+      return null;
+    }
+
+    if (typeof value === 'string') {
+      return value.split('T')[0];
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   private formatDataFormAction() {
-    const rawForm = JSON.parse(JSON.stringify(this.germinationForm.value));
+    const rawForm = { ...this.germinationForm.value };
+
+    rawForm.date_start = this.formatDateForApi(this.germinationForm.get('date_start')?.value);
+    rawForm.date_end = this.formatDateForApi(this.germinationForm.get('date_end')?.value);
+
     const cleanedForm = {};
     const allowedFields = [
       'id_test', 'id_sowing', 'date_start', 'date_end',
