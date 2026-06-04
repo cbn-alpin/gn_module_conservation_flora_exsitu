@@ -200,12 +200,14 @@
       <!-- Infos générales -->
       <div class="field-block" *ngIf="code && code !== 'svr'">
         <label>Date début :</label>
-        <span>{{ germinationForm.get('date_start')?.value | date }}</span>
+        <span>{{ formatDateForDisplay(germinationForm.get('date_start')?.value) }}</span>
       </div>
+
       <div class="field-block" *ngIf="code">
         <label>Date fin :</label>
-        <span>{{ germinationForm.get('date_end')?.value | date }}</span>
+        <span>{{ formatDateForDisplay(germinationForm.get('date_end')?.value) }}</span>
       </div>
+
       <div class="field-block" *ngIf="code">
         <label>Effectué par :</label>
         <span>{{ labels.id_actor }}</span>

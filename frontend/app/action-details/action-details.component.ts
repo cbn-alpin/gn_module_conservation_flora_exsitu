@@ -324,4 +324,31 @@ export class ActionDetailsComponent implements OnChanges {
       };
     }
   }
+
+  formatDateForDisplay(value: any): string {
+    if (!value) {
+      return '-';
+    }
+
+    if (typeof value === 'string') {
+      const datePart = value.split('T')[0];
+      const [year, month, day] = datePart.split('-');
+
+      if (year && month && day) {
+        return `${day}/${month}/${year}`;
+      }
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return '-';
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
 }
