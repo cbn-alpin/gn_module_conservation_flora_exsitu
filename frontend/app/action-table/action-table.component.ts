@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActionComponent } from '../action/action.component';
 import { DataService } from '../services/data.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -148,7 +149,9 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
       width: '900px',
       height: '90vh',
       disableClose: true,
-      data: this.idSowing ? { id_sowing: this.idSowing } : { id_test: this.idTest }
+      data: this.idSowing
+        ? { id_sowing: this.idSowing, sowingCode: this.sowingCode }
+        : { id_test: this.idTest }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -170,10 +173,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
               height: '90vh',
               disableClose: true,
               data: {
-                ...(this.idSowing ? { id_sowing: this.idSowing } : { id_test: this.idTest }),
+                ...(this.idSowing ? { id_sowing: this.idSowing, sowingCode: this.sowingCode } : { id_test: this.idTest }),
                 action: actionFull,
                 edit: true,
                 code,
+                actionTypeLabel: element?.label_action_type || '',
                 id_action: actionFull.id_action,
                 hideTypeField: true
               }
