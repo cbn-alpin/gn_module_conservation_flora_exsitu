@@ -30,8 +30,19 @@
     idMaterial: number | null = null;
     sowings:any;
     @Input() dataSource = new MatTableDataSource<Semis>();
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+    private paginatorRef!: MatPaginator;
+
+    @ViewChild(MatPaginator)
+    set paginator(paginator: MatPaginator) {
+      if (paginator) {
+        this.paginatorRef = paginator;
+        this.syncPaginator();
+      }
+    }
+
     rowPerPage = 5;
+
     @Output() view = new EventEmitter<Semis>();
     @Output() edit = new EventEmitter<Semis>();
     @Output() delete = new EventEmitter<Semis>();
@@ -104,16 +115,28 @@
       ){
       }
 
+  private syncPaginator(): void {
+    if (!this.paginatorRef) {
+      return;
+    }
+
+    this.dataSource.paginator = this.paginatorRef;
+    this.paginatorRef.length = this.dataSource.data.length;
+  }
+
     ngOnInit(): void {
       this.idMaterial = this.exsituFormService.idMaterial;
     this.semisService.sowings$.subscribe((sowings) => {
-      this.dataSource.data = sowings;
-      console.log(this.dataSource.data)
+      this.dataSource.data = sowings || [];
+      console.log(this.dataSource.data);
 
-      if (this.paginator) {
-        this.dataSource.paginator = this.paginator;
-        this.paginator.firstPage();
-      }
+      setTimeout(() => {
+        this.syncPaginator();
+
+        if (this.paginatorRef) {
+          this.paginatorRef.firstPage();
+        }
+      });
     });
 
       // ⬇️ Déclenche le chargement côté service
@@ -121,7 +144,7 @@
     }
 
     ngAfterViewInit(): void {
-      this.dataSource.paginator = this.paginator;
+      this.syncPaginator();
     }
     
     onView() {
