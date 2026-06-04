@@ -13,7 +13,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActionComponent } from '../action/action.component';
 import { DataService } from '../services/data.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
-import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';

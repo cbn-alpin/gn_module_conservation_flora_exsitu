@@ -7,6 +7,7 @@ import { ConfigService } from '../services/config.service';
 import { DataService } from '../services/data.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
 interface Action {
   numSemis: string;
