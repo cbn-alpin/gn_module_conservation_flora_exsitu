@@ -573,6 +573,67 @@ export class ActionComponent implements OnInit {
       });
   }
 
+  private getSelectedActionTypeLabel(): string {
+    const selectedActionType = this.germinationForm.get('id_action_type')?.value;
+
+    return (
+      this.dialogData?.actionTypeLabel ||
+      selectedActionType?.label_default ||
+      selectedActionType?.label_fr ||
+      selectedActionType?.label ||
+      selectedActionType?.mnemonique ||
+      ''
+    );
+  }
+
+  private getActionCancelLabel(): string {
+    const sowingCode = this.dialogData?.sowingCode || '';
+    const actionTypeLabel = this.getSelectedActionTypeLabel();
+
+    if (sowingCode && actionTypeLabel) {
+      return `${sowingCode} - ${actionTypeLabel}`;
+    }
+
+    if (sowingCode) {
+      return sowingCode;
+    }
+
+    if (actionTypeLabel) {
+      return actionTypeLabel;
+    }
+
+    return '';
+  }
+
+  private showActionCancelToaster(): void {
+    const actionLabel = this.getActionCancelLabel();
+    const dateStart = this.formatDateForToaster(this.germinationForm.get('date_start')?.value);
+    const hasDateStart = dateStart !== '-';
+
+    if (this.dialogData?.edit) {
+      this.toast.translateToaster(
+        'info',
+        `Action ${this.toBoldItalicText(actionLabel)} non modifiée${hasDateStart ? `. Date de début : ${this.toBoldItalicText(dateStart)}` : ''}`
+      );
+
+      return;
+    }
+
+    if (actionLabel) {
+      this.toast.translateToaster(
+        'info',
+        `Action ${this.toBoldItalicText(actionLabel)} non créée${hasDateStart ? `. Date de début : ${this.toBoldItalicText(dateStart)}` : ''}`
+      );
+
+      return;
+    }
+
+    this.toast.translateToaster(
+      'info',
+      `Création de l’action annulée${hasDateStart ? `. Date de début : ${this.toBoldItalicText(dateStart)}` : ''}`
+    );
+  }
+
   onCancel(): void {
     if (this.cancelDialogOpen) {
       return;
@@ -588,8 +649,9 @@ export class ActionComponent implements OnInit {
         this.cancelDialogOpen = false;
 
         if (yes) {
+          this.showActionCancelToaster();
           this.dialogRef.close();
         }
-      });
+      }); 
   }
 }
