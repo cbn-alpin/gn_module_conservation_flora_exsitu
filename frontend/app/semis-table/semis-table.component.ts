@@ -185,7 +185,7 @@
 
             this.toast.translateToaster(
               'warning',
-              `Suppression impossible : le semis ${this.toBoldText(currentCode)} contient ${actionCount} ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
+              `Suppression impossible : le semis ${this.toBoldText(currentCode)} contient ${this.toBoldText(String(actionCount))} ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
             );
 
             return;
@@ -215,7 +215,7 @@
 
                     this.toast.translateToaster(
                       'warning',
-                      `Suppression impossible : le semis ${this.toBoldText(currentCode)} contient ${linkedActionCount} ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
+                      `Suppression impossible : le semis ${this.toBoldText(currentCode)} contient ${this.toBoldText(String(linkedActionCount))} ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
                     );
 
                     return;
