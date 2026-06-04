@@ -903,7 +903,10 @@ export class SemisComponent implements OnInit {
             } else {
               this.semisService.addSowing(this.idMaterial!, finalForm).subscribe({
                 next: (res) => {
-                  this.toast.translateToaster('success', `Semis ${currentCode} créé avec succès`);
+                  this.toast.translateToaster(
+                    'success',
+                    `Semis ${this.toBoldText(currentCode)} créé avec succès`
+                  );  
                   this.dialogRef.close(res);
                 },
                 error: (err) => this.handleSowingSaveError(err)
