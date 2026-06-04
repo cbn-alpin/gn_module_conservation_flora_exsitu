@@ -39,6 +39,10 @@ export class SemisTableService {
   deleteSowing(idMaterial: number, idSowing: number): Observable<any> {
     return this.api.delete<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`);
   }
+
+  getActionsBySowing(idSowing: number): Observable<any[]> {
+    return this.api.get<any[]>(`${this.moduleBaseUrl}/sowings/${idSowing}/actions`);
+  }
   
 
 }

@@ -174,25 +174,62 @@
         return;
       }
 
-      this.dialogService
-        .confirmDialog({ message: 'Étes vous certain de vouloir supprimer ce semis ?' })
-        .subscribe((yes) => {
-          if (yes) {
-            this.semisService.deleteSowing(this.idMaterial!, element.id_sowing).subscribe({
-              next: () => {
-                const currentCode = element?.code || '';
-                this.toast.translateToaster(
-                  'error',
-                  `Semis ${this.toBoldText(currentCode)} supprimé avec succès`
-                );
-                this.semisService.loadSowings(this.idMaterial!);
-              },
-              error: (err) => {
-                console.error('Erreur lors de la suppression du semis :', err);
-              }
-            });
+      const currentCode = element?.code || '';
+
+      this.semisService.getActionsBySowing(element.id_sowing).subscribe({
+        next: (actions) => {
+          const actionCount = actions?.length || 0;
+
+          if (actionCount > 0) {
+            const actionLabel = actionCount > 1 ? 'actions liées' : 'action liée';
+
+            this.toast.translateToaster(
+              'warning',
+              `Suppression impossible : le semis ${this.toBoldText(currentCode)} contient ${actionCount} ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
+            );
+
+            return;
           }
-        });
+
+          this.dialogService
+            .confirmDialog({ message: 'Étes vous certain de vouloir supprimer ce semis ?' })
+            .subscribe((yes) => {
+              if (!yes) {
+                return;
+              }
+
+              this.semisService.deleteSowing(this.idMaterial!, element.id_sowing).subscribe({
+                next: () => {
+                  this.toast.translateToaster(
+                    'error',
+                    `Semis ${this.toBoldText(currentCode)} supprimé avec succès`
+                  );
+
+                  this.semisService.loadSowings(this.idMaterial!);
+                },
+                error: (err) => {
+                  const linkedActionCount = err?.error?.action_count;
+
+                  if (err?.status === 409 && linkedActionCount) {
+                    const actionLabel = linkedActionCount > 1 ? 'actions liées' : 'action liée';
+
+                    this.toast.translateToaster(
+                      'warning',
+                      `Suppression impossible : le semis ${this.toBoldText(currentCode)} contient ${linkedActionCount} ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
+                    );
+
+                    return;
+                  }
+
+                  console.error('Erreur lors de la suppression du semis :', err);
+                }
+              });
+            });
+        },
+        error: (err) => {
+          console.error('Erreur lors de la vérification des actions liées au semis :', err);
+        }
+      });
     }
 
     onRowClick(row: any): void {

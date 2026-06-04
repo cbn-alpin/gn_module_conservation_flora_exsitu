@@ -1536,10 +1536,19 @@ def list_sowings_by_material(id_material):
 @json_resp
 def delete_sowing(id_material, id_sowing):
     repo = SowingRepository()
-    deleted = repo.delete(id_sowing)
+    result = repo.delete(id_sowing)
 
-    if not deleted:
+    if result.get("not_found"):
         return {"error": "Semis non trouvé"}, 404
+
+    if result.get("blocked"):
+        action_count = result.get("action_count", 0)
+
+        return {
+            "error": "Suppression impossible",
+            "message": "Ce semis contient des actions liées.",
+            "action_count": action_count
+        }, 409
 
     return {"message": "Semis supprimé avec succès"}, 200
 

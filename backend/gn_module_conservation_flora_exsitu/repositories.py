@@ -813,24 +813,28 @@ class SowingRepository:
         try:
             sowing = TSowing.query.get(id_sowing)
             if not sowing:
-                return False
+                return {
+                    "deleted": False,
+                    "not_found": True,
+                    "action_count": 0
+                }
 
-            actions = TAction.query.filter_by(id_sowing=id_sowing).all()
-            action_ids = [action.id_action for action in actions]
+            action_count = TAction.query.filter_by(id_sowing=id_sowing).count()
 
-            if action_ids:
-                TActionReplicate.query.filter(
-                    TActionReplicate.id_action.in_(action_ids)
-                ).delete(synchronize_session=False)
-
-                TAction.query.filter(
-                    TAction.id_action.in_(action_ids)
-                ).delete(synchronize_session=False)
+            if action_count > 0:
+                return {
+                    "deleted": False,
+                    "blocked": True,
+                    "action_count": action_count
+                }
 
             db.session.delete(sowing)
             db.session.commit()
 
-            return True
+            return {
+                "deleted": True,
+                "action_count": 0
+            }
 
         except SQLAlchemyError as e:
             db.session.rollback()
