@@ -590,11 +590,15 @@ export class ActionComponent implements OnInit {
     const sowingCode = this.dialogData?.sowingCode || '';
     const actionTypeLabel = this.getSelectedActionTypeLabel();
 
+    if (!this.dialogData?.edit && !actionTypeLabel) {
+      return '';
+    }
+
     if (sowingCode && actionTypeLabel) {
       return `${sowingCode} - ${actionTypeLabel}`;
     }
 
-    if (sowingCode) {
+    if (this.dialogData?.edit && sowingCode) {
       return sowingCode;
     }
 
