@@ -335,7 +335,7 @@ export class ActionComponent implements OnInit {
 
     this.toast.translateToaster(
       isEdit ? 'info' : 'success',
-      `Action ${this.toBoldItalicText(actionLabel)} ${isEdit ? 'mise à jour' : 'créée'} avec succès le ${this.toBoldItalicText(dateStart)}`
+      `Action ${this.toBoldItalicText(actionLabel)} ${isEdit ? 'mise à jour' : 'créée'} avec succès. Date de début : ${this.toBoldItalicText(dateStart)}`
     );
   }
   
