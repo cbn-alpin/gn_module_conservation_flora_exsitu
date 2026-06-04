@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DataService } from '../services/data.service';
 
@@ -17,6 +17,7 @@ interface ReplicateGroup {
 })
 export class ActionDetailsComponent implements OnChanges {
   @Input() actionId: number | null = null;
+  @Output() hideDetails = new EventEmitter<void>();
 
   germinationForm: FormGroup;
   code: string | null = null;

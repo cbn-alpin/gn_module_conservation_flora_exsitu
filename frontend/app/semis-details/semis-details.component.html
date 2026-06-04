@@ -110,7 +110,10 @@
     </div>
 
     <div class="germination-detail" *ngIf="selectedAction">
-      <app-action-details [actionId]="selectedAction.id_action"></app-action-details>
+      <app-action-details
+        [actionId]="selectedAction.id_action"
+        (hideDetails)="selectedAction = null">
+      </app-action-details>
     </div>
   </div>
 </div>

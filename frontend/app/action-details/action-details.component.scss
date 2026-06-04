@@ -92,3 +92,26 @@ mat-card-content {
 .group-end {
   border-right: 2px solid #999;
 }
+
+.action-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hide-details-button {
+  background-color: #e0e0e0;
+  color: #000;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.hide-details-button:hover {
+  background-color: #d5d5d5;
+}
+
+.hide-details-button mat-icon {
+  margin-right: 4px;
+}
