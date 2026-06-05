@@ -49,13 +49,18 @@
           ></pnx-nomenclature>
         </div>
         <div class="form-group half-width">
-          <small> produit utilisé</small>
-          <pnx-nomenclature
-            keyValue="id_nomenclature"
-            [bindAllItem]="false"
-            codeNomenclatureType="CFE_STERILIZATION_PRODUCT"
-            [parentFormControl]="germinationForm.controls.id_chemical_liquid"
-          ></pnx-nomenclature>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Produit prétraitement</mat-label>
+
+            <mat-select formControlName="id_chemical_liquid">
+              <mat-option
+                *ngFor="let product of getOrderedPretreatmentProducts()"
+                [value]="product.id_nomenclature"
+              >
+                {{ product.label_default || product.label_fr }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
         
         <div class="form-row">

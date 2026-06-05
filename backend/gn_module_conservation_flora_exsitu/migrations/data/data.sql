@@ -539,10 +539,10 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
     'CFE_STERILIZATION_PRODUCT',
-    'Produit de stérilisation',
-    'Nomenclature des produits utilisés pour la stérilisation des semences.',
-    'Produit de stérilisation',
-    'Nomenclature des produits utilisés pour la stérilisation des semences.',
+    'Produit prétraitement',
+    'Nomenclature des produits utilisés pour le prétraitement des semences.',
+    'Produit prétraitement',
+    'Nomenclature des produits utilisés pour le prétraitement des semences.',
     'conservation_flora_exsitu'
 );
 
