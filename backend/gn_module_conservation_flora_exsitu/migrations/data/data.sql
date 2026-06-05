@@ -551,10 +551,10 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
     'CFE_LIQUID_TREATMENT',
-    'Traitement liquide',
-    'Nomenclature des liquides utilisés pour les traitements des semences.',
-    'Traitement liquide',
-    'Nomenclature des liquides utilisés pour les traitements des semences.',
+    'Liquide traitement',
+    'Nomenclature des liquides utilisés pour le traitement des semences.',
+    'Liquide traitement',
+    'Nomenclature des liquides utilisés pour le traitement des semences.',
     'conservation_flora_exsitu'
 );
 

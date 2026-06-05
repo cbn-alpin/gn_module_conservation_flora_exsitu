@@ -197,23 +197,39 @@
 
             <!-- Traitement -->
             <div *ngIf="code === 'tra'">
-              <h3 class="section-subtitle">Liquide traitement</h3>
-          
-              <div class="form-row">
-                <div class="form-group half-width">
-                  <small>produit utilisé</small>
-                  <pnx-nomenclature
-                    keyValue="id_nomenclature"
-                    [bindAllItem]="false"
-                    codeNomenclatureType="CFE_LIQUID_TREATMENT"
-                    [parentFormControl]="germinationForm.controls.id_liquid_treatment"
-                  ></pnx-nomenclature>
+              <h3 class="section-subtitle">{{ idSowing ? 'Liquide traitement' : 'Traitement' }}</h3>
+
+                <div class="form-row">
+                  <div class="form-group half-width" *ngIf="idSowing">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Liquide traitement</mat-label>
+
+                      <mat-select formControlName="id_liquid_treatment">
+                        <mat-option
+                          *ngFor="let liquid of getOrderedTreatmentLiquids()"
+                          [value]="liquid.id_nomenclature"
+                        >
+                          {{ liquid.label_default || liquid.label_fr }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group half-width" *ngIf="!idSowing">
+                    <small>produit utilisé</small>
+                    <pnx-nomenclature
+                      keyValue="id_nomenclature"
+                      [bindAllItem]="false"
+                      codeNomenclatureType="CFE_LIQUID_TREATMENT"
+                      [parentFormControl]="germinationForm.controls.id_liquid_treatment"
+                    ></pnx-nomenclature>
+                  </div>
+
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Concentration (%)</mat-label>
+                    <input matInput type="number" formControlName="concentration_chemical_liquid">
+                  </mat-form-field>
                 </div>
-                <mat-form-field appearance="outline" class="half-width">
-                  <mat-label>Concentration (%)</mat-label>
-                  <input matInput type="number" formControlName="concentration_chemical_liquid">
-                </mat-form-field>
-              </div>
             
               <h3 class="section-subtitle">Régime thermo-photo</h3>
               <div class="form-row">

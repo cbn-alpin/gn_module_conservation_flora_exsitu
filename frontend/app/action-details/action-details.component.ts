@@ -17,6 +17,7 @@ interface ReplicateGroup {
 })
 export class ActionDetailsComponent implements OnChanges {
   @Input() actionId: number | null = null;
+  @Input() isSowingContext = false;
   @Output() hideDetails = new EventEmitter<void>();
 
   germinationForm: FormGroup;

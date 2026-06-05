@@ -196,6 +196,425 @@ def upgrade():
         AND cd_nomenclature = 'tra';
     """)
 
+    op.execute("""
+        UPDATE ref_nomenclatures.bib_nomenclatures_types
+        SET
+            label_default = 'Produit prétraitement',
+            label_fr = 'Produit prétraitement',
+            definition_default = 'Nomenclature des produits utilisés pour le prétraitement des semences.',
+            definition_fr = 'Nomenclature des produits utilisés pour le prétraitement des semences.'
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT';
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'aut',
+            'autre',
+            'Autre',
+            'Autre produit utilisé pour le prétraitement des semences',
+            'Autre',
+            'Autre produit utilisé pour le prétraitement des semences',
+            'conservation_flora_exsitu',
+            '.004'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'aut'
+        );
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Hypochlorite de calcium (Ca(ClO)₂)',
+            label_fr = 'Hypochlorite de calcium (Ca(ClO)₂)',
+            definition_default = 'Produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Produit utilisé pour le prétraitement des semences',
+            hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'cacl2';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Peroxyde d’hydrogène (H₂O₂)',
+            label_fr = 'Peroxyde d’hydrogène (H₂O₂)',
+            definition_default = 'Produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Produit utilisé pour le prétraitement des semences',
+            hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'h2o2';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Éthanol (C₂H₅OH)',
+            label_fr = 'Éthanol (C₂H₅OH)',
+            definition_default = 'Produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Produit utilisé pour le prétraitement des semences',
+            hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'c2h5oh';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'aut';
+
+        UPDATE pr_conservation_flora_exsitu.t_action
+        SET id_chemical_liquid = (
+            SELECT id_nomenclature
+            FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+            )
+            AND cd_nomenclature = 'aut'
+        )
+        WHERE id_chemical_liquid IN (
+            SELECT id_nomenclature
+            FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+            )
+            AND cd_nomenclature IN ('naclo', 'h2so4', 'crypt')
+        );
+
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature IN ('naclo', 'h2so4', 'crypt');
+
+        UPDATE ref_nomenclatures.bib_nomenclatures_types
+        SET
+            label_default = 'Liquide prétraitement',
+            label_fr = 'Liquide prétraitement',
+            definition_default = 'Nomenclature des liquides utilisés pour le prétraitement des semences.',
+            definition_fr = 'Nomenclature des liquides utilisés pour le prétraitement des semences.'
+        WHERE mnemonique = 'CFE_STERILIZATION_LIQUID';
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'aut',
+            'autre',
+            'Autre',
+            'Autre liquide utilisé pour le prétraitement des semences',
+            'Autre',
+            'Autre liquide utilisé pour le prétraitement des semences',
+            'conservation_flora_exsitu',
+            '.004'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'aut'
+        );
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Eau osmosée',
+            label_fr = 'Eau osmosée',
+            definition_default = 'Liquide utilisé pour le prétraitement des semences',
+            definition_fr = 'Liquide utilisé pour le prétraitement des semences',
+            hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        )
+        AND cd_nomenclature = 'eosm';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Eau purifiée',
+            label_fr = 'Eau purifiée',
+            definition_default = 'Liquide utilisé pour le prétraitement des semences',
+            definition_fr = 'Liquide utilisé pour le prétraitement des semences',
+            hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        )
+        AND cd_nomenclature = 'epuri';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Eau',
+            label_fr = 'Eau',
+            definition_default = 'Liquide utilisé pour le prétraitement des semences',
+            definition_fr = 'Liquide utilisé pour le prétraitement des semences',
+            hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        )
+        AND cd_nomenclature = 'eau';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        )
+        AND cd_nomenclature = 'aut';
+
+        UPDATE pr_conservation_flora_exsitu.t_action
+        SET id_water_type = (
+            SELECT id_nomenclature
+            FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+            )
+            AND cd_nomenclature = 'aut'
+        )
+        WHERE id_water_type IN (
+            SELECT id_nomenclature
+            FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+            )
+            AND cd_nomenclature IN ('exbouti', 'exrac', 'exrad', 'pvpp', 'gr24', 'edem', 'edis', 'erob', 'kine')
+        );
+
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        )
+        AND cd_nomenclature IN ('exbouti', 'exrac', 'exrad', 'pvpp', 'gr24', 'edem', 'edis', 'erob', 'kine');
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.bib_nomenclatures_types
+        SET
+            label_default = 'Liquide traitement',
+            label_fr = 'Liquide traitement',
+            definition_default = 'Nomenclature des liquides utilisés pour le traitement des semences.',
+            definition_fr = 'Nomenclature des liquides utilisés pour le traitement des semences.'
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT';
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'fonbac',
+            'fongicideBactericide',
+            'Fongicide/Bactéricide',
+            'Liquide utilisé pour le traitement des semences',
+            'Fongicide/Bactéricide',
+            'Liquide utilisé pour le traitement des semences',
+            'conservation_flora_exsitu',
+            '.002'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'fonbac'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'ins',
+            'insecticide',
+            'Insecticide',
+            'Liquide utilisé pour le traitement des semences',
+            'Insecticide',
+            'Liquide utilisé pour le traitement des semences',
+            'conservation_flora_exsitu',
+            '.003'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'ins'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'aut',
+            'autre',
+            'Autre',
+            'Autre liquide utilisé pour le traitement des semences',
+            'Autre',
+            'Autre liquide utilisé pour le traitement des semences',
+            'conservation_flora_exsitu',
+            '.004'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'aut'
+        );
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            cd_nomenclature = 'acg',
+            mnemonique = 'acideGibberellique',
+            label_default = 'Acide gibbérellique (GA₃)',
+            label_fr = 'Acide gibbérellique (GA₃)',
+            definition_default = 'Liquide utilisé pour le traitement des semences',
+            definition_fr = 'Liquide utilisé pour le traitement des semences',
+            hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        )
+        AND cd_nomenclature = 'acg';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        )
+        AND cd_nomenclature = 'fonbac';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        )
+        AND cd_nomenclature = 'ins';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        )
+        AND cd_nomenclature = 'aut';
+
+        UPDATE pr_conservation_flora_exsitu.t_action
+        SET id_liquid_treatment = (
+            SELECT id_nomenclature
+            FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+            )
+            AND cd_nomenclature = 'aut'
+        )
+        WHERE id_liquid_treatment IN (
+            SELECT id_nomenclature
+            FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+            )
+            AND cd_nomenclature IN (
+                'eau', 'eade', 'eadi', 'eaur', 'eaos', 'epuri',
+                'liqrac', 'liqimb', 'nitp', 'stri', 'poh3', 'poh6'
+            )
+        );
+
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        )
+        AND cd_nomenclature IN (
+            'eau', 'eade', 'eadi', 'eaur', 'eaos', 'epuri',
+            'liqrac', 'liqimb', 'nitp', 'stri', 'poh3', 'poh6'
+        );
+    """)
+
 def downgrade():
     op.execute("""
         UPDATE ref_nomenclatures.t_nomenclatures
@@ -391,4 +810,166 @@ def downgrade():
             WHERE mnemonique = 'CFE_ACTION_TYPE'
         )
         AND cd_nomenclature = 'synth';
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.bib_nomenclatures_types
+        SET
+            label_default = 'Produit de stérilisation',
+            label_fr = 'Produit de stérilisation',
+            definition_default = 'Nomenclature des produits utilisés pour la stérilisation des semences.',
+            definition_fr = 'Nomenclature des produits utilisés pour la stérilisation des semences.'
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Hypochlorite de calcium (Ca(ClO)₂)',
+            label_fr = 'Hypochlorite de calcium (Ca(ClO)₂)',
+            definition_default = 'Désinfectant chimique à base de chlore utilisé sur les graines',
+            definition_fr = 'Désinfectant chimique à base de chlore utilisé sur les graines',
+            hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'cacl2';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Éthanol (C₂H₅OH)',
+            label_fr = 'Éthanol (C₂H₅OH)',
+            definition_default = 'Alcool utilisé comme désinfectant pour les semences',
+            definition_fr = 'Alcool utilisé comme désinfectant pour les semences',
+            hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'c2h5oh';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Peroxyde d’hydrogène (H₂O₂)',
+            label_fr = 'Peroxyde d’hydrogène (H₂O₂)',
+            definition_default = 'Oxydant puissant utilisé pour la stérilisation des semences',
+            definition_fr = 'Oxydant puissant utilisé pour la stérilisation des semences',
+            hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'h2o2';
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'naclo', 'hypochloriteSodium', 'Hypochlorite de sodium (NaClO)',
+               'Agent stérilisant utilisé pour éliminer les microorganismes',
+               'Hypochlorite de sodium (NaClO)',
+               'Agent stérilisant utilisé pour éliminer les microorganismes',
+               'conservation_flora_exsitu', '.001'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        AND NOT EXISTS (
+            SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'naclo'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'h2so4', 'acideSulfurique', 'Acide sulfurique (H₂SO₄)',
+               'Acide utilisé pour éliminer les pathogènes des semences',
+               'Acide sulfurique (H₂SO₄)',
+               'Acide utilisé pour éliminer les pathogènes des semences',
+               'conservation_flora_exsitu', '.005'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        AND NOT EXISTS (
+            SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'h2so4'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'crypt', 'cryptonol', 'Cryptonol (fongicide)',
+               'Fongicide utilisé pour stériliser les semences',
+               'Cryptonol (fongicide)',
+               'Fongicide utilisé pour stériliser les semences',
+               'conservation_flora_exsitu', '.006'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        AND NOT EXISTS (
+            SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'crypt'
+        );
+
+        UPDATE ref_nomenclatures.bib_nomenclatures_types
+        SET
+            label_default = 'Liquide de stérilisation',
+            label_fr = 'Liquide de stérilisation',
+            definition_default = 'Nomenclature des liquides utilisés pour la stérilisation des semences.',
+            definition_fr = 'Nomenclature des liquides utilisés pour la stérilisation des semences.'
+        WHERE mnemonique = 'CFE_STERILIZATION_LIQUID';
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'exbouti', 'imbibitionExtraitBouture', 'Liquide d’imbibition (extrait de bouture)',
+               'Extrait végétal utilisé pour favoriser la germination',
+               'Liquide d’imbibition (extrait de bouture)',
+               'Extrait végétal utilisé pour favoriser la germination',
+               'conservation_flora_exsitu', '.0012'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        AND NOT EXISTS (
+            SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'exbouti'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'exrac', 'imbibitionExtraitRacinaire', 'Liquide d’imbibition (extrait racinaire)',
+               'Extrait de racines utilisé pour stimuler la germination',
+               'Liquide d’imbibition (extrait racinaire)',
+               'Extrait de racines utilisé pour stimuler la germination',
+               'conservation_flora_exsitu', '.0010'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        AND NOT EXISTS (
+            SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'exrac'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'exrad', 'imbibitionExtraitRadiculaire', 'Liquide d’imbibition (extrait radiculaire)',
+               'Solution issue des racines utilisée pour l’imbibition',
+               'Liquide d’imbibition (extrait radiculaire)',
+               'Solution issue des racines utilisée pour l’imbibition',
+               'conservation_flora_exsitu', '.0011'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_LIQUID'
+        AND NOT EXISTS (
+            SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'exrad'
+        );
     """)

@@ -112,8 +112,8 @@
     <div class="germination-detail" *ngIf="selectedAction">
       <app-action-details
         [actionId]="selectedAction.id_action"
+        [isSowingContext]="true"
         (hideDetails)="hideSelectedActionDetails()">
       </app-action-details>
-    </div>
   </div>
 </div>

@@ -167,7 +167,10 @@
       <!-- Traitement -->
       <div *ngIf="code === 'tra'">
         <h3 class="section-subtitle">Traitement</h3>
-        <div class="field-block"><label>Liquide :</label><span>{{ labels.id_liquid_treatment }}</span></div>
+        <div class="field-block">
+          <label>{{ isSowingContext ? 'Liquide traitement :' : 'Produit utilisé :' }}</label>
+          <span>{{ labels.id_liquid_treatment }}</span>
+        </div>
         <div class="field-block"><label>Concentration (%) :</label><span>{{ germinationForm.get('concentration_chemical_liquid')?.value }}</span></div>
 
         <h3 class="section-subtitle">Régime thermo-photo</h3>

@@ -52,6 +52,7 @@ export class ActionComponent implements OnInit {
   public actionTypes: any[] = [];
   public pretreatmentProductOptions: any[] = [];
   public pretreatmentLiquidOptions: any[] = [];
+  public treatmentLiquidOptions: any[] = [];
 
   private readonly actionTypeOrder = [
     'Scarification',
@@ -73,6 +74,13 @@ export class ActionComponent implements OnInit {
     'Eau osmosée',
     'Eau purifiée',
     'Eau',
+    'Autre'
+  ];
+
+  private readonly treatmentLiquidOrder = [
+    'Acide gibbérellique (GA₃)',
+    'Fongicide/Bactéricide',
+    'Insecticide',
     'Autre'
   ];
 
@@ -189,6 +197,16 @@ export class ActionComponent implements OnInit {
       error: (err) => {
         console.error('Erreur lors du chargement des liquides de prétraitement :', err);
         this.pretreatmentLiquidOptions = [];
+      }
+    });
+
+    this.api.getNomenclaturesByTypeCode('CFE_LIQUID_TREATMENT').subscribe({
+      next: (liquids) => {
+        this.treatmentLiquidOptions = liquids || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des liquides de traitement :', err);
+        this.treatmentLiquidOptions = [];
       }
     });
 
@@ -344,6 +362,36 @@ export class ActionComponent implements OnInit {
 
         return String(labelA).localeCompare(String(labelB), 'fr');
       });
+  }
+
+  public getOrderedTreatmentLiquids(): any[] {
+    const orderMap = new Map(
+      this.treatmentLiquidOrder.map((label, index) => [label, index])
+    );
+
+    const uniqueLiquids = new Map<string, any>();
+
+    this.treatmentLiquidOptions.forEach((liquid) => {
+      const label = liquid?.label_default || liquid?.label_fr || '';
+
+      if (orderMap.has(label) && !uniqueLiquids.has(label)) {
+        uniqueLiquids.set(label, liquid);
+      }
+    });
+
+    return Array.from(uniqueLiquids.values()).sort((a, b) => {
+      const labelA = a?.label_default || a?.label_fr || '';
+      const labelB = b?.label_default || b?.label_fr || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
   }
 
   loadTestDetails(): void {
