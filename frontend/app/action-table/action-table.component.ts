@@ -213,6 +213,33 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     return value.replace(/[A-Za-z0-9]/g, (char) => boldItalicChars[char] || char);
   }
 
+  private formatDateForToaster(value: any): string {
+    if (!value) {
+      return '-';
+    }
+
+    if (typeof value === 'string') {
+      const datePart = value.split('T')[0];
+      const [year, month, day] = datePart.split('-');
+
+      if (year && month && day) {
+        return `${day}/${month}/${year}`;
+      }
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return '-';
+    }
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
   onDelete(action: Action): void {
     this.dialogService
       .confirmDialog({ message: 'Étes vous certain de vouloir supprimer cette action ?' })
@@ -227,9 +254,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
             const currentActionType = action?.label_action_type || '';
             const actionLabel = `${currentSowingCode} - ${currentActionType}`.trim();
 
+            const dateStart = this.formatDateForToaster(action?.date_start);
+
             this.toast.translateToaster(
               'error',
-              `Action ${this.toBoldText(actionLabel)} supprimée avec succès`
+              `Action ${this.toBoldText(actionLabel)} supprimée avec succès. Date de début : ${this.toBoldText(dateStart)}`
             );
 
             this.loadActions();
