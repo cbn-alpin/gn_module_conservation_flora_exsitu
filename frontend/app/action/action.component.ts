@@ -50,6 +50,16 @@ export class ActionComponent implements OnInit {
   replicateLabels: string[] = [];
   replicateDatesUsed: string[] = [];
   public actionTypes: any[] = [];
+
+  private readonly actionTypeOrder = [
+    'Scarification',
+    'Prétraitement',
+    'Stratification',
+    'Suivi réplicats',
+    'Synthèse du suivi',
+    'Traitement'
+  ];
+
   private cancelDialogOpen = false;
   private initialActionFormState: any = null;
   private initialReplicatesFormState: any = null;
@@ -136,6 +146,16 @@ export class ActionComponent implements OnInit {
     this.codeNomenclatureType = url.includes('viability') ? 'CFE_ACTION_VIA_TYPE' : 'CFE_ACTION_TYPE';
     console.log("📍 Type d'action détecté :", this.codeNomenclatureType);
 
+    this.api.getNomenclaturesByTypeCode(this.codeNomenclatureType).subscribe({
+      next: (actionTypes) => {
+        this.actionTypes = actionTypes || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des types d’action :', err);
+        this.actionTypes = [];
+      }
+    });
+
     if (this.formsDefinition && this.additionalDataForm) {
       this.formsDefinition.forEach(field => {
         this.additionalDataForm.addControl(field.attribut_name, this.fb.control(''));
@@ -218,6 +238,26 @@ export class ActionComponent implements OnInit {
     if (this.idTest) {
       this.loadTestDetails();
     }
+  }
+
+  public getOrderedActionTypes(): any[] {
+    const orderMap = new Map(
+      this.actionTypeOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.actionTypes].sort((a, b) => {
+      const labelA = a?.label_default || a?.label_fr || '';
+      const labelB = b?.label_default || b?.label_fr || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
   }
 
   loadTestDetails(): void {

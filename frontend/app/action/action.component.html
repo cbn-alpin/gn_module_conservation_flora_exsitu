@@ -9,14 +9,18 @@
 
       <!-- Type d'action -->
       <div class="form-group full-width" *ngIf="!hideTypeField">
-        <small>Type d'action *</small>
-        <pnx-nomenclature
-          keyValue="id_nomenclature"
-          [bindAllItem]="true"
-          [customData]="actionTypes"
-          [codeNomenclatureType]="codeNomenclatureType"
-          [parentFormControl]="germinationForm.controls.id_action_type"
-        ></pnx-nomenclature>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type d'action</mat-label>
+
+          <mat-select formControlName="id_action_type">
+            <mat-option
+              *ngFor="let actionType of getOrderedActionTypes()"
+              [value]="actionType"
+            >
+              {{ actionType.label_default || actionType.label_fr }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
 
 
