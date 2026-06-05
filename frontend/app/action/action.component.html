@@ -40,14 +40,20 @@
      <!-- Prétraitement -->
       <div *ngIf="code === 'pret'">
         <div class="form-group half-width">
-          <small>liquide utilisé </small>
-          <pnx-nomenclature
-            keyValue="id_nomenclature"
-            [bindAllItem]="false"
-            codeNomenclatureType="CFE_STERILIZATION_LIQUID"
-            [parentFormControl]="germinationForm.controls.id_water_type"
-          ></pnx-nomenclature>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Liquide prétraitement</mat-label>
+
+            <mat-select formControlName="id_water_type">
+              <mat-option
+                *ngFor="let liquid of getOrderedPretreatmentLiquids()"
+                [value]="liquid.id_nomenclature"
+              >
+                {{ liquid.label_default || liquid.label_fr }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
+
         <div class="form-group half-width">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Produit prétraitement</mat-label>

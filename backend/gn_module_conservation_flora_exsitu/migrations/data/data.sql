@@ -563,10 +563,10 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source
 ) VALUES (
     'CFE_STERILIZATION_LIQUID',
-    'Liquide de stérilisation',
-    'Nomenclature des liquides utilisés pour la stérilisation des semences.',
-    'Liquide de stérilisation',
-    'Nomenclature des liquides utilisés pour la stérilisation des semences.',
+    'Liquide prétraitement',
+    'Nomenclature des liquides utilisés pour le prétraitement des semences.',
+    'Liquide prétraitement',
+    'Nomenclature des liquides utilisés pour le prétraitement des semences.',
     'conservation_flora_exsitu'
 );
 
