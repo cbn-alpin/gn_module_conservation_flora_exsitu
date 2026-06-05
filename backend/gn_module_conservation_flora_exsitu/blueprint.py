@@ -1585,6 +1585,7 @@ def get_nomenclatures_by_code_type(code_type):
                 TNomenclatures.cd_nomenclature
             )
             .filter(TNomenclatures.id_type == id_type)
+            .order_by(TNomenclatures.hierarchy.asc(), TNomenclatures.id_nomenclature.asc())
             .all()
         )
 

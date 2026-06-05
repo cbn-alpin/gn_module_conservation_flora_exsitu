@@ -128,6 +128,74 @@ def upgrade():
         AND cd_nomenclature = 'aut';
     """)
 
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'scar';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            cd_nomenclature = 'pret',
+            mnemonique = 'pretraitement',
+            label_default = 'Prétraitement',
+            label_fr = 'Prétraitement',
+            definition_default = 'Action de préparation des semences avant traitement ou germination',
+            definition_fr = 'Action de préparation des semences avant traitement ou germination',
+            hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'ster';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'strat';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'svr';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            hierarchy = '.005'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'synth';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            hierarchy = '.006'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'tra';
+    """)
+
 def downgrade():
     op.execute("""
         UPDATE ref_nomenclatures.t_nomenclatures
@@ -260,4 +328,67 @@ def downgrade():
                 WHERE id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
                 AND cd_nomenclature = 'aut'
         );
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            cd_nomenclature = 'ster',
+            mnemonique = 'sterilisation',
+            label_default = 'Stérilisation',
+            label_fr = 'Stérilisation',
+            definition_default = 'Technique destinée à détruire tout germe microbien',
+            definition_fr = 'Technique destinée à détruire tout germe microbien',
+            hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'pret';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'scar';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'strat';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'tra';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.005'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'svr';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.006'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'synth';
     """)
