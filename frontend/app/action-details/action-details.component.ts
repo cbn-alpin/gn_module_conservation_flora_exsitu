@@ -18,6 +18,7 @@ interface ReplicateGroup {
 export class ActionDetailsComponent implements OnChanges {
   @Input() actionId: number | null = null;
   @Input() isSowingContext = false;
+  @Input() refreshKey = 0;
   @Output() hideDetails = new EventEmitter<void>();
 
   germinationForm: FormGroup;
@@ -81,7 +82,7 @@ export class ActionDetailsComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.actionId && this.actionId) {
+    if ((changes.actionId || changes.refreshKey) && this.actionId) {
       this.loadActionDetails(this.actionId);
     }
   }
@@ -324,6 +325,50 @@ export class ActionDetailsComponent implements OnChanges {
         percent
       };
     }
+  }
+
+  private firstFilledValue(...values: any[]): any {
+    for (const value of values) {
+      if (value !== null && value !== undefined && value !== '') {
+        return value;
+      }
+    }
+
+    return '-';
+  }
+
+  getSowingChemicalTemperatureDisplayValue(): string | number {
+    return this.firstFilledValue(
+      this.germinationForm.get('temperature_light')?.value,
+      this.action?.temperature_light
+    );
+  }
+
+  getSowingActorDisplayValue(): string {
+    return this.firstFilledValue(
+      this.labels?.id_actor,
+      this.action?.label_actor
+    );
+  }
+  
+  getMechanicalScarificationDisplayValue(): string {
+    const value = this.labels?.id_scarification_mecanique || '';
+
+    if (!value) {
+      return '-';
+    }
+
+    const normalizedValue = String(value).trim().toLowerCase();
+
+    if (normalizedValue === 'partielle' || normalizedValue === 'scarification partielle') {
+      return 'Scarification partielle';
+    }
+
+    if (normalizedValue === 'totale' || normalizedValue === 'scarification totale') {
+      return 'Scarification totale';
+    }
+
+    return value;
   }
 
   formatDateForDisplay(value: any): string {

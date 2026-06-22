@@ -615,6 +615,51 @@ def upgrade():
         );
     """)
 
+    op.execute("""
+        WITH treatment_type AS (
+        SELECT id_type
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        ),
+        aut_values AS (
+        SELECT
+        n.id_nomenclature,
+        MIN(n.id_nomenclature) OVER () AS keep_id
+        FROM ref_nomenclatures.t_nomenclatures n
+        JOIN treatment_type t ON t.id_type = n.id_type
+        WHERE n.label_fr = 'Autre'
+        OR n.cd_nomenclature = 'aut'
+        ),
+        duplicate_aut_values AS (
+        SELECT id_nomenclature, keep_id
+        FROM aut_values
+        WHERE id_nomenclature <> keep_id
+        )
+        UPDATE pr_conservation_flora_exsitu.t_action a
+        SET id_liquid_treatment = d.keep_id
+        FROM duplicate_aut_values d
+        WHERE a.id_liquid_treatment = d.id_nomenclature;
+        
+        WITH treatment_type AS (
+        SELECT id_type
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        ),
+        aut_values AS (
+        SELECT
+        n.id_nomenclature,
+        MIN(n.id_nomenclature) OVER () AS keep_id
+        FROM ref_nomenclatures.t_nomenclatures n
+        JOIN treatment_type t ON t.id_type = n.id_type
+        WHERE n.label_fr = 'Autre'
+        OR n.cd_nomenclature = 'aut'
+        )
+        DELETE FROM ref_nomenclatures.t_nomenclatures n
+        USING aut_values a
+        WHERE n.id_nomenclature = a.id_nomenclature
+        AND a.id_nomenclature <> a.keep_id;
+    """)
+
 def downgrade():
     op.execute("""
         UPDATE ref_nomenclatures.t_nomenclatures
@@ -972,4 +1017,14 @@ def downgrade():
             WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
             AND n.cd_nomenclature = 'exrad'
         );
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.bib_nomenclatures_types
+        SET
+            label_default = 'Traitement liquide',
+            label_fr = 'Traitement liquide',
+            definition_default = 'Nomenclature des liquides utilisés pour les traitements des semences.',
+            definition_fr = 'Nomenclature des liquides utilisés pour les traitements des semences.'
+        WHERE mnemonique = 'CFE_LIQUID_TREATMENT';
     """)

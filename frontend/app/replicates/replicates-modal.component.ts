@@ -17,6 +17,7 @@ export class ReplicatesModalComponent implements OnInit, OnChanges {
   @Input() replicateLabels: string[] = [];
   @Input() code: string;
   @Input() replicates_for_form: any;
+  @Input() isSowingContext = false;
 
   constructor(private fb: FormBuilder) {}
 

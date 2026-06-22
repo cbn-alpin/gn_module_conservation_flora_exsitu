@@ -15,6 +15,7 @@ export class SemisDetailsComponent implements OnInit {
   idMaterial!: number;
   idSowing!: number;
   selectedAction: any = null;
+  actionDetailsRefreshKey = 0;
 
   sowingForm: FormGroup;
   dataSource = new MatTableDataSource<any>([]);
@@ -164,6 +165,29 @@ export class SemisDetailsComponent implements OnInit {
     this.selectedAction = null;
   }
 
+  getSowingReplicateCount(): number | null {
+    const value = Number(this.sowingForm.get('replicate_count')?.value);
+
+    return Number.isFinite(value) && value > 0 ? value : null;
+  }
+
+
+  onVisibleActionsChanged(visibleActions: any[]): void {
+    if (!this.selectedAction) {
+      return;
+    }
+
+    const selectedActionStillVisible = visibleActions.some(
+      (action) => action.id_action === this.selectedAction.id_action
+    );
+
+    if (!selectedActionStillVisible) {
+      this.selectedAction = null;
+    }
+  }
+
+
+
   patchFormFromSowing(sowing: any): void {
     this.sowingForm.patchValue({
       code: sowing.code || '-',
@@ -201,6 +225,68 @@ export class SemisDetailsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur chargement de l’action :', err);
+      }
+    });
+  }
+
+  private getActionRows(): any[] {
+    return this.dataSource?.data || [];
+  }
+
+  private getSelectedActionIndex(): number {
+    if (!this.selectedAction) {
+      return -1;
+    }
+
+    return this.getActionRows().findIndex(
+      (action) => action.id_action === this.selectedAction.id_action
+    );
+  }
+
+  canGoToPreviousAction(): boolean {
+    return this.getSelectedActionIndex() > 0;
+  }
+
+  canGoToNextAction(): boolean {
+    const selectedIndex = this.getSelectedActionIndex();
+    const actions = this.getActionRows();
+
+    return selectedIndex >= 0 && selectedIndex < actions.length - 1;
+  }
+
+  showPreviousActionDetails(): void {
+    const selectedIndex = this.getSelectedActionIndex();
+
+    if (selectedIndex <= 0) {
+      return;
+    }
+
+    this.onActionSelected(this.getActionRows()[selectedIndex - 1]);
+  }
+
+  showNextActionDetails(): void {
+    const selectedIndex = this.getSelectedActionIndex();
+    const actions = this.getActionRows();
+
+    if (selectedIndex < 0 || selectedIndex >= actions.length - 1) {
+      return;
+    }
+
+    this.onActionSelected(actions[selectedIndex + 1]);
+  }
+
+  refreshSelectedActionDetails(actionId: number): void {
+    if (!this.selectedAction || this.selectedAction.id_action !== actionId) {
+      return;
+    }
+
+    this.api.getActionWithLabels(actionId).subscribe({
+      next: (fullAction) => {
+        this.selectedAction = fullAction;
+        this.actionDetailsRefreshKey++;
+      },
+      error: (err) => {
+        console.error('Erreur rafraîchissement des détails de l’action :', err);
       }
     });
   }

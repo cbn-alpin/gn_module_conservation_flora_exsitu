@@ -194,3 +194,101 @@ mat-card-content,
 .return-button button:hover {
   background-color: #d21919;
 }
+
+.sowing-action-detail-navigation {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.sowing-action-details-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-navigation-button {
+  margin-top: 18px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0 !important;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  border: 1px solid #bdbdbd;
+  color: #333;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+.detail-navigation-button mat-icon {
+  margin: 0 !important;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-navigation-button:hover:not(:disabled) {
+  background-color: rgb(235, 250, 235);
+}
+
+.detail-navigation-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details mat-card {
+  width: 100%;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details .action-details-header {
+  position: relative;
+  justify-content: center;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details .action-details-header mat-card-title {
+  text-align: center;
+  width: 100%;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details .hide-details-button {
+  position: absolute;
+  right: 16px;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details mat-card-content {
+  width: 92%;
+  margin: 14px auto 18px auto !important;
+  padding: 16px 18px !important;
+  box-sizing: border-box;
+}
+
+.detail-navigation-button {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0 !important;
+  border-radius: 50%;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+.detail-navigation-button mat-icon {
+  margin: 0 !important;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

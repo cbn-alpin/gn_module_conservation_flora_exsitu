@@ -1,4 +1,56 @@
 <mat-card>
+  <div class="sowing-action-filters-card" *ngIf="idSowing">
+  <div class="sowing-action-filters-header">
+    <div class="sowing-action-filters-title">
+      <mat-icon>filter_alt</mat-icon>
+      <span>Filtres</span>
+    </div>
+
+    <button
+      mat-button
+      type="button"
+      class="reset-filter-button with-border"
+      (click)="resetSowingActionFilters()">
+      <mat-icon>autorenew</mat-icon>
+      Réinitialiser filtre
+    </button>
+  </div>
+
+  <div class="sowing-action-filter-fields">
+    <mat-form-field appearance="outline" class="sowing-action-filter-field">
+      <mat-label>Type d'action</mat-label>
+
+      <mat-select
+        [value]="sowingActionTypeFilter"
+        (selectionChange)="onSowingActionTypeFilterChange($event.value)">
+
+        <mat-option [value]="null">Tous les types</mat-option>
+
+        <mat-option
+          *ngFor="let actionType of sowingActionTypeFilterOptions"
+          [value]="actionType">
+          {{ actionType }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="sowing-action-filter-field">
+      <mat-label>Date de début</mat-label>
+
+      <input
+        matInput
+        [matDatepicker]="sowingActionStartDateFilterPicker"
+        [value]="sowingActionStartDateFilter"
+        (dateChange)="onSowingActionStartDateFilterChange($event.value)">
+
+      <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateFilterPicker"></mat-datepicker-toggle>
+      <mat-datepicker #sowingActionStartDateFilterPicker></mat-datepicker>
+    </mat-form-field>
+  </div>
+</div>
+
+
+
   <mat-card-header class="header-with-button">
     <button mat-button class="gray-button" (click)="add()">
       <mat-icon>add</mat-icon> Ajouter une action
@@ -23,7 +75,7 @@
       <ng-container matColumnDef="label_action_type">
         <th mat-header-cell *matHeaderCellDef>Type d'action</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.label_action_type }}
+          {{ getActionTypeDisplayValue(element) }}
         </td>
       </ng-container>
 
@@ -69,14 +121,16 @@
       <!-- Lignes -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row
-          *matRowDef="let row; columns: displayedColumns;"
-          class="clickable-row"
-          (click)="onRowClick(row)">
+        *matRowDef="let row; columns: displayedColumns;"
+        class="clickable-row"
+        [class.selected-row]="row.id_action === selectedActionId"
+        (click)="onRowClick(row)">
       </tr>
     </table>
 
     <mat-paginator
       *ngIf="enablePagination && dataSource.data.length > 0"
+      [length]="dataSource.data.length"
       [pageSize]="rowPerPage"
       [pageSizeOptions]="[5, 10, 25, 100]"
       showFirstLastButtons>
@@ -84,7 +138,7 @@
 
     <!-- Aucune donnée -->
     <div class="no-data" *ngIf="dataSource.data.length === 0">
-      Aucune action enregistrée pour ce test.
+      {{ idSowing ? 'Aucune action ne correspond aux filtres.' : 'Aucune action enregistrée pour ce test.' }}
     </div>
   </mat-card-content>
 </mat-card>

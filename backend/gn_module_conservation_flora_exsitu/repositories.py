@@ -1276,10 +1276,10 @@ class ActionRepository:
             label_tool,
             label_water_type,
             label_chemical_liquid,
+            nom_actor,
             label_sterilization_liquid,
             label_sterilization_product,
             label_liquid_treatment,
-            nom_actor,
             prenom_actor,
         ) = query
 
@@ -1293,7 +1293,8 @@ class ActionRepository:
         data["label_sterilization_liquid"] = label_sterilization_liquid
         data["label_sterilization_product"] = label_sterilization_product
         data["label_liquid_treatment"] = label_liquid_treatment
-        data["label_actor"] = f"{prenom_actor} {nom_actor}".strip() if nom_actor else None
+        actor_label = f"{prenom_actor or ''} {nom_actor or ''}".strip()
+        data["label_actor"] = actor_label or None
 
         code = code_action
 
@@ -1576,6 +1577,7 @@ class ActionRepository:
     
     def get_actions_by_id_sowing(self, id_sowing: int):
         ActionType = aliased(TNomenclatures)
+        ScarificationType = aliased(TNomenclatures)
         Actor = aliased(User)
 
         query = (
@@ -1585,10 +1587,12 @@ class ActionRepository:
                 TAction.date_end,
                 TAction.meta_create_date,
                 ActionType.label_default.label("label_action_type"),
+                ScarificationType.label_default.label("label_scarification_type"),
                 Actor.nom_role.label("nom_actor"),
                 Actor.prenom_role.label("prenom_actor")
             )
             .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(ScarificationType, TAction.id_scarification_type == ScarificationType.id_nomenclature)
             .outerjoin(Actor, TAction.id_actor == Actor.id_role)
             .filter(TAction.id_sowing == id_sowing)
             .order_by(TAction.meta_create_date.desc())
@@ -1603,6 +1607,7 @@ class ActionRepository:
                 "date_end": row.date_end.isoformat() if row.date_end else None,
                 "meta_create_date": row.meta_create_date.isoformat() if row.meta_create_date else None,
                 "label_action_type": row.label_action_type,
+                "label_scarification_type": row.label_scarification_type,
                 "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip()
             }
             for row in results

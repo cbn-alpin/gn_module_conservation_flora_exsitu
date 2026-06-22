@@ -37,14 +37,34 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() sowingCode: string = '';
   @Input() dataSource = new MatTableDataSource<any>();
   @Input() enablePagination = false;
+  @Input() sowingReplicateCount: number | null = null;
+  @Input() selectedActionId: number | null = null;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   rowPerPage = 5;
+
+  private allSowingActions: any[] = [];
+
+  public sowingActionTypeFilter: string | null = null;
+  public sowingActionStartDateFilter: Date | null = null;
+  public sowingActionTypeFilterOptions: string[] = [];
+
+  private readonly sowingActionTypeFilterOrder = [
+    'Scarification chimique',
+    'Scarification mécanique',
+    'Prétraitement',
+    'Stratification',
+    'Suivi réplicats',
+    'Synthèse du suivi',
+    'Traitement'
+  ];
 
   @Output() view = new EventEmitter<Action>();
   @Output() edit = new EventEmitter<Action>();
   @Output() delete = new EventEmitter<Action>();
   @Output() rowClicked = new EventEmitter<Action>();
+  @Output() actionSaved = new EventEmitter<number>();
+  @Output() visibleActionsChanged = new EventEmitter<any[]>();
 
   displayedColumns: string[] = [
     'date_start',
@@ -88,10 +108,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
         next: (actions) => {
           console.log('📦 Actions du semis reçues :', actions);
 
-          this.dataSource.data = actions.map(action => ({
+          this.allSowingActions = actions.map(action => ({
             id_action: action.id_action,
             date_start: action.date_start,
             label_action_type: action.label_action_type,
+            label_scarification_type: action.label_scarification_type,
             label_actor: action.label_actor,
             meta_create_date: action.meta_create_date
           })).sort((a, b) => {
@@ -100,10 +121,8 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
             return dateB - dateA;
           });
 
-          if (this.enablePagination && this.paginator) {
-            this.dataSource.paginator = this.paginator;
-            this.paginator.firstPage();
-          }
+          this.updateSowingActionTypeFilterOptions();
+          this.applySowingActionFilters();
         },
         error: (err) => {
           console.error('Erreur lors du chargement des actions du semis :', err);
@@ -149,7 +168,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
       height: '90vh',
       disableClose: true,
       data: this.idSowing
-        ? { id_sowing: this.idSowing, sowingCode: this.sowingCode }
+        ? {
+            id_sowing: this.idSowing,
+            sowingCode: this.sowingCode,
+            sowingReplicateCount: this.sowingReplicateCount
+          }
         : { id_test: this.idTest }
     });
 
@@ -172,7 +195,14 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
               height: '90vh',
               disableClose: true,
               data: {
-                ...(this.idSowing ? { id_sowing: this.idSowing, sowingCode: this.sowingCode } : { id_test: this.idTest }),
+                ...(this.idSowing
+                  ? {
+                      id_sowing: this.idSowing,
+                      sowingCode: this.sowingCode,
+                      sowingReplicateCount: this.sowingReplicateCount
+                    }
+                  : { id_test: this.idTest }),
+  
                 action: actionFull,
                 edit: true,
                 code,
@@ -185,6 +215,10 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
             dialogRef.afterClosed().subscribe(result => {
               if (result) {
                 this.loadActions();
+
+                if (this.idSowing) {
+                  this.actionSaved.emit(element.id_action);
+                }
               }
             });
           },
@@ -238,6 +272,140 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     const year = date.getFullYear();
 
     return `${day}/${month}/${year}`;
+  }
+
+  getActionTypeDisplayValue(element: any): string {
+    const actionType = element?.label_action_type || '-';
+
+    if (!this.idSowing) {
+      return actionType;
+    }
+
+    const normalizedActionType = String(actionType).trim().toLowerCase();
+    const scarificationType = String(element?.label_scarification_type || '').trim().toLowerCase();
+
+    if (normalizedActionType !== 'scarification') {
+      return actionType;
+    }
+
+    if (scarificationType.includes('chimique')) {
+      return 'Scarification chimique';
+    }
+
+    if (scarificationType.includes('mécanique') || scarificationType.includes('mecanique')) {
+      return 'Scarification mécanique';
+    }
+
+    return actionType;
+  }
+
+  private updateSowingActionTypeFilterOptions(): void {
+    const presentActionTypes = new Set(
+      this.allSowingActions
+        .map((action) => this.getActionTypeDisplayValue(action))
+        .filter((label) => !!label && label !== '-')
+    );
+
+    const orderedActionTypes = this.sowingActionTypeFilterOrder.filter(
+      (label) => presentActionTypes.has(label)
+    );
+
+    const additionalActionTypes = Array.from(presentActionTypes)
+      .filter((label) => !this.sowingActionTypeFilterOrder.includes(label))
+      .sort((a, b) => a.localeCompare(b, 'fr'));
+
+    this.sowingActionTypeFilterOptions = [
+      ...orderedActionTypes,
+      ...additionalActionTypes
+    ];
+
+    if (
+      this.sowingActionTypeFilter &&
+      !this.sowingActionTypeFilterOptions.includes(this.sowingActionTypeFilter)
+    ) {
+      this.sowingActionTypeFilter = null;
+    }
+  }
+
+  private getDateFilterKey(value: any): string {
+    if (!value) {
+      return '';
+    }
+
+    if (typeof value === 'string') {
+      const datePart = value.split('T')[0];
+
+      if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+        return datePart;
+      }
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  private syncSowingActionPaginator(totalItems: number): void {
+    if (!this.enablePagination || !this.paginator) {
+      return;
+    }
+
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.paginator.length = totalItems;
+      this.paginator.pageIndex = 0;
+      this.paginator.firstPage();
+    });
+  }
+
+  public applySowingActionFilters(): void {
+    if (!this.idSowing) {
+      return;
+    }
+
+    const selectedDateKey = this.getDateFilterKey(this.sowingActionStartDateFilter);
+
+    const filteredActions = this.allSowingActions.filter((action) => {
+      const actionType = this.getActionTypeDisplayValue(action);
+
+      const matchesActionType =
+        !this.sowingActionTypeFilter ||
+        actionType === this.sowingActionTypeFilter;
+
+      const matchesStartDate =
+        !selectedDateKey ||
+        this.getDateFilterKey(action.date_start) === selectedDateKey;
+
+      return matchesActionType && matchesStartDate;
+    });
+
+    this.dataSource.data = filteredActions;
+    this.visibleActionsChanged.emit(filteredActions);
+    this.syncSowingActionPaginator(filteredActions.length);
+  }
+
+  public onSowingActionTypeFilterChange(value: string | null): void {
+    this.sowingActionTypeFilter = value;
+    this.applySowingActionFilters();
+  }
+
+  public onSowingActionStartDateFilterChange(value: Date | null): void {
+    this.sowingActionStartDateFilter = value;
+    this.applySowingActionFilters();
+  }
+
+  public resetSowingActionFilters(): void {
+    this.sowingActionTypeFilter = null;
+    this.sowingActionStartDateFilter = null;
+    this.applySowingActionFilters();
   }
 
   onDelete(action: Action): void {

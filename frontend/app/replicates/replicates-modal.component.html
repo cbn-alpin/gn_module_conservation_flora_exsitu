@@ -19,14 +19,15 @@
       </thead>
       <tbody>
         <tr>
-          <td>Nb de graines germées</td>
+          <td>{{ isSowingContext && code === 'svr' ? 'Nb de graines levées' : 'Nb de graines germées' }}</td>
           <td *ngFor="let ctrl of germes.controls">
             <mat-form-field appearance="outline" class="replicate-input">
               <input matInput type="number" [formControl]="ctrl" />
             </mat-form-field>
           </td>
         </tr>
-        <tr>
+
+        <tr *ngIf="!(isSowingContext && code === 'svr')">
           <td>Nb de graines mortes</td>
           <td *ngFor="let ctrl of mortes.controls">
             <mat-form-field appearance="outline" class="replicate-input">
@@ -34,8 +35,9 @@
             </mat-form-field>
           </td>
         </tr>
+
         <tr *ngIf="isLastReplicate">
-          <td>Nb de graines non germées</td>
+          <td>{{ isSowingContext && code === 'svr' ? 'Nb de graines non levées' : 'Nb de graines non germées' }}</td>
           <td *ngFor="let ctrl of nonGermes.controls">
             <mat-form-field appearance="outline" class="replicate-input">
               <input matInput type="number" [formControl]="ctrl" />
@@ -48,23 +50,30 @@
   </div>
 
   <!-- Synthèse du suivi (si code = 'synth') -->
-    <div *ngIf="code === 'synth' && replicatesForm.get('total_count_germinated')">
+  <div *ngIf="code === 'synth' && replicatesForm.get('total_count_germinated')">
 
     <h3 class="section-subtitle">Synthèse du suivi</h3>
 
     <div class="form-row">
       <mat-form-field appearance="outline" class="third-width">
-        <mat-label>Total graines germées</mat-label>
+        <mat-label>
+          {{ isSowingContext ? 'Total graines levées' : 'Total graines germées' }}
+        </mat-label>
         <input matInput type="number" formControlName="total_count_germinated" />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="third-width">
+      <mat-form-field
+        *ngIf="!isSowingContext"
+        appearance="outline"
+        class="third-width">
         <mat-label>Total graines mortes</mat-label>
         <input matInput type="number" formControlName="total_count_dead" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="third-width">
-        <mat-label>Total graines non germées</mat-label>
+        <mat-label>
+          {{ isSowingContext ? 'Total graines non levées' : 'Total graines non germées' }}
+        </mat-label>
         <input matInput type="number" formControlName="total_count_viable" />
       </mat-form-field>
     </div>

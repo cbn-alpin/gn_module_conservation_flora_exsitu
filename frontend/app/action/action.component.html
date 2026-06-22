@@ -1,18 +1,28 @@
 <mat-card>
-  <mat-card-header  class="sticky-header">
+  <mat-card-header class="action-dialog-header">
     <mat-card-title>Détails Action</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
     <form [formGroup]="germinationForm" class="semis-form">
-      <h2 class="section-title sticky-header">Synthèse du suivi</h2>
+      <h2 class="section-title">Synthèse du suivi</h2>
 
       <!-- Type d'action -->
       <div class="form-group full-width" *ngIf="!hideTypeField">
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field
+          appearance="outline"
+          class="full-width shake-wrapper"
+          [class.action-type-required]="!!idSowing"
+          [hideRequiredMarker]="!idSowing"
+          [class.shake-field]="shakeActionTypeField"
+          [class.shake-error]="shakeActionTypeField">
+
           <mat-label>Type d'action</mat-label>
 
-          <mat-select formControlName="id_action_type">
+          <mat-select
+            formControlName="id_action_type"
+            [required]="!!idSowing">
+
             <mat-option
               *ngFor="let actionType of getOrderedActionTypes()"
               [value]="actionType"
@@ -20,17 +30,37 @@
               {{ actionType.label_default || actionType.label_fr }}
             </mat-option>
           </mat-select>
+
+          <mat-error *ngIf="hasSowingActionTypeRequiredError()">
+            Le type d’action est obligatoire pour enregistrer une action de semis.
+          </mat-error>
         </mat-form-field>
       </div>
 
 
       <div  *ngIf="code">
         <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field
+            appearance="outline"
+            class="half-width start-date-required shake-wrapper"
+            [hideRequiredMarker]="!idSowing"
+            [class.shake-field]="shakeActionStartDateField"
+            [class.shake-error]="shakeActionStartDateField">
+
             <mat-label>Date de début</mat-label>
-            <input matInput [matDatepicker]="startPicker" formControlName="date_start">
+
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              formControlName="date_start"
+              [required]="!!idSowing">
+
             <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
             <mat-datepicker #startPicker></mat-datepicker>
+
+            <mat-error *ngIf="hasSowingActionStartDateRequiredError()">
+              La date de début est obligatoire pour enregistrer une action de semis.
+            </mat-error>
           </mat-form-field>
           <div *ngIf="isReplicateDateUsed()" class="alert alert-warning">
             ⚠️ Une action de type "Suivi réplicat" existe déjà pour cette date.
@@ -75,9 +105,25 @@
             <input matInput type="number" formControlName="duration_water">
           </mat-form-field>
          
-          <mat-form-field appearance="outline" class="half-width">
+          <mat-form-field
+            appearance="outline"
+            class="half-width treatment-concentration-business-rule shake-wrapper"
+            [class.shake-field]="shakeTreatmentConcentrationField"
+            [class.shake-error]="shakeTreatmentConcentrationField">
+
             <mat-label>Concentration (%)</mat-label>
-            <input matInput type="number" formControlName="concentration_chemical_liquid">
+
+            <input
+              matInput
+              type="number"
+              formControlName="concentration_chemical_liquid"
+              min="0"
+              max="100"
+              (input)="refreshSowingTreatmentConcentrationError()">
+
+            <mat-error *ngIf="hasSowingTreatmentConcentrationRangeError()">
+              La concentration doit être comprise entre 0 % et 100 %.
+            </mat-error>
           </mat-form-field>
         
         </div>
@@ -143,14 +189,51 @@
                 ></pnx-nomenclature>
               </div>
 
-              <mat-form-field appearance="outline" class="half-width">
+              <mat-form-field
+                *ngIf="idSowing"
+                appearance="outline"
+                class="half-width treatment-concentration-business-rule shake-wrapper"
+                [class.shake-field]="shakeTreatmentConcentrationField"
+                [class.shake-error]="shakeTreatmentConcentrationField">
+
                 <mat-label>Concentration (%)</mat-label>
-                <input matInput type="number" formControlName="concentration_chemical_liquid">
+
+                <input
+                  matInput
+                  type="number"
+                  formControlName="concentration_chemical_liquid"
+                  min="0"
+                  max="100"
+                  (input)="refreshSowingTreatmentConcentrationError()">
+
+                <mat-error *ngIf="hasSowingTreatmentConcentrationRangeError()">
+                  La concentration doit être comprise entre 0 % et 100 %.
+                </mat-error>
               </mat-form-field>
+
+              <mat-form-field
+                *ngIf="!idSowing"
+                appearance="outline"
+                class="half-width">
+
+                <mat-label>Concentration (%)</mat-label>
+
+                <input
+                  matInput
+                  type="number"
+                  formControlName="concentration_chemical_liquid">
+              </mat-form-field>
+
             </div>
 
             <div class="form-row">
-              <mat-form-field appearance="outline" class="half-width">
+
+              <mat-form-field appearance="outline" class="half-width" *ngIf="idSowing">
+                <mat-label>Température (°C)</mat-label>
+                <input matInput type="number" formControlName="temperature_light">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width" *ngIf="!idSowing">
                 <mat-label>Température (°C)</mat-label>
                 <input matInput type="number" formControlName="temperature">
               </mat-form-field>
@@ -225,9 +308,25 @@
                     ></pnx-nomenclature>
                   </div>
 
-                  <mat-form-field appearance="outline" class="half-width">
+                  <mat-form-field
+                    appearance="outline"
+                    class="half-width treatment-concentration-business-rule shake-wrapper"
+                    [class.shake-field]="shakeTreatmentConcentrationField"
+                    [class.shake-error]="shakeTreatmentConcentrationField">
+
                     <mat-label>Concentration (%)</mat-label>
-                    <input matInput type="number" formControlName="concentration_chemical_liquid">
+
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="concentration_chemical_liquid"
+                      min="0"
+                      max="100"
+                      (input)="refreshSowingTreatmentConcentrationError()">
+
+                    <mat-error *ngIf="hasSowingTreatmentConcentrationRangeError()">
+                      La concentration doit être comprise entre 0 % et 100 %.
+                    </mat-error>
                   </mat-form-field>
                 </div>
             
@@ -254,12 +353,28 @@
               </div>
               <div class="form-row">
                 
-                <mat-form-field appearance="outline" class="half-width">
+                <mat-form-field
+                  appearance="outline"
+                  class="half-width treatment-end-date-business-rule shake-wrapper"
+                  [class.shake-field]="shakeTreatmentEndDateField"
+                  [class.shake-error]="shakeTreatmentEndDateField">
+
                   <mat-label>Date de fin</mat-label>
-                  <input matInput [matDatepicker]="endPicker" formControlName="date_end">
+
+                  <input
+                    matInput
+                    [matDatepicker]="endPicker"
+                    formControlName="date_end"
+                    (dateChange)="refreshSowingTreatmentDateRangeError()">
+
                   <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
                   <mat-datepicker #endPicker></mat-datepicker>
+
+                  <mat-error *ngIf="hasSowingTreatmentDateRangeError()">
+                    La date de fin doit être postérieure à la date de début.
+                  </mat-error>
                 </mat-form-field>
+
               </div>
             </div>
             
@@ -297,13 +412,13 @@
           </div>
           <div>
             <app-replicates-modal
-            *ngIf="code === 'svr' || code === 'synth'"
-            [replicatesForm]="replicatesForm"
-            [replicateLabels]="replicateLabels"
-            [replicates_for_form]="replicates_for_form"
-            [code]="code"
+              *ngIf="code === 'svr' || code === 'synth'"
+              [replicatesForm]="replicatesForm"
+              [replicateLabels]="replicateLabels"
+              [replicates_for_form]="replicates_for_form"
+              [code]="code"
+              [isSowingContext]="!!idSowing"
             ></app-replicates-modal>
-          
           </div>
          
           
@@ -325,14 +440,14 @@
           </button>
 
         <button mat-button class="save-button with-border" type="submit" (click)="onSubmit()"
-        [disabled]="germinationForm.invalid"
+        [disabled]="!idSowing && germinationForm.invalid"
         >
           <mat-icon>save</mat-icon>
           Enregistrer
         </button>
         <button mat-button class="save-button with-border"
             type="button"
-            [disabled]="!germinationForm.valid"
+            [disabled]="!idSowing && !germinationForm.valid"
             (click)="addNewAction()">
           <mat-icon>add</mat-icon>
           Ajouter une autre action

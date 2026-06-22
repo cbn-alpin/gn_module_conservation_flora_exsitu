@@ -145,15 +145,11 @@ mat-form-field {
 ::ng-deep .cdk-overlay-container {
   z-index: 1000 !important;
 }
-.sticky-header {
-  position: sticky;
-  top: 0;
+
+.action-dialog-header {
   background: white;
-  z-index: 10;
   border-bottom: 1px solid #ccc;
 }
-
-
 
 .form-section {
   margin-bottom: 32px;
@@ -186,4 +182,85 @@ mat-form-field {
 
 .reset-button .mat-icon {
   color: #fff !important;
+}
+
+.shake-wrapper {
+  display: block;
+}
+
+:host ::ng-deep .shake-field .mat-mdc-text-field-wrapper {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
+:host ::ng-deep .shake-error .mat-mdc-form-field-subscript-wrapper {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
+@keyframes shake-field-animation {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+:host ::ng-deep .start-date-required.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:host ::ng-deep .start-date-required.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+:host ::ng-deep .start-date-required.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.38) !important;
+}
+
+:host ::ng-deep .start-date-required.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: inherit !important;
+}
+
+:host ::ng-deep .start-date-required.mat-mdc-form-field.mat-form-field-invalid input {
+  color: inherit !important;
+  caret-color: inherit !important;
+}
+
+:host ::ng-deep .start-date-required .mat-mdc-form-field-required-marker {
+  color: #f44336 !important;
+  margin-left: 4px;
+}
+
+:host ::ng-deep .action-type-required.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:host ::ng-deep .action-type-required.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+:host ::ng-deep .action-type-required.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.38) !important;
+}
+
+:host ::ng-deep .action-type-required.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: inherit !important;
+}
+
+:host ::ng-deep .action-type-required.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-select-arrow,
+:host ::ng-deep .action-type-required.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-select-value {
+  color: inherit !important;
+}
+
+:host ::ng-deep .action-type-required .mat-mdc-form-field-required-marker {
+  color: #f44336 !important;
+  margin-left: 4px;
+}
+
+:host ::ng-deep .treatment-end-date-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:host ::ng-deep .treatment-end-date-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+:host ::ng-deep .treatment-end-date-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing,
+:host ::ng-deep .treatment-concentration-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+:host ::ng-deep .treatment-concentration-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+:host ::ng-deep .treatment-concentration-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.38) !important;
+}
+
+:host ::ng-deep .treatment-end-date-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label,
+:host ::ng-deep .treatment-concentration-business-rule.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: inherit !important;
+}
+
+:host ::ng-deep .treatment-end-date-business-rule.mat-mdc-form-field.mat-form-field-invalid input,
+:host ::ng-deep .treatment-concentration-business-rule.mat-mdc-form-field.mat-form-field-invalid input {
+  color: inherit !important;
+  caret-color: inherit !important;
 }

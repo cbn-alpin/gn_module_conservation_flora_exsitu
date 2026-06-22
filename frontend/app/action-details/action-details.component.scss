@@ -115,3 +115,41 @@ mat-card-content {
 .hide-details-button mat-icon {
   margin-right: 4px;
 }
+
+.sowing-pretreatment-details-mode .field-block {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  column-gap: 18px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.sowing-pretreatment-details-mode .field-block label {
+  min-width: 0;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.sowing-pretreatment-details-mode .field-block span {
+  min-width: 0;
+  word-break: break-word;
+}
+
+.sowing-synthesis-details-mode .field-block {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  column-gap: 18px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.sowing-synthesis-details-mode .field-block label {
+  min-width: 0;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.sowing-synthesis-details-mode .field-block span {
+  min-width: 0;
+  word-break: break-word;
+}

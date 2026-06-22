@@ -59,6 +59,9 @@ table tr.mat-row {
   background-color: rgb(235, 250, 235) !important;
 }
 
+:host ::ng-deep .mat-mdc-row.clickable-row.selected-row .mat-mdc-cell {
+  background-color: rgb(235, 250, 235) !important;
+}
 
 .header-with-button {
   display: flex;
@@ -100,6 +103,118 @@ table tr.mat-row {
 
 .actions-trigger-red mat-icon {
   color: #f44336 !important;
+}
+.sowing-action-filters-card {
+  margin: 16px 16px 18px 16px;
+  padding: 14px 16px 10px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafafa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.sowing-action-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.sowing-action-filters-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sowing-action-filters-title mat-icon {
+  font-size: 19px;
+  width: 19px;
+  height: 19px;
+  color: #6a1b9a;
+}
+
+.sowing-action-filter-fields {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(180px, 240px);
+  gap: 14px;
+  align-items: center;
+}
+
+.sowing-action-filter-field {
+  width: 100%;
+}
+
+.reset-filter-button {
+  min-height: 34px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background-color: #8e24aa;
+  color: #fff;
+  border: 1px solid #7b1fa2;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.reset-filter-button:hover {
+  background-color: #7b1fa2;
+}
+
+.reset-filter-button mat-icon {
+  color: #fff !important;
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  margin-right: 5px;
+}
+
+:host ::ng-deep .sowing-action-filter-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+:host ::ng-deep .sowing-action-filter-field .mat-mdc-text-field-wrapper {
+  background-color: #fff;
+}
+
+@media (max-width: 900px) {
+  .sowing-action-filters-card {
+    margin: 14px 12px 16px 12px;
+    padding: 12px;
+  }
+
+  .sowing-action-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sowing-action-filter-fields {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .reset-filter-button {
+    width: fit-content;
+  }
+}
+
+@media (max-width: 900px) {
+  .sowing-action-filters {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sowing-action-filter-fields {
+    width: 100%;
+  }
+
+  .sowing-action-filter-field {
+    width: 100%;
+  }
 }
 
 

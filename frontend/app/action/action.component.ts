@@ -53,6 +53,11 @@ export class ActionComponent implements OnInit {
   public pretreatmentProductOptions: any[] = [];
   public pretreatmentLiquidOptions: any[] = [];
   public treatmentLiquidOptions: any[] = [];
+  public actionFormSubmitted = false;
+  public shakeActionStartDateField = false;
+  public shakeActionTypeField = false;
+  public shakeTreatmentEndDateField = false;
+  public shakeTreatmentConcentrationField = false;
 
   private readonly actionTypeOrder = [
     'Scarification',
@@ -112,6 +117,7 @@ export class ActionComponent implements OnInit {
       date_start: [null, Validators.required],
       date_end: [null],
       remarks: [''],
+      temperature: [null],
       temperature_light: [null],
       temperature_shadow: [null],
       hour_count_light: [null],
@@ -154,6 +160,9 @@ export class ActionComponent implements OnInit {
     this.observers_list_code = this.cfg.getObsCode();
     this.idTest = this.dialogData?.id_test ?? null;
     this.idSowing = this.dialogData?.id_sowing ?? null;
+    if (this.idSowing) {
+      this.replicateCount = this.getReplicateCountForCurrentContext();
+    }
     const url = this.router.url;
 
     this.dialogRef.backdropClick().subscribe(() => {
@@ -268,7 +277,7 @@ export class ActionComponent implements OnInit {
           this.storeInitialFormState();
 
           if (this.code === 'svr') {
-            this.initReplicateFields(this.replicateCount);
+            this.initReplicateFields(this.getReplicateCountForCurrentContext());
             this.loadReplicateDates();
           }
 
@@ -404,13 +413,24 @@ export class ActionComponent implements OnInit {
     });
   }
 
+  private getReplicateCountForCurrentContext(): number {
+    const count = Number(
+      this.replicateCount ||
+      this.dialogData?.sowingReplicateCount ||
+      this.dialogData?.replicate_count ||
+      0
+    );
+
+    return Number.isFinite(count) && count > 0 ? count : 1;
+  }
+
   getActionByCode(id_nomenclature: number): void {
     this.api.getActionByCode(id_nomenclature).subscribe({
       next: (result) => {
         this.code = result.cd_nomenclature;
 
         if (this.code === 'svr') {
-          this.initReplicateFields(this.replicateCount);
+          this.initReplicateFields(this.getReplicateCountForCurrentContext());
           this.loadReplicateDates();
         } else if (this.code === 'synth') {
           this.replicatesForm.addControl('total_count_germinated', this.fb.control(null));
@@ -423,7 +443,13 @@ export class ActionComponent implements OnInit {
   }
 
   addNewAction(): void {
-    if (!this.germinationForm.valid) return;
+    if (!this.validateSowingActionRequiredFields()) {
+      return;
+    }
+
+    if (!this.idSowing && !this.germinationForm.valid) {
+      return;
+    }
 
     const finalForm = this.formatDataFormAction();
 
@@ -434,6 +460,7 @@ export class ActionComponent implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.actionAdded.emit(res);
+        this.resetSowingActionValidationState();
 
         this.germinationForm.reset();
         this.additionalDataForm.reset();
@@ -497,6 +524,244 @@ export class ActionComponent implements OnInit {
     return `${sowingCode} - ${actionTypeLabel}`.trim();
   }
 
+  private triggerActionStartDateFieldShake(): void {
+    this.shakeActionStartDateField = false;
+
+    setTimeout(() => {
+      this.shakeActionStartDateField = true;
+
+      setTimeout(() => {
+        this.shakeActionStartDateField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerActionTypeFieldShake(): void {
+    this.shakeActionTypeField = false;
+
+    setTimeout(() => {
+      this.shakeActionTypeField = true;
+
+      setTimeout(() => {
+        this.shakeActionTypeField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerTreatmentEndDateFieldShake(): void {
+    this.shakeTreatmentEndDateField = false;
+
+    setTimeout(() => {
+      this.shakeTreatmentEndDateField = true;
+
+      setTimeout(() => {
+        this.shakeTreatmentEndDateField = false;
+      }, 400);
+    }, 0);
+  }
+
+  private triggerTreatmentConcentrationFieldShake(): void {
+    this.shakeTreatmentConcentrationField = false;
+
+    setTimeout(() => {
+      this.shakeTreatmentConcentrationField = true;
+
+      setTimeout(() => {
+        this.shakeTreatmentConcentrationField = false;
+      }, 400);
+    }, 0);
+  }
+
+  public hasSowingActionTypeRequiredError(): boolean {
+    return !!(
+      this.idSowing &&
+      !this.hideTypeField &&
+      this.actionFormSubmitted &&
+      this.germinationForm.get('id_action_type')?.hasError('required')
+    );
+  }
+
+  public hasSowingActionStartDateRequiredError(): boolean {
+    return !!(
+      this.idSowing &&
+      this.actionFormSubmitted &&
+      this.germinationForm.get('date_start')?.hasError('required')
+    );
+  }
+
+  private isSowingTreatmentAction(): boolean {
+    return !!this.idSowing && this.code === 'tra';
+  }
+
+  private setControlError(controlName: string, errorName: string): void {
+    const control = this.germinationForm.get(controlName);
+
+    if (!control) {
+      return;
+    }
+
+    control.setErrors({
+      ...(control.errors || {}),
+      [errorName]: true
+    });
+  }
+
+  private clearControlError(controlName: string, errorName: string): void {
+    const control = this.germinationForm.get(controlName);
+
+    if (!control?.errors?.[errorName]) {
+      return;
+    }
+
+    const errors = { ...control.errors };
+    delete errors[errorName];
+
+    control.setErrors(Object.keys(errors).length ? errors : null);
+  }
+
+  private getDateOnlyTimestamp(value: any): number | null {
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    ).getTime();
+  }
+
+  public hasSowingTreatmentDateRangeError(): boolean {
+    return !!(
+      this.isSowingTreatmentAction() &&
+      this.actionFormSubmitted &&
+      this.germinationForm.get('date_end')?.hasError('dateEndBeforeStart')
+    );
+  }
+
+  public hasSowingTreatmentConcentrationRangeError(): boolean {
+    return !!(
+      this.isSowingTreatmentAction() &&
+      this.actionFormSubmitted &&
+      this.germinationForm.get('concentration_chemical_liquid')?.hasError('invalidConcentrationRange')
+    );
+  }
+
+  public refreshSowingTreatmentDateRangeError(): void {
+    if (!this.isSowingTreatmentAction()) {
+      this.clearControlError('date_end', 'dateEndBeforeStart');
+      return;
+    }
+
+    const startDate = this.getDateOnlyTimestamp(this.germinationForm.get('date_start')?.value);
+    const endDate = this.getDateOnlyTimestamp(this.germinationForm.get('date_end')?.value);
+
+    if (startDate !== null && endDate !== null && endDate <= startDate) {
+      this.setControlError('date_end', 'dateEndBeforeStart');
+      return;
+    }
+
+    this.clearControlError('date_end', 'dateEndBeforeStart');
+  }
+
+  public refreshSowingTreatmentConcentrationError(): void {
+    if (!this.isSowingTreatmentAction()) {
+      this.clearControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
+      return;
+    }
+
+    const concentrationValue = this.germinationForm.get('concentration_chemical_liquid')?.value;
+
+    if (concentrationValue === null || concentrationValue === undefined || concentrationValue === '') {
+      this.clearControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
+      return;
+    }
+
+    const concentration = Number(concentrationValue);
+
+    if (Number.isNaN(concentration) || concentration < 0 || concentration > 100) {
+      this.setControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
+      return;
+    }
+
+    this.clearControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
+  }
+
+  private validateSowingTreatmentBusinessRules(): boolean {
+    if (!this.isSowingTreatmentAction()) {
+      return true;
+    }
+
+    let isValid = true;
+
+    this.refreshSowingTreatmentDateRangeError();
+    this.refreshSowingTreatmentConcentrationError();
+
+    const endDateControl = this.germinationForm.get('date_end');
+    const concentrationControl = this.germinationForm.get('concentration_chemical_liquid');
+
+    if (endDateControl?.hasError('dateEndBeforeStart')) {
+      endDateControl.markAsTouched();
+      this.triggerTreatmentEndDateFieldShake();
+      isValid = false;
+    }
+
+    if (concentrationControl?.hasError('invalidConcentrationRange')) {
+      concentrationControl.markAsTouched();
+      this.triggerTreatmentConcentrationFieldShake();
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  private validateSowingActionRequiredFields(): boolean {
+    if (!this.idSowing) {
+      return true;
+    }
+
+    this.actionFormSubmitted = true;
+
+    const actionTypeControl = this.germinationForm.get('id_action_type');
+    const dateStartControl = this.germinationForm.get('date_start');
+
+    let isValid = true;
+
+    if (!this.hideTypeField && actionTypeControl?.hasError('required')) {
+      actionTypeControl.markAsTouched();
+      this.triggerActionTypeFieldShake();
+      isValid = false;
+    }
+
+    if (dateStartControl?.hasError('required')) {
+      dateStartControl.markAsTouched();
+      this.triggerActionStartDateFieldShake();
+      isValid = false;
+    }
+
+    if (!this.validateSowingTreatmentBusinessRules()) {
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  private resetSowingActionValidationState(): void {
+    this.actionFormSubmitted = false;
+    this.shakeActionStartDateField = false;
+    this.shakeActionTypeField = false;
+    this.shakeTreatmentEndDateField = false;
+    this.shakeTreatmentConcentrationField = false;
+    this.clearControlError('date_end', 'dateEndBeforeStart');
+    this.clearControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
+  }
+
   private showActionSuccessToaster(isEdit: boolean): void {
     const actionLabel = this.getActionSuccessLabel();
     const dateStart = this.formatDateForToaster(this.germinationForm.get('date_start')?.value);
@@ -508,8 +773,14 @@ export class ActionComponent implements OnInit {
   }
   
   onSubmit(): void {
-    if (!this.germinationForm.valid) return;
+    if (!this.validateSowingActionRequiredFields()) {
+      return;
+    }
 
+    if (!this.idSowing && !this.germinationForm.valid) {
+      return;
+    }
+    
     this.dialogService
       .confirmDialog({
         message: this.dialogData?.edit
@@ -572,6 +843,14 @@ export class ActionComponent implements OnInit {
   private formatDataFormAction() {
     const rawForm = { ...this.germinationForm.value };
 
+    if (this.idSowing && this.code === 'scar' && this.scarTypeCode === 'chi') {
+      rawForm.temperature_light = this.parseNumber(rawForm.temperature_light);
+    }
+
+    if (this.idSowing && this.code === 'tra') {
+      rawForm.concentration_chemical_liquid = this.parseNumber(rawForm.concentration_chemical_liquid);
+    }
+
     rawForm.date_start = this.formatDateForApi(this.germinationForm.get('date_start')?.value);
     rawForm.date_end = this.formatDateForApi(this.germinationForm.get('date_end')?.value);
 
@@ -617,7 +896,9 @@ export class ActionComponent implements OnInit {
     if (this.code === 'svr' && replicates?.germes?.length) {
       cleanedForm['replicates'] = {
         germes: replicates.germes.map(this.parseNumber),
-        mortes: replicates.mortes.map(this.parseNumber),
+        mortes: this.idSowing
+          ? replicates.germes.map(() => null)
+          : replicates.mortes.map(this.parseNumber),
         non_germes: replicates.nonGermes.map(this.parseNumber),
         last_replicate: replicates.last_replicate || false
       };
@@ -626,7 +907,7 @@ export class ActionComponent implements OnInit {
     if (this.code === 'synth') {
       cleanedForm['replicates'] = {
         total_count_germinated: this.parseNumber(replicates.total_count_germinated),
-        total_count_dead: this.parseNumber(replicates.total_count_dead),
+        total_count_dead: this.idSowing ? null : this.parseNumber(replicates.total_count_dead),
         total_count_viable: this.parseNumber(replicates.total_count_viable)
       };
     }
@@ -740,6 +1021,7 @@ export class ActionComponent implements OnInit {
         this.germinationForm.markAsPristine();
         this.germinationForm.markAsUntouched();
         this.germinationForm.updateValueAndValidity();
+        this.resetSowingActionValidationState();
 
         this.replicatesForm.markAsPristine();
         this.replicatesForm.markAsUntouched();
