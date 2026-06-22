@@ -181,9 +181,16 @@ export class SemisDetailsComponent implements OnInit {
       (action) => action.id_action === this.selectedAction.id_action
     );
 
-    if (!selectedActionStillVisible) {
-      this.selectedAction = null;
+    if (selectedActionStillVisible) {
+      return;
     }
+
+    if (visibleActions.length > 0) {
+      this.onActionSelected(visibleActions[0]);
+      return;
+    }
+
+    this.selectedAction = null;
   }
 
 
