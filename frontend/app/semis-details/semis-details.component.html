@@ -6,13 +6,25 @@
     </button>
   </div>
 
-  <mat-card-header>
-    <mat-card-title>Les Informations du semis</mat-card-title>
-  </mat-card-header>
+  <section class="sowing-info-panel">
+    <div class="sowing-info-hero">
+      <div class="sowing-info-icon">
+        <mat-icon>local_florist</mat-icon>
+      </div>
 
-  <div>
-    <mat-card-content>
-      <form [formGroup]="sowingForm" class="semis-form">
+      <div class="sowing-info-heading">
+        <h2>Les Informations du semis</h2>
+        <p>Vue détaillée des données principales du semis</p>
+      </div>
+
+      <div class="sowing-info-code-badge">
+        <span>N° semis</span>
+        <strong>{{ sowingForm.get('code')?.value || '-' }}</strong>
+      </div>
+    </div>
+
+    <mat-card-content class="sowing-info-content">
+      <form [formGroup]="sowingForm" class="semis-form sowing-info-grid">
 
         <div class="form-row">
           <div class="half-width">
@@ -96,7 +108,7 @@
 
       </form>
     </mat-card-content>
-  </div>
+  </section>
 
   <div class="action-detail split-view">
     <div class="germination-list">

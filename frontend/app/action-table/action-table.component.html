@@ -1,9 +1,18 @@
-<mat-card>
+<mat-card
+  class="action-list-card"
+  [class.sowing-action-list-card]="idSowing"
+  [class.sowing-action-list-with-details]="idSowing && selectedActionId">
   <div class="sowing-action-filters-card" *ngIf="idSowing">
   <div class="sowing-action-filters-header">
     <div class="sowing-action-filters-title">
-      <mat-icon>filter_alt</mat-icon>
-      <span>Filtres</span>
+      <div class="sowing-action-filters-icon">
+        <mat-icon>filter_alt</mat-icon>
+      </div>
+
+      <div>
+        <span>Filtres des actions</span>
+        <small>Affiner par type, période et ordre des dates</small>
+      </div>
     </div>
 
     <button
@@ -12,51 +21,89 @@
       class="reset-filter-button with-border"
       (click)="resetSowingActionFilters()">
       <mat-icon>autorenew</mat-icon>
-      Réinitialiser filtre
+      Réinitialiser
     </button>
   </div>
 
   <div class="sowing-action-filter-fields">
-    <mat-form-field appearance="outline" class="sowing-action-filter-field">
-      <mat-label>Type d'action</mat-label>
+  <div class="sowing-action-sort-control">
+    <span class="sowing-action-sort-label">Ordre des dates</span>
 
-      <mat-select
-        [value]="sowingActionTypeFilter"
-        (selectionChange)="onSowingActionTypeFilterChange($event.value)">
+    <button
+      mat-stroked-button
+      type="button"
+      class="sowing-action-sort-button"
+      (click)="toggleSowingActionDateSort()">
 
-        <mat-option [value]="null">Tous les types</mat-option>
+      <mat-icon>
+        {{ sowingActionDateSort === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+      </mat-icon>
 
-        <mat-option
-          *ngFor="let actionType of sowingActionTypeFilterOptions"
-          [value]="actionType">
-          {{ actionType }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="sowing-action-filter-field">
-      <mat-label>Date de début</mat-label>
-
-      <input
-        matInput
-        [matDatepicker]="sowingActionStartDateFilterPicker"
-        [value]="sowingActionStartDateFilter"
-        (dateChange)="onSowingActionStartDateFilterChange($event.value)">
-
-      <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateFilterPicker"></mat-datepicker-toggle>
-      <mat-datepicker #sowingActionStartDateFilterPicker></mat-datepicker>
-    </mat-form-field>
+      {{ sowingActionDateSort === 'asc' ? 'Croissantes' : 'Décroissantes' }}
+    </button>
   </div>
+
+  <mat-form-field appearance="outline" class="sowing-action-filter-field">
+    <mat-label>Type d'action</mat-label>
+
+    <mat-select
+      [value]="sowingActionTypeFilter"
+      (selectionChange)="onSowingActionTypeFilterChange($event.value)">
+
+      <mat-option [value]="null">Tous les types</mat-option>
+
+      <mat-option
+        *ngFor="let actionType of sowingActionTypeFilterOptions"
+        [value]="actionType">
+        {{ actionType }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="sowing-action-filter-field">
+    <mat-label>À partir du</mat-label>
+
+    <input
+      matInput
+      [matDatepicker]="sowingActionStartDateFromFilterPicker"
+      [value]="sowingActionStartDateFromFilter"
+      (dateChange)="onSowingActionStartDateFromFilterChange($event.value)">
+
+    <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateFromFilterPicker"></mat-datepicker-toggle>
+    <mat-datepicker #sowingActionStartDateFromFilterPicker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="sowing-action-filter-field">
+    <mat-label>Jusqu’au</mat-label>
+
+    <input
+      matInput
+      [matDatepicker]="sowingActionStartDateToFilterPicker"
+      [value]="sowingActionStartDateToFilter"
+      (dateChange)="onSowingActionStartDateToFilterChange($event.value)">
+
+    <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateToFilterPicker"></mat-datepicker-toggle>
+    <mat-datepicker #sowingActionStartDateToFilterPicker></mat-datepicker>
+  </mat-form-field>
+</div>
 </div>
 
 
-
-  <mat-card-header class="header-with-button">
-    <button mat-button class="gray-button" (click)="add()">
-      <mat-icon>add</mat-icon> Ajouter une action
+  <mat-card-header class="header-with-button action-list-header">
+    <button mat-button class="gray-button add-action-button" (click)="add()">
+      <mat-icon>add</mat-icon>
+      Ajouter une action
     </button>
-    <div class="title-wrapper">
-      <mat-card-title>Liste des actions</mat-card-title>
+
+    <div class="title-wrapper action-list-title-wrapper">
+      <div class="action-list-title-icon" *ngIf="idSowing">
+        <mat-icon>format_list_bulleted</mat-icon>
+      </div>
+
+      <div class="action-list-title-text">
+        <mat-card-title>Liste des actions</mat-card-title>
+        <small *ngIf="idSowing">Actions enregistrées pour ce semis</small>
+      </div>
     </div>
   </mat-card-header>
 
@@ -67,7 +114,9 @@
       <ng-container matColumnDef="date_start">
         <th mat-header-cell *matHeaderCellDef>Début</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.date_start ? (element.date_start | date:'dd/MM/yyyy') : '-' }}
+          <span class="action-date-pill">
+            {{ element.date_start ? (element.date_start | date:'dd/MM/yyyy') : '-' }}
+          </span>
         </td>
       </ng-container>
 
@@ -75,7 +124,9 @@
       <ng-container matColumnDef="label_action_type">
         <th mat-header-cell *matHeaderCellDef>Type d'action</th>
         <td mat-cell *matCellDef="let element">
-          {{ getActionTypeDisplayValue(element) }}
+          <span class="action-type-pill">
+            {{ getActionTypeDisplayValue(element) }}
+          </span>
         </td>
       </ng-container>
 
@@ -83,7 +134,10 @@
       <ng-container matColumnDef="label_actor">
         <th mat-header-cell *matHeaderCellDef>Agent</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.label_actor }}
+          <span class="action-agent-cell">
+            <mat-icon>person</mat-icon>
+            {{ element.label_actor || '-' }}
+          </span>
         </td>
       </ng-container>
 

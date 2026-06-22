@@ -320,3 +320,192 @@ mat-card-content,
   color: #9e9e9e !important;
   box-shadow: none;
 }
+
+/* Page principale : Les Informations du semis */
+.sowing-info-panel {
+  margin: 18px 15px 26px 15px;
+  border: 1px solid #d8ead8;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(46, 125, 50, 0.10);
+}
+
+.sowing-info-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 18px 20px 18px;
+  text-align: center;
+  background:
+    radial-gradient(circle at top, rgba(200, 230, 201, 0.65) 0%, rgba(255, 255, 255, 0) 58%),
+    linear-gradient(180deg, #f7fff8 0%, #ffffff 100%);
+  border-bottom: 1px solid #e3f1e3;
+}
+
+.sowing-info-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 140px;
+  height: 4px;
+  border-radius: 0 0 999px 999px;
+  background: #43a047;
+  transform: translateX(-50%);
+}
+
+.sowing-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.14);
+}
+
+.sowing-info-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 28px;
+  line-height: 28px;
+  color: #2e7d32;
+}
+
+.sowing-info-heading h2 {
+  margin: 0;
+  color: #1b5e20;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+}
+
+.sowing-info-heading p {
+  margin: 4px 0 0 0;
+  color: #607d63;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sowing-info-code-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 7px 16px;
+  border: 1px solid #a5d6a7;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2e7d32;
+  box-shadow: 0 3px 9px rgba(46, 125, 50, 0.10);
+}
+
+.sowing-info-code-badge span {
+  color: #6b806d;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sowing-info-code-badge strong {
+  color: #1b5e20;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.sowing-info-content {
+  margin: 0 !important;
+  padding: 18px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: #fbfefb !important;
+  box-shadow: none !important;
+}
+
+.sowing-info-grid {
+  padding: 0;
+}
+
+.sowing-info-grid .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sowing-info-grid .half-width,
+.sowing-info-grid .full-width {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #e0eee0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #263238;
+  box-sizing: border-box;
+  line-height: 1.45;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.sowing-info-grid .half-width:hover,
+.sowing-info-grid .full-width:hover {
+  background-color: #f4fbf5;
+  border-color: #c8e6c9;
+  transform: translateY(-1px);
+}
+
+.sowing-info-grid .full-width {
+  grid-column: 1 / -1;
+  text-align: center;
+  border-color: #c8e6c9;
+  background: linear-gradient(90deg, #f1f8e9 0%, #ffffff 100%);
+}
+
+.sowing-info-grid strong {
+  display: block;
+  margin: 0 0 4px 0;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.15px;
+  text-transform: uppercase;
+}
+
+.sowing-info-grid i {
+  color: #37474f;
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .sowing-info-grid .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sowing-info-heading h2 {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sowing-info-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sowing-info-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sowing-info-code-badge {
+    width: fit-content;
+  }
+}

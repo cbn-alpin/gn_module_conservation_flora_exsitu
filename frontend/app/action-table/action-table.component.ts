@@ -46,7 +46,9 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   private allSowingActions: any[] = [];
 
   public sowingActionTypeFilter: string | null = null;
-  public sowingActionStartDateFilter: Date | null = null;
+  public sowingActionStartDateFromFilter: Date | null = null;
+  public sowingActionStartDateToFilter: Date | null = null;
+  public sowingActionDateSort: 'asc' | 'desc' = 'desc';
   public sowingActionTypeFilterOptions: string[] = [];
 
   private readonly sowingActionTypeFilterOrder = [
@@ -353,6 +355,18 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     return `${year}-${month}-${day}`;
   }
 
+  private getDateFilterTimestamp(value: any): number {
+    const dateKey = this.getDateFilterKey(value);
+
+    if (!dateKey) {
+      return 0;
+    }
+
+    const timestamp = new Date(`${dateKey}T00:00:00`).getTime();
+
+    return Number.isNaN(timestamp) ? 0 : timestamp;
+  }
+
   private syncSowingActionPaginator(totalItems: number): void {
     if (!this.enablePagination || !this.paginator) {
       return;
@@ -371,21 +385,43 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
       return;
     }
 
-    const selectedDateKey = this.getDateFilterKey(this.sowingActionStartDateFilter);
+    const selectedDateFromKey = this.getDateFilterKey(this.sowingActionStartDateFromFilter);
+    const selectedDateToKey = this.getDateFilterKey(this.sowingActionStartDateToFilter);
 
-    const filteredActions = this.allSowingActions.filter((action) => {
-      const actionType = this.getActionTypeDisplayValue(action);
+    const filteredActions = this.allSowingActions
+      .filter((action) => {
+        const actionType = this.getActionTypeDisplayValue(action);
+        const actionDateKey = this.getDateFilterKey(action.date_start);
 
-      const matchesActionType =
-        !this.sowingActionTypeFilter ||
-        actionType === this.sowingActionTypeFilter;
+        const matchesActionType =
+          !this.sowingActionTypeFilter ||
+          actionType === this.sowingActionTypeFilter;
 
-      const matchesStartDate =
-        !selectedDateKey ||
-        this.getDateFilterKey(action.date_start) === selectedDateKey;
+        const matchesDateFrom =
+          !selectedDateFromKey ||
+          (!!actionDateKey && actionDateKey >= selectedDateFromKey);
 
-      return matchesActionType && matchesStartDate;
-    });
+        const matchesDateTo =
+          !selectedDateToKey ||
+          (!!actionDateKey && actionDateKey <= selectedDateToKey);
+
+        return matchesActionType && matchesDateFrom && matchesDateTo;
+      })
+      .sort((a, b) => {
+        const dateA = this.getDateFilterTimestamp(a.date_start);
+        const dateB = this.getDateFilterTimestamp(b.date_start);
+
+        if (dateA !== dateB) {
+          return this.sowingActionDateSort === 'asc'
+            ? dateA - dateB
+            : dateB - dateA;
+        }
+
+        const createDateA = new Date(a.meta_create_date).getTime();
+        const createDateB = new Date(b.meta_create_date).getTime();
+
+        return createDateB - createDateA;
+      });
 
     this.dataSource.data = filteredActions;
     this.visibleActionsChanged.emit(filteredActions);
@@ -397,14 +433,31 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     this.applySowingActionFilters();
   }
 
-  public onSowingActionStartDateFilterChange(value: Date | null): void {
-    this.sowingActionStartDateFilter = value;
+  public onSowingActionStartDateFromFilterChange(value: Date | null): void {
+    this.sowingActionStartDateFromFilter = value;
+    this.applySowingActionFilters();
+  }
+
+  public onSowingActionStartDateToFilterChange(value: Date | null): void {
+    this.sowingActionStartDateToFilter = value;
+    this.applySowingActionFilters();
+  }
+
+  public onSowingActionDateSortChange(value: 'asc' | 'desc'): void {
+    this.sowingActionDateSort = value;
+    this.applySowingActionFilters();
+  }
+
+  public toggleSowingActionDateSort(): void {
+    this.sowingActionDateSort = this.sowingActionDateSort === 'asc' ? 'desc' : 'asc';
     this.applySowingActionFilters();
   }
 
   public resetSowingActionFilters(): void {
     this.sowingActionTypeFilter = null;
-    this.sowingActionStartDateFilter = null;
+    this.sowingActionStartDateFromFilter = null;
+    this.sowingActionStartDateToFilter = null;
+    this.sowingActionDateSort = 'desc';
     this.applySowingActionFilters();
   }
 

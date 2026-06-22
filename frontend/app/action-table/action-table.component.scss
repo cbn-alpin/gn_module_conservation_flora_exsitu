@@ -139,7 +139,7 @@ table tr.mat-row {
 
 .sowing-action-filter-fields {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(180px, 240px);
+  grid-template-columns: minmax(220px, 1.2fr) repeat(3, minmax(170px, 1fr));
   gap: 14px;
   align-items: center;
 }
@@ -215,6 +215,442 @@ table tr.mat-row {
   .sowing-action-filter-field {
     width: 100%;
   }
+}
+
+/* Visuel clair : Semi > Liste des actions */
+.sowing-action-list-card {
+  border: 1px solid #d8ead8;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(46, 125, 50, 0.10);
+}
+
+/* Bloc filtres */
+.sowing-action-list-card .sowing-action-filters-card {
+  margin: 16px 16px 18px 16px;
+  padding: 16px;
+  border: 1px solid #d8ead8;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, #fbfffb 0%, #ffffff 100%);
+  box-shadow: 0 3px 10px rgba(46, 125, 50, 0.06);
+}
+
+.sowing-action-list-card .sowing-action-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.sowing-action-list-card .sowing-action-filters-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1b5e20;
+}
+
+.sowing-action-list-card .sowing-action-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.sowing-action-list-card .sowing-action-filters-title span {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.sowing-action-list-card .sowing-action-filters-title small {
+  display: block;
+  margin-top: 2px;
+  color: #607d63;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sowing-action-list-card .sowing-action-filter-fields {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) minmax(220px, 1.2fr) minmax(160px, 1fr) minmax(160px, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+.sowing-action-list-card .sowing-action-sort-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sowing-action-list-card .sowing-action-sort-label {
+  color: #607d63;
+  font-size: 12px;
+  font-weight: 700;
+  padding-left: 2px;
+}
+
+.sowing-action-list-card .sowing-action-sort-button {
+  min-height: 56px;
+  padding: 0 16px;
+  border: 1px solid #c8e6c9;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1b5e20;
+  font-size: 13px;
+  font-weight: 800;
+  justify-content: flex-start;
+  box-shadow: none;
+}
+
+.sowing-action-list-card .sowing-action-sort-button:hover {
+  background: #f4fbf5;
+  border-color: #a5d6a7;
+}
+
+.sowing-action-list-card .sowing-action-sort-button mat-icon {
+  margin-right: 8px;
+  color: #43a047;
+}
+
+.sowing-action-list-card .sowing-action-filter-field {
+  width: 100%;
+}
+
+:host ::ng-deep .sowing-action-list-card .sowing-action-filter-field .mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .sowing-action-list-card .sowing-action-filter-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.sowing-action-list-card .reset-filter-button {
+  min-height: 34px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background-color: #8e24aa;
+  color: #ffffff;
+  border: 1px solid #7b1fa2;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sowing-action-list-card .reset-filter-button:hover {
+  background-color: #7b1fa2;
+}
+
+.sowing-action-list-card .reset-filter-button mat-icon {
+  color: #ffffff !important;
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  margin-right: 5px;
+}
+
+/* Header liste */
+.sowing-action-list-card .action-list-header {
+  height: auto;
+  min-height: 74px;
+  padding: 10px 16px 14px 16px;
+  border-top: 1px solid #eef6ee;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfffb 100%);
+}
+
+.sowing-action-list-card .action-list-title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sowing-action-list-card .action-list-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.sowing-action-list-card .action-list-title-text {
+  text-align: center;
+}
+
+.sowing-action-list-card .action-list-title-text mat-card-title {
+  color: #1b5e20;
+  font-size: 21px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.sowing-action-list-card .action-list-title-text small {
+  display: block;
+  margin-top: 2px;
+  color: #607d63;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sowing-action-list-card .add-action-button {
+  min-height: 36px;
+  border-radius: 999px;
+  background-color: #4caf50;
+  border-color: #43a047;
+  box-shadow: 0 3px 8px rgba(76, 175, 80, 0.20);
+}
+
+.sowing-action-list-card .add-action-button:hover {
+  background-color: #43a047;
+}
+
+/* Tableau */
+.sowing-action-list-card mat-card-content {
+  padding: 0 16px 16px 16px;
+}
+
+.sowing-action-list-card table {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.08);
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-mdc-header-row {
+  height: 52px;
+  background: #f7fff8;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-mdc-header-cell {
+  color: #1b5e20;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #d8ead8;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-mdc-row {
+  height: 58px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-mdc-row .mat-mdc-cell {
+  color: #263238;
+  font-size: 14px;
+  border-bottom: 1px solid #edf5ed;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-mdc-row.clickable-row:hover .mat-mdc-cell,
+:host ::ng-deep .sowing-action-list-card .mat-mdc-row.clickable-row.selected-row .mat-mdc-cell {
+  background-color: #e8f8e9 !important;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-mdc-row.clickable-row.selected-row .mat-mdc-cell:first-child {
+  border-left: 5px solid #43a047;
+}
+
+/* Petits badges lisibles */
+.sowing-action-list-card .action-date-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #d8ead8;
+  border-radius: 999px;
+  background: #fbfffb;
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+.sowing-action-list-card .action-type-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.sowing-action-list-card .action-agent-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #37474f;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Version plus compacte et plus propre quand le détail de l'action est ouvert */
+.sowing-action-list-card.sowing-action-list-with-details .sowing-action-filters-card {
+  margin: 12px 12px 14px 12px;
+  padding: 13px 14px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .sowing-action-filters-header {
+  margin-bottom: 12px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .action-list-header {
+  min-height: 66px;
+  padding: 10px 12px 12px 12px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .action-list-title-text mat-card-title {
+  font-size: 18px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .action-list-title-text small {
+  font-size: 11px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details mat-card-content {
+  padding: 0 12px 12px 12px;
+}
+
+:host ::ng-deep .sowing-action-list-card.sowing-action-list-with-details .mat-mdc-header-cell,
+:host ::ng-deep .sowing-action-list-card.sowing-action-list-with-details .mat-mdc-cell {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+:host ::ng-deep .sowing-action-list-card.sowing-action-list-with-details .mat-mdc-row {
+  height: 56px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .action-date-pill {
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .action-type-pill {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .action-agent-cell {
+  font-size: 13px;
+}
+
+.sowing-action-list-card.sowing-action-list-with-details .add-action-button {
+  min-height: 34px;
+  font-size: 13px;
+}
+
+.sowing-action-list-card .action-agent-cell mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #66bb6a;
+}
+
+.sowing-action-list-card .actions-trigger-red {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+
+.sowing-action-list-card .actions-trigger-red:hover {
+  background-color: #fff3f3;
+}
+
+/* Pagination */
+:host ::ng-deep .sowing-action-list-card .mat-mdc-paginator {
+  margin-top: 10px;
+  border-top: 1px solid #edf5ed;
+  background: #fbfffb;
+}
+
+/* Aucune donnée */
+.sowing-action-list-card .no-data {
+  margin-top: 12px;
+  padding: 18px;
+  border: 1px dashed #c8e6c9;
+  border-radius: 12px;
+  background: #fbfffb;
+  color: #607d63;
+  font-style: normal;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .sowing-action-list-card .sowing-action-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sowing-action-list-card .sowing-action-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .sowing-action-list-card .action-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sowing-action-list-card .title-wrapper {
+    position: static;
+    transform: none;
+    width: 100%;
+  }
+
+  .sowing-action-list-card .sowing-action-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .sowing-action-list-card .sowing-action-sort-button {
+    width: 100%;
+  }
+
+}
+
+/* Alignement propre de la colonne Action dans Semi > Liste des actions */
+:host ::ng-deep .sowing-action-list-card .mat-column-actions {
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  text-align: center !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+:host ::ng-deep .sowing-action-list-card th.mat-column-actions {
+  text-align: center !important;
+}
+
+:host ::ng-deep .sowing-action-list-card td.mat-column-actions {
+  text-align: center !important;
+}
+
+.sowing-action-list-card .actions-trigger-red {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto;
+  padding: 0 !important;
+}
+
+.sowing-action-list-card .actions-trigger-red mat-icon {
+  margin: 0 !important;
 }
 
 
