@@ -1,4 +1,6 @@
-<mat-card>
+<mat-card
+  class="action-details-card"
+  [class.sowing-action-details-card]="isSowingContext">
   <mat-card-header class="sticky-header action-details-header">
     <mat-card-title>Détails de l'action</mat-card-title>
 
@@ -21,7 +23,7 @@
       [class.sowing-synthesis-details-mode]="isSowingContext && code === 'synth'">
 
       <!-- Type d'action -->
-      <div class="field-block">
+      <div class="field-block action-type-highlight">
         <label>Type d'action :</label>
         <span>{{ labels.id_action_type }}</span>
       </div>

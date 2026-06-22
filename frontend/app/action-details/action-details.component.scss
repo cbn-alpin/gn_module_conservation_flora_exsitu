@@ -153,3 +153,203 @@ mat-card-content {
   min-width: 0;
   word-break: break-word;
 }
+
+/* Visuel amélioré uniquement pour Semi > Détails de l'action */
+.sowing-action-details-card {
+  overflow: hidden;
+  border: 1px solid #c8e6c9;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f1fbf4 0%, #ffffff 45%);
+  box-shadow: 0 8px 22px rgba(46, 125, 50, 0.14);
+}
+
+.sowing-action-details-card .action-details-header {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+  color: #fff;
+  border-bottom: none;
+}
+
+.sowing-action-details-card .action-details-header mat-card-title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.sowing-action-details-card .hide-details-button {
+  background-color: rgba(255, 255, 255, 0.94);
+  color: #2e7d32;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.sowing-action-details-card .hide-details-button:hover {
+  background-color: #ffffff;
+  color: #1b5e20;
+}
+
+.sowing-action-details-card mat-card-content {
+  width: 94% !important;
+  margin: 16px auto 20px auto !important;
+  padding: 18px 18px !important;
+  border: 1px solid #e0eee0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(46, 125, 50, 0.08);
+}
+
+.sowing-action-details-card .semis-form {
+  padding: 8px;
+}
+
+.sowing-action-details-card .section-subtitle {
+  display: inline-flex;
+  align-items: center;
+  color: #1b5e20;
+  background: linear-gradient(90deg, #e8f5e9 0%, #f7fff8 100%);
+  border-left: 5px solid #43a047;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 18px 0 14px;
+}
+
+.sowing-action-details-card .field-block {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: center;
+  margin-bottom: 9px;
+  padding: 9px 12px;
+  border: 1px solid #e2f0e2;
+  border-left: 4px solid #81c784;
+  border-radius: 10px;
+  background-color: #fbfffb;
+}
+
+.sowing-action-details-card .field-block label {
+  min-width: 0;
+  margin-right: 0;
+  color: #2e7d32;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sowing-action-details-card .field-block span {
+  min-width: 0;
+  color: #263238;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.sowing-action-details-card .field-block:hover {
+  background-color: #f3fbf4;
+  border-left-color: #43a047;
+}
+
+.sowing-action-details-card .sowing-pretreatment-details-mode .field-block {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.sowing-action-details-card .sowing-synthesis-details-mode .field-block {
+  grid-template-columns: 210px minmax(0, 1fr);
+}
+
+/* Tableaux réplicats dans le détail Semi */
+.sowing-action-details-card .replicates-scroll-wrapper {
+  padding: 12px;
+  border: 1px solid #e0eee0;
+  border-radius: 12px;
+  background-color: #fbfffb;
+}
+
+.sowing-action-details-card .replicate-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.08);
+}
+
+.sowing-action-details-card .replicate-table th {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  font-weight: 700;
+}
+
+.sowing-action-details-card .replicate-table td {
+  background-color: #ffffff;
+}
+
+.sowing-action-details-card .replicate-table tbody tr:nth-child(even) td {
+  background-color: #f8fcf8;
+}
+
+.sowing-action-details-card .replicate-table tbody tr:hover td {
+  background-color: #eef8ef;
+}
+
+.sowing-action-details-card .replicate-table .total-row td {
+  background-color: #eaf6eb;
+  color: #1b5e20;
+  font-weight: 700;
+}
+
+.sowing-action-details-card .group-end {
+  border-right: 2px solid #66bb6a;
+}
+
+@media (max-width: 900px) {
+  .sowing-action-details-card .field-block,
+  .sowing-action-details-card .sowing-pretreatment-details-mode .field-block,
+  .sowing-action-details-card .sowing-synthesis-details-mode .field-block {
+    grid-template-columns: 1fr;
+    row-gap: 4px;
+  }
+
+  .sowing-action-details-card .field-block label {
+    white-space: normal;
+  }
+}
+
+/* Information principale : Type d'action */
+.sowing-action-details-card .action-type-highlight {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 4px 0 22px 0;
+  padding: 18px 22px;
+  border: 1px solid #66bb6a;
+  border-left: 9px solid #1b5e20;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #dff5e1 0%, #f7fff8 55%, #ffffff 100%);
+  box-shadow: 0 6px 18px rgba(46, 125, 50, 0.20);
+}
+
+.sowing-action-details-card .action-type-highlight label {
+  color: #1b5e20;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.sowing-action-details-card .action-type-highlight span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 190px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1b5e20 0%, #43a047 100%);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(27, 94, 32, 0.28);
+}
