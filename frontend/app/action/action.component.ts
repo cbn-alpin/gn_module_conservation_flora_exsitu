@@ -60,12 +60,12 @@ export class ActionComponent implements OnInit {
   public shakeTreatmentConcentrationField = false;
 
   private readonly actionTypeOrder = [
-    'Scarification',
     'Prétraitement',
+    'Scarification',
     'Stratification',
+    'Traitement',
     'Suivi réplicats',
-    'Synthèse du suivi',
-    'Traitement'
+    'Synthèse du suivi'
   ];
 
   private readonly pretreatmentProductOrder = [
@@ -321,6 +321,16 @@ export class ActionComponent implements OnInit {
 
       return String(labelA).localeCompare(String(labelB), 'fr');
     });
+  }
+
+  public getActionTypeOptionLabel(actionType: any): string {
+    const label = actionType?.label_default || actionType?.label_fr || '';
+
+    if (this.idSowing && label === 'Suivi réplicats') {
+      return 'Suivi par réplicats';
+    }
+
+    return label;
   }
 
   public getOrderedPretreatmentProducts(): any[] {

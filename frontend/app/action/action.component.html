@@ -27,7 +27,7 @@
               *ngFor="let actionType of getOrderedActionTypes()"
               [value]="actionType"
             >
-              {{ actionType.label_default || actionType.label_fr }}
+              {{ getActionTypeOptionLabel(actionType) }}
             </mat-option>
           </mat-select>
 
