@@ -72,8 +72,24 @@
       return this.activeActionRowId === row.id_sowing;
     }
 
-    public getEmergenceRateDisplay(_element: any): string {
-      return '-';
+    public getEmergenceRateDisplay(element: any): string {
+      const value = element?.emergence_rate_action;
+
+      if (value === null || value === undefined || value === '') {
+        return '-';
+      }
+
+      const rate = Number(value);
+
+      if (Number.isNaN(rate)) {
+        return '-';
+      }
+
+      const formattedRate = Number.isInteger(rate)
+        ? String(rate)
+        : rate.toFixed(1).replace('.', ',');
+
+      return `${formattedRate} %`;
     }
 
     public getDurationInDays(startDate: any, endDate: any): string {

@@ -873,7 +873,9 @@ class SowingRepository:
                 .order_by(TSowing.meta_create_date.desc())
             )
 
+            emergence_rates_by_sowing = self.get_average_emergence_rate_by_sowing(id_material)
             results = query.all()
+
             return [
                 {
                     **sowing.to_dic(),
@@ -883,13 +885,17 @@ class SowingRepository:
                     "label_substrate": label_substrate,
                     "nom_actor": nom_actor,
                     "prenom_actor": prenom_actor,
-                    "code_material": code_material
+                    "code_material": code_material,
+                    "emergence_rate_action": emergence_rates_by_sowing.get(sowing.id_sowing)
                 }
                 for sowing, label_location, label_watering, label_sowing, label_substrate, nom_actor, prenom_actor, code_material in results
             ]
+
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+
+    
         
     def list_by_material(self, id_material: int):
         try:
@@ -898,7 +904,75 @@ class SowingRepository:
             db.session.rollback()
             raise e
         
+    def get_average_emergence_rate_by_sowing(self, id_material: int):
+        rows = (
+            db.session.query(
+                TAction.id_sowing,
+                TAction.id_action,
+                TAction.date_start,
+                TActionReplicate.code,
+                TActionReplicate.count_germinated,
+                TActionReplicate.count_dead,
+                TActionReplicate.count_viable
+            )
+            .join(TSowing, TAction.id_sowing == TSowing.id_sowing)
+            .join(TActionReplicate, TActionReplicate.id_action == TAction.id_action)
+            .filter(
+                TSowing.id_material == id_material,
+                TAction.id_sowing.isnot(None),
+                TActionReplicate.code.isnot(None),
+                TActionReplicate.code != "synth"
+            )
+            .order_by(
+                TAction.id_sowing,
+                TAction.id_action,
+                TActionReplicate.code
+            )
+            .all()
+        )
 
+        rows_by_sowing = {}
+
+        for row in rows:
+            id_sowing = row.id_sowing
+            date_key = row.date_start.isoformat() if row.date_start else "inconnue"
+
+            rows_by_sowing.setdefault(id_sowing, {})
+            rows_by_sowing[id_sowing].setdefault(date_key, {})
+
+            rows_by_sowing[id_sowing][date_key][row.code] = row
+
+        result = {}
+
+        for id_sowing, rows_by_date in rows_by_sowing.items():
+            totals_by_code = {}
+
+            for rows_by_code in rows_by_date.values():
+                for code, row in rows_by_code.items():
+                    totals_by_code.setdefault(code, {
+                        "germinated": 0,
+                        "dead": 0,
+                        "viable": 0
+                    })
+
+                    totals_by_code[code]["germinated"] += row.count_germinated or 0
+                    totals_by_code[code]["dead"] += row.count_dead or 0
+                    totals_by_code[code]["viable"] += row.count_viable or 0
+
+            percentages = []
+
+            for counts in totals_by_code.values():
+                total = counts["germinated"] + counts["dead"] + counts["viable"]
+
+                if total <= 0:
+                    continue
+
+                percentages.append(round((counts["germinated"] / total) * 100))
+
+            if percentages:
+                result[id_sowing] = round(sum(percentages) / len(percentages), 1)
+
+        return result
 
 class TestRepository:
     def create(self, data):
@@ -1317,14 +1391,23 @@ class ActionRepository:
                 data["replicates"] = []
 
         else:
-            # ✅ 2. Sinon (svr ou autre), logique EXISTANTE : récupérer tous les réplicats du test
-            id_test = action.id_test
-            actions_same_test = (
-                db.session.query(TAction.id_action, TAction.date_start)
-                .filter(TAction.id_test == id_test)
-                .all()
-            )
-            actions_by_id = {a.id_action: a.date_start for a in actions_same_test}
+            # ✅ Pour un semis : récupérer les réplicats des actions du même semis
+            if action.id_sowing:
+                actions_same_context = (
+                    db.session.query(TAction.id_action, TAction.date_start)
+                    .filter(TAction.id_sowing == action.id_sowing)
+                    .all()
+                )
+
+            # ✅ Pour un test : conserver le comportement existant
+            else:
+                actions_same_context = (
+                    db.session.query(TAction.id_action, TAction.date_start)
+                    .filter(TAction.id_test == action.id_test)
+                    .all()
+                )
+
+            actions_by_id = {a.id_action: a.date_start for a in actions_same_context}
 
             all_replicates = (
                 db.session.query(TActionReplicate)
