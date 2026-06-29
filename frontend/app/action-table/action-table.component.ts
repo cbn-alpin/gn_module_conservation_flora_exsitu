@@ -15,7 +15,7 @@ import { DataService } from '../services/data.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { AfterViewInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 
 export interface Action {
@@ -96,11 +96,16 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     ) {
       this.loadActions();
     }
+
+    if (changes['selectedActionId']) {
+      this.syncPaginatorWithSelectedAction();
+    }
   }
 
   ngAfterViewInit(): void {
     if (this.enablePagination && this.paginator) {
       this.dataSource.paginator = this.paginator;
+      this.syncPaginatorWithSelectedAction();
     }
   }
 
@@ -380,6 +385,43 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  private syncPaginatorWithSelectedAction(): void {
+    if (!this.enablePagination || !this.paginator || !this.selectedActionId) {
+      return;
+    }
+
+    setTimeout(() => {
+      const actionIndex = this.dataSource.data.findIndex(
+        (action) => action.id_action === this.selectedActionId
+      );
+
+      if (actionIndex < 0) {
+        return;
+      }
+
+      const pageSize = this.paginator.pageSize || this.rowPerPage;
+      const nextPageIndex = Math.floor(actionIndex / pageSize);
+
+      if (this.paginator.pageIndex === nextPageIndex) {
+        return;
+      }
+
+      const previousPageIndex = this.paginator.pageIndex;
+
+      this.paginator.pageIndex = nextPageIndex;
+      this.paginator.length = this.dataSource.data.length;
+
+      const pageEvent: PageEvent = {
+        previousPageIndex,
+        pageIndex: nextPageIndex,
+        pageSize,
+        length: this.dataSource.data.length
+      };
+
+      this.paginator.page.emit(pageEvent);
+    });
+  }
+
   public applySowingActionFilters(): void {
     if (!this.idSowing) {
       return;
@@ -426,6 +468,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     this.dataSource.data = filteredActions;
     this.visibleActionsChanged.emit(filteredActions);
     this.syncSowingActionPaginator(filteredActions.length);
+    this.syncPaginatorWithSelectedAction();
   }
 
   public onSowingActionTypeFilterChange(value: string | null): void {
