@@ -279,45 +279,9 @@ table tr.mat-row {
 
 .sowing-action-list-card .sowing-action-filter-fields {
   display: grid;
-  grid-template-columns: minmax(170px, 0.8fr) minmax(220px, 1.2fr) minmax(160px, 1fr) minmax(160px, 1fr);
+  grid-template-columns: minmax(220px, 1.2fr) minmax(160px, 1fr) minmax(160px, 1fr);
   gap: 14px;
   align-items: end;
-}
-
-.sowing-action-list-card .sowing-action-sort-control {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sowing-action-list-card .sowing-action-sort-label {
-  color: #607d63;
-  font-size: 12px;
-  font-weight: 700;
-  padding-left: 2px;
-}
-
-.sowing-action-list-card .sowing-action-sort-button {
-  min-height: 56px;
-  padding: 0 16px;
-  border: 1px solid #c8e6c9;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #1b5e20;
-  font-size: 13px;
-  font-weight: 800;
-  justify-content: flex-start;
-  box-shadow: none;
-}
-
-.sowing-action-list-card .sowing-action-sort-button:hover {
-  background: #f4fbf5;
-  border-color: #a5d6a7;
-}
-
-.sowing-action-list-card .sowing-action-sort-button mat-icon {
-  margin-right: 8px;
-  color: #43a047;
 }
 
 .sowing-action-list-card .sowing-action-filter-field {
@@ -441,6 +405,14 @@ table tr.mat-row {
   letter-spacing: 0.2px;
   text-transform: uppercase;
   border-bottom: 1px solid #d8ead8;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-sort-header-container {
+  justify-content: flex-start;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-sort-header-arrow {
+  color: #1b5e20;
 }
 
 :host ::ng-deep .sowing-action-list-card .mat-mdc-row {
