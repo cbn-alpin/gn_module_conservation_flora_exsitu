@@ -142,9 +142,24 @@
 
             <!-- Scarification -->
       <div *ngIf="code === 'scar'">
-          <!-- Type de scarification (toujours affiché) -->
+          <!-- Type de scarification -->
           <div class="form-row">
-            <div class="form-group full-width">
+            <div class="form-group full-width" *ngIf="idSowing">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Type de scarification</mat-label>
+
+                <mat-select formControlName="id_scarification_type">
+                  <mat-option
+                    *ngFor="let scarificationType of scarificationTypeOptions"
+                    [value]="scarificationType.id_nomenclature">
+
+                    {{ scarificationType.label_default || scarificationType.label_fr }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group full-width" *ngIf="!idSowing">
               <small>Type de scarification</small>
               <pnx-nomenclature
                 keyValue="id_nomenclature"

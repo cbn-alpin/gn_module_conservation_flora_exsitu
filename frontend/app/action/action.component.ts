@@ -55,6 +55,7 @@ export class ActionComponent implements OnInit {
   public treatmentLiquidOptions: any[] = [];
   public scarificationChemicalProductOptions: any[] = [];
   public scarificationMechanicalToolOptions: any[] = [];
+  public scarificationTypeOptions: any[] = [];
   public actionFormSubmitted = false;
   public shakeActionStartDateField = false;
   public shakeActionTypeField = false;
@@ -202,6 +203,16 @@ export class ActionComponent implements OnInit {
       error: (err) => {
         console.error('Erreur lors du chargement des types d’action :', err);
         this.actionTypes = [];
+      }
+    });
+
+    this.api.getNomenclaturesByTypeCode('CFE_SCARIFICATION_TYPE').subscribe({
+      next: (scarificationTypes) => {
+        this.scarificationTypeOptions = scarificationTypes || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des types de scarification :', err);
+        this.scarificationTypeOptions = [];
       }
     });
 
