@@ -180,7 +180,22 @@
           <!-- Si chimique -->
           <div *ngIf="scarTypeCode === 'chi'">
             <div class="form-row">
-              <div class="form-group half-width">
+              <div class="form-group half-width" *ngIf="idSowing">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Produit utilisé</mat-label>
+
+                  <mat-select formControlName="id_chemical_liquid">
+                    <mat-option
+                      *ngFor="let product of getOrderedScarificationChemicalProducts()"
+                      [value]="product.id_nomenclature">
+
+                      {{ product.label_default || product.label_fr }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group half-width" *ngIf="!idSowing">
                 <small>produit utilisé</small>
                 <pnx-nomenclature
                   keyValue="id_nomenclature"
