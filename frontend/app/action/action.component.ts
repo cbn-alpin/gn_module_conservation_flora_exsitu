@@ -299,6 +299,17 @@ export class ActionComponent implements OnInit {
       });
     });
 
+    this.germinationForm.get('id_liquid_treatment')?.valueChanges.subscribe(() => {
+      if (!this.hasSelectedTreatmentLiquid()) {
+        this.germinationForm.get('concentration_chemical_liquid')?.reset(null, { emitEvent: false });
+        this.clearControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
+        this.shakeTreatmentConcentrationField = false;
+        return;
+      }
+
+      this.refreshSowingTreatmentConcentrationError();
+    });
+
     if (this.dialogData?.edit) {
       const action = this.dialogData.action;
       const code = this.dialogData.code;
@@ -698,6 +709,17 @@ export class ActionComponent implements OnInit {
 
   private isSowingTreatmentAction(): boolean {
     return !!this.idSowing && this.code === 'tra';
+  }
+
+  public hasSelectedTreatmentLiquid(): boolean {
+    const treatmentLiquid = this.germinationForm.get('id_liquid_treatment')?.value;
+
+    return !!(
+      this.isSowingTreatmentAction() &&
+      treatmentLiquid !== null &&
+      treatmentLiquid !== undefined &&
+      treatmentLiquid !== ''
+    );
   }
 
   private setControlError(controlName: string, errorName: string): void {

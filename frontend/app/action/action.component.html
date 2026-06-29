@@ -354,6 +354,7 @@
                   </div>
 
                   <mat-form-field
+                    *ngIf="hasSelectedTreatmentLiquid()"
                     appearance="outline"
                     class="half-width treatment-concentration-business-rule shake-wrapper"
                     [class.shake-field]="shakeTreatmentConcentrationField"
