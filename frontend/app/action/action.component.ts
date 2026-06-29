@@ -53,6 +53,7 @@ export class ActionComponent implements OnInit {
   public pretreatmentProductOptions: any[] = [];
   public pretreatmentLiquidOptions: any[] = [];
   public treatmentLiquidOptions: any[] = [];
+  public scarificationChemicalProductOptions: any[] = [];
   public actionFormSubmitted = false;
   public shakeActionStartDateField = false;
   public shakeActionTypeField = false;
@@ -79,6 +80,13 @@ export class ActionComponent implements OnInit {
     'Eau osmosée',
     'Eau purifiée',
     'Eau',
+    'Autre'
+  ];
+
+  private readonly scarificationChemicalProductOrder = [
+    'Eau (H₂O)',
+    'Acide sulfurique (H₂SO₄)',
+    'Chlorure d’hydrogène (HCl)',
     'Autre'
   ];
 
@@ -216,6 +224,16 @@ export class ActionComponent implements OnInit {
       error: (err) => {
         console.error('Erreur lors du chargement des liquides de traitement :', err);
         this.treatmentLiquidOptions = [];
+      }
+    });
+
+    this.api.getNomenclaturesByTypeCode('CFE_SCA_CH_PRODUCT').subscribe({
+      next: (products) => {
+        this.scarificationChemicalProductOptions = products || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des produits de scarification chimique :', err);
+        this.scarificationChemicalProductOptions = [];
       }
     });
 
@@ -366,6 +384,31 @@ export class ActionComponent implements OnInit {
     return [...this.pretreatmentLiquidOptions]
       .filter((liquid) => {
         const label = liquid?.label_default || liquid?.label_fr || '';
+        return orderMap.has(label);
+      })
+      .sort((a, b) => {
+        const labelA = a?.label_default || a?.label_fr || '';
+        const labelB = b?.label_default || b?.label_fr || '';
+
+        const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return String(labelA).localeCompare(String(labelB), 'fr');
+      });
+  }
+
+  public getOrderedScarificationChemicalProducts(): any[] {
+    const orderMap = new Map(
+      this.scarificationChemicalProductOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.scarificationChemicalProductOptions]
+      .filter((product) => {
+        const label = product?.label_default || product?.label_fr || '';
         return orderMap.has(label);
       })
       .sort((a, b) => {

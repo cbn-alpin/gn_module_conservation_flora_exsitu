@@ -353,3 +353,111 @@ mat-card-content {
   text-align: center;
   box-shadow: 0 4px 10px rgba(27, 94, 32, 0.28);
 }
+
+/* Variante violette : Semi > Détails de l'action */
+.sowing-action-details-card {
+  border: 1px solid #e1bee7;
+  background: linear-gradient(180deg, #fbf5ff 0%, #ffffff 45%);
+  box-shadow: 0 8px 22px rgba(142, 36, 170, 0.14);
+}
+
+.sowing-action-details-card .action-details-header {
+  background: linear-gradient(135deg, #8e24aa 0%, #ab47bc 100%);
+  color: #ffffff;
+}
+
+.sowing-action-details-card .action-details-header mat-card-title {
+  color: #ffffff;
+}
+
+.sowing-action-details-card .hide-details-button {
+  background-color: rgba(255, 255, 255, 0.96);
+  color: #8e24aa;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+.sowing-action-details-card .hide-details-button:hover {
+  background-color: #ffffff;
+  color: #7b1fa2;
+}
+
+.sowing-action-details-card mat-card-content {
+  border: 1px solid #ead7ef;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(142, 36, 170, 0.08);
+}
+
+.sowing-action-details-card .section-subtitle {
+  color: #6a1b9a;
+  background: linear-gradient(90deg, #f3e5f5 0%, #fbf5ff 100%);
+  border-left: 5px solid #8e24aa;
+}
+
+.sowing-action-details-card .field-block {
+  border: 1px solid #ead7ef;
+  border-left: 4px solid #ba68c8;
+  background-color: #fdf8ff;
+}
+
+.sowing-action-details-card .field-block label {
+  color: #7b1fa2;
+}
+
+.sowing-action-details-card .field-block span {
+  color: #263238;
+}
+
+.sowing-action-details-card .field-block:hover {
+  background-color: #fbf1ff;
+  border-left-color: #8e24aa;
+}
+
+/* Tableaux réplicats en violet */
+.sowing-action-details-card .replicates-scroll-wrapper {
+  border: 1px solid #ead7ef;
+  background-color: #fdf8ff;
+}
+
+.sowing-action-details-card .replicate-table {
+  box-shadow: 0 2px 8px rgba(142, 36, 170, 0.08);
+}
+
+.sowing-action-details-card .replicate-table th {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.sowing-action-details-card .replicate-table tbody tr:nth-child(even) td {
+  background-color: #fdf8ff;
+}
+
+.sowing-action-details-card .replicate-table tbody tr:hover td {
+  background-color: #f7ecfb;
+}
+
+.sowing-action-details-card .replicate-table .total-row td {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.sowing-action-details-card .group-end {
+  border-right: 2px solid #ab47bc;
+}
+
+/* Information principale : Type d'action en violet */
+.sowing-action-details-card .action-type-highlight {
+  border: 1px solid #ba68c8;
+  border-left: 9px solid #7b1fa2;
+  background: linear-gradient(135deg, #f3e5f5 0%, #fbf5ff 55%, #ffffff 100%);
+  box-shadow: 0 6px 18px rgba(142, 36, 170, 0.18);
+}
+
+.sowing-action-details-card .action-type-highlight label {
+  color: #6a1b9a;
+}
+
+.sowing-action-details-card .action-type-highlight span {
+  background: linear-gradient(135deg, #7b1fa2 0%, #ab47bc 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(123, 31, 162, 0.28);
+}
