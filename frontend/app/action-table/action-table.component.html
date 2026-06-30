@@ -50,7 +50,7 @@
     <input
       matInput
       [matDatepicker]="sowingActionStartDateFromFilterPicker"
-      [value]="sowingActionStartDateFromFilter"
+      [(ngModel)]="sowingActionStartDateFromFilter"
       (dateChange)="onSowingActionStartDateFromFilterChange($event.value)">
 
     <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateFromFilterPicker"></mat-datepicker-toggle>
@@ -63,7 +63,7 @@
     <input
       matInput
       [matDatepicker]="sowingActionStartDateToFilterPicker"
-      [value]="sowingActionStartDateToFilter"
+      [(ngModel)]="sowingActionStartDateToFilter"
       (dateChange)="onSowingActionStartDateToFilterChange($event.value)">
 
     <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateToFilterPicker"></mat-datepicker-toggle>
@@ -175,7 +175,7 @@
     </table>
 
     <mat-paginator
-      *ngIf="enablePagination && dataSource.data.length > 0"
+      [class.hidden-paginator]="!enablePagination || dataSource.data.length === 0"
       [length]="dataSource.data.length"
       [pageSize]="rowPerPage"
       [pageSizeOptions]="[5, 10, 25, 100]"

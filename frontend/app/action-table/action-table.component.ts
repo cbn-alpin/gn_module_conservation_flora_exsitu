@@ -115,6 +115,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
 
   loadActions(): void {
     if (this.idSowing) {
+
       this.api.getActionsBySowing(this.idSowing).subscribe({
         next: (actions) => {
           console.log('📦 Actions du semis reçues :', actions);
@@ -309,8 +310,6 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
 
     return actionType;
   }
-
-
 
   private updateSowingActionTypeFilterOptions(actionsForOptions: any[] = this.allSowingActions): void {
     const presentActionTypes = new Set(
@@ -547,6 +546,8 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     this.sowingActionStartDateToFilter = null;
     this.sowingActionSortActive = 'date_start';
     this.sowingActionSortDirection = 'desc';
+
+    this.updateSowingActionTypeFilterOptions(this.allSowingActions);
     this.applySowingActionFilters();
   }
 
