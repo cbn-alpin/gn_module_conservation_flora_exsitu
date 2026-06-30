@@ -308,9 +308,9 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     return actionType;
   }
 
-  private updateSowingActionTypeFilterOptions(): void {
+  private updateSowingActionTypeFilterOptions(actionsForOptions: any[] = this.allSowingActions): void {
     const presentActionTypes = new Set(
-      this.allSowingActions
+      actionsForOptions
         .map((action) => this.getActionTypeDisplayValue(action))
         .filter((label) => !!label && label !== '-')
     );
@@ -477,13 +477,8 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     const selectedDateFromKey = this.getDateFilterKey(this.sowingActionStartDateFromFilter);
     const selectedDateToKey = this.getDateFilterKey(this.sowingActionStartDateToFilter);
 
-    const filteredActions = this.allSowingActions.filter((action) => {
-      const actionType = this.getActionTypeDisplayValue(action);
+    const actionsMatchingDateFilters = this.allSowingActions.filter((action) => {
       const actionDateKey = this.getDateFilterKey(action.date_start);
-
-      const matchesActionType =
-        !this.sowingActionTypeFilter ||
-        actionType === this.sowingActionTypeFilter;
 
       const matchesDateFrom =
         !selectedDateFromKey ||
@@ -493,7 +488,18 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
         !selectedDateToKey ||
         (!!actionDateKey && actionDateKey <= selectedDateToKey);
 
-      return matchesActionType && matchesDateFrom && matchesDateTo;
+      return matchesDateFrom && matchesDateTo;
+    });
+
+    this.updateSowingActionTypeFilterOptions(actionsMatchingDateFilters);
+
+    const filteredActions = actionsMatchingDateFilters.filter((action) => {
+      const actionType = this.getActionTypeDisplayValue(action);
+
+      return (
+        !this.sowingActionTypeFilter ||
+        actionType === this.sowingActionTypeFilter
+      );
     });
 
     const sortedActions = this.sortSowingActions(filteredActions);
