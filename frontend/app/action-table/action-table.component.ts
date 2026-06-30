@@ -54,13 +54,15 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   public sowingActionTypeFilterOptions: string[] = [];
 
   private readonly sowingActionTypeFilterOrder = [
+    'Prétraitement',
+    'Scarification',
     'Scarification chimique',
     'Scarification mécanique',
-    'Prétraitement',
     'Stratification',
+    'Traitement',
+    'Suivi par réplicats',
     'Suivi réplicats',
-    'Synthèse du suivi',
-    'Traitement'
+    'Synthèse du suivi'
   ];
 
   @Output() view = new EventEmitter<Action>();
