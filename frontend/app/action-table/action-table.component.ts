@@ -401,9 +401,6 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
 
         valueA = indexA === -1 ? 999 : indexA;
         valueB = indexB === -1 ? 999 : indexB;
-      } else if (active === 'label_actor') {
-        valueA = String(a.label_actor || '').toLowerCase();
-        valueB = String(b.label_actor || '').toLowerCase();
       } else {
         valueA = a[active];
         valueB = b[active];
