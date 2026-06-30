@@ -310,6 +310,8 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     return actionType;
   }
 
+
+
   private updateSowingActionTypeFilterOptions(actionsForOptions: any[] = this.allSowingActions): void {
     const presentActionTypes = new Set(
       actionsForOptions
@@ -392,8 +394,14 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
         valueA = this.getDateFilterTimestamp(a.date_start);
         valueB = this.getDateFilterTimestamp(b.date_start);
       } else if (active === 'label_action_type') {
-        valueA = this.getActionTypeDisplayValue(a).toLowerCase();
-        valueB = this.getActionTypeDisplayValue(b).toLowerCase();
+        const actionTypeA = this.getActionTypeDisplayValue(a);
+        const actionTypeB = this.getActionTypeDisplayValue(b);
+
+        const indexA = this.sowingActionTypeFilterOrder.indexOf(actionTypeA);
+        const indexB = this.sowingActionTypeFilterOrder.indexOf(actionTypeB);
+
+        valueA = indexA === -1 ? 999 : indexA;
+        valueB = indexB === -1 ? 999 : indexB;
       } else if (active === 'label_actor') {
         valueA = String(a.label_actor || '').toLowerCase();
         valueB = String(b.label_actor || '').toLowerCase();

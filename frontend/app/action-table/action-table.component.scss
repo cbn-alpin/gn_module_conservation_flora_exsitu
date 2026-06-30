@@ -625,7 +625,52 @@ table tr.mat-row {
   margin: 0 !important;
 }
 
+/* Colonnes fixes : évite que Type d'action et Agent bougent quand la flèche de tri apparaît */
+:host ::ng-deep .sowing-action-list-card table {
+  table-layout: fixed;
+  width: 100%;
+}
 
+:host ::ng-deep .sowing-action-list-card .mat-column-date_start {
+  width: 130px;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-column-label_action_type {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-column-label_actor {
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-column-actions {
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-sort-header-container {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-sort-header-content {
+  flex: 0 1 auto;
+}
+
+:host ::ng-deep .sowing-action-list-card .mat-sort-header-arrow {
+  width: 18px;
+  min-width: 18px;
+  margin-left: 6px;
+  color: #1b5e20;
+}
 
 
 
