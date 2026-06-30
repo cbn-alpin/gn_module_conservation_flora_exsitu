@@ -113,3 +113,121 @@ background-color: #ffffff;
 :host ::ng-deep .mat-mdc-row.clickable-row.action-row-active .mat-mdc-cell {
   background-color: rgb(235, 250, 235) !important;
 }
+
+/* Design compact de la liste des semis */
+.semis-list-card {
+  margin: 0;
+  border: 1px solid #c8e6c9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(46, 125, 50, 0.10);
+}
+
+.semis-list-card .semis-list-header {
+  height: 52px;
+  min-height: 52px;
+  padding: 0 14px;
+  background: linear-gradient(90deg, #e8f5e9 0%, #ffffff 100%);
+  border-bottom: 1px solid #d8ead8;
+}
+
+.semis-list-card .title-wrapper mat-card-title {
+  color: #1b5e20;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+}
+
+.semis-list-card .gray-button {
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 9px;
+  background-color: #43a047 !important;
+  border: 1px solid #2e7d32 !important;
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.18);
+}
+
+.semis-list-card .gray-button:hover {
+  background-color: #2e7d32 !important;
+}
+
+.semis-list-card .gray-button mat-icon {
+  margin-right: 4px;
+  font-size: 20px;
+}
+
+.semis-list-content {
+  padding: 12px 14px 10px 14px !important;
+  background: #fbfffb;
+}
+
+.semis-list-table {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #d8ead8;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+:host ::ng-deep .semis-list-table .mat-mdc-header-row {
+  height: 42px;
+  background: #e8f5e9;
+}
+
+:host ::ng-deep .semis-list-table .mat-mdc-header-cell {
+  color: #1b5e20;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #c8e6c9;
+}
+
+:host ::ng-deep .semis-list-table .mat-mdc-row {
+  height: 44px;
+}
+
+:host ::ng-deep .semis-list-table .mat-mdc-cell {
+  color: #263238;
+  font-size: 13px;
+  border-bottom: 1px solid #edf7ed;
+}
+
+:host ::ng-deep .semis-list-table .mat-mdc-row.clickable-row:hover .mat-mdc-cell,
+:host ::ng-deep .semis-list-table .mat-mdc-row.clickable-row.action-row-active .mat-mdc-cell {
+  background-color: rgb(235, 250, 235) !important;
+}
+
+:host ::ng-deep .semis-list-table .mat-column-code {
+  font-weight: 800;
+}
+
+:host ::ng-deep .semis-list-table .mat-column-emergence_rate {
+  font-weight: 750;
+  color: #1b5e20;
+}
+
+:host ::ng-deep .semis-list-table .mat-column-actions {
+  width: 72px;
+  text-align: center;
+}
+
+.semis-list-paginator {
+  margin-top: 8px;
+  border: 1px solid #d8ead8;
+  border-radius: 10px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.alert-card {
+  border: 1px solid #c8e6c9;
+  border-radius: 12px;
+  background: #f4fbf5;
+  color: #1b5e20;
+  box-shadow: none;
+}

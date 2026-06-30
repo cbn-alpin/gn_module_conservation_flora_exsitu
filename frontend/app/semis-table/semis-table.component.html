@@ -1,5 +1,5 @@
-<mat-card>
-  <mat-card-header class="header-with-button">
+<mat-card class="semis-list-card">
+  <mat-card-header class="header-with-button semis-list-header">
     <button mat-button class="gray-button" (click)="addFicheSemis()">
       <mat-icon>add</mat-icon> Ajouter une fiche de semis
     </button>
@@ -9,10 +9,10 @@
     </div>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content class="semis-list-content">
     <!-- ✅ Bloc conditionnel -->
     <ng-container *ngIf="dataSource.data.length > 0; else noSemisData">
-      <table mat-table [dataSource]="dataSource">
+      <table mat-table [dataSource]="dataSource" class="semis-list-table">
 
         <!-- Code -->
         <ng-container matColumnDef="code">
@@ -131,6 +131,7 @@
         </tr>
       </table>
       <mat-paginator
+        class="semis-list-paginator"
         [pageSize]="rowPerPage"
         [pageSizeOptions]="[5, 10, 25, 100]"
         showFirstLastButtons>
