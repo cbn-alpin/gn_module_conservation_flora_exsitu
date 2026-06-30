@@ -249,7 +249,11 @@
         </mat-form-field>
       </div>
 
-      <mat-form-field appearance="outline" class="align-with-form-group">
+      <mat-form-field
+        *ngIf="hasSelectedSowingLocation()"
+        appearance="outline"
+        class="align-with-form-group">
+
         <mat-label>Précision sur la localisation</mat-label>
         <input
           matInput

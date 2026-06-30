@@ -307,6 +307,12 @@ export class SemisComponent implements OnInit {
     this.validateDuplicateCode(value);
   });
 
+  this.semisForm.get('id_location')?.valueChanges.subscribe(() => {
+    if (!this.hasSelectedSowingLocation()) {
+      this.semisForm.get('specification_location')?.reset('', { emitEvent: false });
+    }
+  });
+
   this.dialogRef.backdropClick().subscribe(() => {
     this.onCancel();
   });
@@ -358,6 +364,16 @@ export class SemisComponent implements OnInit {
     }
   });
 
+  }
+
+  public hasSelectedSowingLocation(): boolean {
+    const location = this.semisForm.get('id_location')?.value;
+
+    return !!(
+      location !== null &&
+      location !== undefined &&
+      location !== ''
+    );
   }
 
   public getOrderedSowingLocations(): any[] {
