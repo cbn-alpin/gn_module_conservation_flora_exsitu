@@ -104,15 +104,21 @@
               Le support est obligatoire.
             </mat-error>
           </mat-form-field>
-          <div class="form-group half-width">
-            <small>Substrat </small>
-            <pnx-nomenclature
-              keyValue="id_nomenclature"
-              [bindAllItem]="false"
-              codeNomenclatureType="CFE_TEST_SUBSTRATE"
-              [parentFormControl]="germinationForm.controls.id_substrate"
-            ></pnx-nomenclature>
-          </div>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Substrat</mat-label>
+
+            <mat-select formControlName="id_substrate" required>
+              <mat-option
+                *ngFor="let substrate of getOrderedSubstrateOptions()"
+                [value]="substrate.id_nomenclature">
+                {{ substrate.label_default || substrate.label_fr }}
+              </mat-option>
+            </mat-select>
+
+            <mat-error *ngIf="germinationForm.get('id_substrate')?.hasError('required')">
+              Le substrat est obligatoire.
+            </mat-error>
+          </mat-form-field>
         </div>
 
         <!-- Programme + Remarques -->

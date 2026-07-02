@@ -49,12 +49,20 @@ export class GerminationComponent implements OnInit {
   additionalDataForm: FormGroup;
   formsDefinition;
   public supportOptions: any[] = [];
+  public substrateOptions: any[] = [];
 
   private readonly supportOrder = [
     'Boite de pétri',
     'Pastilles de Tourbe',
     'Terrine',
     'Autre'
+  ];
+
+  private readonly substrateOrder = [
+    'Papier filtre',
+    'Sable',
+    'Terreau',
+    'Tourbe'
   ];
 
   codeTest = new FormControl();
@@ -145,6 +153,7 @@ export class GerminationComponent implements OnInit {
   
     this.getTestByCode(this.codeT);
     this.loadSupportOptions();
+    this.loadSubstrateOptions();
   
     if (this.data?.edit && this.data?.test) {
       console.log("📦 Test reçu pour édition :", this.data.test);
@@ -174,6 +183,37 @@ export class GerminationComponent implements OnInit {
     );
 
     return [...this.supportOptions].sort((a, b) => {
+      const labelA = a?.label_default || a?.label_fr || '';
+      const labelB = b?.label_default || b?.label_fr || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
+  }
+
+  private loadSubstrateOptions(): void {
+    this.api.getNomenclaturesByTypeCode('CFE_TEST_SUBSTRATE').subscribe({
+      next: (substrates) => {
+        this.substrateOptions = substrates || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des substrats :', err);
+      }
+    });
+  }
+
+  public getOrderedSubstrateOptions(): any[] {
+    const orderMap = new Map(
+      this.substrateOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.substrateOptions].sort((a, b) => {
       const labelA = a?.label_default || a?.label_fr || '';
       const labelB = b?.label_default || b?.label_fr || '';
 

@@ -727,6 +727,44 @@ def upgrade():
         )
         AND cd_nomenclature = 'aut';
     """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
+        )
+        AND cd_nomenclature = 'ppf';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
+        )
+        AND cd_nomenclature = 'sbl';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
+        )
+        AND cd_nomenclature = 'tera';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
+        )
+        AND cd_nomenclature = 'torb';
+    """)
     
 def downgrade():
     op.execute("""
