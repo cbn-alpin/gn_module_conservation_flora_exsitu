@@ -90,15 +90,20 @@
 
         <!-- Support + Substrat -->
         <div class="form-row">
-          <div class="form-group half-width">
-            <small>Support </small>
-            <pnx-nomenclature
-              keyValue="id_nomenclature"
-              [bindAllItem]="false"
-              codeNomenclatureType="CFE_TG_SUPPORT"
-              [parentFormControl]="germinationForm.controls.id_support"
-            ></pnx-nomenclature>
-          </div>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Support</mat-label>
+            <mat-select formControlName="id_support" required>
+              <mat-option
+                *ngFor="let support of getOrderedSupportOptions()"
+                [value]="support.id_nomenclature">
+                {{ support.label_default || support.label_fr }}
+              </mat-option>
+            </mat-select>
+
+            <mat-error *ngIf="germinationForm.get('id_support')?.hasError('required')">
+              Le support est obligatoire.
+            </mat-error>
+          </mat-form-field>
           <div class="form-group half-width">
             <small>Substrat </small>
             <pnx-nomenclature

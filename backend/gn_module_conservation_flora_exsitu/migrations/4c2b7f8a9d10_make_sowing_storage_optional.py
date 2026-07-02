@@ -660,6 +660,74 @@ def upgrade():
         AND a.id_nomenclature <> a.keep_id;
     """)
 
+    op.execute("""
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'aut',
+            'autre',
+            'Autre',
+            'Autre support de germination',
+            'Autre',
+            'Autre support de germination',
+            'conservation_flora_exsitu',
+            '.004'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_TG_SUPPORT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'aut'
+        );
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TG_SUPPORT'
+        )
+        AND cd_nomenclature = 'bpet';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TG_SUPPORT'
+        )
+        AND cd_nomenclature = 'psto';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.003'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TG_SUPPORT'
+        )
+        AND cd_nomenclature = 'ter';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TG_SUPPORT'
+        )
+        AND cd_nomenclature = 'aut';
+    """)
+    
 def downgrade():
     op.execute("""
         UPDATE ref_nomenclatures.t_nomenclatures
@@ -1027,4 +1095,14 @@ def downgrade():
             definition_default = 'Nomenclature des liquides utilisés pour les traitements des semences.',
             definition_fr = 'Nomenclature des liquides utilisés pour les traitements des semences.'
         WHERE mnemonique = 'CFE_LIQUID_TREATMENT';
+    """)
+
+    op.execute("""
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TG_SUPPORT'
+        )
+        AND cd_nomenclature = 'aut';
     """)

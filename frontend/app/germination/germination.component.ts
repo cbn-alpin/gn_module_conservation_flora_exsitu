@@ -48,6 +48,14 @@ export class GerminationComponent implements OnInit {
   public observers_list_code;
   additionalDataForm: FormGroup;
   formsDefinition;
+  public supportOptions: any[] = [];
+
+  private readonly supportOrder = [
+    'Boite de pétri',
+    'Pastilles de Tourbe',
+    'Terrine',
+    'Autre'
+  ];
 
   codeTest = new FormControl();
   filteredTest$: Observable<string[]>;
@@ -136,6 +144,7 @@ export class GerminationComponent implements OnInit {
     }
   
     this.getTestByCode(this.codeT);
+    this.loadSupportOptions();
   
     if (this.data?.edit && this.data?.test) {
       console.log("📦 Test reçu pour édition :", this.data.test);
@@ -146,6 +155,37 @@ export class GerminationComponent implements OnInit {
       this.idStorage = id;
     });
     console.log(this.idStorage)
+  }
+
+  private loadSupportOptions(): void {
+    this.api.getNomenclaturesByTypeCode('CFE_TG_SUPPORT').subscribe({
+      next: (supports) => {
+        this.supportOptions = supports || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des supports :', err);
+      }
+    });
+  }
+
+  public getOrderedSupportOptions(): any[] {
+    const orderMap = new Map(
+      this.supportOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.supportOptions].sort((a, b) => {
+      const labelA = a?.label_default || a?.label_fr || '';
+      const labelB = b?.label_default || b?.label_fr || '';
+
+      const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+      const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+      if (indexA !== indexB) {
+        return indexA - indexB;
+      }
+
+      return String(labelA).localeCompare(String(labelB), 'fr');
+    });
   }
   
   getTestByCode(code :any): void {
