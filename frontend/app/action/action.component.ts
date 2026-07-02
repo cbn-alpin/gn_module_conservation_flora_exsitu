@@ -56,6 +56,10 @@ export class ActionComponent implements OnInit {
   public scarificationChemicalProductOptions: any[] = [];
   public scarificationMechanicalToolOptions: any[] = [];
   public scarificationTypeOptions: any[] = [];
+  private readonly germinationScarificationTypeOrder = [
+    'Mécanique',
+    'Chimique'
+  ];
   public actionFormSubmitted = false;
   public shakeActionStartDateField = false;
   public shakeActionTypeField = false;
@@ -438,6 +442,34 @@ export class ActionComponent implements OnInit {
         }
 
         return String(labelA).localeCompare(String(labelB), 'fr');
+      });
+  }
+
+  public getOrderedGerminationScarificationTypes(): any[] {
+    const orderMap = new Map(
+      this.germinationScarificationTypeOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.scarificationTypeOptions]
+      .filter((scarificationType) => {
+        const label = String(
+          scarificationType?.label_default || scarificationType?.label_fr || ''
+        ).trim();
+
+        return orderMap.has(label);
+      })
+      .sort((a, b) => {
+        const labelA = String(a?.label_default || a?.label_fr || '').trim();
+        const labelB = String(b?.label_default || b?.label_fr || '').trim();
+
+        const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return labelA.localeCompare(labelB, 'fr');
       });
   }
 

@@ -869,6 +869,29 @@ def downgrade():
     )
 
     op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Mécanique',
+            label_fr = 'Mécanique',
+            hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
+        )
+        AND cd_nomenclature = 'mec';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
+        )
+        AND cd_nomenclature = 'chi';
+    """)
+
+    op.execute("""
         INSERT INTO ref_nomenclatures.t_nomenclatures (
             id_type,
             cd_nomenclature,
@@ -1143,4 +1166,27 @@ def downgrade():
             WHERE mnemonique = 'CFE_TG_SUPPORT'
         )
         AND cd_nomenclature = 'aut';
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Mécanique ',
+            label_fr = 'Mécanique ',
+            hierarchy = '.002'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
+        )
+        AND cd_nomenclature = 'mec';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET hierarchy = '.001'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
+        )
+        AND cd_nomenclature = 'chi';
     """)
