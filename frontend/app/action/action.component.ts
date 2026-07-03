@@ -97,6 +97,13 @@ export class ActionComponent implements OnInit {
     'Autre'
   ];
 
+  private readonly germinationScarificationChemicalProductOrder = [
+    'h2so4',
+    'hcl',
+    'h2o',
+    'aut'
+  ];
+
   private readonly scarificationMechanicalToolOrder = [
     'Papier de verre',
     'Scalpel',
@@ -514,6 +521,53 @@ export class ActionComponent implements OnInit {
 
         return String(labelA).localeCompare(String(labelB), 'fr');
       });
+  }
+
+  public getOrderedGerminationScarificationChemicalProducts(): any[] {
+    const orderMap = new Map(
+      this.germinationScarificationChemicalProductOrder.map((code, index) => [code, index])
+    );
+
+    return [...this.scarificationChemicalProductOptions]
+      .filter((product) => {
+        const code = String(product?.cd_nomenclature || '').trim();
+        return orderMap.has(code);
+      })
+      .sort((a, b) => {
+        const codeA = String(a?.cd_nomenclature || '').trim();
+        const codeB = String(b?.cd_nomenclature || '').trim();
+
+        const indexA = orderMap.has(codeA) ? orderMap.get(codeA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(codeB) ? orderMap.get(codeB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return codeA.localeCompare(codeB, 'fr');
+      });
+  }
+
+  public getGerminationScarificationChemicalProductLabel(product: any): string {
+    const code = String(product?.cd_nomenclature || '').trim();
+
+    if (code === 'h2so4') {
+      return 'Acide sulfurique (H₂SO₄)';
+    }
+
+    if (code === 'hcl') {
+      return 'Acide chlorydrique (HCl)';
+    }
+
+    if (code === 'h2o') {
+      return 'Eau (H₂O)';
+    }
+
+    if (code === 'aut') {
+      return 'Autre';
+    }
+
+    return product?.label_default || product?.label_fr || '';
   }
 
   public getOrderedScarificationMechanicalTools(): any[] {
