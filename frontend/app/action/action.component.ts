@@ -100,6 +100,22 @@ export class ActionComponent implements OnInit {
     'Autre'
   ];
 
+  private readonly germinationPretreatmentLiquidOrder = [
+    'edis',
+    'eosm',
+    'edem',
+    'epuri',
+    'erob',
+    'eau',
+    'gr24',
+    'pvpp',
+    'kine',
+    'exrac',
+    'exrad',
+    'exbouti',
+    'aut'
+  ];
+
   private readonly scarificationChemicalProductOrder = [
     'Eau (H₂O)',
     'Acide sulfurique (H₂SO₄)',
@@ -537,6 +553,89 @@ export class ActionComponent implements OnInit {
 
         return String(labelA).localeCompare(String(labelB), 'fr');
       });
+  }
+
+  public getOrderedGerminationPretreatmentLiquids(): any[] {
+    const orderMap = new Map(
+      this.germinationPretreatmentLiquidOrder.map((code, index) => [code, index])
+    );
+
+    return [...this.pretreatmentLiquidOptions]
+      .filter((liquid) => {
+        const code = String(liquid?.cd_nomenclature || '').trim();
+        return orderMap.has(code);
+      })
+      .sort((a, b) => {
+        const codeA = String(a?.cd_nomenclature || '').trim();
+        const codeB = String(b?.cd_nomenclature || '').trim();
+
+        const indexA = orderMap.has(codeA) ? orderMap.get(codeA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(codeB) ? orderMap.get(codeB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return codeA.localeCompare(codeB, 'fr');
+      });
+  }
+
+  public getGerminationPretreatmentLiquidLabel(liquid: any): string {
+    const code = String(liquid?.cd_nomenclature || '').trim();
+
+    if (code === 'edis') {
+      return 'Eau distillée';
+    }
+
+    if (code === 'eosm') {
+      return 'Eau osmosée';
+    }
+
+    if (code === 'edem') {
+      return 'Eau déminéralisée';
+    }
+
+    if (code === 'epuri') {
+      return 'Eau purifiée';
+    }
+
+    if (code === 'erob') {
+      return 'Eau du robinet';
+    }
+
+    if (code === 'eau') {
+      return 'Eau';
+    }
+
+    if (code === 'gr24') {
+      return 'Strigolactone (GR24)';
+    }
+
+    if (code === 'pvpp') {
+      return 'Polyvinylpolypyrrolidone (PVPP)';
+    }
+
+    if (code === 'kine') {
+      return 'Kinétine';
+    }
+
+    if (code === 'exrac') {
+      return 'Liquide d’imbibition (extrait racinaire)';
+    }
+
+    if (code === 'exrad') {
+      return 'Liquide d’imbibition (extrait radiculaire)';
+    }
+
+    if (code === 'exbouti') {
+      return 'Liquide d’imbibition (extrait de bouture)';
+    }
+
+    if (code === 'aut') {
+      return 'Autre';
+    }
+
+    return liquid?.label_default || liquid?.label_fr || '';
   }
 
   public getOrderedGerminationScarificationTypes(): any[] {
