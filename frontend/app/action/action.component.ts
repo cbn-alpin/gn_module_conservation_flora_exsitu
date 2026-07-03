@@ -56,6 +56,7 @@ export class ActionComponent implements OnInit {
   public scarificationChemicalProductOptions: any[] = [];
   public scarificationMechanicalToolOptions: any[] = [];
   public scarificationTypeOptions: any[] = [];
+  public scarificationMechanicalTypeOptions: any[] = [];
   private readonly germinationScarificationTypeOrder = [
     'Mécanique',
     'Chimique'
@@ -100,6 +101,13 @@ export class ActionComponent implements OnInit {
     'Papier de verre',
     'Scalpel',
     'Rasoir',
+    'Pointe'
+  ];
+
+  private readonly germinationScarificationMechanicalToolOrder = [
+    'Scalpel',
+    'Rasoir',
+    'Papier de verre',
     'Pointe'
   ];
 
@@ -217,6 +225,16 @@ export class ActionComponent implements OnInit {
       error: (err) => {
         console.error('Erreur lors du chargement des types de scarification :', err);
         this.scarificationTypeOptions = [];
+      }
+    });
+
+    this.api.getNomenclaturesByTypeCode('CFE_SCARIFICATION_MEC').subscribe({
+      next: (mechanicalTypes) => {
+        this.scarificationMechanicalTypeOptions = mechanicalTypes || [];
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des types de scarification mécanique :', err);
+        this.scarificationMechanicalTypeOptions = [];
       }
     });
 
@@ -522,6 +540,31 @@ export class ActionComponent implements OnInit {
         return labelA.localeCompare(labelB, 'fr');
       });
   }
+
+  public getOrderedGerminationScarificationMechanicalTools(): any[] {
+    const orderMap = new Map(
+      this.germinationScarificationMechanicalToolOrder.map((label, index) => [label, index])
+    );
+
+    return [...this.scarificationMechanicalToolOptions]
+      .filter((tool) => {
+        const label = String(tool?.label_default || tool?.label_fr || '').trim();
+        return orderMap.has(label);
+      })
+      .sort((a, b) => {
+        const labelA = String(a?.label_default || a?.label_fr || '').trim();
+        const labelB = String(b?.label_default || b?.label_fr || '').trim();
+
+        const indexA = orderMap.has(labelA) ? orderMap.get(labelA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(labelB) ? orderMap.get(labelB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return labelA.localeCompare(labelB, 'fr');
+      });
+  }  
 
   public getOrderedTreatmentLiquids(): any[] {
     const orderMap = new Map(
