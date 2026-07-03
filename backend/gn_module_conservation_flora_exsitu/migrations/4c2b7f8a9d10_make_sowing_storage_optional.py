@@ -206,39 +206,63 @@ def upgrade():
         WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT';
 
         INSERT INTO ref_nomenclatures.t_nomenclatures (
-            id_type,
-            cd_nomenclature,
-            mnemonique,
-            label_default,
-            definition_default,
-            label_fr,
-            definition_fr,
-            source,
-            hierarchy
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
         )
-        SELECT
-            id_type,
-            'aut',
-            'autre',
-            'Autre',
-            'Autre produit utilisé pour le prétraitement des semences',
-            'Autre',
-            'Autre produit utilisé pour le prétraitement des semences',
-            'conservation_flora_exsitu',
-            '.004'
+        SELECT id_type, 'naclo', 'hypochloriteSodium', 'Hypochlorite de sodium (NaClO)',
+               'Produit utilisé pour le prétraitement des semences',
+               'Hypochlorite de sodium (NaClO)',
+               'Produit utilisé pour le prétraitement des semences',
+               'conservation_flora_exsitu', '.001'
         FROM ref_nomenclatures.bib_nomenclatures_types
         WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
         AND NOT EXISTS (
             SELECT 1
             FROM ref_nomenclatures.t_nomenclatures n
             WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
-            AND n.cd_nomenclature = 'aut'
+            AND n.cd_nomenclature = 'naclo'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'h2so4', 'acideSulfurique', 'Acide sulfurique (H₂SO₄)',
+               'Produit utilisé pour le prétraitement des semences',
+               'Acide sulfurique (H₂SO₄)',
+               'Produit utilisé pour le prétraitement des semences',
+               'conservation_flora_exsitu', '.005'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'h2so4'
+        );
+
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
+        )
+        SELECT id_type, 'crypt', 'cryptonol', 'Cryptonol',
+               'Produit utilisé pour le prétraitement des semences',
+               'Cryptonol',
+               'Produit utilisé pour le prétraitement des semences',
+               'conservation_flora_exsitu', '.006'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'crypt'
         );
 
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
-            label_default = 'Hypochlorite de calcium (Ca(ClO)₂)',
-            label_fr = 'Hypochlorite de calcium (Ca(ClO)₂)',
+            label_default = 'Hypochlorite de sodium (NaClO)',
+            label_fr = 'Hypochlorite de sodium (NaClO)',
             definition_default = 'Produit utilisé pour le prétraitement des semences',
             definition_fr = 'Produit utilisé pour le prétraitement des semences',
             hierarchy = '.001'
@@ -247,12 +271,12 @@ def upgrade():
             FROM ref_nomenclatures.bib_nomenclatures_types
             WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
         )
-        AND cd_nomenclature = 'cacl2';
+        AND cd_nomenclature = 'naclo';
 
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
-            label_default = 'Peroxyde d’hydrogène (H₂O₂)',
-            label_fr = 'Peroxyde d’hydrogène (H₂O₂)',
+            label_default = 'Hypochlorite de calcium (Ca(ClO)₂)',
+            label_fr = 'Hypochlorite de calcium (Ca(ClO)₂)',
             definition_default = 'Produit utilisé pour le prétraitement des semences',
             definition_fr = 'Produit utilisé pour le prétraitement des semences',
             hierarchy = '.002'
@@ -261,7 +285,7 @@ def upgrade():
             FROM ref_nomenclatures.bib_nomenclatures_types
             WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
         )
-        AND cd_nomenclature = 'h2o2';
+        AND cd_nomenclature = 'cacl2';
 
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
@@ -278,44 +302,60 @@ def upgrade():
         AND cd_nomenclature = 'c2h5oh';
 
         UPDATE ref_nomenclatures.t_nomenclatures
-        SET hierarchy = '.004'
+        SET
+            label_default = 'Peroxyde d’hydrogène (H₂O₂)',
+            label_fr = 'Peroxyde d’hydrogène (H₂O₂)',
+            definition_default = 'Produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Produit utilisé pour le prétraitement des semences',
+            hierarchy = '.004'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'h2o2';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Acide sulfurique (H₂SO₄)',
+            label_fr = 'Acide sulfurique (H₂SO₄)',
+            definition_default = 'Produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Produit utilisé pour le prétraitement des semences',
+            hierarchy = '.005'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'h2so4';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Cryptonol',
+            label_fr = 'Cryptonol',
+            definition_default = 'Produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Produit utilisé pour le prétraitement des semences',
+            hierarchy = '.006'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+        )
+        AND cd_nomenclature = 'crypt';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Autre',
+            label_fr = 'Autre',
+            definition_default = 'Autre produit utilisé pour le prétraitement des semences',
+            definition_fr = 'Autre produit utilisé pour le prétraitement des semences',
+            hierarchy = '.007'
         WHERE id_type = (
             SELECT id_type
             FROM ref_nomenclatures.bib_nomenclatures_types
             WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
         )
         AND cd_nomenclature = 'aut';
-
-        UPDATE pr_conservation_flora_exsitu.t_action
-        SET id_chemical_liquid = (
-            SELECT id_nomenclature
-            FROM ref_nomenclatures.t_nomenclatures
-            WHERE id_type = (
-                SELECT id_type
-                FROM ref_nomenclatures.bib_nomenclatures_types
-                WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
-            )
-            AND cd_nomenclature = 'aut'
-        )
-        WHERE id_chemical_liquid IN (
-            SELECT id_nomenclature
-            FROM ref_nomenclatures.t_nomenclatures
-            WHERE id_type = (
-                SELECT id_type
-                FROM ref_nomenclatures.bib_nomenclatures_types
-                WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
-            )
-            AND cd_nomenclature IN ('naclo', 'h2so4', 'crypt')
-        );
-
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
-        )
-        AND cd_nomenclature IN ('naclo', 'h2so4', 'crypt');
-
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
             label_default = 'Liquide prétraitement',
@@ -1183,13 +1223,18 @@ def downgrade():
     """)
 
     op.execute("""
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
+        DELETE FROM ref_nomenclatures.t_nomenclatures AS n
+        WHERE n.id_type = (
             SELECT id_type
             FROM ref_nomenclatures.bib_nomenclatures_types
             WHERE mnemonique = 'CFE_TG_SUPPORT'
         )
-        AND cd_nomenclature = 'aut';
+        AND n.cd_nomenclature = 'aut'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM pr_conservation_flora_exsitu.t_test AS t
+            WHERE t.id_support = n.id_nomenclature
+        );
     """)
 
     op.execute("""

@@ -84,7 +84,7 @@
           </mat-form-field>
         </div>
 
-        <div class="form-group half-width">
+        <div class="form-group half-width" *ngIf="idSowing">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Produit prétraitement</mat-label>
 
@@ -94,6 +94,21 @@
                 [value]="product.id_nomenclature"
               >
                 {{ product.label_default || product.label_fr }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-group half-width" *ngIf="!idSowing">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Produit prétraitement</mat-label>
+
+            <mat-select formControlName="id_chemical_liquid">
+              <mat-option
+                *ngFor="let product of getOrderedGerminationPretreatmentProducts()"
+                [value]="product.id_nomenclature"
+              >
+                {{ getGerminationPretreatmentProductLabel(product) }}
               </mat-option>
             </mat-select>
           </mat-form-field>

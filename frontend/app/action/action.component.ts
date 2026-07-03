@@ -83,6 +83,16 @@ export class ActionComponent implements OnInit {
     'Autre'
   ];
 
+  private readonly germinationPretreatmentProductOrder = [
+    'naclo',
+    'cacl2',
+    'c2h5oh',
+    'h2o2',
+    'h2so4',
+    'crypt',
+    'aut'
+  ];
+
   private readonly pretreatmentLiquidOrder = [
     'Eau osmosée',
     'Eau purifiée',
@@ -443,6 +453,65 @@ export class ActionComponent implements OnInit {
 
         return String(labelA).localeCompare(String(labelB), 'fr');
       });
+  }
+
+  public getOrderedGerminationPretreatmentProducts(): any[] {
+    const orderMap = new Map(
+      this.germinationPretreatmentProductOrder.map((code, index) => [code, index])
+    );
+
+    return [...this.pretreatmentProductOptions]
+      .filter((product) => {
+        const code = String(product?.cd_nomenclature || '').trim();
+        return orderMap.has(code);
+      })
+      .sort((a, b) => {
+        const codeA = String(a?.cd_nomenclature || '').trim();
+        const codeB = String(b?.cd_nomenclature || '').trim();
+
+        const indexA = orderMap.has(codeA) ? orderMap.get(codeA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(codeB) ? orderMap.get(codeB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return codeA.localeCompare(codeB, 'fr');
+      });
+  }
+
+  public getGerminationPretreatmentProductLabel(product: any): string {
+    const code = String(product?.cd_nomenclature || '').trim();
+
+    if (code === 'naclo') {
+      return 'Hypochlorite de sodium (NaClO)';
+    }
+
+    if (code === 'cacl2') {
+      return 'Hypochlorite de calcium (Ca(ClO)₂)';
+    }
+
+    if (code === 'c2h5oh') {
+      return 'Éthanol (C₂H₅OH)';
+    }
+
+    if (code === 'h2o2') {
+      return 'Peroxyde d’hydrogène (H₂O₂)';
+    }
+
+    if (code === 'h2so4') {
+      return 'Acide sulfurique (H₂SO₄)';
+    }
+
+    if (code === 'crypt') {
+      return 'Cryptonol';
+    }
+
+    if (code === 'aut') {
+      return 'Autre';
+    }
+
+    return product?.label_default || product?.label_fr || '';
   }
 
   public getOrderedPretreatmentLiquids(): any[] {
