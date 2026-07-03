@@ -406,13 +406,18 @@
                   </div>
 
                   <div class="form-group half-width" *ngIf="!idSowing">
-                    <small>produit utilisé</small>
-                    <pnx-nomenclature
-                      keyValue="id_nomenclature"
-                      [bindAllItem]="false"
-                      codeNomenclatureType="CFE_LIQUID_TREATMENT"
-                      [parentFormControl]="germinationForm.controls.id_liquid_treatment"
-                    ></pnx-nomenclature>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Liquide traitement</mat-label>
+
+                      <mat-select formControlName="id_liquid_treatment">
+                        <mat-option
+                          *ngFor="let liquid of getOrderedGerminationTreatmentLiquids()"
+                          [value]="liquid.id_nomenclature"
+                        >
+                          {{ getGerminationTreatmentLiquidLabel(liquid) }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
                   </div>
 
                   <mat-form-field

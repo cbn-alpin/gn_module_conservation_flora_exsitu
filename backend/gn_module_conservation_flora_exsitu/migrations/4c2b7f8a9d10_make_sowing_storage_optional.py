@@ -582,7 +582,7 @@ def upgrade():
         WHERE id_type = (SELECT id_type FROM ref_nomenclatures.bib_nomenclatures_types WHERE mnemonique = 'CFE_STERILIZATION_LIQUID')
         AND cd_nomenclature = 'aut';
     """)
-    
+
     op.execute("""
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
@@ -592,174 +592,96 @@ def upgrade():
             definition_fr = 'Nomenclature des liquides utilisés pour le traitement des semences.'
         WHERE mnemonique = 'CFE_LIQUID_TREATMENT';
 
+        WITH liquid_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        ),
+        expected_values AS (
+            SELECT *
+            FROM (
+                VALUES
+                    ('acg', 'acideGibberellique', 'Acide gibbérellique (GA₃)', 'Liquide utilisé pour le traitement des semences', '.001'),
+                    ('eadi', 'eauDistillee', 'Eau distillée', 'Liquide utilisé pour le traitement des semences', '.002'),
+                    ('eaos', 'eauOsmosee', 'Eau osmosée', 'Liquide utilisé pour le traitement des semences', '.003'),
+                    ('eade', 'eauDemineralisee', 'Eau déminéralisée', 'Liquide utilisé pour le traitement des semences', '.004'),
+                    ('epuri', 'eauPurifiee', 'Eau purifiée', 'Liquide utilisé pour le traitement des semences', '.005'),
+                    ('eaur', 'eauRobinet', 'Eau du robinet', 'Liquide utilisé pour le traitement des semences', '.006'),
+                    ('eau', 'eau', 'Eau', 'Liquide utilisé pour le traitement des semences', '.007'),
+                    ('nitp', 'nitratePotassium', 'Nitrate de potassium (KNO3)', 'Liquide utilisé pour le traitement des semences', '.008'),
+                    ('stri', 'strigolactoneGR24', 'Strigolactone (GR24)', 'Liquide utilisé pour le traitement des semences', '.009'),
+                    ('liqrac', 'imbibitionExtraitRacinaire', 'Liquide d’imbibition (extrait racinaire)', 'Liquide utilisé pour le traitement des semences', '.010'),
+                    ('liqimb', 'imbibitionJus', 'Liquide d’imbibition (jus)', 'Liquide utilisé pour le traitement des semences', '.011'),
+                    ('poh3', 'potentielHydriqueMoins03', 'Potentiel hydrique : -0.3 mpa', 'Liquide utilisé pour le traitement des semences', '.012'),
+                    ('poh6', 'potentielHydriqueMoins06', 'Potentiel hydrique : -0.6 mpa', 'Liquide utilisé pour le traitement des semences', '.013'),
+                    ('aut', 'autre', 'Autre', 'Autre liquide utilisé pour le traitement des semences', '.014'),
+                    ('fonbac', 'fongicideBactericide', 'Fongicide/Bactéricide', 'Liquide utilisé pour le traitement des semences', '.015'),
+                    ('ins', 'insecticide', 'Insecticide', 'Liquide utilisé pour le traitement des semences', '.016')
+            ) AS v(cd_nomenclature, mnemonique, label, definition, hierarchy)
+        )
         INSERT INTO ref_nomenclatures.t_nomenclatures (
-            id_type,
-            cd_nomenclature,
-            mnemonique,
-            label_default,
-            definition_default,
-            label_fr,
-            definition_fr,
-            source,
-            hierarchy
+            id_type, cd_nomenclature, mnemonique, label_default, definition_default,
+            label_fr, definition_fr, source, hierarchy
         )
         SELECT
-            id_type,
-            'fonbac',
-            'fongicideBactericide',
-            'Fongicide/Bactéricide',
-            'Liquide utilisé pour le traitement des semences',
-            'Fongicide/Bactéricide',
-            'Liquide utilisé pour le traitement des semences',
+            lt.id_type,
+            ev.cd_nomenclature,
+            ev.mnemonique,
+            ev.label,
+            ev.definition,
+            ev.label,
+            ev.definition,
             'conservation_flora_exsitu',
-            '.002'
-        FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        AND NOT EXISTS (
+            ev.hierarchy
+        FROM liquid_type lt
+        CROSS JOIN expected_values ev
+        WHERE NOT EXISTS (
             SELECT 1
             FROM ref_nomenclatures.t_nomenclatures n
-            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
-            AND n.cd_nomenclature = 'fonbac'
+            WHERE n.id_type = lt.id_type
+            AND n.cd_nomenclature = ev.cd_nomenclature
         );
 
-        INSERT INTO ref_nomenclatures.t_nomenclatures (
-            id_type,
-            cd_nomenclature,
-            mnemonique,
-            label_default,
-            definition_default,
-            label_fr,
-            definition_fr,
-            source,
-            hierarchy
+        WITH liquid_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
+        ),
+        expected_values AS (
+            SELECT *
+            FROM (
+                VALUES
+                    ('acg', 'acideGibberellique', 'Acide gibbérellique (GA₃)', 'Liquide utilisé pour le traitement des semences', '.001'),
+                    ('eadi', 'eauDistillee', 'Eau distillée', 'Liquide utilisé pour le traitement des semences', '.002'),
+                    ('eaos', 'eauOsmosee', 'Eau osmosée', 'Liquide utilisé pour le traitement des semences', '.003'),
+                    ('eade', 'eauDemineralisee', 'Eau déminéralisée', 'Liquide utilisé pour le traitement des semences', '.004'),
+                    ('epuri', 'eauPurifiee', 'Eau purifiée', 'Liquide utilisé pour le traitement des semences', '.005'),
+                    ('eaur', 'eauRobinet', 'Eau du robinet', 'Liquide utilisé pour le traitement des semences', '.006'),
+                    ('eau', 'eau', 'Eau', 'Liquide utilisé pour le traitement des semences', '.007'),
+                    ('nitp', 'nitratePotassium', 'Nitrate de potassium (KNO3)', 'Liquide utilisé pour le traitement des semences', '.008'),
+                    ('stri', 'strigolactoneGR24', 'Strigolactone (GR24)', 'Liquide utilisé pour le traitement des semences', '.009'),
+                    ('liqrac', 'imbibitionExtraitRacinaire', 'Liquide d’imbibition (extrait racinaire)', 'Liquide utilisé pour le traitement des semences', '.010'),
+                    ('liqimb', 'imbibitionJus', 'Liquide d’imbibition (jus)', 'Liquide utilisé pour le traitement des semences', '.011'),
+                    ('poh3', 'potentielHydriqueMoins03', 'Potentiel hydrique : -0.3 mpa', 'Liquide utilisé pour le traitement des semences', '.012'),
+                    ('poh6', 'potentielHydriqueMoins06', 'Potentiel hydrique : -0.6 mpa', 'Liquide utilisé pour le traitement des semences', '.013'),
+                    ('aut', 'autre', 'Autre', 'Autre liquide utilisé pour le traitement des semences', '.014'),
+                    ('fonbac', 'fongicideBactericide', 'Fongicide/Bactéricide', 'Liquide utilisé pour le traitement des semences', '.015'),
+                    ('ins', 'insecticide', 'Insecticide', 'Liquide utilisé pour le traitement des semences', '.016')
+            ) AS v(cd_nomenclature, mnemonique, label, definition, hierarchy)
         )
-        SELECT
-            id_type,
-            'ins',
-            'insecticide',
-            'Insecticide',
-            'Liquide utilisé pour le traitement des semences',
-            'Insecticide',
-            'Liquide utilisé pour le traitement des semences',
-            'conservation_flora_exsitu',
-            '.003'
-        FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        AND NOT EXISTS (
-            SELECT 1
-            FROM ref_nomenclatures.t_nomenclatures n
-            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
-            AND n.cd_nomenclature = 'ins'
-        );
-
-        INSERT INTO ref_nomenclatures.t_nomenclatures (
-            id_type,
-            cd_nomenclature,
-            mnemonique,
-            label_default,
-            definition_default,
-            label_fr,
-            definition_fr,
-            source,
-            hierarchy
-        )
-        SELECT
-            id_type,
-            'aut',
-            'autre',
-            'Autre',
-            'Autre liquide utilisé pour le traitement des semences',
-            'Autre',
-            'Autre liquide utilisé pour le traitement des semences',
-            'conservation_flora_exsitu',
-            '.004'
-        FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        AND NOT EXISTS (
-            SELECT 1
-            FROM ref_nomenclatures.t_nomenclatures n
-            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
-            AND n.cd_nomenclature = 'aut'
-        );
-
-        UPDATE ref_nomenclatures.t_nomenclatures
+        UPDATE ref_nomenclatures.t_nomenclatures n
         SET
-            cd_nomenclature = 'acg',
-            mnemonique = 'acideGibberellique',
-            label_default = 'Acide gibbérellique (GA₃)',
-            label_fr = 'Acide gibbérellique (GA₃)',
-            definition_default = 'Liquide utilisé pour le traitement des semences',
-            definition_fr = 'Liquide utilisé pour le traitement des semences',
-            hierarchy = '.001'
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        )
-        AND cd_nomenclature = 'acg';
-
-        UPDATE ref_nomenclatures.t_nomenclatures
-        SET hierarchy = '.002'
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        )
-        AND cd_nomenclature = 'fonbac';
-
-        UPDATE ref_nomenclatures.t_nomenclatures
-        SET hierarchy = '.003'
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        )
-        AND cd_nomenclature = 'ins';
-
-        UPDATE ref_nomenclatures.t_nomenclatures
-        SET hierarchy = '.004'
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        )
-        AND cd_nomenclature = 'aut';
-
-        UPDATE pr_conservation_flora_exsitu.t_action
-        SET id_liquid_treatment = (
-            SELECT id_nomenclature
-            FROM ref_nomenclatures.t_nomenclatures
-            WHERE id_type = (
-                SELECT id_type
-                FROM ref_nomenclatures.bib_nomenclatures_types
-                WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-            )
-            AND cd_nomenclature = 'aut'
-        )
-        WHERE id_liquid_treatment IN (
-            SELECT id_nomenclature
-            FROM ref_nomenclatures.t_nomenclatures
-            WHERE id_type = (
-                SELECT id_type
-                FROM ref_nomenclatures.bib_nomenclatures_types
-                WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-            )
-            AND cd_nomenclature IN (
-                'eau', 'eade', 'eadi', 'eaur', 'eaos', 'epuri',
-                'liqrac', 'liqimb', 'nitp', 'stri', 'poh3', 'poh6'
-            )
-        );
-
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_LIQUID_TREATMENT'
-        )
-        AND cd_nomenclature IN (
-            'eau', 'eade', 'eadi', 'eaur', 'eaos', 'epuri',
-            'liqrac', 'liqimb', 'nitp', 'stri', 'poh3', 'poh6'
-        );
+            mnemonique = ev.mnemonique,
+            label_default = ev.label,
+            label_fr = ev.label,
+            definition_default = ev.definition,
+            definition_fr = ev.definition,
+            source = 'conservation_flora_exsitu',
+            hierarchy = ev.hierarchy
+        FROM liquid_type lt
+        JOIN expected_values ev ON TRUE
+        WHERE n.id_type = lt.id_type
+        AND n.cd_nomenclature = ev.cd_nomenclature;
     """)
 
     op.execute("""

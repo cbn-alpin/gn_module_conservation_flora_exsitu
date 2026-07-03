@@ -151,6 +151,23 @@ export class ActionComponent implements OnInit {
     'Autre'
   ];
 
+  private readonly germinationTreatmentLiquidOrder = [
+    'acg',
+    'eadi',
+    'eaos',
+    'eade',
+    'epuri',
+    'eaur',
+    'eau',
+    'nitp',
+    'stri',
+    'liqrac',
+    'liqimb',
+    'poh3',
+    'poh6',
+    'aut'
+  ];
+
   private cancelDialogOpen = false;
   private initialActionFormState: any = null;
   private initialReplicatesFormState: any = null;
@@ -816,6 +833,93 @@ export class ActionComponent implements OnInit {
 
       return String(labelA).localeCompare(String(labelB), 'fr');
     });
+  }
+
+  public getOrderedGerminationTreatmentLiquids(): any[] {
+    const orderMap = new Map(
+      this.germinationTreatmentLiquidOrder.map((code, index) => [code, index])
+    );
+
+    return [...this.treatmentLiquidOptions]
+      .filter((liquid) => {
+        const code = String(liquid?.cd_nomenclature || '').trim();
+        return orderMap.has(code);
+      })
+      .sort((a, b) => {
+        const codeA = String(a?.cd_nomenclature || '').trim();
+        const codeB = String(b?.cd_nomenclature || '').trim();
+
+        const indexA = orderMap.has(codeA) ? orderMap.get(codeA)! : Number.MAX_SAFE_INTEGER;
+        const indexB = orderMap.has(codeB) ? orderMap.get(codeB)! : Number.MAX_SAFE_INTEGER;
+
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+
+        return codeA.localeCompare(codeB, 'fr');
+      });
+  }
+
+  public getGerminationTreatmentLiquidLabel(liquid: any): string {
+    const code = String(liquid?.cd_nomenclature || '').trim();
+
+    if (code === 'acg') {
+      return 'Acide gibbérellique (GA₃)';
+    }
+
+    if (code === 'eadi') {
+      return 'Eau distillée';
+    }
+
+    if (code === 'eaos') {
+      return 'Eau osmosée';
+    }
+
+    if (code === 'eade') {
+      return 'Eau déminéralisée';
+    }
+
+    if (code === 'epuri') {
+      return 'Eau purifiée';
+    }
+
+    if (code === 'eaur') {
+      return 'Eau du robinet';
+    }
+
+    if (code === 'eau') {
+      return 'Eau';
+    }
+
+    if (code === 'nitp') {
+      return 'Nitrate de potassium (KNO3)';
+    }
+
+    if (code === 'stri') {
+      return 'Strigolactone (GR24)';
+    }
+
+    if (code === 'liqrac') {
+      return 'Liquide d’imbibition (extrait racinaire)';
+    }
+
+    if (code === 'liqimb') {
+      return 'Liquide d’imbibition (jus)';
+    }
+
+    if (code === 'poh3') {
+      return 'Potentiel hydrique : -0.3 mpa';
+    }
+
+    if (code === 'poh6') {
+      return 'Potentiel hydrique : -0.6 mpa';
+    }
+
+    if (code === 'aut') {
+      return 'Autre';
+    }
+
+    return liquid?.label_default || liquid?.label_fr || '';
   }
 
   loadTestDetails(): void {
