@@ -765,6 +765,30 @@ def upgrade():
         )
         AND cd_nomenclature = 'torb';
     """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Partielle',
+            label_fr = 'Partielle'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_MEC'
+        )
+        AND cd_nomenclature = 'par';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Totale',
+            label_fr = 'Totale'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_MEC'
+        )
+        AND cd_nomenclature = 'tot';
+    """)
     
 def downgrade():
     op.execute("""
@@ -1063,8 +1087,8 @@ def downgrade():
                'Acide sulfurique (H₂SO₄)',
                'Acide utilisé pour éliminer les pathogènes des semences',
                'conservation_flora_exsitu', '.005'
-        FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_STERILIZATION_PRODUCT'
         AND NOT EXISTS (
             SELECT 1 FROM ref_nomenclatures.t_nomenclatures n
             WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
@@ -1189,4 +1213,28 @@ def downgrade():
             WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
         )
         AND cd_nomenclature = 'chi';
+    """)
+
+    op.execute("""
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Partielle',
+            label_fr = 'Scarification partielle'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_MEC'
+        )
+        AND cd_nomenclature = 'par';
+
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            label_default = 'Totale',
+            label_fr = 'Scarification totale'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_SCARIFICATION_MEC'
+        )
+        AND cd_nomenclature = 'tot';
     """)
