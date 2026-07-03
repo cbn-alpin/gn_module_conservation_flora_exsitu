@@ -176,14 +176,32 @@
 
           <!-- Si mécanique -->
           <div *ngIf="scarTypeCode === 'mec'">
-              <div class="form-group full-width">
-                <small>Type de scarification mécanique</small>
-                <pnx-nomenclature
-                  keyValue="id_nomenclature"
-                  [bindAllItem]="false"
-                  codeNomenclatureType="CFE_SCARIFICATION_MEC"
-                  [parentFormControl]="germinationForm.controls.id_scarification_mecanique"
-                ></pnx-nomenclature>
+              <div class="form-group full-width" *ngIf="idSowing">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Type de scarification mécanique</mat-label>
+
+                  <mat-select formControlName="id_scarification_mecanique">
+                    <mat-option
+                      *ngFor="let mechanicalType of scarificationMechanicalTypeOptions"
+                      [value]="mechanicalType.id_nomenclature">
+                      {{ mechanicalType.label_default || mechanicalType.label_fr }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group full-width" *ngIf="!idSowing">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Type de scarification mécanique</mat-label>
+
+                  <mat-select formControlName="id_scarification_mecanique">
+                    <mat-option
+                      *ngFor="let mechanicalType of scarificationMechanicalTypeOptions"
+                      [value]="mechanicalType.id_nomenclature">
+                      {{ mechanicalType.label_default || mechanicalType.label_fr }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             
               <div class="form-group half-width" *ngIf="idSowing">
