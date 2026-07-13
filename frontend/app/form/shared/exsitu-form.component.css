@@ -9,6 +9,12 @@
   overflow-x: auto;
 }
 
+.tab-left {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
 .tab a.tablinks {
   background-color: inherit;
   color: #555;
@@ -16,12 +22,15 @@
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 14px 30px;
+  padding: 14px 18px;
   transition: 0.2s;
   text-decoration: none;
   display: inline-flex;
-  flex-shrink: 1;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
   min-width: 0;
+  white-space: nowrap;
 }
 
 .tab a.tablinks > mat-icon {
