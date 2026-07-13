@@ -61,7 +61,7 @@
 
                 [ngClass]="{ active: exsituFormService.currentTab === 'semis-table' }"
                 (click)="idMaterial ? goToTab('semis-table') : null">
-                <mat-icon class="example-tab-icon">semis</mat-icon>
+                <mat-icon class="example-tab-icon">grain</mat-icon>
                 Semis
             </a>
 
@@ -71,13 +71,13 @@
                 [class.disabled]="!idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'viability-table' }"
                 (click)="idMaterial ? goToTab('viability-table') : null">
-                <mat-icon class="example-tab-icon">sp</mat-icon>
+                <mat-icon class="example-tab-icon">check_circle</mat-icon>
                 Test de Viabilité
             </a>
 
             <!-- Culture -->
             <a class="tablinks disabled">
-                <mat-icon class="example-tab-icon">emoji_nature</mat-icon>
+                <mat-icon class="example-tab-icon">local_florist</mat-icon>
                 Culture
             </a>
               
