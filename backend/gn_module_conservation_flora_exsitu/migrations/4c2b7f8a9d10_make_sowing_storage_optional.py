@@ -7,6 +7,7 @@ Create Date: 2026-04-18 15:00:00
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 # revision identifiers, used by Alembic.
@@ -858,8 +859,172 @@ def upgrade():
         )
         AND cd_nomenclature = 'tot';
     """)
+
+        # Création de la table Culture
+    op.create_table(
+        't_culture',
+
+        sa.Column(
+            'id_culture',
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False
+        ),
+
+        sa.Column(
+            'code_culture',
+            sa.String(length=50),
+            nullable=False
+        ),
+
+        sa.Column(
+            'id_material',
+            sa.Integer(),
+            nullable=False
+        ),
+
+        sa.Column(
+            'id_sowing',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'id_test',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'id_actor',
+            sa.Integer(),
+            nullable=False
+        ),
+
+        sa.Column(
+            'date_start',
+            sa.DateTime(),
+            nullable=False
+        ),
+
+        sa.Column(
+            'date_end',
+            sa.DateTime(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'remarks',
+            sa.Text(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'additional_data',
+            JSONB(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'meta_create_by',
+            sa.Integer(),
+            nullable=False
+        ),
+
+        sa.Column(
+            'meta_create_date',
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text('now()')
+        ),
+
+        sa.Column(
+            'meta_update_by',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'meta_update_date',
+            sa.DateTime(),
+            nullable=True
+        ),
+
+        sa.PrimaryKeyConstraint(
+            'id_culture',
+            name='pk_t_culture'
+        ),
+
+        sa.UniqueConstraint(
+            'code_culture',
+            name='uq_t_culture_code_culture'
+        ),
+
+        sa.CheckConstraint(
+            "code_culture ~ '^C[0-9]{4}_[0-9]{4}$'",
+            name='ck_t_culture_code_format'
+        ),
+
+        sa.CheckConstraint(
+            'date_end IS NULL OR date_end >= date_start',
+            name='ck_t_culture_end_date_after_start_date'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_material'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_material.id_material'
+            ],
+            name='fk_t_culture_id_material'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_sowing'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_sowing.id_sowing'
+            ],
+            name='fk_t_culture_id_sowing'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_test'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_test.id_test'
+            ],
+            name='fk_t_culture_id_test'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_actor'],
+            ['utilisateurs.t_roles.id_role'],
+            name='fk_t_culture_id_actor'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['meta_create_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name='fk_t_culture_meta_create_by'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['meta_update_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name='fk_t_culture_meta_update_by'
+        ),
+
+        schema='pr_conservation_flora_exsitu'
+    )
     
 def downgrade():
+    
+    op.execute("""
+        DROP TABLE IF EXISTS
+        pr_conservation_flora_exsitu.t_culture;
+    """)
+
     op.execute("""
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
