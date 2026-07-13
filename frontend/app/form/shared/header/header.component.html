@@ -1,19 +1,70 @@
 <div class="header-bar" *ngIf="exsituFormService.harvest">
-    <div class="row row-0">
-      <div class="col-3" style="display: flex;flex-direction: column;">
-        <span><b>Type de Récolte:</b> {{ harvest?.harvest_type }}</span>
-        <span><b>{{ harvest?.id_area_type }}:</b> {{ harvest?.location_name }}</span>
-      </div>
-      <div class="col-3" style="display: flex;flex-direction: column;">
-        <span><b>Date:</b> {{ harvest?.date_start }}</span>
-        <span><b>Observateur:</b> {{ harvest?.observateur }}</span>
-      </div>
-      <div class="col-3" style="display: flex;flex-direction: column;" *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'">
-        <span><b>N° récolte	:</b> {{ codeMaterial }}</span>
-        <span><b>Taxon:</b> 
-          <span [matTooltip]="taxonTooltip">{{ taxonName || 'Non défini' }}</span>
+  <div class="header-info-grid">
+
+    <!-- Colonne 1 -->
+    <div class="info-column">
+      <div class="info-row">
+        <span class="info-label">Type de récolte</span>
+
+        <span class="info-value">
+          {{ harvest?.harvest_type || 'Non renseigné' }}
         </span>
-        
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">
+          {{ harvest?.id_area_type || 'Localisation' }}
+        </span>
+
+        <span class="info-value">
+          {{ harvest?.location_name || 'Inconnue' }}
+        </span>
       </div>
     </div>
+
+    <!-- Colonne 2 -->
+    <div class="info-column">
+      <div class="info-row">
+        <span class="info-label">Date</span>
+
+        <span class="info-value">
+          {{ harvest?.date_start || 'Non renseignée' }}
+        </span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Observateur</span>
+
+        <span class="info-value">
+          {{ harvest?.observateur || 'N/A' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Colonne 3 -->
+    <div
+      class="info-column"
+      *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
+    >
+      <div class="info-row">
+        <span class="info-label">N° de récolte</span>
+
+        <span class="info-value">
+          {{ codeMaterial }}
+        </span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Taxon</span>
+
+        <span
+          class="info-value taxon-value"
+          [matTooltip]="taxonTooltip"
+        >
+          {{ taxonName || 'Non défini' }}
+        </span>
+      </div>
+    </div>
+
+  </div>
 </div>
