@@ -271,6 +271,17 @@
       });
     }
 
+    onCulture(element: any): void {
+      const idSowing = element?.id_sowing;
+
+      if (!idSowing) {
+        console.error('Aucun identifiant de semis trouvé.');
+        return;
+      }
+
+      console.log('Culture du semis sélectionné :', idSowing);
+    }
+
     onRowClick(row: any): void {
       const idSowing = row?.id_sowing;
       const idMaterial = this.exsituFormService.idMaterial;

@@ -233,6 +233,17 @@ export class GerminationTableComponent implements OnInit {
     });
   }
 
+  onCulture(element: any): void {
+    const idTest = element?.id_test;
+
+    if (!idTest) {
+      console.error('Aucun identifiant de test de germination trouvé.');
+      return;
+    }
+
+    console.log('Culture du test de germination sélectionné :', idTest);
+  }
+
   onRowClick(row: any): void {
     const idTest = row.id_test;
     const idMaterial = this.exsituFormService.idMaterial;

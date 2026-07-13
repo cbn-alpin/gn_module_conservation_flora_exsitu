@@ -116,3 +116,9 @@ table tr.mat-row:hover {
 ::ng-deep .text-red {
   color: red;
 }
+
+.culture-action,
+.culture-action mat-icon,
+.culture-action span {
+  color: #795548 !important;
+}
