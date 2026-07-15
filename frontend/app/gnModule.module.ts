@@ -68,6 +68,9 @@ import { ReplicatesModalComponent } from './replicates/replicates-modal.componen
 import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
 import { ViabilityFormService } from './viability/viability-form.service';
 
+import { CultureService } from './culture/culture.service';
+import { CultureTableComponent } from './culture-table/culture-table.component';
+import { CultureTableService } from './culture-table/culture-table.service';
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -128,6 +131,7 @@ registerLocaleData(localeFr);
     ViabilityDetailsComponent,
     ReplicatesModalComponent,
     FollowupDetailsComponent,
+    CultureTableComponent,
   ],
   providers: [
     HarvestStoreService, 
@@ -146,6 +150,8 @@ registerLocaleData(localeFr);
     GerminationFormService,
     SemisTableService,
     ViabilityFormService,
+    CultureService,
+    CultureTableService,
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
     { provide: MatPaginatorIntl, useFactory: getFrenchPaginatorIntl },
   ],
