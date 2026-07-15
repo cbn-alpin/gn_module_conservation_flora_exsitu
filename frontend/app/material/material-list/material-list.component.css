@@ -36,3 +36,9 @@
 ::ng-deep .cdk-overlay-container {
     z-index: 1000 !important;
 }
+
+.culture-action,
+.culture-action mat-icon,
+.culture-action span {
+  color: #4E342E !important;
+}

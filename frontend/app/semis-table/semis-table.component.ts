@@ -273,13 +273,25 @@
 
     onCulture(element: any): void {
       const idSowing = element?.id_sowing;
+      const idMaterial = this.exsituFormService.idMaterial;
+      const idHarvest = this.exsituFormService.idHarvest;
 
-      if (!idSowing) {
-        console.error('Aucun identifiant de semis trouvé.');
+      if (!idSowing || !idMaterial || !idHarvest) {
+        console.error(
+          'Impossible d’ouvrir Culture : identifiant du semis, du matériel ou de la récolte manquant.'
+        );
         return;
       }
 
-      console.log('Culture du semis sélectionné :', idSowing);
+      this.exsituFormService.currentTab = 'culture-table';
+
+      this.router.navigate([
+        '/conservation_flora_exsitu/form/harvest',
+        idHarvest,
+        'material',
+        idMaterial,
+        'culture-table'
+      ]);
     }
 
     onRowClick(row: any): void {

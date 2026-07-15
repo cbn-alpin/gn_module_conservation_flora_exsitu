@@ -232,6 +232,25 @@ export class MaterialListComponent implements OnInit {
       this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/stock`]);
     }
 
+    goToCulture(material: any): void {
+      const idMaterial = material?.id_material;
+      const idHarvest = this.exsituFormService.idHarvest;
+
+      if (!idMaterial || !idHarvest) {
+        console.error(
+          'Impossible d’ouvrir Culture : identifiant du matériel ou de la récolte manquant.'
+        );
+        return;
+      }
+
+      this.exsituFormService.setIdMaterial(idMaterial);
+      this.exsituFormService.currentTab = 'culture-table';
+
+      this.router.navigate([
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/culture-table`
+      ]);
+    }
+
     goToSeedDetails(material: any): void {
       const idMaterial = material.id_material
       this.exsituFormService.setIdMaterial(idMaterial);

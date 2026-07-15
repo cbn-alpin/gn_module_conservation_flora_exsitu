@@ -89,8 +89,16 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         else if (tab === 'viability-table' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/viability-table`]);
         }
-                          
-        
+        else if (
+          tab === 'culture-table' &&
+          this.exsituFormService.idHarvest &&
+          this.idMaterial
+        ) {
+          this.router.navigate([
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/culture-table`
+          ]);
+        }
+                   
     }
 
     updateTabAndIdsFromUrl(url: string) {      
@@ -196,6 +204,29 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
       }
+      if (urlSegments.includes('culture-table')) {
+        this.exsituFormService.currentTab = 'culture-table';
+
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest = Number(
+            urlSegments[harvestIndex]
+          );
+        }
+
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial = Number(
+            urlSegments[materialIndex]
+          );
+
+          this.exsituFormService.idMaterial = Number(
+            urlSegments[materialIndex]
+          );
+        }
+      }
+
       if (urlSegments.includes('semis-table')) {
         this.exsituFormService.currentTab = 'semis-table';
         const harvestIndex = urlSegments.indexOf('harvest') + 1;

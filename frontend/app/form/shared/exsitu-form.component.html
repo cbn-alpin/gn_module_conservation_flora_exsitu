@@ -76,9 +76,16 @@
             </a>
 
             <!-- Culture -->
-            <a class="tablinks disabled">
-                <mat-icon class="example-tab-icon">local_florist</mat-icon>
-                Culture
+            <a
+              class="tablinks"
+              [class.disabled]="!idMaterial"
+              [ngClass]="{
+                active: exsituFormService.currentTab === 'culture-table'
+              }"
+              (click)="idMaterial ? goToTab('culture-table') : null"
+            >
+              <mat-icon class="example-tab-icon">local_florist</mat-icon>
+              Culture
             </a>
               
         </div>
@@ -159,6 +166,10 @@
     </div> 
     <div *ngIf="exsituFormService.currentTab === 'viability-table'">
         <app-viability-table></app-viability-table>
+    </div>
+
+    <div *ngIf="exsituFormService.currentTab === 'culture-table'">
+        <app-culture-table></app-culture-table>
     </div>
 
     <div *ngIf="exsituFormService.currentTab === 'viability-add'"
