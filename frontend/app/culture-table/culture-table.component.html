@@ -1,5 +1,176 @@
 <mat-card class="culture-list-card">
-  <mat-card-header>
+
+  <mat-card-header class="culture-list-header">
     <mat-card-title>Fiche de Culture</mat-card-title>
   </mat-card-header>
+
+  <mat-card-content class="culture-list-content">
+
+    <ng-container
+      *ngIf="dataSource.data.length > 0; else noCultureData"
+    >
+
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="culture-list-table"
+      >
+
+        <!-- N° culture -->
+        <ng-container matColumnDef="code_culture">
+          <th mat-header-cell *matHeaderCellDef>
+            N° culture
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+
+            <ng-container
+              *ngIf="
+                isStandardCultureCode(element.code_culture);
+                else plainCultureCode
+              "
+            >
+              <span class="culture-code-prefix">
+                {{ element.code_culture.slice(0, 1) }}
+              </span>
+
+              <span class="culture-code-year">
+                {{ element.code_culture.slice(1, 5) }}
+              </span>
+
+              <span class="culture-code-separator">
+                {{ element.code_culture.slice(5, 6) }}
+              </span>
+
+              <span class="culture-code-sequence">
+                {{ element.code_culture.slice(6, 10) }}
+              </span>
+            </ng-container>
+
+            <ng-template #plainCultureCode>
+              {{ element.code_culture || '-' }}
+            </ng-template>
+
+          </td>
+        </ng-container>
+
+        <!-- Origine de la culture -->
+        <ng-container matColumnDef="source">
+          <th mat-header-cell *matHeaderCellDef>
+            Origine
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{ getSourceLabel(element) }}
+          </td>
+        </ng-container>
+
+        <!-- Acteur -->
+        <ng-container matColumnDef="actor">
+          <th mat-header-cell *matHeaderCellDef>
+            Effectué par
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            {{ element.actor_label || element.id_actor || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- Date de début -->
+        <ng-container matColumnDef="date_start">
+          <th mat-header-cell *matHeaderCellDef>
+            Date de début
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            <ng-container
+              *ngIf="element.date_start; else noStartDate"
+            >
+              {{ element.date_start | date:'dd/MM/yyyy' }}
+            </ng-container>
+
+            <ng-template #noStartDate>
+              -
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Date de fin -->
+        <ng-container matColumnDef="date_end">
+          <th mat-header-cell *matHeaderCellDef>
+            Date de fin
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            <ng-container
+              *ngIf="element.date_end; else noEndDate"
+            >
+              {{ element.date_end | date:'dd/MM/yyyy' }}
+            </ng-container>
+
+            <ng-template #noEndDate>
+              -
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Statut -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>
+            Statut
+          </th>
+
+          <td mat-cell *matCellDef="let element">
+            <span
+              class="culture-status"
+              [class.culture-status-active]="
+                element.is_active || !element.date_end
+              "
+              [class.culture-status-ended]="
+                !element.is_active && element.date_end
+              "
+            >
+              {{ getStatusLabel(element) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- En-tête -->
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns"
+        ></tr>
+
+        <!-- Lignes -->
+        <tr
+          mat-row
+          *matRowDef="
+            let row;
+            columns: displayedColumns
+          "
+        ></tr>
+
+      </table>
+
+      <mat-paginator
+        class="culture-list-paginator"
+        [pageSize]="rowPerPage"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+
+    </ng-container>
+
+    <!-- Aucune culture -->
+    <ng-template #noCultureData>
+      <mat-card class="alert-card warning-card mt-4">
+        <mat-icon>info</mat-icon>
+
+        Aucune culture enregistrée pour ce matériel.
+      </mat-card>
+    </ng-template>
+
+  </mat-card-content>
+
 </mat-card>
