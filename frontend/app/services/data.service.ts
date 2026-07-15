@@ -324,9 +324,53 @@ export class DataService {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings`);
   }
 
-  getActionsBySowing(idSowing: number): Observable<any[]> {
-    return this.api.get<any[]>(`${this.moduleBaseUrl}/sowings/${idSowing}/actions`);
+    getActionsBySowing(idSowing: number): Observable<any[]> {
+    return this.api.get<any[]>(
+      `${this.moduleBaseUrl}/sowings/${idSowing}/actions`
+    );
   }
 
-  
+  // Ajouter une culture
+  addCulture(idMaterial: number, cultureData: any): Observable<any> {
+    return this.api.post<any>(
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures`,
+      cultureData
+    );
+  }
+
+  // Récupérer les cultures associées à un matériel
+  getCulturesByMaterial(idMaterial: number): Observable<any[]> {
+    return this.api.get<any[]>(
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures`
+    );
+  }
+
+  // Récupérer le détail d’une culture
+  getCultureById(idCulture: number): Observable<any> {
+    return this.api.get<any>(
+      `${this.moduleBaseUrl}/cultures/${idCulture}`
+    );
+  }
+
+  // Modifier une culture
+  updateCulture(
+    idMaterial: number,
+    idCulture: number,
+    cultureData: any
+  ): Observable<any> {
+    return this.api.put<any>(
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures/${idCulture}`,
+      cultureData
+    );
+  }
+
+  // Supprimer une culture
+  deleteCulture(
+    idMaterial: number,
+    idCulture: number
+  ): Observable<any> {
+    return this.api.delete<any>(
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures/${idCulture}`
+    );
+  }  
 }
