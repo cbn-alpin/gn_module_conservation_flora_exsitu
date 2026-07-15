@@ -1,0 +1,203 @@
+/* Carte principale de la liste des cultures */
+.culture-list-card {
+  margin: 0;
+  overflow: hidden;
+
+  background-color: #ffffff;
+  border: 1px solid #d7ccc8;
+  border-radius: 14px;
+
+  box-shadow: 0 4px 14px rgba(78, 52, 46, 0.12);
+}
+
+/* En-tête de la carte */
+.culture-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 52px;
+  padding: 0 14px;
+
+  background: linear-gradient(
+    90deg,
+    #efebe9 0%,
+    #ffffff 100%
+  );
+
+  border-bottom: 1px solid #d7ccc8;
+}
+
+/* Centrage du titre Angular Material */
+:host ::ng-deep
+.culture-list-header .mat-mdc-card-header-text {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+:host ::ng-deep
+.culture-list-header .mat-card-header-text {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+/* Titre Fiche de Culture */
+.culture-list-header mat-card-title {
+  margin: 0;
+
+  color: #4e342e;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+}
+
+/* Contenu de la carte */
+.culture-list-content {
+  padding: 12px 14px 10px !important;
+  background-color: #fdfbf9;
+}
+
+/* Tableau */
+.culture-list-table {
+  width: 100%;
+  overflow: hidden;
+
+  background-color: #ffffff;
+  border: 1px solid #ded5d1;
+  border-radius: 12px;
+}
+
+/* Ligne d’en-tête */
+:host ::ng-deep
+.culture-list-table .mat-mdc-header-row {
+  height: 42px;
+  background-color: #efebe9;
+}
+
+/* Cellules d’en-tête */
+:host ::ng-deep
+.culture-list-table .mat-mdc-header-cell {
+  color: #4e342e;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+
+  border-bottom: 1px solid #d7ccc8;
+}
+
+/* Lignes du tableau */
+:host ::ng-deep
+.culture-list-table .mat-mdc-row {
+  height: 44px;
+}
+
+/* Cellules du tableau */
+:host ::ng-deep
+.culture-list-table .mat-mdc-cell {
+  color: #263238;
+  font-size: 13px;
+
+  border-bottom: 1px solid #f1ebe8;
+}
+
+/* Survol d’une ligne */
+:host ::ng-deep
+.culture-list-table .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: #faf5f2;
+}
+
+/* Colonne du numéro de culture */
+:host ::ng-deep
+.culture-list-table .mat-column-code_culture {
+  font-weight: 800;
+}
+
+/* Parties colorées du code C2026_0001 */
+.culture-code-prefix {
+  color: #4e342e;
+  font-weight: 800;
+}
+
+.culture-code-year {
+  color: #546e7a;
+  font-weight: 700;
+}
+
+.culture-code-separator {
+  color: #6d4c41;
+  font-weight: 700;
+}
+
+.culture-code-sequence {
+  color: #8d6e63;
+  font-weight: 800;
+}
+
+/* Badge commun du statut */
+.culture-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 105px;
+  padding: 4px 10px;
+
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  border-radius: 20px;
+}
+
+/* Culture toujours active */
+.culture-status-active {
+  color: #37474f;
+  background-color: #eceff1;
+  border: 1px solid #b0bec5;
+}
+
+/* Culture terminée */
+.culture-status-ended {
+  color: #5d4037;
+  background-color: #efebe9;
+  border: 1px solid #bcaaa4;
+}
+
+/* Pagination */
+.culture-list-paginator {
+  margin-top: 8px;
+  overflow: hidden;
+
+  background-color: #ffffff;
+  border: 1px solid #ded5d1;
+  border-radius: 10px;
+}
+
+/* Message lorsqu’aucune culture n’existe */
+.alert-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 16px;
+
+  color: #5d4037;
+  font-size: 16px;
+  text-align: center;
+
+  background-color: #faf6f4;
+  border: 1px solid #d7ccc8;
+  border-radius: 12px;
+
+  box-shadow: none;
+}
+
+.alert-card mat-icon {
+  color: #8d6e63;
+}
