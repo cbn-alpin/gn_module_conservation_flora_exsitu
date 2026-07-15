@@ -10,6 +10,7 @@ import { SemisTableComponent } from './semis-table/semis-table.component';
 import { GerminationTableComponent } from './germination-table/germination-table.component';
 import { ViabilityComponent } from './viability/viability.component';
 import { ViabilityTableComponent } from './viability-table/viability-table.component';
+import { CultureTableComponent } from './culture-table/culture-table.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
 import { SeedDetailsComponent } from './seed-details/seed-details.component';
 import { GerminationDetailsComponent } from './germination-details/germination-details.component';
@@ -73,6 +74,10 @@ export const routes: Routes = [
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/viability-table',
                 component: ViabilityTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/culture-table',
+                component: CultureTableComponent,
             },
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/germination-details/:id_test',
