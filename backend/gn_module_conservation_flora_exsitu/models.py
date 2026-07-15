@@ -733,6 +733,163 @@ class TSowing(db.Model):
 
 
         }
+
+
+
+@serializable
+class TCulture(db.Model):
+    __tablename__ = "t_culture"
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "code_culture",
+            name="uq_t_culture_code_culture"
+        ),
+        db.CheckConstraint(
+            "code_culture ~ '^C[0-9]{4}_[0-9]{4}$'",
+            name="ck_t_culture_code_format"
+        ),
+        db.CheckConstraint(
+            "date_end IS NULL OR date_end >= date_start",
+            name="ck_t_culture_end_date_after_start_date"
+        ),
+        {
+            "schema": "pr_conservation_flora_exsitu"
+        }
+    )
+
+    id_culture = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    code_culture = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    id_material = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_material.id_material"
+        ),
+        nullable=False
+    )
+
+    id_sowing = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_sowing.id_sowing"
+        ),
+        nullable=True
+    )
+
+    id_test = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_test.id_test"
+        ),
+        nullable=True
+    )
+
+    id_actor = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=False
+    )
+
+    date_start = db.Column(
+        db.DateTime,
+        nullable=False
+    )
+
+    date_end = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    remarks = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    additional_data = db.Column(
+        JSONB,
+        nullable=True
+    )
+
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=False
+    )
+
+    meta_create_date = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
+
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=True
+    )
+
+    meta_update_date = db.Column(
+        db.DateTime,
+        nullable=True,
+        onupdate=sa.func.now()
+    )
+
+    @property
+    def is_active(self):
+        return self.date_end is None
+
+    def to_dic(self):
+        return {
+            "id_culture": self.id_culture,
+            "code_culture": self.code_culture,
+            "id_material": self.id_material,
+            "id_sowing": self.id_sowing,
+            "id_test": self.id_test,
+            "id_actor": self.id_actor,
+            "date_start": (
+                self.date_start.isoformat()
+                if self.date_start
+                else None
+            ),
+            "date_end": (
+                self.date_end.isoformat()
+                if self.date_end
+                else None
+            ),
+            "remarks": self.remarks,
+            "additional_data": self.additional_data,
+            "meta_create_by": self.meta_create_by,
+            "meta_create_date": (
+                self.meta_create_date.isoformat()
+                if self.meta_create_date
+                else None
+            ),
+            "meta_update_by": self.meta_update_by,
+            "meta_update_date": (
+                self.meta_update_date.isoformat()
+                if self.meta_update_date
+                else None
+            ),
+            "is_active": self.is_active
+        }
+
+
+
 @serializable
 class TAction(db.Model):
     __tablename__ = 't_action'
