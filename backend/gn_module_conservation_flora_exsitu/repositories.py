@@ -3,6 +3,7 @@ from geonature.utils.env import db
 from sqlalchemy.exc import SQLAlchemyError
 from pypnusershub.db.models import User
 from datetime import datetime, date
+from dateutil.parser import isoparse
 from shapely.geometry import shape
 from geoalchemy2.shape import from_shape
 from pypn_habref_api.models import Habref
@@ -29,7 +30,8 @@ from .models import(
     TMaterielSeed,
     TSowing,
     TStorage,
-    TTest
+    TTest,
+    TCulture
 )
 
 
@@ -973,6 +975,412 @@ class SowingRepository:
                 result[id_sowing] = round(sum(percentages) / len(percentages), 1)
 
         return result
+
+class CultureRepository:
+
+    @staticmethod
+    def _parse_datetime(value, field_name: str, required: bool = False):
+        if value in (None, ""):
+            if required:
+                raise ValueError(f"Le champ {field_name} est obligatoire")
+            return None
+
+        if isinstance(value, datetime):
+            return value
+
+        try:
+            return isoparse(value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"Le champ {field_name} doit contenir une date valide"
+            ) from exc
+
+    @staticmethod
+    def _validate_source(id_material: int, id_sowing=None, id_test=None):
+        if id_sowing and id_test:
+            raise ValueError(
+                "Une culture ne peut pas être liée à la fois "
+                "à un semis et à un test de germination"
+            )
+
+        if id_sowing:
+            sowing = TSowing.query.filter_by(
+                id_sowing=id_sowing,
+                id_material=id_material
+            ).first()
+
+            if not sowing:
+                raise ValueError(
+                    "Le semis sélectionné n'existe pas "
+                    "ou n'appartient pas à ce matériel"
+                )
+
+        if id_test:
+            test = TTest.query.filter_by(
+                id_test=id_test,
+                id_material=id_material
+            ).first()
+
+            if not test:
+                raise ValueError(
+                    "Le test sélectionné n'existe pas "
+                    "ou n'appartient pas à ce matériel"
+                )
+
+    @staticmethod
+    def _generate_code(date_start: datetime):
+        year = date_start.year
+        prefix = f"C{year}_"
+
+        last_culture = (
+            TCulture.query
+            .filter(TCulture.code_culture.like(f"{prefix}%"))
+            .order_by(TCulture.code_culture.desc())
+            .first()
+        )
+
+        next_number = 1
+
+        if last_culture:
+            try:
+                next_number = (
+                    int(last_culture.code_culture.split("_")[-1]) + 1
+                )
+            except (TypeError, ValueError):
+                next_number = 1
+
+        if next_number > 9999:
+            raise ValueError(
+                f"Le nombre maximal de cultures "
+                f"pour l'année {year} est atteint"
+            )
+
+        return f"{prefix}{next_number:04d}"
+
+    def create(self, id_material: int, data: dict):
+        try:
+            payload = dict(data or {})
+
+            payload.pop("id_culture", None)
+            payload.pop("code_culture", None)
+            payload.pop("id_material", None)
+            payload.pop("meta_create_date", None)
+            payload.pop("meta_update_by", None)
+            payload.pop("meta_update_date", None)
+
+            date_start = self._parse_datetime(
+                payload.pop("date_start", None),
+                "date_start",
+                required=True
+            )
+
+            date_end = self._parse_datetime(
+                payload.pop("date_end", None),
+                "date_end"
+            )
+
+            if date_end and date_end < date_start:
+                raise ValueError(
+                    "La date de fin doit être supérieure "
+                    "ou égale à la date de début"
+                )
+
+            id_sowing = payload.get("id_sowing")
+            id_test = payload.get("id_test")
+
+            self._validate_source(
+                id_material,
+                id_sowing,
+                id_test
+            )
+
+            if not payload.get("id_actor"):
+                raise ValueError(
+                    "Le champ id_actor est obligatoire"
+                )
+
+            additional_data = (
+                payload.pop("additional_data", None) or {}
+            )
+
+            culture = TCulture(
+                **payload,
+                id_material=id_material,
+                code_culture=self._generate_code(date_start),
+                date_start=date_start,
+                date_end=date_end,
+                additional_data=additional_data,
+                meta_create_date=datetime.utcnow()
+            )
+
+            db.session.add(culture)
+            db.session.commit()
+
+            return culture
+
+        except (SQLAlchemyError, ValueError):
+            db.session.rollback()
+            raise
+
+    def get_by_id(self, id_culture: int):
+        return TCulture.query.get(id_culture)
+
+    def get_with_labels_by_id(self, id_culture: int):
+        Actor = aliased(User)
+        Creator = aliased(User)
+        Updater = aliased(User)
+        Material = aliased(TMaterial)
+        Sowing = aliased(TSowing)
+        Test = aliased(TTest)
+
+        result = (
+            db.session.query(
+                TCulture,
+
+                Actor.nom_role.label(
+                    "actor_last_name"
+                ),
+                Actor.prenom_role.label(
+                    "actor_first_name"
+                ),
+
+                Creator.nom_role.label(
+                    "creator_last_name"
+                ),
+                Creator.prenom_role.label(
+                    "creator_first_name"
+                ),
+
+                Updater.nom_role.label(
+                    "updater_last_name"
+                ),
+                Updater.prenom_role.label(
+                    "updater_first_name"
+                ),
+
+                Material.code_material.label(
+                    "code_material"
+                ),
+                Sowing.code.label(
+                    "code_sowing"
+                ),
+                Test.code.label(
+                    "code_test"
+                )
+            )
+            .outerjoin(
+                Actor,
+                TCulture.id_actor == Actor.id_role
+            )
+            .outerjoin(
+                Creator,
+                TCulture.meta_create_by == Creator.id_role
+            )
+            .outerjoin(
+                Updater,
+                TCulture.meta_update_by == Updater.id_role
+            )
+            .outerjoin(
+                Material,
+                TCulture.id_material == Material.id_material
+            )
+            .outerjoin(
+                Sowing,
+                TCulture.id_sowing == Sowing.id_sowing
+            )
+            .outerjoin(
+                Test,
+                TCulture.id_test == Test.id_test
+            )
+            .filter(
+                TCulture.id_culture == id_culture
+            )
+            .first()
+        )
+
+        if not result:
+            return None
+
+        (
+            culture,
+            actor_last_name,
+            actor_first_name,
+            creator_last_name,
+            creator_first_name,
+            updater_last_name,
+            updater_first_name,
+            code_material,
+            code_sowing,
+            code_test
+        ) = result
+
+        data = culture.to_dic()
+
+        data.update({
+            "actor_label": (
+                f"{actor_first_name or ''} "
+                f"{actor_last_name or ''}"
+            ).strip() or None,
+
+            "created_by_label": (
+                f"{creator_first_name or ''} "
+                f"{creator_last_name or ''}"
+            ).strip() or None,
+
+            "updated_by_label": (
+                f"{updater_first_name or ''} "
+                f"{updater_last_name or ''}"
+            ).strip() or None,
+
+            "code_material": code_material,
+            "code_sowing": code_sowing,
+            "code_test": code_test,
+
+            "source_type": (
+                "sowing"
+                if culture.id_sowing
+                else "test"
+                if culture.id_test
+                else None
+            ),
+
+            "source_code": code_sowing or code_test
+        })
+
+        return data
+
+    def get_all_by_material(self, id_material: int):
+        culture_ids = (
+            db.session.query(
+                TCulture.id_culture
+            )
+            .filter(
+                TCulture.id_material == id_material
+            )
+            .order_by(
+                TCulture.date_start.desc(),
+                TCulture.id_culture.desc()
+            )
+            .all()
+        )
+
+        return [
+            self.get_with_labels_by_id(id_culture)
+            for (id_culture,) in culture_ids
+        ]
+
+    def update(
+        self,
+        id_material: int,
+        id_culture: int,
+        data: dict
+    ):
+        try:
+            culture = TCulture.query.filter_by(
+                id_culture=id_culture,
+                id_material=id_material
+            ).first()
+
+            if not culture:
+                return None
+
+            payload = dict(data or {})
+
+            for protected_field in (
+                "id_culture",
+                "code_culture",
+                "id_material",
+                "meta_create_by",
+                "meta_create_date",
+                "meta_update_date"
+            ):
+                payload.pop(protected_field, None)
+
+            date_start = self._parse_datetime(
+                payload.pop(
+                    "date_start",
+                    culture.date_start
+                ),
+                "date_start",
+                required=True
+            )
+
+            date_end = self._parse_datetime(
+                payload.pop(
+                    "date_end",
+                    culture.date_end
+                ),
+                "date_end"
+            )
+
+            if date_end and date_end < date_start:
+                raise ValueError(
+                    "La date de fin doit être supérieure "
+                    "ou égale à la date de début"
+                )
+
+            id_sowing = payload.get(
+                "id_sowing",
+                culture.id_sowing
+            )
+
+            id_test = payload.get(
+                "id_test",
+                culture.id_test
+            )
+
+            self._validate_source(
+                id_material,
+                id_sowing,
+                id_test
+            )
+
+            culture.date_start = date_start
+            culture.date_end = date_end
+            culture.id_sowing = id_sowing
+            culture.id_test = id_test
+
+            if "additional_data" in payload:
+                culture.additional_data = (
+                    payload.pop("additional_data") or {}
+                )
+
+            for key, value in payload.items():
+                if hasattr(culture, key):
+                    setattr(culture, key, value)
+
+            culture.meta_update_date = datetime.utcnow()
+
+            db.session.commit()
+
+            return culture
+
+        except (SQLAlchemyError, ValueError):
+            db.session.rollback()
+            raise
+
+    def delete(
+        self,
+        id_material: int,
+        id_culture: int
+    ):
+        try:
+            culture = TCulture.query.filter_by(
+                id_culture=id_culture,
+                id_material=id_material
+            ).first()
+
+            if not culture:
+                return False
+
+            db.session.delete(culture)
+            db.session.commit()
+
+            return True
+
+        except SQLAlchemyError:
+            db.session.rollback()
+            raise
 
 class TestRepository:
     def create(self, data):

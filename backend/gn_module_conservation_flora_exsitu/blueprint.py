@@ -2,8 +2,19 @@ import logging
 
 from flask import Blueprint, request, g, Response
 from geonature.core.gn_permissions import decorators as permissions
-from .repositories import SowingRepository, TestRepository , ActionRepository
-from .models import TSowing, TTest, TAction,TActionReplicate
+from .repositories import (
+    SowingRepository,
+    TestRepository,
+    ActionRepository,
+    CultureRepository
+)
+from .models import (
+    TSowing,
+    TTest,
+    TAction,
+    TActionReplicate,
+    TCulture
+)
 from utils_flask_sqla.response import json_resp
 from .repositories import HarvestRepository, HarvestMaterialRepository, TMaterielSeedRepository, StorageRepository
 from .models import TMaterial, THarvest, CorMaterialTaxon, CorHarvestObserver, TMaterielSeed, TStorage
@@ -1565,6 +1576,172 @@ def update_sowing(id_material, id_sowing):
         return {"error": "Semis non trouvé"}, 404
 
     return sowing.to_dic(), 200
+
+@blueprint.route(
+    "/materials/<int:id_material>/cultures",
+    methods=["POST"]
+)
+@permissions.check_cruved_scope(
+    "C",
+    module_code=MODULE_CODE
+)
+@json_resp
+def create_culture(id_material):
+    try:
+        data = request.get_json(silent=True) or {}
+
+        data["meta_create_by"] = (
+            g.current_user.id_role
+        )
+
+        repo = CultureRepository()
+        culture = repo.create(
+            id_material,
+            data
+        )
+
+        return {
+            "message": "Culture créée avec succès",
+            "culture": culture.to_dic()
+        }, 201
+
+    except ValueError as e:
+        return {
+            "error": str(e)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "create_culture failed"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/materials/<int:id_material>/cultures",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def list_cultures_by_material(id_material):
+    repo = CultureRepository()
+
+    return repo.get_all_by_material(
+        id_material
+    ), 200
+
+
+@blueprint.route(
+    "/cultures/<int:id_culture>",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def get_culture(id_culture):
+    repo = CultureRepository()
+
+    culture = repo.get_with_labels_by_id(
+        id_culture
+    )
+
+    if not culture:
+        return {
+            "error": "Culture non trouvée"
+        }, 404
+
+    return culture, 200
+
+
+@blueprint.route(
+    "/materials/<int:id_material>/cultures/<int:id_culture>",
+    methods=["PUT"]
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE
+)
+@json_resp
+def update_culture(
+    id_material,
+    id_culture
+):
+    try:
+        data = request.get_json(silent=True) or {}
+
+        data["meta_update_by"] = (
+            g.current_user.id_role
+        )
+
+        repo = CultureRepository()
+
+        culture = repo.update(
+            id_material,
+            id_culture,
+            data
+        )
+
+        if not culture:
+            return {
+                "error": "Culture non trouvée"
+            }, 404
+
+        return {
+            "message": "Culture mise à jour avec succès",
+            "culture": culture.to_dic()
+        }, 200
+
+    except ValueError as e:
+        return {
+            "error": str(e)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "update_culture failed"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/materials/<int:id_material>/cultures/<int:id_culture>",
+    methods=["DELETE"]
+)
+@permissions.check_cruved_scope(
+    "D",
+    module_code=MODULE_CODE
+)
+@json_resp
+def delete_culture(
+    id_material,
+    id_culture
+):
+    repo = CultureRepository()
+
+    deleted = repo.delete(
+        id_material,
+        id_culture
+    )
+
+    if not deleted:
+        return {
+            "error": "Culture non trouvée"
+        }, 404
+
+    return {
+        "message": "Culture supprimée avec succès"
+    }, 200
 
 @blueprint.route("/nomenclatures/<string:code_type>", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
