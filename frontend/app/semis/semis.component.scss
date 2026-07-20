@@ -1,3 +1,209 @@
+/* =========================================================
+   FICHE SEMIS - CONTENEUR PRINCIPAL
+   ========================================================= */
+
+.semis-form-card {
+  width: 100%;
+  background-color: #ffffff;
+
+  border: 1px solid #c8e6c9;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 16px rgba(46, 125, 50, 0.10);
+}
+
+
+/* =========================================================
+   EN-TÊTE DE LA FICHE
+   ========================================================= */
+
+.semis-form-header {
+  min-height: 58px;
+  padding: 0 20px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e8f5e9 0%,
+      #f6fbf6 55%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #c8e6c9;
+}
+
+.semis-form-header mat-card-title {
+  color: #1b5e20;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.semis-form-content {
+  background-color: #fbfffb;
+}
+
+.semis-form {
+  padding: 18px 22px 20px;
+}
+
+
+/* =========================================================
+   TITRES DES SECTIONS
+   ========================================================= */
+
+.semis-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 8px;
+  margin-bottom: 4px;
+  padding: 10px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e8f5e9 0%,
+      #f5faf5 75%,
+      #fbfffb 100%
+    );
+
+  border-left: 4px solid #43a047;
+  border-bottom: 1px solid #d8ead8;
+  border-radius: 8px;
+}
+
+.semis-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+}
+
+.semis-section-icon mat-icon {
+  color: #2e7d32;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.semis-section-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.semis-section-title {
+  color: #1b5e20;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.semis-section-subtitle {
+  color: #607d63;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   CHAMPS DU FORMULAIRE
+   ========================================================= */
+
+:host ::ng-deep
+.semis-form .mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field:not(.mat-form-field-invalid):hover
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field:not(.mat-form-field-invalid):hover
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field:not(.mat-form-field-invalid):hover
+.mdc-notched-outline__trailing {
+  border-color: #81c784;
+}
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color: #43a047 !important;
+}
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color: #2e7d32 !important;
+}
+
+
+/* =========================================================
+   PERSONNE AYANT EFFECTUÉ LE SEMIS
+   ========================================================= */
+
+.semis-form .form-group small {
+  color: #455a4a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   ZONE REMARQUES
+   ========================================================= */
+
+.semis-form textarea {
+  resize: vertical;
+  min-height: 55px;
+}
+
+
+/* =========================================================
+   BARRE DES ACTIONS
+   ========================================================= */
+
+.form-actions.dual-buttons.sticky-actions {
+  border-top: 1px solid #c8e6c9;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f7fbf7 100%
+    );
+
+  box-shadow:
+    0 -4px 10px rgba(46, 125, 50, 0.08);
+}
+
 .semis-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -21,10 +227,14 @@
 .centered-title mat-card-title {
   display: block;
   width: 100%;
+  margin: 0;
+
   text-align: center;
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 4px;
+
+  color: #1b5e20;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
 }
 
 .section-title {

@@ -1,5 +1,5 @@
-<mat-card>
-  <mat-card-header class="header-with-button centered-header">
+<mat-card class="semis-form-card">
+  <mat-card-header class="header-with-button centered-header semis-form-header">
     <div class="title-wrapper centered-title">
       <mat-card-title>
         {{
@@ -11,8 +11,21 @@
     </div>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content class="semis-form-content">
     <form [formGroup]="semisForm" class="semis-form" (ngSubmit)="onSubmit()">
+
+      <div class="semis-section-header full-width">
+        <div class="semis-section-icon">
+          <mat-icon>assignment</mat-icon>
+        </div>
+
+        <div class="semis-section-text">
+          <span class="semis-section-title">Identification du semis</span>
+          <span class="semis-section-subtitle">
+            Informations générales et période du semis
+          </span>
+        </div>
+      </div>
 
       <!-- Ligne 1 : Numéro de semis -->
       <mat-form-field appearance="outline" class="full-width shake-wrapper" [class.shake-field]="shakeCodeField" [class.shake-error]="shakeCodeField">
@@ -86,6 +99,19 @@
                 La date de fin doit être postérieure à la date de début.
               </mat-error>
             </mat-form-field>
+        </div>
+      </div>
+
+      <div class="semis-section-header full-width">
+        <div class="semis-section-icon">
+          <mat-icon>spa</mat-icon>
+        </div>
+
+        <div class="semis-section-text">
+          <span class="semis-section-title">Conditions de semis</span>
+          <span class="semis-section-subtitle">
+            Méthode, substrat et paramètres de mise en semis
+          </span>
         </div>
       </div>
 
@@ -238,6 +264,22 @@
             Le nombre de réplicats doit être supérieur à 0.
           </mat-error>
       </mat-form-field>
+
+      <div class="semis-section-header full-width">
+        <div class="semis-section-icon">
+          <mat-icon>place</mat-icon>
+        </div>
+
+        <div class="semis-section-text">
+          <span class="semis-section-title">
+            Localisation et informations complémentaires
+          </span>
+
+          <span class="semis-section-subtitle">
+            Emplacement, remarques et données complémentaires
+          </span>
+        </div>
+      </div>
 
       <!-- Ligne 7 : Localisation / Précision sur la localisation -->
       <div class="form-group" [class.shake-group-field]="shakeLocationField">
