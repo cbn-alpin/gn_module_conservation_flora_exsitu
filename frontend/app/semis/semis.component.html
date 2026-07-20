@@ -9,7 +9,7 @@
     <form [formGroup]="semisForm" class="semis-form" (ngSubmit)="onSubmit()">
 
       <!-- Ligne 1 : Numéro de semis -->
-      <mat-form-field appearance="outline" class="full-width shake-wrapper" [class.shake-field]="shakeCodeField">
+      <mat-form-field appearance="outline" class="full-width shake-wrapper" [class.shake-field]="shakeCodeField" [class.shake-error]="shakeCodeField">
   <mat-label>Numéro de Semis</mat-label>
   <input
     matInput
