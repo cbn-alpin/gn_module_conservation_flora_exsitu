@@ -14,6 +14,7 @@ from ref_geo.models import LAreas, BibAreasTypes
 from apptax.taxonomie.models import Taxref
 from sqlalchemy import func, cast, Integer
 import json
+import re
 from sqlalchemy import and_
 from sqlalchemy.sql import text
 from functools import cached_property
@@ -1028,45 +1029,53 @@ class CultureRepository:
                 )
 
     @staticmethod
-    def _generate_code(date_start: datetime):
-        year = date_start.year
-        prefix = f"C{year}_"
+    def _validate_code(code_culture, id_culture=None):
+        code_culture = str(
+            code_culture or ""
+        ).strip()
 
-        last_culture = (
-            TCulture.query
-            .filter(TCulture.code_culture.like(f"{prefix}%"))
-            .order_by(TCulture.code_culture.desc())
-            .first()
-        )
-
-        next_number = 1
-
-        if last_culture:
-            try:
-                next_number = (
-                    int(last_culture.code_culture.split("_")[-1]) + 1
-                )
-            except (TypeError, ValueError):
-                next_number = 1
-
-        if next_number > 9999:
+        if not code_culture:
             raise ValueError(
-                f"Le nombre maximal de cultures "
-                f"pour l'année {year} est atteint"
+                "Le numéro de culture est obligatoire"
             )
 
-        return f"{prefix}{next_number:04d}"
+        if not re.fullmatch(
+            r"C\d{4}_(?!0000)\d{4}",
+            code_culture
+        ):
+            raise ValueError(
+                "Le numéro de culture doit respecter "
+                "le format CAAAA_NNNN"
+            )
+
+        query = TCulture.query.filter(
+            TCulture.code_culture == code_culture
+        )
+
+        if id_culture is not None:
+            query = query.filter(
+                TCulture.id_culture != id_culture
+            )
+
+        if query.first():
+            raise ValueError(
+                "Ce numéro de culture est déjà utilisé"
+            )
+
+        return code_culture
 
     def create(self, id_material: int, data: dict):
         try:
             payload = dict(data or {})
 
             payload.pop("id_culture", None)
-            payload.pop("code_culture", None)
             payload.pop("id_material", None)
             payload.pop("meta_create_date", None)
             payload.pop("meta_update_by", None)
             payload.pop("meta_update_date", None)
+            code_culture = self._validate_code(
+                payload.pop("code_culture", None)
+            )
 
             date_start = self._parse_datetime(
                 payload.pop("date_start", None),
@@ -1106,7 +1115,7 @@ class CultureRepository:
             culture = TCulture(
                 **payload,
                 id_material=id_material,
-                code_culture=self._generate_code(date_start),
+                code_culture=code_culture,
                 date_start=date_start,
                 date_end=date_end,
                 additional_data=additional_data,
@@ -1288,13 +1297,20 @@ class CultureRepository:
 
             for protected_field in (
                 "id_culture",
-                "code_culture",
                 "id_material",
                 "meta_create_by",
                 "meta_create_date",
                 "meta_update_date"
             ):
                 payload.pop(protected_field, None)
+
+            code_culture = self._validate_code(
+                payload.pop(
+                    "code_culture",
+                    culture.code_culture
+                ),
+                id_culture=id_culture
+            )
 
             date_start = self._parse_datetime(
                 payload.pop(
@@ -1335,6 +1351,7 @@ class CultureRepository:
                 id_test
             )
 
+            culture.code_culture = code_culture
             culture.date_start = date_start
             culture.date_end = date_end
             culture.id_sowing = id_sowing

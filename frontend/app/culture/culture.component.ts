@@ -35,6 +35,7 @@ export class CultureComponent implements OnInit {
 
   public formSubmitted = false;
 
+  public shakeCodeField = false;
   public shakeStartDateField = false;
   public shakeEndDateField = false;
 
@@ -55,11 +56,20 @@ export class CultureComponent implements OnInit {
     private exsituFormService: ExsituFormService,
     private cfg: ConfigService,
     private toast: CommonService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
+    
     this.cultureForm = this.fb.group(
       {
+        code_culture: [
+          '',
+          [
+            Validators.required,
+            this.cultureCodeValidator
+          ]
+        ],
+
         date_start: [null, Validators.required],
         date_end: [null],
 
@@ -81,6 +91,8 @@ export class CultureComponent implements OnInit {
     }
 
     const formState = {
+      code_culture: data.code_culture || '',
+
       date_start: data.date_start
         ? new Date(data.date_start)
         : null,
@@ -175,6 +187,37 @@ export class CultureComponent implements OnInit {
           this.onCancel();
         }
       });
+  }
+
+  cultureCodeValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+
+    const value = control.value;
+
+    if (!value || typeof value !== 'string') {
+      return null;
+    }
+
+    const normalizedValue = value.trim();
+
+    const match = normalizedValue.match(
+      /^C\d{4}_(\d{4})$/
+    );
+
+    if (!match) {
+      return {
+        cultureFormatInvalid: true
+      };
+    }
+
+    if (match[1] === '0000') {
+      return {
+        cultureSequenceInvalid: true
+      };
+    }
+
+    return null;
   }
 
   dateRangeValidator(
@@ -274,6 +317,18 @@ export class CultureComponent implements OnInit {
     return payload;
   }
 
+  private triggerCodeFieldShake(): void {
+    this.shakeCodeField = false;
+
+    setTimeout(() => {
+      this.shakeCodeField = true;
+
+      setTimeout(() => {
+        this.shakeCodeField = false;
+      }, 400);
+    }, 0);
+  }
+
   private triggerStartDateFieldShake(): void {
     this.shakeStartDateField = false;
 
@@ -303,6 +358,14 @@ export class CultureComponent implements OnInit {
 
     if (this.cultureForm.invalid) {
       this.cultureForm.markAllAsTouched();
+
+      if (
+        this.cultureForm
+          .get('code_culture')
+          ?.invalid
+      ) {
+        this.triggerCodeFieldShake();
+      }
 
       if (
         this.cultureForm
@@ -343,41 +406,88 @@ export class CultureComponent implements OnInit {
 
         const payload = this.formatFormData();
 
-        this.cultureService
-          .addCulture(
-            this.idMaterial!,
-            payload
-          )
-          .subscribe({
-            next: (response) => {
-              const cultureCode =
-                response?.culture?.code_culture;
+        if (
+          this.modalData?.edit &&
+          this.modalData?.culture?.id_culture
+        ) {
 
-              this.toast.translateToaster(
-                'success',
-                cultureCode
-                  ? `Culture ${cultureCode} créée avec succès`
-                  : 'Culture créée avec succès'
-              );
+          // MODE MODIFICATION
+          this.cultureService
+            .updateCulture(
+              this.idMaterial!,
+              this.modalData.culture.id_culture,
+              payload
+            )
+            .subscribe({
+              next: (response) => {
+                const cultureCode =
+                  payload.code_culture;
 
-              this.dialogRef.close(
-                response?.culture || response
-              );
-            },
+                this.toast.translateToaster(
+                  'success',
+                  cultureCode
+                    ? `Culture ${cultureCode} mise à jour avec succès`
+                    : 'Culture mise à jour avec succès'
+                );
 
-            error: (error) => {
-              console.error(
-                'Erreur lors de la création de la culture :',
-                error
-              );
+                this.dialogRef.close(
+                  response?.culture || response
+                );
+              },
 
-              this.toast.translateToaster(
-                'error',
-                error?.error?.error ||
-                  'Erreur lors de la création de la culture'
-              );
-            }
-          });
+              error: (error) => {
+                console.error(
+                  'Erreur lors de la modification de la culture :',
+                  error
+                );
+
+                this.toast.translateToaster(
+                  'error',
+                  error?.error?.error ||
+                    'Erreur lors de la modification de la culture'
+                );
+              }
+            });
+
+        } else {
+
+          // MODE AJOUT
+          this.cultureService
+            .addCulture(
+              this.idMaterial!,
+              payload
+            )
+            .subscribe({
+              next: (response) => {
+                const cultureCode =
+                  response?.culture?.code_culture;
+
+                this.toast.translateToaster(
+                  'success',
+                  cultureCode
+                    ? `Culture ${cultureCode} créée avec succès`
+                    : 'Culture créée avec succès'
+                );
+
+                this.dialogRef.close(
+                  response?.culture || response
+                );
+              },
+
+              error: (error) => {
+                console.error(
+                  'Erreur lors de la création de la culture :',
+                  error
+                );
+
+                this.toast.translateToaster(
+                  'error',
+                  error?.error?.error ||
+                    'Erreur lors de la création de la culture'
+                );
+              }
+            });
+        }
       });
   }
 

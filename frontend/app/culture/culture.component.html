@@ -18,16 +18,57 @@
       (ngSubmit)="onSubmit()"
     >
 
-      <!-- Numéro généré automatiquement -->
-      <div class="culture-code-information full-width">
-        <mat-icon>info</mat-icon>
+      <!-- Numéro de Culture -->
+      <mat-form-field
+        appearance="outline"
+        class="full-width shake-wrapper"
+        [class.shake-field]="shakeCodeField"
+      >
+        <mat-label>Numéro de Culture</mat-label>
 
-        <span>
-          Le numéro de culture sera généré automatiquement
-          lors de l’enregistrement au format
-          <strong>CAAAA_NNNN</strong>.
-        </span>
-      </div>
+        <input
+          matInput
+          formControlName="code_culture"
+          placeholder="Ex : C2026_0001"
+          matTooltip="Code alphanumérique identifiant la culture.&#10;Ex : C2026_0001 (C = culture, 2026 = année, 0001 = n° d’ordre)"
+          matTooltipPosition="below"
+        >
+
+        <mat-error
+          *ngIf="
+            formSubmitted &&
+            cultureForm.get('code_culture')
+              ?.hasError('required')
+          "
+        >
+          Le numéro de culture est obligatoire.
+        </mat-error>
+
+        <mat-error
+          *ngIf="
+            formSubmitted &&
+            cultureForm.get('code_culture')
+              ?.hasError('cultureFormatInvalid')
+          "
+        >
+          Le numéro de culture doit respecter le format CAAAA_NNNN.
+        </mat-error>
+
+        <mat-error
+          *ngIf="
+            formSubmitted &&
+            cultureForm.get('code_culture')
+              ?.hasError('cultureSequenceInvalid')
+          "
+        >
+          Le numéro d’ordre de la culture ne peut pas être 0000.
+        </mat-error>
+
+        <small class="custom-helper-message">
+          Format standard : CAAAA_NNNN.
+        </small>
+
+      </mat-form-field>
 
       <!-- Date de début -->
       <mat-form-field
