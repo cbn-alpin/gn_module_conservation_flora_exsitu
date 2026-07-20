@@ -24,7 +24,7 @@ export interface Culture {
   id_material: number;
   id_sowing: number | null;
   id_test: number | null;
-  id_actor: number;
+  id_actor: number | null;
 
   date_start: string;
   date_end: string | null;

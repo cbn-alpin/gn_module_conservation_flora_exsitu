@@ -1103,11 +1103,6 @@ class CultureRepository:
                 id_test
             )
 
-            if not payload.get("id_actor"):
-                raise ValueError(
-                    "Le champ id_actor est obligatoire"
-                )
-
             additional_data = (
                 payload.pop("additional_data", None) or {}
             )

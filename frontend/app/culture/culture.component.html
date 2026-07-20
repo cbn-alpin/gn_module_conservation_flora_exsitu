@@ -149,11 +149,9 @@
       </mat-form-field>
 
       <!-- Acteur -->
+      <!-- Personne ayant effectué la culture -->
       <div class="form-group full-width">
-        <small>
-          Effectué par
-          <span class="required-star">*</span>
-        </small>
+        <small>Personne ayant effectué la culture</small>
 
         <pnx-observers
           [bindAllItem]="true"
@@ -162,21 +160,10 @@
           "
           [codeList]="observersListCode"
           [multiSelect]="true"
-          matTooltip="Personne effectuant la culture."
+          matTooltip="Personne ayant effectué la culture."
           matTooltipPosition="below"
         >
         </pnx-observers>
-
-        <div
-          class="actor-error"
-          *ngIf="
-            formSubmitted &&
-            cultureForm.get('id_actor')
-              ?.hasError('required')
-          "
-        >
-          La personne effectuant la culture est obligatoire.
-        </div>
       </div>
 
       <!-- Remarques -->

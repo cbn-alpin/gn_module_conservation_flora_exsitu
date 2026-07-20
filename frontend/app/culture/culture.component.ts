@@ -73,7 +73,7 @@ export class CultureComponent implements OnInit {
         date_start: [null, Validators.required],
         date_end: [null],
 
-        id_actor: [[], Validators.required],
+        id_actor: [[]],
 
         remarks: [''],
 

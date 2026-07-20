@@ -797,7 +797,7 @@ class TCulture(db.Model):
         db.ForeignKey(
             "utilisateurs.t_roles.id_role"
         ),
-        nullable=False
+        nullable=True
     )
 
     date_start = db.Column(

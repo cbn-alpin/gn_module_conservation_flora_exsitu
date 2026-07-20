@@ -898,7 +898,7 @@ def upgrade():
         sa.Column(
             'id_actor',
             sa.Integer(),
-            nullable=False
+            nullable=True
         ),
 
         sa.Column(
