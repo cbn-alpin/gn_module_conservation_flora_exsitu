@@ -63,6 +63,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     'date_start',
     'date_end',
     'status',
+    'actions'
   ];
 
   private paginatorRef!: MatPaginator;

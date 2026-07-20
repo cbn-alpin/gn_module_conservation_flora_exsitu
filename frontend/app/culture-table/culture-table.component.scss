@@ -250,3 +250,26 @@
 .alert-card mat-icon {
   color: #8d6e63;
 }
+
+/* Colonne Actions */
+.culture-actions-cell {
+  text-align: center;
+}
+
+:host ::ng-deep
+.culture-list-table .mat-column-actions {
+  width: 90px;
+  text-align: center;
+}
+
+/* Bouton menu Actions */
+.culture-actions-cell button mat-icon {
+  color: #4e342e;
+}
+
+/* Suppression */
+.delete-culture-action,
+.delete-culture-action mat-icon,
+.delete-culture-action span {
+  color: #d32f2f !important;
+}
