@@ -55,8 +55,11 @@
 }
 
 .culture-title-wrapper {
-  width: 100%;
-  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .culture-add-button {
