@@ -10,7 +10,7 @@
     </mat-card-title>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content class="culture-form-content">
 
     <form
       [formGroup]="cultureForm"
@@ -18,11 +18,32 @@
       (ngSubmit)="onSubmit()"
     >
 
+    <div class="culture-section-header full-width">
+
+      <div class="culture-section-icon">
+        <mat-icon>assignment</mat-icon>
+      </div>
+
+      <div class="culture-section-text">
+
+        <span class="culture-section-title">
+          Identification de la culture
+        </span>
+
+        <span class="culture-section-subtitle">
+          Numéro et période de la culture
+        </span>
+
+      </div>
+
+    </div>
+
       <!-- Numéro de Culture -->
       <mat-form-field
         appearance="outline"
         class="full-width shake-wrapper"
         [class.shake-field]="shakeCodeField"
+        [class.shake-error]="shakeCodeField"
       >
         <mat-label>Numéro de Culture</mat-label>
 
@@ -169,6 +190,26 @@
         </mat-error>
       </mat-form-field>
 
+      <div class="culture-section-header full-width">
+
+        <div class="culture-section-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+
+        <div class="culture-section-text">
+
+          <span class="culture-section-title">
+            Suivi de la culture
+          </span>
+
+          <span class="culture-section-subtitle">
+            Personne responsable et informations de suivi
+          </span>
+
+        </div>
+
+      </div>
+
       <!-- Acteur -->
       <!-- Personne ayant effectué la culture -->
       <div class="form-group full-width">
@@ -185,6 +226,26 @@
           matTooltipPosition="below"
         >
         </pnx-observers>
+      </div>
+
+      <div class="culture-section-header full-width">
+
+        <div class="culture-section-icon">
+          <mat-icon>description</mat-icon>
+        </div>
+
+        <div class="culture-section-text">
+
+          <span class="culture-section-title">
+            Informations complémentaires
+          </span>
+
+          <span class="culture-section-subtitle">
+            Remarques, programme et données complémentaires
+          </span>
+
+        </div>
+
       </div>
 
       <!-- Remarques -->

@@ -1,19 +1,39 @@
+/* =========================================================
+   FICHE CULTURE - CONTENEUR PRINCIPAL
+   ========================================================= */
+
 .culture-form-card {
+  width: 100%;
   overflow: visible;
+
+  background-color: #ffffff;
+
   border: 1px solid #d7ccc8;
   border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px rgba(78, 52, 46, 0.10);
 }
+
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
 
 .culture-form-header {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 14px 20px;
 
-  background: linear-gradient(
-    90deg,
-    #efebe9 0%,
-    #ffffff 100%
-  );
+  min-height: 58px;
+  padding: 0 20px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #efebe9 0%,
+      #f8f5f3 55%,
+      #ffffff 100%
+    );
 
   border-bottom: 1px solid #d7ccc8;
 }
@@ -27,9 +47,12 @@
 
 .culture-form-header mat-card-title {
   margin: 0;
+
   color: #4e342e;
+
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.2px;
 }
 
 .culture-form {
@@ -39,8 +62,14 @@
     minmax(0, 1fr)
   );
 
-  gap: 18px 20px;
-  padding: 20px;
+  column-gap: 16px;
+  row-gap: 10px;
+
+  align-items: start;
+
+  padding: 16px 20px 18px;
+
+  background-color: #fdfbf9;
 }
 
 .full-width {
@@ -55,10 +84,19 @@
 }
 
 .form-group small {
-  margin-bottom: 8px;
-  color: #4b5563;
-  font-size: 13px;
-  font-weight: 600;
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #5d4b45;
+
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.culture-form textarea {
+  resize: vertical;
+  min-height: 55px;
 }
 
 .required-star {
@@ -107,10 +145,17 @@
   margin-top: 12px;
   padding: 18px 28px;
 
-  background-color: #ffffff;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #faf7f5 100%
+    );
+
   border-top: 1px solid #d7ccc8;
 
-  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 -4px 10px rgba(78, 52, 46, 0.08);
 }
 
 .culture-form-actions button {
@@ -204,8 +249,10 @@ textarea {
 :host ::ng-deep
 .culture-form
 .mat-mdc-form-field-required-marker {
+  margin-left: 0;
+  padding-left: 4px;
+
   color: #f44336 !important;
-  margin-left: 4px;
 }
 
 
@@ -253,4 +300,186 @@ textarea {
   100% {
     transform: translateX(0);
   }
+}
+
+/* =========================================================
+   SECTIONS DU FORMULAIRE
+   ========================================================= */
+
+.culture-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 10px;
+  margin-bottom: 6px;
+  padding: 7px 4px 8px;
+
+  background: transparent;
+
+  border-bottom: 1px solid #d7ccc8;
+}
+
+/* Petit trait marron sous chaque section */
+.culture-section-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #795548;
+  border-radius: 2px;
+}
+
+/* Icône */
+.culture-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+
+  background-color: #efebe9;
+
+  border: 1px solid #d7ccc8;
+  border-radius: 7px;
+}
+
+.culture-section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #5d4037;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+/* Texte de section */
+.culture-section-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0;
+  min-width: 0;
+}
+
+.culture-section-title {
+  color: #4e342e;
+
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.1px;
+}
+
+.culture-section-subtitle {
+  margin-top: 1px;
+
+  color: #7b6a64;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.culture-form-content {
+  background-color: #fdfbf9;
+}
+
+/* =========================================================
+   CHAMPS
+   ========================================================= */
+
+:host ::ng-deep
+.culture-form .mat-mdc-form-field {
+  margin: 0;
+}
+
+:host ::ng-deep
+.culture-form .mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+/* Contours au repos */
+:host ::ng-deep
+.culture-form
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.culture-form
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.culture-form
+.mdc-notched-outline__trailing {
+  border-color: #cbbab4;
+}
+
+/* Survol */
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__trailing {
+  border-color: #a1887f;
+}
+
+/* Champ sélectionné */
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color: #795548 !important;
+  border-width: 1.5px !important;
+}
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color: #5d4037 !important;
+}
+
+/* Contenu */
+:host ::ng-deep
+.culture-form input,
+
+:host ::ng-deep
+.culture-form textarea,
+
+:host ::ng-deep
+.culture-form .mat-mdc-select-value {
+  color: #3e302c;
+  font-size: 13px;
 }
