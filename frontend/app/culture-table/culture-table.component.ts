@@ -5,8 +5,11 @@ import {
   ViewChild
 } from '@angular/core';
 
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+
+import { CultureComponent } from '../culture/culture.component';
 
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { CultureTableService } from './culture-table.service';
@@ -74,7 +77,8 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
   constructor(
     public exsituFormService: ExsituFormService,
-    private cultureTableService: CultureTableService
+    private cultureTableService: CultureTableService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -108,6 +112,28 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     this.dataSource.paginator = this.paginatorRef;
     this.paginatorRef.length = this.dataSource.data.length;
+  }
+
+  addFicheCulture(): void {
+    const dialogRef = this.dialog.open(
+      CultureComponent,
+      {
+        width: '800px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        disableClose: true
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(
+      (result) => {
+        if (result && this.idMaterial) {
+          this.cultureTableService.loadCultures(
+            this.idMaterial
+          );
+        }
+      }
+    );
   }
 
   getSourceLabel(culture: Culture): string {

@@ -1,0 +1,147 @@
+.culture-form-card {
+  overflow: hidden;
+  border: 1px solid #d7ccc8;
+  border-radius: 12px;
+}
+
+.culture-form-header {
+  display: flex;
+  justify-content: center;
+  padding: 14px 20px;
+
+  background: linear-gradient(
+    90deg,
+    #efebe9 0%,
+    #ffffff 100%
+  );
+
+  border-bottom: 1px solid #d7ccc8;
+}
+
+:host ::ng-deep
+.culture-form-header .mat-card-header-text {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.culture-form-header mat-card-title {
+  margin: 0;
+  color: #4e342e;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.culture-form {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+
+  gap: 18px 20px;
+  padding: 20px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group small {
+  margin-bottom: 8px;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.required-star {
+  color: #f44336;
+}
+
+.culture-code-information {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 14px;
+
+  color: #4e342e;
+  font-size: 13px;
+
+  background-color: #faf7f5;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+}
+
+.culture-code-information mat-icon {
+  flex-shrink: 0;
+  color: #6d4c41;
+}
+
+.actor-error {
+  margin-top: 5px;
+  color: #f44336;
+  font-size: 12px;
+}
+
+.culture-form-actions {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 30px;
+
+  margin-top: 15px;
+  padding-top: 18px;
+
+  border-top: 1px solid #e0e0e0;
+}
+
+.culture-form-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-width: 165px;
+  height: 42px;
+
+  color: #ffffff;
+  border-radius: 5px;
+}
+
+.cancel-button {
+  justify-self: start;
+  background-color: #f44336;
+}
+
+.reset-button {
+  justify-self: center;
+  background-color: #8e24aa;
+}
+
+.save-button {
+  justify-self: end;
+  background-color: #4caf50;
+}
+
+@media (max-width: 700px) {
+  .culture-form {
+    grid-template-columns: 1fr;
+  }
+
+  .culture-form-actions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .culture-form-actions button {
+    width: 100%;
+  }
+}

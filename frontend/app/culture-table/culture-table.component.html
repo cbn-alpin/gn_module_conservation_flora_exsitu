@@ -1,7 +1,22 @@
 <mat-card class="culture-list-card">
 
   <mat-card-header class="culture-list-header">
-    <mat-card-title>Fiche de Culture</mat-card-title>
+
+    <button
+      mat-button
+      class="culture-add-button"
+      (click)="addFicheCulture()"
+    >
+      <mat-icon>add</mat-icon>
+      Ajouter une fiche de culture
+    </button>
+
+    <div class="culture-title-wrapper">
+      <mat-card-title>
+        Fiche de Culture
+      </mat-card-title>
+    </div>
+
   </mat-card-header>
 
   <mat-card-content class="culture-list-content">
