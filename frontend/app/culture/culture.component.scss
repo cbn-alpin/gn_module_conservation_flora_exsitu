@@ -145,3 +145,102 @@
     width: 100%;
   }
 }
+
+/* =========================================================
+   Validation identique au formulaire Semis
+   ========================================================= */
+
+/* Une erreur ne colore pas toute la bordure du champ en rouge */
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-form-field-invalid
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-form-field-invalid
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-form-field-invalid
+.mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.38) !important;
+}
+
+/* Le nom "Date de transplantation" ne devient pas rouge */
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-form-field-invalid
+.mdc-floating-label {
+  color: inherit !important;
+}
+
+/* Le texte saisi ne devient pas rouge */
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-form-field-invalid
+input,
+
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field.mat-form-field-invalid
+textarea {
+  color: inherit !important;
+  caret-color: inherit !important;
+}
+
+/* Seule l'étoile obligatoire est rouge */
+:host ::ng-deep
+.culture-form
+.mat-mdc-form-field-required-marker {
+  color: #f44336 !important;
+  margin-left: 4px;
+}
+
+
+/* =========================================================
+   Shake identique à Semis
+   ========================================================= */
+
+.shake-wrapper {
+  display: block;
+}
+
+:host ::ng-deep
+.shake-field
+.mat-mdc-text-field-wrapper {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
+:host ::ng-deep
+.shake-error
+.mat-mdc-form-field-subscript-wrapper {
+  animation: shake-field-animation 0.35s ease-in-out;
+}
+
+@keyframes shake-field-animation {
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(6px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}

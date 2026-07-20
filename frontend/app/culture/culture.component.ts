@@ -27,6 +27,8 @@ export class CultureComponent implements OnInit {
 
   public formSubmitted = false;
 
+  public shakeStartDateField = false;
+
   public observersListCode: any;
 
   public additionalDataForm!: FormGroup;
@@ -203,11 +205,32 @@ export class CultureComponent implements OnInit {
     return payload;
   }
 
+  private triggerStartDateFieldShake(): void {
+    this.shakeStartDateField = false;
+
+    setTimeout(() => {
+      this.shakeStartDateField = true;
+
+      setTimeout(() => {
+        this.shakeStartDateField = false;
+      }, 400);
+    }, 0);
+  }
+
   onSubmit(): void {
     this.formSubmitted = true;
 
     if (this.cultureForm.invalid) {
       this.cultureForm.markAllAsTouched();
+
+      if (
+        this.cultureForm
+          .get('date_start')
+          ?.hasError('required')
+      ) {
+        this.triggerStartDateFieldShake();
+      }
+
       return;
     }
 

@@ -26,16 +26,18 @@
       </div>
 
       <!-- Date de début -->
-      <mat-form-field appearance="outline">
-        <mat-label>
-          Date de transplantation
-        </mat-label>
+      <mat-form-field
+        appearance="outline"
+        class="start-date-required shake-wrapper"
+        [class.shake-field]="shakeStartDateField"
+        [class.shake-error]="shakeStartDateField"
+      >
+        <mat-label>Date de transplantation</mat-label>
 
         <input
           matInput
           [matDatepicker]="startDatePicker"
           formControlName="date_start"
-          required
           matTooltip="Date de début de la première transplantation."
           matTooltipPosition="below"
         >
@@ -54,11 +56,10 @@
         <mat-error
           *ngIf="
             formSubmitted &&
-            cultureForm.get('date_start')
-              ?.hasError('required')
+            cultureForm.get('date_start')?.hasError('required')
           "
         >
-          La date de début est obligatoire.
+          La date de transplantation est obligatoire.
         </mat-error>
       </mat-form-field>
 
