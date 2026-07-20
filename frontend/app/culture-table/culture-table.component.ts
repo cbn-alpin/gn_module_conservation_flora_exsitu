@@ -10,6 +10,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { CultureComponent } from '../culture/culture.component';
+import { CultureService } from '../culture/culture.service';
 
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { CultureTableService } from './culture-table.service';
@@ -81,6 +82,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
   constructor(
     public exsituFormService: ExsituFormService,
     private cultureTableService: CultureTableService,
+    private cultureService: CultureService,
     private dialog: MatDialog,
     private dialogService: DialogService,
     private toast: CommonService
@@ -189,6 +191,51 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
               );
             }
           });
+      });
+  }
+
+  onEdit(element: Culture): void {
+    if (!element?.id_culture) {
+      return;
+    }
+
+    this.cultureService
+      .getCultureById(element.id_culture)
+      .subscribe({
+        next: (cultureFull) => {
+
+          const dialogRef = this.dialog.open(
+            CultureComponent,
+            {
+              width: '900px',
+              maxWidth: '95vw',
+              maxHeight: '90vh',
+              disableClose: true,
+
+              data: {
+                edit: true,
+                culture: cultureFull
+              }
+            }
+          );
+
+          dialogRef.afterClosed().subscribe(
+            (result) => {
+              if (result && this.idMaterial) {
+                this.cultureTableService.loadCultures(
+                  this.idMaterial
+                );
+              }
+            }
+          );
+        },
+
+        error: (err) => {
+          console.error(
+            'Erreur lors du chargement de la culture :',
+            err
+          );
+        }
       });
   }
 

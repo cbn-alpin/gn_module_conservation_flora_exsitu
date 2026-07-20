@@ -2,7 +2,11 @@
 
   <mat-card-header class="culture-form-header">
     <mat-card-title>
-      Ajouter une fiche de Culture
+      {{
+        modalData?.edit
+          ? 'Modifier une fiche de Culture'
+          : 'Ajouter une fiche de Culture'
+      }}
     </mat-card-title>
   </mat-card-header>
 

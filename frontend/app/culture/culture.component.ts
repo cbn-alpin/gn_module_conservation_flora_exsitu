@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit
+} from '@angular/core';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -7,7 +12,10 @@ import {
   Validators
 } from '@angular/forms';
 
-import { MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef
+} from '@angular/material/dialog';
 
 import { CommonService } from '@geonature_common/service/common.service';
 
@@ -48,6 +56,7 @@ export class CultureComponent implements OnInit {
     private cfg: ConfigService,
     private toast: CommonService,
     private dialogService: DialogService
+    @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
     this.cultureForm = this.fb.group(
       {
@@ -64,6 +73,55 @@ export class CultureComponent implements OnInit {
         validators: this.dateRangeValidator
       }
     );
+  }
+
+  private patchForm(data: any): void {
+    if (!data) {
+      return;
+    }
+
+    const formState = {
+      date_start: data.date_start
+        ? new Date(data.date_start)
+        : null,
+
+      date_end: data.date_end
+        ? new Date(data.date_end)
+        : null,
+
+      id_actor: data.id_actor
+        ? [{ id_role: data.id_actor }]
+        : [],
+
+      remarks: data.remarks || '',
+
+      additional_data: {}
+    };
+
+    this.cultureForm.reset(formState);
+
+    if (
+      data.additional_data &&
+      this.additionalDataForm
+    ) {
+      Object.keys(
+        data.additional_data
+      ).forEach((key) => {
+
+        if (
+          this.additionalDataForm.contains(key)
+        ) {
+          this.additionalDataForm
+            .get(key)
+            ?.patchValue(
+              data.additional_data[key]
+            );
+        }
+      });
+    }
+
+    this.cultureForm.markAsPristine();
+    this.cultureForm.markAsUntouched();
   }
 
   ngOnInit(): void {
@@ -93,7 +151,17 @@ export class CultureComponent implements OnInit {
       }
     });
 
-    this.initialFormState = this.cultureForm.getRawValue();
+    if (
+      this.modalData?.edit &&
+      this.modalData?.culture
+    ) {
+      this.patchForm(
+        this.modalData.culture
+      );
+    }
+
+    this.initialFormState =
+      this.cultureForm.getRawValue();
 
     this.dialogRef.backdropClick().subscribe(() => {
       this.onCancel();
@@ -264,8 +332,9 @@ export class CultureComponent implements OnInit {
 
     this.dialogService
       .confirmDialog({
-        message:
-          'Étes vous certain de vouloir enregistrer cette fiche de culture ?'
+        message: this.modalData?.edit
+          ? 'Étes vous certain de vouloir modifier cette fiche de culture ?'
+          : 'Étes vous certain de vouloir enregistrer cette fiche de culture ?'
       })
       .subscribe((yes) => {
         if (!yes) {

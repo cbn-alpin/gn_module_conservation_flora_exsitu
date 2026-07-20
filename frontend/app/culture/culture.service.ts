@@ -40,4 +40,13 @@ export class CultureService {
       idMaterial
     );
   }
+
+  getCultureById(
+    idCulture: number
+  ): Observable<any> {
+    return this.dataService.getCultureById(
+      idCulture
+    );
+  }
+
 }
