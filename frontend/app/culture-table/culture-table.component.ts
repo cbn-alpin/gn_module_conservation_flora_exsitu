@@ -13,6 +13,8 @@ import { CultureComponent } from '../culture/culture.component';
 
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { CultureTableService } from './culture-table.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
 export interface Culture {
   id_culture: number;
@@ -79,7 +81,9 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
   constructor(
     public exsituFormService: ExsituFormService,
     private cultureTableService: CultureTableService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private dialogService: DialogService,
+    private toast: CommonService
   ) {}
 
   ngOnInit(): void {
@@ -135,6 +139,57 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
         }
       }
     );
+  }
+
+  onDelete(element: Culture): void {
+    if (!this.idMaterial || !element?.id_culture) {
+      return;
+    }
+
+    const cultureCode = element.code_culture || '';
+
+    this.dialogService
+      .confirmDialog({
+        message: 'Étes vous certain de vouloir supprimer cette culture ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        this.cultureTableService
+          .deleteCulture(
+            this.idMaterial!,
+            element.id_culture
+          )
+          .subscribe({
+            next: () => {
+              this.toast.translateToaster(
+                'error',
+                cultureCode
+                  ? `Culture ${cultureCode} supprimée avec succès`
+                  : 'Culture supprimée avec succès'
+              );
+
+              this.cultureTableService.loadCultures(
+                this.idMaterial!
+              );
+            },
+
+            error: (err) => {
+              console.error(
+                'Erreur lors de la suppression de la culture :',
+                err
+              );
+
+              this.toast.translateToaster(
+                'error',
+                err?.error?.error ||
+                  'Erreur lors de la suppression de la culture'
+              );
+            }
+          });
+      });
   }
 
   getSourceLabel(culture: Culture): string {

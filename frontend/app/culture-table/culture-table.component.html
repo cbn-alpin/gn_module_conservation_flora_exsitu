@@ -196,7 +196,7 @@
               <button
                 mat-menu-item
                 class="delete-culture-action"
-                disabled
+                (click)="onDelete(element)"
               >
                 <mat-icon>delete</mat-icon>
                 <span>Supprimer</span>
