@@ -4,13 +4,15 @@
 
 .semis-form-card {
   width: 100%;
+  overflow: visible;
+
   background-color: #ffffff;
 
-  border: 1px solid #c8e6c9;
-  border-radius: 14px;
+  border: 1px solid #c5ddc7;
+  border-radius: 12px;
 
   box-shadow:
-    0 4px 16px rgba(46, 125, 50, 0.10);
+    0 3px 12px rgba(27, 94, 32, 0.09);
 }
 
 
@@ -53,72 +55,93 @@
   padding: 18px 22px 20px;
 }
 
-
 /* =========================================================
-   TITRES DES SECTIONS
+   SECTIONS DU FORMULAIRE
    ========================================================= */
 
 .semis-section-header {
+  position: relative;
+
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 
-  margin-top: 8px;
-  margin-bottom: 4px;
-  padding: 10px 14px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  padding: 7px 4px 8px;
 
-  background:
-    linear-gradient(
-      90deg,
-      #e8f5e9 0%,
-      #f5faf5 75%,
-      #fbfffb 100%
-    );
+  background: transparent;
 
-  border-left: 4px solid #43a047;
-  border-bottom: 1px solid #d8ead8;
-  border-radius: 8px;
+  border-left: none;
+  border-bottom: 1px solid #c8e6c9;
+  border-radius: 0;
 }
 
+/* Petit accent visuel professionnel */
+.semis-section-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #43a047;
+  border-radius: 2px;
+}
+
+/* Icône compacte */
 .semis-section-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
 
-  background-color: #ffffff;
+  background-color: #e8f5e9;
   border: 1px solid #c8e6c9;
-  border-radius: 8px;
+  border-radius: 7px;
 }
 
 .semis-section-icon mat-icon {
   color: #2e7d32;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+
+  width: 18px;
+  height: 18px;
+
+  font-size: 18px;
+  line-height: 18px;
 }
 
+/* Titre + description */
 .semis-section-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+
+  gap: 0;
+  min-width: 0;
 }
 
 .semis-section-title {
   color: #1b5e20;
+
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 750;
+  letter-spacing: 0.1px;
 }
 
 .semis-section-subtitle {
-  color: #607d63;
+  margin-top: 1px;
+
+  color: #708074;
+
   font-size: 11px;
   font-weight: 400;
 }
-
 
 /* =========================================================
    CHAMPS DU FORMULAIRE
@@ -164,6 +187,84 @@
   color: #2e7d32 !important;
 }
 
+/* =========================================================
+   CHAMPS - STYLE COMPACT ET PROFESSIONNEL
+   ========================================================= */
+
+:host ::ng-deep
+.semis-form .mat-mdc-form-field {
+  margin: 0;
+}
+
+/* Fond propre des champs */
+:host ::ng-deep
+.semis-form .mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+:host ::ng-deep
+.semis-form input,
+:host ::ng-deep
+.semis-form textarea {
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Texte saisi */
+:host ::ng-deep
+.semis-form input,
+:host ::ng-deep
+.semis-form textarea,
+:host ::ng-deep
+.semis-form .mat-mdc-select-value {
+  color: #26382b;
+  font-size: 13px;
+}
+
+/* Survol discret */
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__trailing {
+  border-color: #81c784;
+}
+
+/* Champ actif */
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color: #43a047 !important;
+  border-width: 1.5px !important;
+}
+
+:host ::ng-deep
+.semis-form
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color: #2e7d32 !important;
+}
 
 /* =========================================================
    PERSONNE AYANT EFFECTUÉ LE SEMIS
@@ -207,9 +308,27 @@
 .semis-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 20px;
+
+  column-gap: 16px;
+  row-gap: 10px;
+
   align-items: start;
-  padding: 20px;
+
+  padding: 16px 20px 18px;
+
+  background-color: #f8fbf8;
+}
+
+:host ::ng-deep
+.semis-form
+.mdc-notched-outline__leading,
+:host ::ng-deep
+.semis-form
+.mdc-notched-outline__notch,
+:host ::ng-deep
+.semis-form
+.mdc-notched-outline__trailing {
+  border-color: #b7cbb8;
 }
 
 .centered-header {
@@ -275,10 +394,13 @@ mat-form-field,
 
 .form-group small {
   display: block;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #444;
+
+  margin-bottom: 5px;
+
+  color: #455a4a;
+
+  font-size: 12px;
+  font-weight: 650;
 }
 
 .section-header {
@@ -475,12 +597,15 @@ mat-form-field,
 .dates-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 20px;
+
+  column-gap: 16px;
+  row-gap: 6px;
+
   align-items: start;
 }
 
 .align-with-form-group {
-  margin-top: 26px;
+  margin-top: 18px;
 }
 
 :host ::ng-deep .semis-form .mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
@@ -503,9 +628,12 @@ mat-form-field,
   color: #f44336;
 }
 
-:host ::ng-deep .mat-mdc-form-field-required-marker {
+:host ::ng-deep
+.semis-form .mat-mdc-form-field-required-marker {
+  margin-left: 0;
+  padding-left: 4px;
+
   color: #f44336 !important;
-  margin-left: 4px;
 }
 
 .shake-wrapper {
