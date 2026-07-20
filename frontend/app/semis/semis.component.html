@@ -1,7 +1,13 @@
 <mat-card>
   <mat-card-header class="header-with-button centered-header">
     <div class="title-wrapper centered-title">
-      <mat-card-title>Fiche de Semis :</mat-card-title>
+      <mat-card-title>
+        {{
+          modalData?.edit
+            ? 'Modifier une fiche de Semi'
+            : 'Ajouter une fiche de Semi'
+        }}
+      </mat-card-title>
     </div>
   </mat-card-header>
 
