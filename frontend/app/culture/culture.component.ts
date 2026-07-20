@@ -28,6 +28,7 @@ export class CultureComponent implements OnInit {
   public formSubmitted = false;
 
   public shakeStartDateField = false;
+  public shakeEndDateField = false;
 
   public observersListCode: any;
 
@@ -217,6 +218,18 @@ export class CultureComponent implements OnInit {
     }, 0);
   }
 
+  private triggerEndDateFieldShake(): void {
+    this.shakeEndDateField = false;
+
+    setTimeout(() => {
+      this.shakeEndDateField = true;
+
+      setTimeout(() => {
+        this.shakeEndDateField = false;
+      }, 400);
+    }, 0);
+  }
+
   onSubmit(): void {
     this.formSubmitted = true;
 
@@ -229,6 +242,14 @@ export class CultureComponent implements OnInit {
           ?.hasError('required')
       ) {
         this.triggerStartDateFieldShake();
+      }
+
+      if (
+        this.cultureForm
+          .get('date_end')
+          ?.hasError('dateRangeInvalid')
+      ) {
+        this.triggerEndDateFieldShake();
       }
 
       return;
