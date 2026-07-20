@@ -118,7 +118,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(
       CultureComponent,
       {
-        width: '800px',
+        width: '900px',
         maxWidth: '95vw',
         maxHeight: '90vh',
         disableClose: true
