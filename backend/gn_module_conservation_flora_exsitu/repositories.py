@@ -14,7 +14,6 @@ from ref_geo.models import LAreas, BibAreasTypes
 from apptax.taxonomie.models import Taxref
 from sqlalchemy import func, cast, Integer
 import json
-import re
 from sqlalchemy import and_
 from sqlalchemy.sql import text
 from functools import cached_property
@@ -1037,15 +1036,6 @@ class CultureRepository:
         if not code_culture:
             raise ValueError(
                 "Le numéro de culture est obligatoire"
-            )
-
-        if not re.fullmatch(
-            r"C\d{4}_(?!0000)\d{4}",
-            code_culture
-        ):
-            raise ValueError(
-                "Le numéro de culture doit respecter "
-                "le format CAAAA_NNNN"
             )
 
         query = TCulture.query.filter(

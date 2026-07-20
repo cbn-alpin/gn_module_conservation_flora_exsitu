@@ -746,10 +746,6 @@ class TCulture(db.Model):
             name="uq_t_culture_code_culture"
         ),
         db.CheckConstraint(
-            "code_culture ~ '^C[0-9]{4}_[0-9]{4}$'",
-            name="ck_t_culture_code_format"
-        ),
-        db.CheckConstraint(
             "date_end IS NULL OR date_end >= date_start",
             name="ck_t_culture_end_date_after_start_date"
         ),

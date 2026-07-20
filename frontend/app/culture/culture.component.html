@@ -48,24 +48,34 @@
           *ngIf="
             formSubmitted &&
             cultureForm.get('code_culture')
-              ?.hasError('cultureFormatInvalid')
-          "
-        >
-          Le numéro de culture doit respecter le format CAAAA_NNNN.
-        </mat-error>
-
-        <mat-error
-          *ngIf="
-            formSubmitted &&
-            cultureForm.get('code_culture')
               ?.hasError('cultureSequenceInvalid')
           "
         >
           Le numéro d’ordre de la culture ne peut pas être 0000.
         </mat-error>
 
+        <mat-error
+          *ngIf="
+            formSubmitted &&
+            cultureForm.get('code_culture')
+              ?.hasError('duplicateCode')
+          "
+        >
+          Code déjà utilisé.
+        </mat-error>
+
+        <mat-error
+          *ngIf="
+            formSubmitted &&
+            cultureForm.get('code_culture')
+              ?.hasError('codeYearMismatch')
+          "
+        >
+          L’année de la culture doit correspondre à la date de transplantation.
+        </mat-error>
+
         <small class="custom-helper-message">
-          Format standard : CAAAA_NNNN.
+          Format standard conseillé : CAAAA_NNNN.
         </small>
 
       </mat-form-field>
@@ -106,6 +116,17 @@
         >
           La date de transplantation est obligatoire.
         </mat-error>
+
+        <mat-error
+          *ngIf="
+            formSubmitted &&
+            cultureForm.get('date_start')
+              ?.hasError('codeYearMismatch')
+          "
+        >
+          L’année de la date de transplantation doit correspondre au numéro de culture.
+        </mat-error>
+
       </mat-form-field>
 
       <!-- Date de fin -->

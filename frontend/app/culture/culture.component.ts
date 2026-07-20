@@ -46,6 +46,7 @@ export class CultureComponent implements OnInit {
 
   public idMaterial: number | null = null;
 
+  private existingCultures: any[] = [];
   private initialFormState: any = null;
   private cancelDialogOpen = false;
 
@@ -66,7 +67,7 @@ export class CultureComponent implements OnInit {
           '',
           [
             Validators.required,
-            this.cultureCodeValidator
+            this.cultureSequenceValidator
           ]
         ],
 
@@ -136,8 +137,125 @@ export class CultureComponent implements OnInit {
     this.cultureForm.markAsUntouched();
   }
 
+  private isDuplicateCultureCode(
+    existingCultures: any[],
+    currentCode: string
+  ): boolean {
+
+    const normalizedCode =
+      (currentCode || '').trim();
+
+    const currentCultureId =
+      this.modalData?.edit
+        ? this.modalData?.culture?.id_culture
+        : null;
+
+    return existingCultures.some(
+      (culture: any) => {
+
+        const existingCode =
+          (culture?.code_culture || '').trim();
+
+        const existingId =
+          culture?.id_culture ?? null;
+
+        return (
+          existingCode === normalizedCode &&
+          existingId !== currentCultureId
+        );
+      }
+    );
+  }
+
+
+  private validateDuplicateCode(
+    currentCode?: string
+  ): void {
+
+    const codeControl =
+      this.cultureForm.get('code_culture');
+
+    if (!codeControl) {
+      return;
+    }
+
+    const normalizedCode =
+      (
+        currentCode ??
+        codeControl.value ??
+        ''
+      ).trim();
+
+    const currentErrors = {
+      ...(codeControl.errors || {})
+    };
+
+    if (!normalizedCode) {
+      delete currentErrors['duplicateCode'];
+
+      codeControl.setErrors(
+        Object.keys(currentErrors).length
+          ? currentErrors
+          : null
+      );
+
+      return;
+    }
+
+    const duplicate =
+      this.isDuplicateCultureCode(
+        this.existingCultures,
+        normalizedCode
+      );
+
+    if (duplicate) {
+
+      codeControl.setErrors({
+        ...currentErrors,
+        duplicateCode: true
+      });
+
+    } else {
+
+      delete currentErrors['duplicateCode'];
+
+      codeControl.setErrors(
+        Object.keys(currentErrors).length
+          ? currentErrors
+          : null
+      );
+    }
+  }
+
   ngOnInit(): void {
     this.idMaterial = this.exsituFormService.idMaterial;
+
+      if (this.idMaterial) {
+
+    this.cultureService
+      .getCulturesByMaterial(
+        this.idMaterial
+      )
+      .subscribe({
+        next: (cultures) => {
+
+          this.existingCultures =
+            cultures || [];
+
+          this.validateDuplicateCode();
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Erreur lors du chargement des cultures existantes :',
+            err
+          );
+
+          this.existingCultures = [];
+        }
+      });
+  }
 
     this.observersListCode = this.cfg.getObsCode();
 
@@ -187,9 +305,17 @@ export class CultureComponent implements OnInit {
           this.onCancel();
         }
       });
+
+    this.cultureForm
+      .get('code_culture')
+      ?.valueChanges
+      .subscribe((value) => {
+
+        this.validateDuplicateCode(value);
+      });
   }
 
-  cultureCodeValidator(
+  cultureSequenceValidator(
     control: AbstractControl
   ): ValidationErrors | null {
 
@@ -199,62 +325,148 @@ export class CultureComponent implements OnInit {
       return null;
     }
 
-    const normalizedValue = value.trim();
-
-    const match = normalizedValue.match(
+    const match = value.match(
       /^C\d{4}_(\d{4})$/
     );
 
+    /*
+    * Comme pour Semis :
+    * si le code ne correspond pas au format standard,
+    * on considère qu'il s'agit d'un code libre.
+    */
     if (!match) {
-      return {
-        cultureFormatInvalid: true
-      };
+      return null;
     }
 
-    if (match[1] === '0000') {
-      return {
-        cultureSequenceInvalid: true
-      };
-    }
-
-    return null;
+    return match[1] === '0000'
+      ? { cultureSequenceInvalid: true }
+      : null;
   }
 
   dateRangeValidator(
     control: AbstractControl
   ): ValidationErrors | null {
-    const startDate = control.get('date_start')?.value;
+
+    const codeControl = control.get('code_culture');
+    const startDateControl = control.get('date_start');
     const endDateControl = control.get('date_end');
+
+    const code = codeControl?.value;
+    const startDate = startDateControl?.value;
     const endDate = endDateControl?.value;
 
-    const currentErrors = {
-      ...(endDateControl?.errors || {})
-    };
+    const errors: ValidationErrors = {};
 
-    if (
+    /*
+    * Règle 1 :
+    * Date de fin >= Date de transplantation
+    */
+    const hasDateRangeInvalid = !!(
       startDate &&
       endDate &&
       new Date(endDate).getTime() <
         new Date(startDate).getTime()
-    ) {
-      currentErrors['dateRangeInvalid'] = true;
-
-      endDateControl?.setErrors(currentErrors);
-
-      return {
-        dateRangeInvalid: true
-      };
-    }
-
-    delete currentErrors['dateRangeInvalid'];
-
-    endDateControl?.setErrors(
-      Object.keys(currentErrors).length
-        ? currentErrors
-        : null
     );
 
-    return null;
+    if (hasDateRangeInvalid) {
+      errors['dateRangeInvalid'] = true;
+    }
+
+    /*
+    * Règle 2 :
+    * L'année de CAAAA_NNNN doit correspondre
+    * à l'année de la date de transplantation.
+    */
+    let startYear: string | null = null;
+
+    const codeMatch =
+      typeof code === 'string'
+        ? code.trim().match(
+            /^C(\d{4})_(?!0000)\d{4}$/
+          )
+        : null;
+
+    if (startDate) {
+      const parsedDate = new Date(startDate);
+
+      if (!isNaN(parsedDate.getTime())) {
+        startYear =
+          parsedDate.getFullYear().toString();
+      }
+    }
+
+    const hasCodeYearMismatch = !!(
+      codeMatch &&
+      startYear &&
+      codeMatch[1] !== startYear
+    );
+
+    /*
+    * Erreur sur Date de transplantation
+    */
+    if (startDateControl) {
+      const currentErrors = {
+        ...(startDateControl.errors || {})
+      };
+
+      if (hasCodeYearMismatch) {
+        currentErrors['codeYearMismatch'] = true;
+      } else {
+        delete currentErrors['codeYearMismatch'];
+      }
+
+      startDateControl.setErrors(
+        Object.keys(currentErrors).length
+          ? currentErrors
+          : null
+      );
+    }
+
+    /*
+    * Erreur sur Numéro de Culture
+    */
+    if (codeControl) {
+      const currentErrors = {
+        ...(codeControl.errors || {})
+      };
+
+      if (hasCodeYearMismatch) {
+        currentErrors['codeYearMismatch'] = true;
+      } else {
+        delete currentErrors['codeYearMismatch'];
+      }
+
+      codeControl.setErrors(
+        Object.keys(currentErrors).length
+          ? currentErrors
+          : null
+      );
+    }
+
+    /*
+    * Erreur sur Date de fin
+    */
+    if (endDateControl) {
+      const currentErrors = {
+        ...(endDateControl.errors || {})
+      };
+
+      if (hasDateRangeInvalid) {
+        currentErrors['dateRangeInvalid'] = true;
+      } else {
+        delete currentErrors['dateRangeInvalid'];
+      }
+
+      endDateControl.setErrors(
+        Object.keys(currentErrors).length
+          ? currentErrors
+          : null
+      );
+    }
+
+    return Object.keys(errors).length
+      ? errors
+      : null;
   }
 
   private formatFormData(): any {
@@ -365,6 +577,18 @@ export class CultureComponent implements OnInit {
           ?.invalid
       ) {
         this.triggerCodeFieldShake();
+      }
+
+      if (
+        this.cultureForm
+          .get('code_culture')
+          ?.hasError('codeYearMismatch') ||
+        this.cultureForm
+          .get('date_start')
+          ?.hasError('codeYearMismatch')
+      ) {
+        this.triggerCodeFieldShake();
+        this.triggerStartDateFieldShake();
       }
 
       if (
