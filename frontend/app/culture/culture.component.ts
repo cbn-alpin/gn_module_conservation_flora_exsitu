@@ -498,12 +498,19 @@ export class CultureComponent implements OnInit {
       payload.date_end instanceof Date &&
       !isNaN(payload.date_end.getTime())
     ) {
+
       payload.date_end =
         payload.date_end.toISOString();
-    }
 
-    if (!payload.date_end) {
-      delete payload.date_end;
+    } else if (!payload.date_end) {
+
+      /*
+      * Important en modification :
+      * null signifie explicitement que l'utilisateur
+      * souhaite supprimer la date de fin existante.
+      */
+      payload.date_end = null;
+
     }
 
     const additionalData =

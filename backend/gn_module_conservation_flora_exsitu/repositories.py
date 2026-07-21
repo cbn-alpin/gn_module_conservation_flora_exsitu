@@ -1306,13 +1306,13 @@ class CultureRepository:
                 required=True
             )
 
-            date_end = self._parse_datetime(
-                payload.pop(
-                    "date_end",
-                    culture.date_end
-                ),
-                "date_end"
-            )
+            if "date_end" in payload:
+                date_end = self._parse_datetime(
+                    payload.pop("date_end"),
+                    "date_end"
+                )
+            else:
+                date_end = culture.date_end
 
             if date_end and date_end < date_start:
                 raise ValueError(
