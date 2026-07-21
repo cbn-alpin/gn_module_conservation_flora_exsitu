@@ -410,6 +410,16 @@ mat-card-content,
   box-shadow: 0 3px 9px rgba(46, 125, 50, 0.10);
 }
 
+.sowing-info-code-badge span,
+.sowing-info-code-badge strong {
+  display: inline-flex;
+  align-items: center;
+
+  margin: 0;
+
+  line-height: 1;
+}
+
 .sowing-info-code-badge span {
   color: #6b806d;
   font-size: 12px;

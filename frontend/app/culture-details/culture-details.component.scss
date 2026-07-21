@@ -191,6 +191,16 @@
     rgba(78, 52, 46, 0.10);
 }
 
+.culture-info-code-badge span,
+.culture-info-code-badge strong {
+  display: inline-flex;
+  align-items: center;
+
+  margin: 0;
+
+  line-height: 1;
+}
+
 .culture-info-code-badge span {
   color: #8d6e63;
 
