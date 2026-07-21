@@ -172,6 +172,18 @@
         <app-culture-table></app-culture-table>
     </div>
 
+    <div
+        *ngIf="
+            exsituFormService.currentTab ===
+            'culture-details'
+        "
+        >
+
+        <app-culture-details>
+        </app-culture-details>
+
+    </div>
+
     <div *ngIf="exsituFormService.currentTab === 'viability-add'"
     >
             <app-viability></app-viability>

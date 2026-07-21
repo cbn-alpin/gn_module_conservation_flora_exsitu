@@ -1,0 +1,557 @@
+<div class="culture-details-page">
+
+  <!-- RETOUR -->
+  <div class="return-button">
+
+    <button
+      mat-raised-button
+      type="button"
+      (click)="onBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       INFORMATIONS DE LA CULTURE
+       ===================================================== -->
+
+  <section
+    class="culture-info-panel"
+    *ngIf="culture"
+  >
+
+    <div class="culture-info-hero">
+
+      <div class="culture-info-icon">
+
+        <mat-icon>
+          local_florist
+        </mat-icon>
+
+      </div>
+
+
+      <div class="culture-info-heading">
+
+        <h2>
+          Les Informations de la culture
+        </h2>
+
+        <p>
+          Vue détaillée des données principales de la culture
+        </p>
+
+      </div>
+
+
+      <div class="culture-info-code-badge">
+
+        <span>
+          N° culture
+        </span>
+
+        <strong>
+          {{ culture.code_culture || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="culture-info-content">
+
+      <!-- IDENTIFICATION -->
+
+      <div class="culture-detail-section">
+
+        <div class="culture-detail-section-title">
+
+          <mat-icon>
+            assignment
+          </mat-icon>
+
+          <span>
+            Identification
+          </span>
+
+        </div>
+
+
+        <div class="culture-detail-grid">
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Numéro de culture
+            </span>
+
+            <strong class="detail-value">
+              {{ culture.code_culture || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Numéro du matériel
+            </span>
+
+            <strong class="detail-value">
+              {{ culture.code_material || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Type d’origine
+            </span>
+
+            <strong class="detail-value">
+              {{ getSourceTypeLabel() }}
+            </strong>
+
+          </div>
+
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Origine
+            </span>
+
+            <strong class="detail-value">
+              {{ getSourceLabel() }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUIVI -->
+
+      <div class="culture-detail-section">
+
+        <div class="culture-detail-section-title">
+
+          <mat-icon>
+            event
+          </mat-icon>
+
+          <span>
+            Suivi de la culture
+          </span>
+
+        </div>
+
+
+        <div class="culture-detail-grid">
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Date de transplantation
+            </span>
+
+            <strong class="detail-value">
+
+              {{
+                culture.date_start
+                  ? (
+                      culture.date_start
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Date de fin
+            </span>
+
+            <strong class="detail-value">
+
+              {{
+                culture.date_end
+                  ? (
+                      culture.date_end
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Personne ayant effectué la culture
+            </span>
+
+            <strong class="detail-value">
+              {{ culture.actor_label || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Statut
+            </span>
+
+            <span
+              class="culture-detail-status"
+              [class.culture-detail-status-active]="
+                culture.is_active ||
+                !culture.date_end
+              "
+              [class.culture-detail-status-ended]="
+                !culture.is_active &&
+                culture.date_end
+              "
+            >
+
+              {{ getStatusLabel() }}
+
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- INFORMATIONS COMPLEMENTAIRES -->
+
+      <div class="culture-detail-section">
+
+        <div class="culture-detail-section-title">
+
+          <mat-icon>
+            description
+          </mat-icon>
+
+          <span>
+            Informations complémentaires
+          </span>
+
+        </div>
+
+
+        <div
+          class="
+            culture-detail-grid
+            culture-detail-grid-complementary
+          "
+        >
+
+          <div
+            class="
+              culture-detail-item
+              culture-detail-item-full
+            "
+          >
+
+            <span class="detail-label">
+              Commentaire / Remarques
+            </span>
+
+            <div class="detail-long-value">
+
+              {{ culture.remarks || '-' }}
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="
+              culture-detail-item
+              culture-detail-item-full
+            "
+          >
+
+            <span class="detail-label">
+              Programme / Contrat
+            </span>
+
+            <div class="detail-long-value">
+
+              {{ getProgram() }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       LISTE DES ACTIONS CULTURE
+       STRUCTURE CONSERVÉE MAIS PAS ENCORE FONCTIONNELLE
+       ===================================================== -->
+
+  <section class="culture-actions-panel">
+
+    <div class="culture-actions-header">
+
+      <!--
+        IMPORTANT :
+        Le bouton est volontairement désactivé.
+
+        Les Actions de Culture seront développées
+        séparément des Actions de Semis/Test.
+      -->
+
+      <button
+        mat-button
+        type="button"
+        class="culture-add-action-button"
+        disabled
+        matTooltip="
+          La gestion des actions de Culture
+          sera disponible ultérieurement
+        "
+      >
+
+        <mat-icon>
+          add
+        </mat-icon>
+
+        Ajouter une action
+
+      </button>
+
+
+      <div class="culture-actions-title">
+
+        <div class="culture-actions-title-icon">
+
+          <mat-icon>
+            format_list_bulleted
+          </mat-icon>
+
+        </div>
+
+
+        <div>
+
+          <h3>
+            Liste des actions
+          </h3>
+
+          <span>
+            Actions enregistrées pour cette culture
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="culture-actions-content">
+
+      <table
+        mat-table
+        [dataSource]="actionDataSource"
+        class="culture-actions-table"
+      >
+
+        <!-- DATE -->
+
+        <ng-container
+          matColumnDef="date_start"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Début
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+
+            {{
+              element.date_start
+                ? (
+                    element.date_start
+                    | date:'dd/MM/yyyy'
+                  )
+                : '-'
+            }}
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- TYPE -->
+
+        <ng-container
+          matColumnDef="action_type"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Type d'action
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+
+            {{
+              element.action_type_label ||
+              '-'
+            }}
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- AGENT -->
+
+        <ng-container
+          matColumnDef="actor"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Agent
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+
+            {{
+              element.actor_label ||
+              '-'
+            }}
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- ACTION -->
+
+        <ng-container
+          matColumnDef="actions"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Action
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+            -
+          </td>
+
+        </ng-container>
+
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="
+            displayedActionColumns
+          "
+        >
+        </tr>
+
+        <tr
+          mat-row
+          *matRowDef="
+            let row;
+            columns:
+              displayedActionColumns
+          "
+        >
+        </tr>
+
+      </table>
+
+
+      <div
+        class="culture-actions-empty"
+        *ngIf="
+          actionDataSource.data.length === 0
+        "
+      >
+
+        <mat-icon>
+          info
+        </mat-icon>
+
+
+        <div>
+
+          <strong>
+            Aucune action de culture enregistrée.
+          </strong>
+
+          <span>
+            La gestion des actions de Culture
+            sera développée dans une prochaine étape.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

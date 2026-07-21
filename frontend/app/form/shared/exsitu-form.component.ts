@@ -227,6 +227,61 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+      if (
+        urlSegments.includes(
+          'culture-details'
+        )
+      ) {
+
+        this.exsituFormService.currentTab =
+          'culture-details';
+
+
+        const harvestIndex =
+          urlSegments.indexOf(
+            'harvest'
+          ) + 1;
+
+        const materialIndex =
+          urlSegments.indexOf(
+            'material'
+          ) + 1;
+
+
+        if (
+          harvestIndex <
+          urlSegments.length
+        ) {
+
+          this.exsituFormService.idHarvest =
+            Number(
+              urlSegments[
+                harvestIndex
+              ]
+            );
+
+        }
+
+
+        if (
+          materialIndex <
+          urlSegments.length
+        ) {
+
+          this.idMaterial =
+            Number(
+              urlSegments[
+                materialIndex
+              ]
+            );
+
+          this.exsituFormService.idMaterial =
+            this.idMaterial;
+
+        }
+
+      }
+
       if (urlSegments.includes('semis-table')) {
         this.exsituFormService.currentTab = 'semis-table';
         const harvestIndex = urlSegments.indexOf('harvest') + 1;

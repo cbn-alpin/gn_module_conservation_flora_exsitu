@@ -16,6 +16,9 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { CultureTableService } from './culture-table.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import {
+  Router
+} from '@angular/router';
 
 export interface Culture {
   id_culture: number;
@@ -80,6 +83,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
   }
 
   constructor(
+    public router: Router,
     public exsituFormService: ExsituFormService,
     private cultureTableService: CultureTableService,
     private cultureService: CultureService,
@@ -237,6 +241,65 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
           );
         }
       });
+  }
+
+  onDetails(
+    element: Culture
+  ): void {
+
+    const idCulture =
+      element?.id_culture;
+
+    const idMaterial =
+      this.exsituFormService.idMaterial;
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+
+    if (
+      !idCulture ||
+      !idMaterial ||
+      !idHarvest
+    ) {
+
+      console.error(
+        'Impossible d’ouvrir les détails de la culture : identifiant manquant.'
+      );
+
+      return;
+    }
+
+
+    this.exsituFormService.currentTab =
+      'culture-details';
+
+
+    this.router.navigate([
+
+      '/conservation_flora_exsitu/form/harvest',
+
+      idHarvest,
+
+      'material',
+
+      idMaterial,
+
+      'culture-details',
+
+      idCulture
+
+    ]);
+
+  }
+
+
+  onRowClick(
+    element: Culture
+  ): void {
+
+    this.onDetails(element);
+
   }
 
   getSourceLabel(culture: Culture): string {

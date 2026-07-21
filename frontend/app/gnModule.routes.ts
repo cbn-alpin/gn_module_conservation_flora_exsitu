@@ -17,6 +17,9 @@ import { GerminationDetailsComponent } from './germination-details/germination-d
 import { SemisDetailsComponent } from './semis-details/semis-details.component';
 import { ViabilityDetailsComponent } from './viability-details/viability-details.component';
 import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
+import {
+  CultureDetailsComponent
+} from './culture-details/culture-details.component';
 
 export const routes: Routes = [
     {
@@ -78,6 +81,10 @@ export const routes: Routes = [
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/culture-table',
                 component: CultureTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/culture-details/:id_culture',
+                component: CultureDetailsComponent,
             },
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/germination-details/:id_test',

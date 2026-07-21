@@ -273,3 +273,19 @@
 .delete-culture-action span {
   color: #d32f2f !important;
 }
+
+/* Ligne Culture cliquable vers Détails/Action */
+
+:host ::ng-deep
+.culture-list-table
+.culture-clickable-row {
+  cursor: pointer;
+}
+
+:host ::ng-deep
+.culture-list-table
+.culture-clickable-row:hover
+.mat-mdc-cell {
+  background-color:
+    #faf5f2;
+}

@@ -186,10 +186,19 @@
               <!-- Détails / Actions -->
               <button
                 mat-menu-item
-                disabled
+                (click)="onDetails(element)"
               >
-                <mat-icon>visibility</mat-icon>
-                <span>Détails / Actions</span>
+
+                <mat-icon
+                  style="color: #8d6e63;"
+                >
+                  visibility
+                </mat-icon>
+
+                <span>
+                  Détails/Action
+                </span>
+
               </button>
 
               <!-- Supprimer -->
@@ -221,7 +230,10 @@
             let row;
             columns: displayedColumns
           "
-        ></tr>
+          class="culture-clickable-row"
+          (click)="onRowClick(row)"
+        >
+        </tr>
 
       </table>
 

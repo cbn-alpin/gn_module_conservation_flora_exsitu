@@ -1,0 +1,615 @@
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.culture-details-page {
+  padding-bottom: 24px;
+}
+
+
+/* =========================================================
+   RETOUR
+   ========================================================= */
+
+.return-button {
+  margin: 18px 15px 10px;
+}
+
+.return-button button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #ffffff;
+
+  background-color: #6d4c41;
+}
+
+.return-button button:hover {
+  background-color: #4e342e;
+}
+
+
+/* =========================================================
+   INFORMATIONS CULTURE
+   ========================================================= */
+
+.culture-info-panel {
+  margin: 18px 15px 26px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #d7ccc8;
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 18px
+    rgba(78, 52, 46, 0.11);
+}
+
+
+/* HERO */
+
+.culture-info-hero {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 24px 18px 20px;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(215, 204, 200, 0.70) 0%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(
+      180deg,
+      #fdf9f7 0%,
+      #ffffff 100%
+    );
+
+  border-bottom:
+    1px solid #eee3df;
+}
+
+
+/* Ligne marron haute */
+
+.culture-info-hero::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  transform:
+    translateX(-50%);
+
+  background-color: #6d4c41;
+
+  border-radius:
+    0 0 999px 999px;
+}
+
+
+/* Icône */
+
+.culture-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #5d4037;
+
+  background: #ffffff;
+
+  border:
+    1px solid #d7ccc8;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px
+    rgba(78, 52, 46, 0.14);
+}
+
+.culture-info-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #5d4037;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+/* Titre */
+
+.culture-info-heading h2 {
+  margin: 0;
+
+  color: #4e342e;
+
+  font-size: 22px;
+  font-weight: 850;
+
+  letter-spacing: 0.2px;
+}
+
+.culture-info-heading p {
+  margin: 4px 0 0;
+
+  color: #7b6a64;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+/* Badge code */
+
+.culture-info-code-badge {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 4px;
+  padding: 7px 16px;
+
+  color: #5d4037;
+
+  background: #ffffff;
+
+  border:
+    1px solid #bcaaa4;
+  border-radius: 999px;
+
+  box-shadow:
+    0 3px 9px
+    rgba(78, 52, 46, 0.10);
+}
+
+.culture-info-code-badge span {
+  color: #8d6e63;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.culture-info-code-badge strong {
+  color: #4e342e;
+
+  font-size: 14px;
+  font-weight: 850;
+}
+
+
+/* =========================================================
+   CONTENU DETAILS
+   ========================================================= */
+
+.culture-info-content {
+  padding:
+    18px 20px 22px;
+
+  background-color: #fdfbf9;
+}
+
+
+/* Section */
+
+.culture-detail-section {
+  margin-bottom: 18px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border:
+    1px solid #e3d9d5;
+  border-radius: 12px;
+}
+
+.culture-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+
+/* Titre section */
+
+.culture-detail-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 14px;
+
+  color: #4e342e;
+
+  background:
+    linear-gradient(
+      90deg,
+      #efebe9 0%,
+      #faf7f5 75%,
+      #ffffff 100%
+    );
+
+  border-bottom:
+    1px solid #ded4d0;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.culture-detail-section-title mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #6d4c41;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+/* Grille */
+
+.culture-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 1px;
+
+  background-color: #eee5e1;
+}
+
+
+/* Information */
+
+.culture-detail-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-height: 64px;
+  padding: 12px 14px;
+
+  background-color: #ffffff;
+}
+
+.detail-label {
+  color: #7b6a64;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+}
+
+.detail-value {
+  color: #342824;
+
+  font-size: 14px;
+  font-weight: 650;
+}
+
+
+/* Pleine largeur */
+
+.culture-detail-item-full {
+  grid-column: 1 / -1;
+}
+
+.detail-long-value {
+  min-height: 28px;
+
+  color: #453630;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+}
+
+
+/* Statut */
+
+.culture-detail-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  align-self: flex-start;
+
+  min-width: 115px;
+  padding: 4px 11px;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  border-radius: 999px;
+}
+
+.culture-detail-status-active {
+  color: #37474f;
+
+  background-color: #eceff1;
+
+  border:
+    1px solid #b0bec5;
+}
+
+.culture-detail-status-ended {
+  color: #5d4037;
+
+  background-color: #efebe9;
+
+  border:
+    1px solid #bcaaa4;
+}
+
+
+/* =========================================================
+   LISTE DES ACTIONS CULTURE
+   ========================================================= */
+
+.culture-actions-panel {
+  margin: 0 15px 26px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border:
+    1px solid #d7ccc8;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 14px
+    rgba(78, 52, 46, 0.11);
+}
+
+
+/* En-tête */
+
+.culture-actions-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 64px;
+  padding: 0 16px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #efebe9 0%,
+      #ffffff 100%
+    );
+
+  border-bottom:
+    1px solid #d7ccc8;
+}
+
+
+/* Titre */
+
+.culture-actions-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  text-align: left;
+}
+
+.culture-actions-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  color: #5d4037;
+
+  background: #ffffff;
+
+  border:
+    1px solid #d7ccc8;
+  border-radius: 8px;
+}
+
+.culture-actions-title h3 {
+  margin: 0;
+
+  color: #4e342e;
+
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.culture-actions-title span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #7b6a64;
+
+  font-size: 11px;
+}
+
+
+/* Ajouter action : volontairement disabled */
+
+.culture-add-action-button {
+  position: absolute;
+
+  left: 16px;
+
+  color: #ffffff !important;
+
+  background-color:
+    #8d6e63 !important;
+
+  border:
+    1px solid #6d4c41 !important;
+
+  border-radius: 8px;
+}
+
+.culture-add-action-button:disabled {
+  opacity: 0.48;
+
+  cursor: not-allowed;
+}
+
+
+/* Contenu liste */
+
+.culture-actions-content {
+  padding: 14px;
+
+  background-color: #fdfbf9;
+}
+
+
+/* Tableau */
+
+.culture-actions-table {
+  width: 100%;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border:
+    1px solid #ded5d1;
+  border-radius: 10px;
+}
+
+:host ::ng-deep
+.culture-actions-table
+.mat-mdc-header-row {
+  height: 42px;
+
+  background-color: #efebe9;
+}
+
+:host ::ng-deep
+.culture-actions-table
+.mat-mdc-header-cell {
+  color: #4e342e;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+
+  border-bottom:
+    1px solid #d7ccc8;
+}
+
+
+/* Message aucune action */
+
+.culture-actions-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 22px 16px;
+
+  color: #6d5a53;
+
+  text-align: left;
+}
+
+.culture-actions-empty mat-icon {
+  color: #8d6e63;
+}
+
+.culture-actions-empty strong,
+.culture-actions-empty span {
+  display: block;
+}
+
+.culture-actions-empty strong {
+  color: #5d4037;
+
+  font-size: 13px;
+}
+
+.culture-actions-empty span {
+  margin-top: 3px;
+
+  color: #8a7872;
+
+  font-size: 12px;
+}
+
+
+/* Responsive */
+
+@media (
+  max-width: 768px
+) {
+
+  .culture-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .culture-detail-item-full {
+    grid-column: auto;
+  }
+
+  .culture-actions-header {
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding:
+      12px 14px;
+  }
+
+  .culture-add-action-button {
+    position: static;
+  }
+
+}
