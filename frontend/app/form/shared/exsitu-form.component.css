@@ -107,3 +107,48 @@
   width: 45px;
   line-height: 40px;
 }
+
+/* =========================================================
+   ONGLET CULTURE - IDENTITÉ VISUELLE SPÉCIFIQUE
+   ========================================================= */
+
+/* Culture disponible mais non sélectionnée */
+.tab a.tablinks.culture-tab:not(.disabled) {
+  color: #5d4037;
+  background-color: #faf7f5;
+  border-bottom-color: #bcaaa4;
+}
+
+.tab a.tablinks.culture-tab:not(.disabled) .example-tab-icon {
+  color: #6d4c41;
+}
+
+
+/* Survol de Culture */
+.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover {
+  color: #4e342e;
+  background-color: #efebe9;
+  border-bottom-color: #8d6e63;
+}
+
+.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover
+.example-tab-icon {
+  color: #5d4037;
+}
+
+
+/* Culture actuellement sélectionnée */
+.tab a.tablinks.culture-tab.active {
+  color: #4e342e;
+  background-color: #efebe9;
+  border-bottom-color: #6d4c41;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 -1px 4px rgba(78, 52, 46, 0.16);
+}
+
+.tab a.tablinks.culture-tab.active .example-tab-icon {
+  color: #5d4037;
+}

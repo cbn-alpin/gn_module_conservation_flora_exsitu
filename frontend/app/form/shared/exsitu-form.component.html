@@ -77,15 +77,17 @@
 
             <!-- Culture -->
             <a
-              class="tablinks"
-              [class.disabled]="!idMaterial"
-              [ngClass]="{
-                active: exsituFormService.currentTab === 'culture-table'
-              }"
-              (click)="idMaterial ? goToTab('culture-table') : null"
+            class="tablinks culture-tab"
+            [class.disabled]="!idMaterial"
+            [ngClass]="{
+                active:
+                exsituFormService.currentTab === 'culture-table' ||
+                exsituFormService.currentTab === 'culture-details'
+            }"
+            (click)="idMaterial ? goToTab('culture-table') : null"
             >
-              <mat-icon class="example-tab-icon">local_florist</mat-icon>
-              Culture
+            <mat-icon class="example-tab-icon">local_florist</mat-icon>
+            Culture
             </a>
               
         </div>
