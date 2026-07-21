@@ -109,46 +109,32 @@
 }
 
 /* =========================================================
-   ONGLET CULTURE - IDENTITÉ VISUELLE SPÉCIFIQUE
+   ONGLET CULTURE - COULEUR SPÉCIFIQUE
+   Même comportement que les autres onglets
    ========================================================= */
 
-/* Culture disponible mais non sélectionnée */
-.tab a.tablinks.culture-tab:not(.disabled) {
-  color: #5d4037;
-  background-color: #faf7f5;
-  border-bottom-color: #bcaaa4;
+/* Texte Culture */
+.tab a.tablinks.culture-tab,
+.tab a.tablinks.culture-tab:hover,
+.tab a.tablinks.culture-tab.active,
+.tab a.tablinks.culture-tab.active:hover {
+  color: #4e342e !important;
 }
 
-.tab a.tablinks.culture-tab:not(.disabled) .example-tab-icon {
-  color: #6d4c41;
+/* Icône Culture : reste marron dans TOUS les états */
+.tab a.tablinks.culture-tab .example-tab-icon,
+.tab a.tablinks.culture-tab:hover .example-tab-icon,
+.tab a.tablinks.culture-tab.active .example-tab-icon,
+.tab a.tablinks.culture-tab.active:hover .example-tab-icon {
+  color: #5d4037 !important;
 }
 
-
-/* Survol de Culture */
-.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover {
-  color: #4e342e;
-  background-color: #efebe9;
-  border-bottom-color: #8d6e63;
-}
-
-.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover
-.example-tab-icon {
-  color: #5d4037;
-}
-
-
-/* Culture actuellement sélectionnée */
+/* Barre de sélection spécifique à Culture */
 .tab a.tablinks.culture-tab.active {
-  color: #4e342e;
-  background-color: #efebe9;
-  border-bottom-color: #6d4c41;
-
-  font-weight: 700;
-
-  box-shadow:
-    0 -1px 4px rgba(78, 52, 46, 0.16);
+  border-bottom-color: #6d4c41 !important;
 }
 
-.tab a.tablinks.culture-tab.active .example-tab-icon {
-  color: #5d4037;
+/* Barre au survol */
+.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover {
+  border-bottom-color: #8d6e63 !important;
 }
