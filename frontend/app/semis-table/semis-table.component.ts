@@ -53,6 +53,28 @@
     public semisMethodFilterOptions: string[] = [];
     public semisSubstrateFilterOptions: string[] = [];
 
+
+    /*
+    * Même ordre que dans la Fiche Semis.
+    */
+    private readonly semisMethodOrder = [
+      'Individuel',
+      'En poquets',
+      'En ligne',
+      'A la volée'
+    ];
+
+    private readonly semisSubstrateOrder = [
+      'Terreau',
+      'Tourbe',
+      'Terre de bruyère',
+      'Sable',
+      'Perlite',
+      'Vermiculite',
+      'Sol prélevé in-situ',
+      'Autre'
+    ];
+
     @Output() view = new EventEmitter<Semis>();
     @Output() edit = new EventEmitter<Semis>();
     @Output() delete = new EventEmitter<Semis>();
@@ -266,25 +288,61 @@
     }
 
 
-    private getUniqueSortedValues(
-      values: string[]
+    private getUniqueValuesByOrder(
+      values: string[],
+      order: string[]
     ): string[] {
 
-      return Array
-        .from(
+      const uniqueValues =
+        Array.from(
           new Set(
             values.filter(
               value => !!value
             )
           )
-        )
-        .sort(
-          (a, b) =>
-            a.localeCompare(
-              b,
-              'fr'
-            )
         );
+
+
+      const orderMap =
+        new Map(
+          order.map(
+            (label, index) => [
+              label,
+              index
+            ]
+          )
+        );
+
+
+      return uniqueValues.sort(
+        (a, b) => {
+
+          const indexA =
+            orderMap.has(a)
+              ? orderMap.get(a)!
+              : Number.MAX_SAFE_INTEGER;
+
+          const indexB =
+            orderMap.has(b)
+              ? orderMap.get(b)!
+              : Number.MAX_SAFE_INTEGER;
+
+
+          if (indexA !== indexB) {
+            return indexA - indexB;
+          }
+
+
+          /*
+          * Une éventuelle valeur non prévue
+          * est placée après les valeurs connues.
+          */
+          return a.localeCompare(
+            b,
+            'fr'
+          );
+        }
+      );
     }
 
 
@@ -410,13 +468,17 @@
 
 
         methodOptions =
-          this.getUniqueSortedValues(
+          this.getUniqueValuesByOrder(
+
             sowingsForMethods.map(
               sowing =>
                 this.getSowingMethodFilterValue(
                   sowing
                 )
-            )
+            ),
+
+            this.semisMethodOrder
+
           );
 
 
@@ -441,13 +503,17 @@
 
 
         substrateOptions =
-          this.getUniqueSortedValues(
+          this.getUniqueValuesByOrder(
+
             sowingsForSubstrates.map(
               sowing =>
                 this.getSowingSubstrateFilterValue(
                   sowing
                 )
-            )
+            ),
+
+            this.semisSubstrateOrder
+
           );
 
 
