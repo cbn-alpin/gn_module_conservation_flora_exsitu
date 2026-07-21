@@ -24,90 +24,387 @@
     </div>
 
     <mat-card-content class="sowing-info-content">
-      <form [formGroup]="sowingForm" class="semis-form sowing-info-grid">
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Numéro de récolte :</strong> {{ sowingForm.get('id_material')?.value }}
-          </div>
-          <div class="half-width">
-            <strong>Stock utilisé :</strong> {{ sowingForm.get('id_storage')?.value }}
-          </div>
+      <!-- =====================================================
+          IDENTIFICATION DU SEMIS
+          ===================================================== -->
+
+      <div class="sowing-detail-section">
+
+        <div class="sowing-detail-section-title">
+
+          <mat-icon>
+            assignment
+          </mat-icon>
+
+          <span>
+            Identification du semis
+          </span>
+
         </div>
 
-        <div class="form-row">
-          <div class="full-width">
-            <strong>Numéro de semis :</strong> {{ sowingForm.get('code')?.value }}
+
+        <div class="sowing-detail-grid">
+
+          <!-- Numéro de semis -->
+
+          <div
+            class="
+              sowing-detail-item
+              sowing-detail-item-full
+              sowing-detail-code
+            "
+          >
+
+            <span class="sowing-detail-label">
+              Numéro de semis
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('code')?.value || '-' }}
+            </strong>
+
           </div>
+
+
+          <!-- Numéro de récolte -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Numéro de récolte
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('id_material')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Stock utilisé -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Stock utilisé
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('id_storage')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Date début -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Date de début
+            </span>
+
+            <strong class="sowing-detail-value">
+
+              {{
+                sowingForm.get('start_date')?.value &&
+                sowingForm.get('start_date')?.value !== '-'
+                  ? (
+                      sowingForm.get('start_date')?.value
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- Date fin -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Date de fin
+            </span>
+
+            <strong class="sowing-detail-value">
+
+              {{
+                sowingForm.get('end_date')?.value &&
+                sowingForm.get('end_date')?.value !== '-'
+                  ? (
+                      sowingForm.get('end_date')?.value
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </strong>
+
+          </div>
+
         </div>
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Date de début :</strong>
-            {{ sowingForm.get('start_date')?.value !== '-' ? (sowingForm.get('start_date')?.value | date:'dd/MM/yyyy') : '-' }}
-          </div>
-          <div class="half-width">
-            <strong>Date de fin :</strong>
-            {{ sowingForm.get('end_date')?.value !== '-' ? (sowingForm.get('end_date')?.value | date:'dd/MM/yyyy') : '-' }}
-          </div>
+      </div>
+
+
+      <!-- =====================================================
+          CONDITIONS DE SEMIS
+          ===================================================== -->
+
+      <div class="sowing-detail-section">
+
+        <div class="sowing-detail-section-title">
+
+          <mat-icon>
+            spa
+          </mat-icon>
+
+          <span>
+            Conditions de semis
+          </span>
+
         </div>
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Méthode :</strong> {{ sowingForm.get('id_sowing_method')?.value }}
+
+        <div class="sowing-detail-grid">
+
+          <!-- Méthode -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Méthode
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('id_sowing_method')?.value || '-' }}
+            </strong>
+
           </div>
-          <div class="half-width">
-            <strong>Substrat :</strong> {{ sowingForm.get('substrate')?.value }}
+
+
+          <!-- Substrat -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Substrat
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('substrate')?.value || '-' }}
+            </strong>
+
           </div>
+
+
+          <!-- Contenant -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Contenant
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('container')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Profondeur -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Profondeur (mm)
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('depth')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Arrosage -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Mode d’arrosage
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('id_watering_method')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Personne -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Personne ayant effectué le semis
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('id_actor')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Graines -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Nombre de graines semées
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('initial_count')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Réplicats -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Nombre de réplicats
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('replicate_count')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
         </div>
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Contenant :</strong> {{ sowingForm.get('container')?.value }}
-          </div>
-          <div class="half-width">
-            <strong>Profondeur (mm) :</strong> {{ sowingForm.get('depth')?.value }}
-          </div>
+      </div>
+
+
+      <!-- =====================================================
+          LOCALISATION ET INFORMATIONS COMPLÉMENTAIRES
+          ===================================================== -->
+
+      <div class="sowing-detail-section">
+
+        <div class="sowing-detail-section-title">
+
+          <mat-icon>
+            place
+          </mat-icon>
+
+          <span>
+            Localisation et informations complémentaires
+          </span>
+
         </div>
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Mode d’arrosage :</strong> {{ sowingForm.get('id_watering_method')?.value }}
+
+        <div class="sowing-detail-grid">
+
+          <!-- Localisation -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Localisation
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{ sowingForm.get('id_location')?.value || '-' }}
+            </strong>
+
           </div>
-          <div class="half-width">
-            <strong>Personne ayant effectué le semis :</strong> {{ sowingForm.get('id_actor')?.value }}
+
+
+          <!-- Précision -->
+
+          <div class="sowing-detail-item">
+
+            <span class="sowing-detail-label">
+              Précision sur la localisation
+            </span>
+
+            <strong class="sowing-detail-value">
+              {{
+                sowingForm.get('specification_location')?.value ||
+                '-'
+              }}
+            </strong>
+
           </div>
+
+
+          <!-- Remarque -->
+
+          <div
+            class="
+              sowing-detail-item
+              sowing-detail-item-full
+            "
+          >
+
+            <span class="sowing-detail-label">
+              Remarque
+            </span>
+
+            <div class="sowing-detail-long-value">
+
+              {{
+                sowingForm.get('remarks')?.value ||
+                '-'
+              }}
+
+            </div>
+
+          </div>
+
+
+          <!-- Programme -->
+
+          <div
+            class="
+              sowing-detail-item
+              sowing-detail-item-full
+            "
+          >
+
+            <span class="sowing-detail-label">
+              Programme / Contrat
+            </span>
+
+            <div class="sowing-detail-long-value">
+
+              {{
+                sowingForm.get('additional_data')?.value?.program ||
+                '-'
+              }}
+
+            </div>
+
+          </div>
+
         </div>
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Nombre de graines semées :</strong> {{ sowingForm.get('initial_count')?.value }}
-          </div>
-          <div class="half-width">
-            <strong>Nombre de réplicats :</strong> {{ sowingForm.get('replicate_count')?.value }}
-          </div>
-        </div>
+      </div>
 
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Localisation :</strong> {{ sowingForm.get('id_location')?.value }}
-          </div>
-          <div class="half-width">
-            <strong>Précision sur la localisation :</strong> {{ sowingForm.get('specification_location')?.value }}
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="half-width">
-            <strong>Remarque :</strong> <i>{{ sowingForm.get('remarks')?.value }}</i>
-          </div>
-          <div class="half-width">
-            <strong>Programme :</strong> {{ sowingForm.get('additional_data')?.value?.program || '-' }}
-          </div>
-        </div>
-
-      </form>
     </mat-card-content>
+
   </section>
 
   <div class="action-detail split-view">
