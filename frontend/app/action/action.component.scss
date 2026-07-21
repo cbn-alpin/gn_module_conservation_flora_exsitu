@@ -264,3 +264,364 @@ mat-form-field {
   color: inherit !important;
   caret-color: inherit !important;
 }
+
+/* =========================================================
+   ACTION DE SEMIS - CONTENEUR PRINCIPAL
+   ========================================================= */
+
+.sowing-action-form-card {
+  width: 100%;
+
+  overflow: visible;
+
+  background-color: #ffffff;
+
+  border: 1px solid #c8e6c9;
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px rgba(27, 94, 32, 0.10);
+}
+
+
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
+
+.sowing-action-form-card
+.action-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 58px;
+  padding: 0 20px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e8f5e9 0%,
+      #f6fbf6 55%,
+      #ffffff 100%
+    );
+
+  border-bottom:
+    1px solid #c8e6c9;
+}
+
+
+.sowing-action-form-card
+.action-dialog-header
+mat-card-title {
+  width: 100%;
+  margin: 0;
+
+  color: #1b5e20;
+
+  font-size: 20px;
+  font-weight: 800;
+
+  text-align: center;
+
+  letter-spacing: 0.2px;
+}
+
+
+/* =========================================================
+   CONTENU DU FORMULAIRE
+   ========================================================= */
+
+.sowing-action-form-card
+mat-card-content {
+  background-color: #f8fbf8;
+}
+
+
+.sowing-action-form-card
+.semis-form {
+  padding: 16px 20px 18px;
+}
+
+
+/* Champs moins espacés */
+
+.sowing-action-form-card
+.form-row {
+  gap: 16px;
+
+  margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   GRANDES CATÉGORIES
+   ========================================================= */
+
+.sowing-action-form-card
+.action-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  width: 100%;
+
+  margin-top: 12px;
+  margin-bottom: 10px;
+
+  padding: 7px 4px 8px;
+
+  background: transparent;
+
+  border-bottom:
+    1px solid #c8e6c9;
+
+  box-sizing: border-box;
+}
+
+
+/* Petit trait vert */
+
+.sowing-action-form-card
+.action-section-header::after {
+  content: '';
+
+  position: absolute;
+
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #43a047;
+
+  border-radius: 2px;
+}
+
+
+/* Icône */
+
+.sowing-action-form-card
+.action-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  color: #2e7d32;
+
+  background-color: #e8f5e9;
+
+  border: 1px solid #c8e6c9;
+  border-radius: 7px;
+}
+
+
+.sowing-action-form-card
+.action-section-icon
+mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #2e7d32;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+/* Texte */
+
+.sowing-action-form-card
+.action-section-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0;
+
+  min-width: 0;
+}
+
+
+.sowing-action-form-card
+.action-section-title {
+  color: #1b5e20;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  letter-spacing: 0.1px;
+}
+
+
+.sowing-action-form-card
+.action-section-subtitle {
+  margin-top: 1px;
+
+  color: #607d63;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   SOUS-CATÉGORIES
+   ========================================================= */
+
+.sowing-action-form-card
+.action-subsection-header {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  width: 100%;
+
+  margin: 5px 0 10px;
+  padding: 7px 10px;
+
+  color: #2e7d32;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f1f8e9 0%,
+      #fbfefb 100%
+    );
+
+  border-left:
+    3px solid #66bb6a;
+
+  border-radius: 6px;
+
+  box-sizing: border-box;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+.sowing-action-form-card
+.action-subsection-header
+mat-icon {
+  width: 17px;
+  height: 17px;
+
+  color: #43a047;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+/* =========================================================
+   CHAMPS ANGULAR MATERIAL
+   ========================================================= */
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 8px;
+}
+
+
+/* Survol */
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field:not(.mat-form-field-invalid):not(.mat-focused):hover
+.mdc-notched-outline__trailing {
+  border-color: #81c784;
+}
+
+
+/* Focus */
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #43a047 !important;
+
+  border-width:
+    1.5px !important;
+}
+
+
+:host ::ng-deep
+.sowing-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #2e7d32 !important;
+}
+
+.sowing-action-form-card
+.form-group
+small {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #455a4a;
+
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.sowing-action-form-card
+textarea {
+  resize: vertical;
+
+  min-height: 55px;
+}
+
+.sowing-action-form-card
+.form-actions.dual-buttons.sticky-actions {
+  margin-top: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f7fbf7 100%
+    );
+
+  border-top:
+    1px solid #c8e6c9;
+
+  box-shadow:
+    0 -4px 10px
+    rgba(46, 125, 50, 0.08);
+}

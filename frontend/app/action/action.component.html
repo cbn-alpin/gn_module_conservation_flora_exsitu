@@ -1,11 +1,55 @@
-<mat-card>
+<mat-card
+  [class.sowing-action-form-card]="!!idSowing"
+>
   <mat-card-header class="action-dialog-header">
-    <mat-card-title>Détails Action</mat-card-title>
+
+    <mat-card-title>
+
+      {{
+        idSowing
+          ? (
+              dialogData?.edit
+                ? 'Modifier une action de semis'
+                : 'Ajouter une action de semis'
+            )
+          : 'Détails Action'
+      }}
+
+    </mat-card-title>
+
   </mat-card-header>
 
   <mat-card-content>
     <form [formGroup]="germinationForm" class="semis-form">
-      <h2 class="section-title">Synthèse du suivi</h2>
+      <div
+        class="action-section-header full-width"
+        *ngIf="idSowing"
+      >
+
+        <div class="action-section-icon">
+          <mat-icon>assignment</mat-icon>
+        </div>
+
+        <div class="action-section-text">
+
+          <span class="action-section-title">
+            Identification de l'action
+          </span>
+
+          <span class="action-section-subtitle">
+            Type d'action et date de réalisation
+          </span>
+
+        </div>
+
+      </div>
+
+      <h2
+        class="section-title"
+        *ngIf="!idSowing"
+      >
+        Synthèse du suivi
+      </h2>
 
       <!-- Type d'action -->
       <div class="form-group full-width" *ngIf="!hideTypeField">
@@ -69,6 +113,28 @@
       
      <!-- Prétraitement -->
       <div *ngIf="code === 'pret'">
+        <div
+          class="action-section-header full-width"
+          *ngIf="idSowing"
+        >
+
+          <div class="action-section-icon">
+            <mat-icon>science</mat-icon>
+          </div>
+
+          <div class="action-section-text">
+
+            <span class="action-section-title">
+              Paramètres du prétraitement
+            </span>
+
+            <span class="action-section-subtitle">
+              Liquide, produit, durée et concentration du prétraitement
+            </span>
+
+          </div>
+
+        </div>
         <div class="form-group half-width" *ngIf="idSowing">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Liquide prétraitement</mat-label>
@@ -157,6 +223,16 @@
           </mat-form-field>
         
         </div>
+        <div
+          class="action-subsection-header"
+          *ngIf="idSowing"
+        >
+          <mat-icon>wb_sunny</mat-icon>
+
+          <span>
+            Conditions d'exposition
+          </span>
+        </div>
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Nb heures Lumière</mat-label>
@@ -170,8 +246,30 @@
       </div>
 
 
-            <!-- Scarification -->
+      <!-- Scarification -->
       <div *ngIf="code === 'scar'">
+        <div
+          class="action-section-header full-width"
+          *ngIf="idSowing"
+        >
+
+          <div class="action-section-icon">
+            <mat-icon>build</mat-icon>
+          </div>
+
+          <div class="action-section-text">
+
+            <span class="action-section-title">
+              Paramètres de scarification
+            </span>
+
+            <span class="action-section-subtitle">
+              Type et méthode de scarification appliqués aux graines
+            </span>
+
+          </div>
+
+        </div>
           <!-- Type de scarification -->
           <div class="form-row">
             <div class="form-group full-width" *ngIf="idSowing">
@@ -206,6 +304,16 @@
 
           <!-- Si mécanique -->
           <div *ngIf="scarTypeCode === 'mec'">
+              <div
+                class="action-subsection-header"
+                *ngIf="idSowing"
+              >
+                <mat-icon>construction</mat-icon>
+
+                <span>
+                  Scarification mécanique
+                </span>
+              </div>
               <div class="form-group full-width" *ngIf="idSowing">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>Type de scarification mécanique</mat-label>
@@ -266,6 +374,16 @@
 
           <!-- Si chimique -->
           <div *ngIf="scarTypeCode === 'chi'">
+            <div
+              class="action-subsection-header"
+              *ngIf="idSowing"
+            >
+              <mat-icon>science</mat-icon>
+
+              <span>
+                Scarification chimique
+              </span>
+            </div>
             <div class="form-row">
               <div class="form-group half-width" *ngIf="idSowing">
                 <mat-form-field appearance="outline" class="full-width">
@@ -359,7 +477,36 @@
 
          <!-- Stratification -->
           <div *ngIf="code === 'strat'">
-            <h3 class="section-subtitle">Régime thermo-photo</h3>
+
+            <div
+              class="action-section-header full-width"
+              *ngIf="idSowing"
+            >
+
+              <div class="action-section-icon">
+                <mat-icon>ac_unit</mat-icon>
+              </div>
+
+              <div class="action-section-text">
+
+                <span class="action-section-title">
+                  Conditions de stratification
+                </span>
+
+                <span class="action-section-subtitle">
+                  Températures et cycles d'exposition lumière / obscurité
+                </span>
+
+              </div>
+
+            </div>
+
+            <h3
+              class="section-subtitle"
+              *ngIf="!idSowing"
+            >
+              Régime thermo-photo
+            </h3>
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>T° Lumière</mat-label>
@@ -387,7 +534,45 @@
 
             <!-- Traitement -->
             <div *ngIf="code === 'tra'">
-              <h3 class="section-subtitle">{{ idSowing ? 'Liquide traitement' : 'Traitement' }}</h3>
+              <div
+                class="action-section-header full-width"
+                *ngIf="idSowing"
+              >
+
+                <div class="action-section-icon">
+                  <mat-icon>opacity</mat-icon>
+                </div>
+
+                <div class="action-section-text">
+
+                  <span class="action-section-title">
+                    Paramètres du traitement
+                  </span>
+
+                  <span class="action-section-subtitle">
+                    Solution utilisée, conditions thermo-photo et période du traitement
+                  </span>
+
+                </div>
+
+              </div>
+              <div
+                class="action-subsection-header"
+                *ngIf="idSowing"
+              >
+                <mat-icon>water_drop</mat-icon>
+
+                <span>
+                  Solution de traitement
+                </span>
+              </div>
+
+              <h3
+                class="section-subtitle"
+                *ngIf="!idSowing"
+              >
+                Traitement
+              </h3>
 
                 <div class="form-row">
                   <div class="form-group half-width" *ngIf="idSowing">
@@ -443,7 +628,23 @@
                   </mat-form-field>
                 </div>
             
-              <h3 class="section-subtitle">Régime thermo-photo</h3>
+              <div
+                class="action-subsection-header"
+                *ngIf="idSowing"
+              >
+                <mat-icon>thermostat</mat-icon>
+
+                <span>
+                  Régime thermo-photo
+                </span>
+              </div>
+
+              <h3
+                class="section-subtitle"
+                *ngIf="!idSowing"
+              >
+                Régime thermo-photo
+              </h3>
               <div class="form-row">
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>T° Lumière</mat-label>
@@ -463,6 +664,16 @@
                   <mat-label>Nb heures Obscurité</mat-label>
                   <input matInput type="number" formControlName="hour_count_shadow">
                 </mat-form-field>
+              </div>
+              <div
+                class="action-subsection-header"
+                *ngIf="idSowing"
+              >
+                <mat-icon>date_range</mat-icon>
+
+                <span>
+                  Période du traitement
+                </span>
               </div>
               <div class="form-row">
                 
@@ -491,29 +702,71 @@
               </div>
             </div>
             
+            <!-- Informations communes à l'action -->
 
-                <!-- Afficher ces champs seulement si un type d'action est sélectionné -->
-        <div  *ngIf="code">
-      
-          </div>
-          <div class="form-row">
-            <div class="form-group half-width">
-              <small> Effectué par</small>
-              <pnx-observers
-                [bindAllItem]="true"
-                [parentFormControl]="germinationForm.controls.id_actor"
-                [codeList]="observers_list_code"
-                matTooltipPosition="above"
-                [multiSelect]="true"
-              >
-              </pnx-observers>
+            <div
+              class="action-section-header full-width"
+              *ngIf="idSowing"
+            >
+
+              <div class="action-section-icon">
+                <mat-icon>person</mat-icon>
+              </div>
+
+              <div class="action-section-text">
+
+                <span class="action-section-title">
+                  Suivi et informations complémentaires
+                </span>
+
+                <span class="action-section-subtitle">
+                  Personne ayant effectué l'action, remarques et données complémentaires
+                </span>
+
+              </div>
+
             </div>
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Remarques</mat-label>
-              <textarea matInput formControlName="remarks" rows="2"></textarea>
-            </mat-form-field>
-            
-          </div>
+
+
+            <div class="form-row">
+
+              <div class="form-group half-width">
+
+                <small>
+                  Effectué par
+                </small>
+
+                <pnx-observers
+                  [bindAllItem]="true"
+                  [parentFormControl]="germinationForm.controls.id_actor"
+                  [codeList]="observers_list_code"
+                  matTooltipPosition="above"
+                  [multiSelect]="true"
+                >
+                </pnx-observers>
+
+              </div>
+
+
+              <mat-form-field
+                appearance="outline"
+                class="half-width"
+              >
+
+                <mat-label>
+                  Remarques
+                </mat-label>
+
+                <textarea
+                  matInput
+                  formControlName="remarks"
+                  rows="2"
+                ></textarea>
+
+              </mat-form-field>
+
+            </div>
+
           <div class="form-row">
             <div class="form-group col-6">
               <pnx-dynamic-form-generator
@@ -524,6 +777,57 @@
             </div>
           </div>
           <div>
+            
+
+
+            <div
+              class="action-section-header full-width"
+              *ngIf="
+                idSowing &&
+                (
+                  code === 'svr' ||
+                  code === 'synth'
+                )
+              "
+            >
+
+              <div class="action-section-icon">
+
+                <mat-icon>
+                  {{
+                    code === 'svr'
+                      ? 'table_chart'
+                      : 'assessment'
+                  }}
+                </mat-icon>
+
+              </div>
+
+              <div class="action-section-text">
+
+                <span class="action-section-title">
+
+                  {{
+                    code === 'svr'
+                      ? 'Suivi des réplicats'
+                      : 'Synthèse du suivi'
+                  }}
+
+                </span>
+
+                <span class="action-section-subtitle">
+
+                  {{
+                    code === 'svr'
+                      ? 'Saisie des résultats observés pour chaque réplicat'
+                      : 'Synthèse globale des résultats du semis'
+                  }}
+
+                </span>
+
+              </div>
+
+            </div>
             <app-replicates-modal
               *ngIf="code === 'svr' || code === 'synth'"
               [replicatesForm]="replicatesForm"
