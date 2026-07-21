@@ -44,7 +44,7 @@
           <th mat-header-cell *matHeaderCellDef>Date début</th>
           <td mat-cell *matCellDef="let element">
             <ng-container *ngIf="element.start_date">
-              {{ element.start_date | date:'dd/MM/' }}<span class="sowing-code-year">{{ element.start_date | date:'yyyy' }}</span>
+              {{ element.start_date | date:'dd/MM/yyyy' }}
             </ng-container>
           </td>
         </ng-container>
@@ -54,7 +54,7 @@
           <th mat-header-cell *matHeaderCellDef>Date fin</th>
           <td mat-cell *matCellDef="let element">
             <ng-container *ngIf="element.end_date; else noEndDate">
-              {{ element.end_date | date:'dd/MM/' }}<span class="sowing-code-year">{{ element.end_date | date:'yyyy' }}</span>
+              {{ element.end_date | date:'dd/MM/yyyy' }}
             </ng-container>
             <ng-template #noEndDate>-</ng-template>
           </td>
