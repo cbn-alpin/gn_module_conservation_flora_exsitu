@@ -162,37 +162,153 @@ export class ActionDetailsComponent implements OnChanges {
     return Array.from(set).sort();
   }
 
-  groupReplicatesByDate(replicates: any[]): ReplicateGroup[] {
-    const groupedByDate: { [date: string]: any[] } = {};
+  groupReplicatesByDate(
+    replicates: any[]
+  ): ReplicateGroup[] {
+
+    const groupedByDate: {
+      [date: string]: any[]
+    } = {};
+
+
     replicates
-      .filter(rep => rep.code !== 'synth')
+      .filter(
+        rep => rep.code !== 'synth'
+      )
       .forEach(rep => {
-        const rawDate = rep.date ? new Date(rep.date) : null;
-        const key = rawDate ? rawDate.toISOString().split('T')[0] : 'inconnue';
-        if (!groupedByDate[key]) groupedByDate[key] = [];
+
+        /*
+        * On récupère directement YYYY-MM-DD
+        * sans passer par toISOString().
+        *
+        * Cela évite le décalage UTC de -1 jour.
+        */
+        const key =
+          rep.date
+            ? String(rep.date).split('T')[0]
+            : 'inconnue';
+
+
+        if (!groupedByDate[key]) {
+          groupedByDate[key] = [];
+        }
+
+
         groupedByDate[key].push(rep);
+
       });
+
 
     const result: ReplicateGroup[] = [];
 
-    for (const [dateKey, reps] of Object.entries(groupedByDate)) {
-      const date = dateKey !== 'inconnue' ? new Date(dateKey) : null;
-      const grouped: { [code: string]: any } = {};
-      reps.forEach(rep => grouped[rep.code] = rep);
-      const replicateArray = this.replicateLabels.map(code => grouped[code] || {});
 
-      const total_germinated = replicateArray.reduce((sum, r) => sum + (r.count_germinated || 0), 0);
-      const total_dead = replicateArray.reduce((sum, r) => sum + (r.count_dead || 0), 0);
-      const total_viable = replicateArray.reduce((sum, r) => sum + (r.count_viable || 0), 0);
+    for (
+      const [dateKey, reps]
+      of Object.entries(groupedByDate)
+    ) {
 
-      result.push({ date, replicates: replicateArray, total_germinated, total_dead, total_viable });
+      let date: Date | null = null;
+
+
+      /*
+      * Création de la date en heure locale
+      * pour éviter toute conversion UTC.
+      */
+      if (dateKey !== 'inconnue') {
+
+        const [
+          year,
+          month,
+          day
+        ] = dateKey
+          .split('-')
+          .map(Number);
+
+
+        date = new Date(
+          year,
+          month - 1,
+          day
+        );
+
+      }
+
+
+      const grouped: {
+        [code: string]: any
+      } = {};
+
+
+      reps.forEach(
+        rep =>
+          grouped[rep.code] = rep
+      );
+
+
+      const replicateArray =
+        this.replicateLabels.map(
+          code =>
+            grouped[code] || {}
+        );
+
+
+      const total_germinated =
+        replicateArray.reduce(
+          (sum, r) =>
+            sum +
+            (r.count_germinated || 0),
+          0
+        );
+
+
+      const total_dead =
+        replicateArray.reduce(
+          (sum, r) =>
+            sum +
+            (r.count_dead || 0),
+          0
+        );
+
+
+      const total_viable =
+        replicateArray.reduce(
+          (sum, r) =>
+            sum +
+            (r.count_viable || 0),
+          0
+        );
+
+
+      result.push({
+        date,
+        replicates: replicateArray,
+        total_germinated,
+        total_dead,
+        total_viable
+      });
+
     }
 
-    return result.sort((a, b) => {
-      if (!a.date) return 1;
-      if (!b.date) return -1;
-      return a.date.getTime() - b.date.getTime();
-    });
+
+    return result.sort(
+      (a, b) => {
+
+        if (!a.date) {
+          return 1;
+        }
+
+        if (!b.date) {
+          return -1;
+        }
+
+
+        return (
+          a.date.getTime() -
+          b.date.getTime()
+        );
+
+      }
+    );
   }
 
   getReplicateTotals() {

@@ -59,7 +59,7 @@
             <tr *ngFor="let line of replicatesGrouped">
               <td>
                 <ng-container *ngIf="line.date; else noDate">
-                  {{ line.date !== 'inconnue' ? (line.date | date: 'shortDate') : 'Inconnue' }}
+                  {{ line.date !== 'inconnue' ? (line.date | date:'dd/MM/yyyy') : 'Inconnue' }}
                 </ng-container>
                 <ng-template #noDate>Inconnue</ng-template>
               </td>
