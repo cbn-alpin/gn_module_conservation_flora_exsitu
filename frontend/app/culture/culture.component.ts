@@ -23,12 +23,27 @@ import { CultureService } from './culture.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { ConfigService } from '../services/config.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import {
+  DateAdapter
+} from '@angular/material/core';
+
+import {
+  FrenchDateAdapter
+} from '../services/french-date-adapter';
 
 @Component({
   selector: 'app-culture',
   templateUrl: './culture.component.html',
-  styleUrls: ['./culture.component.scss']
+  styleUrls: ['./culture.component.scss'],
+
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: FrenchDateAdapter
+    }
+  ]
 })
+
 export class CultureComponent implements OnInit {
 
   public cultureForm: FormGroup;

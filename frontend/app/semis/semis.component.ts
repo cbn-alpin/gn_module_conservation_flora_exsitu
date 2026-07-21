@@ -7,12 +7,27 @@ import { DataService } from '../services/data.service';
 import { ConfigService } from '../services/config.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import {
+  DateAdapter
+} from '@angular/material/core';
+
+import {
+  FrenchDateAdapter
+} from '../services/french-date-adapter';
 
 @Component({
   selector: 'app-semis',
   templateUrl: './semis.component.html',
-  styleUrls: ['./semis.component.scss']
+  styleUrls: ['./semis.component.scss'],
+
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: FrenchDateAdapter
+    }
+  ]
 })
+
 export class SemisComponent implements OnInit {
   public semisForm: FormGroup;
   public formSubmitted = false;
