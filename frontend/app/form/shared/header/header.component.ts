@@ -3,7 +3,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ExsituFormService } from '../exsitu-form.service';
 import { DataService } from '../../../services/data.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import {
+  filter,
+  take
+} from 'rxjs/operators';
 
 
 @Component({
@@ -53,7 +56,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     loadCodeMaterial() {
       this.exsituFormService.materials$
-        .pipe(take(1))
+        .pipe(
+          filter(
+            (materials) =>
+              Array.isArray(materials)
+          ),
+          take(1)
+        )
         .subscribe((materials) => {
           const idMat = this.exsituFormService.idMaterial;
           const material = materials.find(m => m.id_material === idMat);

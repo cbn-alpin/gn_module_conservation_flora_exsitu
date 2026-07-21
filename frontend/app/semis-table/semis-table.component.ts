@@ -136,8 +136,8 @@
       return;
     }
 
-    this.dataSource.paginator = this.paginatorRef;
-    this.paginatorRef.length = this.dataSource.data.length;
+    this.dataSource.paginator =
+      this.paginatorRef;
   }
 
     ngOnInit(): void {

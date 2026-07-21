@@ -494,6 +494,50 @@ export class SemisComponent implements OnInit {
     this.semisForm.markAsUntouched();
   }
 
+  private formatDateForApi(value: any): string | null {
+    if (!value) {
+      return null;
+    }
+
+    /*
+    * Une date déjà reçue sous la forme YYYY-MM-DD
+    * est conservée telle quelle.
+    */
+    if (typeof value === 'string') {
+      const match = value.match(/^(\d{4}-\d{2}-\d{2})/);
+
+      if (match) {
+        return match[1];
+      }
+    }
+
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+
+    /*
+    * Important :
+    * on utilise la date locale et non toISOString(),
+    * afin d'éviter un décalage d'un jour lié à UTC.
+    */
+    const year = date.getFullYear();
+
+    const month = String(
+      date.getMonth() + 1
+    ).padStart(2, '0');
+
+    const day = String(
+      date.getDate()
+    ).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   private formatFormData(): any {
     const raw = this.semisForm.value;
     const payload: any = { ...raw };
@@ -520,8 +564,9 @@ export class SemisComponent implements OnInit {
     payload.id_material = this.idMaterial;
     payload.id_storage = this.idStorage;
 
-    if (!payload.replicate_count) payload.replicate_count = 1;
-    if (!payload.end_date) delete payload.end_date;
+    if (!payload.replicate_count) {
+      payload.replicate_count = 1;
+    }
 
     if (
       payload.id_substrate !== null &&
@@ -532,13 +577,15 @@ export class SemisComponent implements OnInit {
     }
     delete payload.id_substrate;
 
-    if (payload.start_date instanceof Date && !isNaN(payload.start_date.getTime())) {
-      payload.start_date = payload.start_date.toISOString().slice(0, 10);
-    }
+    payload.start_date =
+      this.formatDateForApi(
+        payload.start_date
+      );
 
-    if (payload.end_date instanceof Date && !isNaN(payload.end_date.getTime())) {
-      payload.end_date = payload.end_date.toISOString().slice(0, 10);
-    }
+    payload.end_date =
+      this.formatDateForApi(
+        payload.end_date
+      );
 
     return payload;
   }
