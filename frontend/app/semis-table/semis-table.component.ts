@@ -43,6 +43,16 @@
 
     rowPerPage = 5;
 
+    public allSowings: any[] = [];
+
+    public semisCodeFilter = '';
+    public semisStartDateFromFilter: Date | null = null;
+    public semisMethodFilter: string | null = null;
+    public semisSubstrateFilter: string | null = null;
+
+    public semisMethodFilterOptions: string[] = [];
+    public semisSubstrateFilterOptions: string[] = [];
+
     @Output() view = new EventEmitter<Semis>();
     @Output() edit = new EventEmitter<Semis>();
     @Output() delete = new EventEmitter<Semis>();
@@ -142,17 +152,18 @@
 
     ngOnInit(): void {
       this.idMaterial = this.exsituFormService.idMaterial;
+
     this.semisService.sowings$.subscribe((sowings) => {
-      this.dataSource.data = sowings || [];
-      console.log(this.dataSource.data);
 
-      setTimeout(() => {
-        this.syncPaginator();
+      this.allSowings = sowings || [];
 
-        if (this.paginatorRef) {
-          this.paginatorRef.firstPage();
-        }
-      });
+      console.log(
+        'Liste complète des semis :',
+        this.allSowings
+      );
+
+      this.applySemisFilters();
+
     });
 
       // ⬇️ Déclenche le chargement côté service
@@ -161,6 +172,447 @@
 
     ngAfterViewInit(): void {
       this.syncPaginator();
+    }
+
+   /* =========================================================
+      FILTRES DE LA LISTE DES SEMIS
+      ========================================================= */
+
+    private getSowingMethodFilterValue(
+      sowing: any
+    ): string {
+
+      const value =
+        sowing?.label_sowing ||
+        sowing?.id_sowing_method?.label_default ||
+        sowing?.id_sowing_method?.value ||
+        '';
+
+      return String(value).trim();
+    }
+
+
+    private getSowingSubstrateFilterValue(
+      sowing: any
+    ): string {
+
+      const value =
+        sowing?.label_substrate ||
+        sowing?.substrate?.label_default ||
+        sowing?.substrate?.value ||
+        '';
+
+      return String(value).trim();
+    }
+
+
+    private getSemisDateFilterKey(
+      value: any
+    ): string {
+
+      if (!value) {
+        return '';
+      }
+
+      /*
+      * Date provenant directement de l'API.
+      */
+      if (typeof value === 'string') {
+
+        const datePart =
+          value.split('T')[0];
+
+        if (
+          /^\d{4}-\d{2}-\d{2}$/.test(
+            datePart
+          )
+        ) {
+          return datePart;
+        }
+
+      }
+
+
+      const date =
+        value instanceof Date
+          ? value
+          : new Date(value);
+
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return '';
+      }
+
+
+      const year =
+        date.getFullYear();
+
+      const month =
+        String(
+          date.getMonth() + 1
+        ).padStart(2, '0');
+
+      const day =
+        String(
+          date.getDate()
+        ).padStart(2, '0');
+
+
+      return `${year}-${month}-${day}`;
+    }
+
+
+    private getUniqueSortedValues(
+      values: string[]
+    ): string[] {
+
+      return Array
+        .from(
+          new Set(
+            values.filter(
+              value => !!value
+            )
+          )
+        )
+        .sort(
+          (a, b) =>
+            a.localeCompare(
+              b,
+              'fr'
+            )
+        );
+    }
+
+
+    /*
+    * Applique uniquement les filtres communs :
+    *
+    * - Code
+    * - Date "À partir du"
+    *
+    * Méthode et Substrat sont ensuite appliqués
+    * séparément afin de rendre leurs listes
+    * dynamiques entre elles.
+    */
+    private getSemisMatchingBaseFilters(): any[] {
+
+      const normalizedCode =
+        String(
+          this.semisCodeFilter || ''
+        )
+          .trim()
+          .toLowerCase();
+
+
+      const selectedDateKey =
+        this.getSemisDateFilterKey(
+          this.semisStartDateFromFilter
+        );
+
+
+      return this.allSowings.filter(
+        (sowing) => {
+
+          const sowingCode =
+            String(
+              sowing?.code || ''
+            )
+              .trim()
+              .toLowerCase();
+
+
+          const sowingDateKey =
+            this.getSemisDateFilterKey(
+              sowing?.start_date
+            );
+
+
+          const matchesCode =
+            !normalizedCode ||
+            sowingCode.includes(
+              normalizedCode
+            );
+
+
+          const matchesDate =
+            !selectedDateKey ||
+            (
+              !!sowingDateKey &&
+              sowingDateKey >=
+                selectedDateKey
+            );
+
+
+          return (
+            matchesCode &&
+            matchesDate
+          );
+
+        }
+      );
+    }
+
+
+    /*
+    * Rend Méthode et Substrat dynamiques entre eux.
+    *
+    * Exemple :
+    *
+    * Méthode = Individuel
+    *   ->
+    * seuls les substrats réellement présents
+    * pour cette méthode restent proposés.
+    *
+    * Substrat = Perlite
+    *   ->
+    * seules les méthodes réellement compatibles
+    * restent proposées.
+    */
+    private updateSemisFilterOptions(
+      baseSowings: any[]
+    ): void {
+
+      let selectedMethod =
+        this.semisMethodFilter;
+
+      let selectedSubstrate =
+        this.semisSubstrateFilter;
+
+
+      let methodOptions: string[] = [];
+      let substrateOptions: string[] = [];
+
+
+      /*
+      * Deux passages permettent de remettre
+      * automatiquement à null un filtre devenu
+      * impossible après modification du Code
+      * ou de la Date.
+      */
+      for (
+        let pass = 0;
+        pass < 2;
+        pass++
+      ) {
+
+        const sowingsForMethods =
+          baseSowings.filter(
+            sowing =>
+              !selectedSubstrate ||
+              this.getSowingSubstrateFilterValue(
+                sowing
+              ) === selectedSubstrate
+          );
+
+
+        methodOptions =
+          this.getUniqueSortedValues(
+            sowingsForMethods.map(
+              sowing =>
+                this.getSowingMethodFilterValue(
+                  sowing
+                )
+            )
+          );
+
+
+        if (
+          selectedMethod &&
+          !methodOptions.includes(
+            selectedMethod
+          )
+        ) {
+          selectedMethod = null;
+        }
+
+
+        const sowingsForSubstrates =
+          baseSowings.filter(
+            sowing =>
+              !selectedMethod ||
+              this.getSowingMethodFilterValue(
+                sowing
+              ) === selectedMethod
+          );
+
+
+        substrateOptions =
+          this.getUniqueSortedValues(
+            sowingsForSubstrates.map(
+              sowing =>
+                this.getSowingSubstrateFilterValue(
+                  sowing
+                )
+            )
+          );
+
+
+        if (
+          selectedSubstrate &&
+          !substrateOptions.includes(
+            selectedSubstrate
+          )
+        ) {
+          selectedSubstrate = null;
+        }
+
+      }
+
+
+      this.semisMethodFilter =
+        selectedMethod;
+
+      this.semisSubstrateFilter =
+        selectedSubstrate;
+
+      this.semisMethodFilterOptions =
+        methodOptions;
+
+      this.semisSubstrateFilterOptions =
+        substrateOptions;
+    }
+
+
+    public applySemisFilters(): void {
+
+      /*
+      * 1. Code + Date
+      */
+      const baseSowings =
+        this.getSemisMatchingBaseFilters();
+
+
+      /*
+      * 2. Mise à jour dynamique des options
+      *    Méthode / Substrat.
+      */
+      this.updateSemisFilterOptions(
+        baseSowings
+      );
+
+
+      /*
+      * 3. Application finale
+      *    Méthode + Substrat.
+      */
+      const filteredSowings =
+        baseSowings.filter(
+          sowing => {
+
+            const method =
+              this.getSowingMethodFilterValue(
+                sowing
+              );
+
+            const substrate =
+              this.getSowingSubstrateFilterValue(
+                sowing
+              );
+
+
+            const matchesMethod =
+              !this.semisMethodFilter ||
+              method ===
+                this.semisMethodFilter;
+
+
+            const matchesSubstrate =
+              !this.semisSubstrateFilter ||
+              substrate ===
+                this.semisSubstrateFilter;
+
+
+            return (
+              matchesMethod &&
+              matchesSubstrate
+            );
+
+          }
+        );
+
+
+      this.dataSource.data =
+        filteredSowings;
+
+
+      /*
+      * Retour page 1 après chaque changement
+      * de filtre.
+      */
+      setTimeout(() => {
+
+        this.syncPaginator();
+
+        if (this.paginatorRef) {
+          this.paginatorRef.firstPage();
+        }
+
+      });
+    }
+
+
+    public onSemisCodeFilterChange(
+      value: string
+    ): void {
+
+      this.semisCodeFilter =
+        value || '';
+
+      this.applySemisFilters();
+    }
+
+
+    public onSemisStartDateFromFilterChange(
+      value: Date | null
+    ): void {
+
+      this.semisStartDateFromFilter =
+        value;
+
+      this.applySemisFilters();
+    }
+
+
+    public onSemisMethodFilterChange(
+      value: string | null
+    ): void {
+
+      this.semisMethodFilter =
+        value;
+
+      this.applySemisFilters();
+    }
+
+
+    public onSemisSubstrateFilterChange(
+      value: string | null
+    ): void {
+
+      this.semisSubstrateFilter =
+        value;
+
+      this.applySemisFilters();
+    }
+
+
+    public resetSemisFilters(): void {
+
+      this.semisCodeFilter = '';
+
+      this.semisStartDateFromFilter =
+        null;
+
+      this.semisMethodFilter =
+        null;
+
+      this.semisSubstrateFilter =
+        null;
+
+      this.applySemisFilters();
     }
     
     onView() {

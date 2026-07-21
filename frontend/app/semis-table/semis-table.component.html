@@ -10,9 +10,239 @@
   </mat-card-header>
 
   <mat-card-content class="semis-list-content">
-    <!-- ✅ Bloc conditionnel -->
-    <ng-container *ngIf="dataSource.data.length > 0; else noSemisData">
-      <table mat-table [dataSource]="dataSource" class="semis-list-table">
+
+  <!-- Il existe au moins un semis pour ce matériel -->
+    <ng-container
+      *ngIf="
+        allSowings.length > 0;
+        else noSemisData
+      "
+    >
+
+      <!-- ===================================================
+          FILTRES DES SEMIS
+          =================================================== -->
+
+      <div class="semis-filters-card">
+
+        <div class="semis-filters-header">
+
+          <div class="semis-filters-title">
+
+            <div class="semis-filters-icon">
+
+              <mat-icon>
+                filter_alt
+              </mat-icon>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Filtres des semis
+              </span>
+
+              <small>
+                Affiner par code, date de début,
+                méthode et substrat
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <button
+            mat-button
+            type="button"
+            class="reset-semis-filter-button"
+            (click)="resetSemisFilters()"
+          >
+
+            <mat-icon>
+              autorenew
+            </mat-icon>
+
+            Réinitialiser
+
+          </button>
+
+        </div>
+
+
+        <div class="semis-filter-fields">
+
+          <!-- CODE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="semis-filter-field"
+          >
+
+            <mat-label>
+              Code
+            </mat-label>
+
+            <input
+              matInput
+              [(ngModel)]="semisCodeFilter"
+              (ngModelChange)="
+                onSemisCodeFilterChange($event)
+              "
+              placeholder="Rechercher un code"
+            >
+
+            <mat-icon matSuffix>
+              search
+            </mat-icon>
+
+          </mat-form-field>
+
+
+          <!-- À PARTIR DU -->
+
+          <mat-form-field
+            appearance="outline"
+            class="semis-filter-field"
+          >
+
+            <mat-label>
+              À partir du
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                semisStartDateFromFilterPicker
+              "
+              [(ngModel)]="
+                semisStartDateFromFilter
+              "
+              (dateChange)="
+                onSemisStartDateFromFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="
+                semisStartDateFromFilterPicker
+              "
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #semisStartDateFromFilterPicker
+            >
+            </mat-datepicker>
+
+          </mat-form-field>
+
+
+          <!-- MÉTHODE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="semis-filter-field"
+          >
+
+            <mat-label>
+              Méthode
+            </mat-label>
+
+            <mat-select
+              [value]="semisMethodFilter"
+              (selectionChange)="
+                onSemisMethodFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Toutes les méthodes
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let method of
+                  semisMethodFilterOptions
+                "
+                [value]="method"
+              >
+
+                {{ method }}
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- SUBSTRAT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="semis-filter-field"
+          >
+
+            <mat-label>
+              Substrat
+            </mat-label>
+
+            <mat-select
+              [value]="semisSubstrateFilter"
+              (selectionChange)="
+                onSemisSubstrateFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les substrats
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let substrate of
+                  semisSubstrateFilterOptions
+                "
+                [value]="substrate"
+              >
+
+                {{ substrate }}
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+
+      <!-- Liste filtrée -->
+
+      <ng-container
+        *ngIf="
+          dataSource.data.length > 0;
+          else noFilteredSemis
+        "
+      >
+
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="semis-list-table"
+        >
 
         <!-- Code -->
         <ng-container matColumnDef="code">
@@ -141,10 +371,43 @@
         [pageSizeOptions]="[5, 10, 25, 100]"
         showFirstLastButtons>
       </mat-paginator>
-    </ng-container>
 
-    <!-- ❌ Aucune donnée -->
-    <ng-template #noSemisData>
+      </ng-container>
+
+
+      <!-- Aucun résultat après filtrage -->
+
+      <ng-template #noFilteredSemis>
+
+        <div class="no-filtered-semis">
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+          <div>
+
+            <strong>
+              Aucun semis ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez les critères ou réinitialisez
+              les filtres.
+            </span>
+
+          </div>
+
+        </div>
+
+      </ng-template>
+
+      </ng-container>
+
+
+      <!-- Aucun semis enregistré -->
+
+      <ng-template #noSemisData>
       <mat-card class="alert-card warning-card mt-4">
         <mat-icon color="warn">info</mat-icon>
         Aucun semis enregistré pour ce matériel.

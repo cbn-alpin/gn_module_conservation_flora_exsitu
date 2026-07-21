@@ -247,3 +247,299 @@ background-color: #ffffff;
 .culture-action span {
   color: #4E342E !important;
 }
+
+/* =========================================================
+   FILTRES DE LA LISTE DES SEMIS
+   ========================================================= */
+
+.semis-filters-card {
+  margin-bottom: 14px;
+
+  padding: 14px 16px 10px;
+
+  border: 1px solid #d8ead8;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbfffb 0%,
+      #ffffff 100%
+    );
+
+  box-shadow:
+    0 3px 10px
+    rgba(46, 125, 50, 0.06);
+}
+
+
+/* =========================================================
+   EN-TÊTE DES FILTRES
+   ========================================================= */
+
+.semis-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 12px;
+}
+
+
+.semis-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #1b5e20;
+}
+
+
+.semis-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background-color: #e8f5e9;
+
+  color: #2e7d32;
+}
+
+
+.semis-filters-icon mat-icon {
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+  line-height: 20px;
+
+  color: #2e7d32;
+}
+
+
+.semis-filters-title span {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+.semis-filters-title small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #607d63;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   CHAMPS
+   ========================================================= */
+
+.semis-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(200px, 1.2fr)
+    minmax(170px, 1fr)
+    minmax(190px, 1fr)
+    minmax(190px, 1fr);
+
+  gap: 14px;
+
+  align-items: center;
+}
+
+
+.semis-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.semis-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.semis-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+/* Focus vert Semis */
+
+:host ::ng-deep
+.semis-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.semis-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.semis-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #43a047 !important;
+}
+
+
+:host ::ng-deep
+.semis-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #2e7d32 !important;
+}
+
+
+/* =========================================================
+   RÉINITIALISER
+   ========================================================= */
+
+.reset-semis-filter-button {
+  min-height: 34px;
+
+  padding: 5px 13px;
+
+  border: 1px solid #7b1fa2;
+  border-radius: 999px;
+
+  background-color: #8e24aa;
+
+  color: #ffffff !important;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+.reset-semis-filter-button:hover {
+  background-color: #7b1fa2;
+}
+
+
+.reset-semis-filter-button mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+/* =========================================================
+   AUCUN RÉSULTAT
+   ========================================================= */
+
+.no-filtered-semis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 4px;
+  padding: 22px 16px;
+
+  border: 1px dashed #c8e6c9;
+  border-radius: 12px;
+
+  background-color: #fbfffb;
+
+  color: #607d63;
+}
+
+
+.no-filtered-semis mat-icon {
+  color: #66bb6a;
+}
+
+
+.no-filtered-semis strong,
+.no-filtered-semis span {
+  display: block;
+}
+
+
+.no-filtered-semis strong {
+  color: #2e7d32;
+
+  font-size: 13px;
+}
+
+
+.no-filtered-semis span {
+  margin-top: 3px;
+
+  color: #78907b;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+  .semis-filter-fields {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .semis-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .semis-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+
+  .reset-semis-filter-button {
+    width: fit-content;
+  }
+
+}
