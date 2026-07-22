@@ -79,6 +79,14 @@ export const routes: Routes = [
                 component: ViabilityTableComponent,
             },
             {
+                path: 'harvest/:id_harvest/material/:idMaterial/sowing/:idSowing/culture-table',
+                component: CultureTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/culture-table',
+                component: CultureTableComponent,
+            },
+            {
                 path: 'harvest/:id_harvest/material/:idMaterial/culture-table',
                 component: CultureTableComponent,
             },

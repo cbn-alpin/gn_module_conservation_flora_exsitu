@@ -20,6 +20,10 @@ import {
   Router
 } from '@angular/router';
 
+import {
+  SemisTableService
+} from '../semis-table/semis-table.service';
+
 export interface Culture {
   id_culture: number;
   code_culture: string;
@@ -86,13 +90,28 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     public exsituFormService: ExsituFormService,
     private cultureTableService: CultureTableService,
     private cultureService: CultureService,
+    private semisTableService: SemisTableService,
     private dialog: MatDialog,
     private dialogService: DialogService,
     private toast: CommonService
   ) {}
 
   ngOnInit(): void {
-    this.idMaterial = this.exsituFormService.idMaterial;
+
+    this.idMaterial =
+      this.exsituFormService.idMaterial;
+
+
+    /*
+    * Après un F5 sur une URL Culture provenant
+    * d'un Semis, l'id_sowing est restauré depuis
+    * l'URL.
+    *
+    * On recharge ici uniquement son code
+    * pour l'en-tête et la fiche Culture.
+    */
+    this.restoreSowingCodeFromContext();
+
 
     this.cultureTableService.cultures$.subscribe((cultures) => {
       this.dataSource.data = cultures || [];
@@ -120,6 +139,87 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     this.dataSource.paginator = this.paginatorRef;
     this.paginatorRef.length = this.dataSource.data.length;
+  }
+
+  private restoreSowingCodeFromContext(): void {
+
+    const sourceType =
+      this.exsituFormService
+        .cultureSourceType;
+
+    const idSowing =
+      this.exsituFormService
+        .cultureSourceSowingId;
+
+
+    /*
+    * Rien à restaurer pour une Culture
+    * ouverte directement depuis Matériel.
+    */
+    if (
+      sourceType !== 'sowing' ||
+      !idSowing ||
+      !this.idMaterial
+    ) {
+
+      return;
+    }
+
+
+    /*
+    * Lors d'une navigation normale depuis Semis,
+    * le code est déjà connu.
+    */
+    if (
+      this.exsituFormService
+        .cultureSourceSowingCode
+    ) {
+
+      return;
+    }
+
+
+    /*
+    * Cas F5 :
+    * on connaît l'id_sowing grâce à l'URL,
+    * on retrouve son code dans les Semis
+    * du matériel courant.
+    */
+    this.semisTableService
+      .getSowingsByMaterial(
+        this.idMaterial
+      )
+      .subscribe({
+
+        next: (sowings) => {
+
+          const sowing =
+            (sowings || []).find(
+              (item: any) =>
+                Number(item?.id_sowing) ===
+                Number(idSowing)
+            );
+
+
+          this.exsituFormService
+            .setCultureSourceFromSowing(
+              idSowing,
+              sowing?.code || null
+            );
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Impossible de restaurer le code du Semis associé à la Culture :',
+            err
+          );
+
+        }
+
+      });
+
   }
 
   private loadCurrentCultures(): void {

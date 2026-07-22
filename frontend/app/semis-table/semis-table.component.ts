@@ -841,6 +841,8 @@
         idHarvest,
         'material',
         idMaterial,
+        'sowing',
+        idSowing,
         'culture-table'
       ]);
     }

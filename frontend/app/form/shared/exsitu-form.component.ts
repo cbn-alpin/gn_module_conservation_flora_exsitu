@@ -94,9 +94,40 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.exsituFormService.idHarvest &&
           this.idMaterial
         ) {
+
+          /*
+          * Culture associée à un Semis précis.
+          */
+          if (
+            this.exsituFormService
+              .cultureSourceType === 'sowing' &&
+            this.exsituFormService
+              .cultureSourceSowingId
+          ) {
+
+            this.router.navigate([
+
+              `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/sowing/${this.exsituFormService.cultureSourceSowingId}/culture-table`
+
+            ]);
+
+            return;
+          }
+
+
+          /*
+          * Culture directe du matériel récolté.
+          */
+          this.exsituFormService
+            .setCultureSourceFromMaterial();
+
+
           this.router.navigate([
+
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/culture-table`
+
           ]);
+
         }
                    
     }
@@ -205,26 +236,98 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
       }
       if (urlSegments.includes('culture-table')) {
-        this.exsituFormService.currentTab = 'culture-table';
 
-        const harvestIndex = urlSegments.indexOf('harvest') + 1;
-        const materialIndex = urlSegments.indexOf('material') + 1;
+        this.exsituFormService.currentTab =
+          'culture-table';
 
-        if (harvestIndex < urlSegments.length) {
-          this.exsituFormService.idHarvest = Number(
-            urlSegments[harvestIndex]
+
+        const harvestIndex =
+          urlSegments.indexOf('harvest') + 1;
+
+        const materialIndex =
+          urlSegments.indexOf('material') + 1;
+
+
+        if (
+          harvestIndex <
+          urlSegments.length
+        ) {
+
+          this.exsituFormService.idHarvest =
+            Number(
+              urlSegments[harvestIndex]
+            );
+        }
+
+
+        if (
+          materialIndex <
+          urlSegments.length
+        ) {
+
+          this.idMaterial =
+            Number(
+              urlSegments[materialIndex]
+            );
+
+          this.exsituFormService.setIdMaterial(
+            this.idMaterial
           );
         }
 
-        if (materialIndex < urlSegments.length) {
-          this.idMaterial = Number(
-            urlSegments[materialIndex]
-          );
 
-          this.exsituFormService.idMaterial = Number(
-            urlSegments[materialIndex]
-          );
+        /*
+        * Cas 1 :
+        * /material/A1/culture-table
+        *
+        * => A1 | NULL | NULL
+        */
+        if (
+          !urlSegments.includes('sowing')
+        ) {
+
+          this.exsituFormService
+            .setCultureSourceFromMaterial();
+
         }
+
+
+        /*
+        * Cas 2 :
+        * /material/A1/sowing/S1/culture-table
+        *
+        * => A1 | S1 | NULL
+        */
+        if (
+          urlSegments.includes('sowing')
+        ) {
+
+          const sowingIndex =
+            urlSegments.indexOf('sowing') + 1;
+
+          const idSowing =
+            Number(
+              urlSegments[sowingIndex]
+            );
+
+
+          if (
+            sowingIndex <
+              urlSegments.length &&
+            !isNaN(idSowing) &&
+            idSowing > 0
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromSowing(
+                idSowing,
+                null
+              );
+
+          }
+
+        }
+
       }
 
       if (
