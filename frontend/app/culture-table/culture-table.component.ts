@@ -64,7 +64,6 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     'code_culture',
-    'source',
     'actor',
     'date_start',
     'date_end',
