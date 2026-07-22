@@ -12,7 +12,33 @@
   </mat-card-header>
 
   <mat-card-content class="semis-form-content">
-    <form [formGroup]="semisForm" class="semis-form" (ngSubmit)="onSubmit()">
+
+    <div class="semis-material-banner">
+
+      <div class="semis-material-banner-icon">
+        <mat-icon>link</mat-icon>
+      </div>
+
+      <div class="semis-material-banner-text">
+
+        <span class="semis-material-banner-label">
+          N° du matériel récolté associé
+        </span>
+
+        <strong class="semis-material-banner-value">
+          {{ codeMaterial || idMaterial || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <form
+      [formGroup]="semisForm"
+      class="semis-form"
+      (ngSubmit)="onSubmit()"
+    >
 
       <div class="semis-section-header full-width">
         <div class="semis-section-icon">

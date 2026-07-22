@@ -15,6 +15,11 @@ import {
   FrenchDateAdapter
 } from '../services/french-date-adapter';
 
+import {
+  filter,
+  take
+} from 'rxjs/operators';
+
 @Component({
   selector: 'app-semis',
   templateUrl: './semis.component.html',
@@ -87,6 +92,8 @@ export class SemisComponent implements OnInit {
 
   public observers_list_code: any;
   public idMaterial!: number;
+  public codeMaterial: string | null = null;
+
   public idStorage: number | null = null;
   public existingSowings: any[] = [];
 
@@ -288,9 +295,42 @@ export class SemisComponent implements OnInit {
     }
   }
 
+  private loadAssociatedMaterialCode(): void {
+
+    if (!this.idMaterial) {
+      return;
+    }
+
+    this.exsituFormService.materials$
+      .pipe(
+        filter(
+          (materials) =>
+            Array.isArray(materials)
+        ),
+        take(1)
+      )
+      .subscribe((materials) => {
+
+        const material =
+          materials.find(
+            (item: any) =>
+              item.id_material === this.idMaterial
+          );
+
+        this.codeMaterial =
+          material?.code_material || null;
+
+      });
+  }
+
   ngOnInit(): void {
     this.idMaterial = this.exsituFormService.idMaterial;
-    this.exsituFormService.id_storage.subscribe(id => this.idStorage = id ?? null);
+
+    this.loadAssociatedMaterialCode();
+
+    this.exsituFormService.id_storage.subscribe(
+      id => this.idStorage = id ?? null
+    );
 
     this.observers_list_code = this.cfg.getObsCode();
 

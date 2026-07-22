@@ -55,6 +55,78 @@
   letter-spacing: 0.2px;
 }
 
+/* =========================================================
+   MATÉRIEL RÉCOLTÉ ASSOCIÉ
+   ========================================================= */
+
+.culture-material-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 14px 20px 0;
+  padding: 9px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #efebe9 0%,
+      #fdfbf9 100%
+    );
+
+  border: 1px solid #d7ccc8;
+  border-radius: 9px;
+}
+
+.culture-material-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+
+  border: 1px solid #bcaaa4;
+  border-radius: 7px;
+}
+
+.culture-material-banner-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #6d4c41;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.culture-material-banner-text {
+  display: flex;
+  align-items: baseline;
+
+  gap: 9px;
+}
+
+.culture-material-banner-label {
+  color: #7b6a64;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.culture-material-banner-value {
+  color: #4e342e;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
 .culture-form {
   display: grid;
   grid-template-columns: repeat(

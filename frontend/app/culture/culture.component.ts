@@ -31,6 +31,11 @@ import {
   FrenchDateAdapter
 } from '../services/french-date-adapter';
 
+import {
+  filter,
+  take
+} from 'rxjs/operators';
+
 @Component({
   selector: 'app-culture',
   templateUrl: './culture.component.html',
@@ -60,6 +65,7 @@ export class CultureComponent implements OnInit {
   public formsDefinition: any[] = [];
 
   public idMaterial: number | null = null;
+  public codeMaterial: string | null = null;
 
   private existingCultures: any[] = [];
   private initialFormState: any = null;
@@ -242,10 +248,40 @@ export class CultureComponent implements OnInit {
     }
   }
 
+  private loadAssociatedMaterialCode(): void {
+
+    if (!this.idMaterial) {
+      return;
+    }
+
+    this.exsituFormService.materials$
+      .pipe(
+        filter(
+          (materials) =>
+            Array.isArray(materials)
+        ),
+        take(1)
+      )
+      .subscribe((materials) => {
+
+        const material =
+          materials.find(
+            (item: any) =>
+              item.id_material === this.idMaterial
+          );
+
+        this.codeMaterial =
+          material?.code_material || null;
+
+      });
+  }
+
   ngOnInit(): void {
     this.idMaterial = this.exsituFormService.idMaterial;
 
-      if (this.idMaterial) {
+    this.loadAssociatedMaterialCode();
+
+    if (this.idMaterial) {
 
     this.cultureService
       .getCulturesByMaterial(
