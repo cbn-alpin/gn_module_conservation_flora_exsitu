@@ -18,15 +18,51 @@
         <mat-icon>link</mat-icon>
       </div>
 
-      <div class="culture-material-banner-text">
+      <div class="culture-material-banner-content">
 
-        <span class="culture-material-banner-label">
-          N° du matériel récolté associé
-        </span>
+        <!-- Matériel récolté associé -->
+        <div class="culture-material-banner-text">
 
-        <strong class="culture-material-banner-value">
-          {{ codeMaterial || idMaterial || '-' }}
-        </strong>
+          <span class="culture-material-banner-label">
+            N° du matériel récolté associé
+          </span>
+
+          <strong class="culture-material-banner-value">
+            {{ codeMaterial || idMaterial || '-' }}
+          </strong>
+
+        </div>
+
+
+        <!-- Origine éventuelle de la culture -->
+        <div class="culture-associated-sources">
+
+          <div class="culture-associated-source">
+
+            <span>
+              N° de semis associé
+            </span>
+
+            <strong>
+              -
+            </strong>
+
+          </div>
+
+
+          <div class="culture-associated-source">
+
+            <span>
+              N° de test de germination associé
+            </span>
+
+            <strong>
+              -
+            </strong>
+
+          </div>
+
+        </div>
 
       </div>
 

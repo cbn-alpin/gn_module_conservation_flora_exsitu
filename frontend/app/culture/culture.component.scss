@@ -555,3 +555,48 @@ textarea {
   color: #3e302c;
   font-size: 13px;
 }
+
+/* Contenu du bandeau Culture */
+.culture-material-banner-content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+/* Deux références sur la même ligne */
+.culture-associated-sources {
+  display: flex;
+  align-items: center;
+
+  gap: 24px;
+}
+
+
+/* Une référence */
+.culture-associated-source {
+  display: flex;
+  align-items: baseline;
+
+  gap: 6px;
+
+  font-size: 11px;
+}
+
+
+/* Libellé */
+.culture-associated-source span {
+  color: #7b6a64;
+
+  font-weight: 600;
+}
+
+
+/* Valeur */
+.culture-associated-source strong {
+  color: #4e342e;
+
+  font-size: 12px;
+  font-weight: 800;
+}
