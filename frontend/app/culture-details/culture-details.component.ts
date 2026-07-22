@@ -109,24 +109,50 @@ export class CultureDetailsComponent implements OnInit {
       return '-';
     }
 
-    if (this.culture.source_code) {
-      return this.culture.source_code;
-    }
+    /*
+    * Culture provenant d'un Semis
+    */
+    if (
+      this.culture.source_type === 'sowing' ||
+      this.culture.id_sowing
+    ) {
 
-    if (this.culture.id_sowing) {
       return (
+        this.culture.source_code ||
         this.culture.code_sowing ||
-        `Semis n°${this.culture.id_sowing}`
+        (
+          this.culture.id_sowing
+            ? `Semis n°${this.culture.id_sowing}`
+            : '-'
+        )
       );
     }
 
-    if (this.culture.id_test) {
+
+    /*
+    * Culture provenant d'un Test de germination
+    */
+    if (
+      this.culture.source_type === 'test' ||
+      this.culture.id_test
+    ) {
+
       return (
+        this.culture.source_code ||
         this.culture.code_test ||
-        `Test n°${this.culture.id_test}`
+        (
+          this.culture.id_test
+            ? `Test n°${this.culture.id_test}`
+            : '-'
+        )
       );
     }
 
+
+    /*
+    * Culture provenant directement
+    * du matériel récolté
+    */
     return '-';
   }
 
@@ -137,14 +163,28 @@ export class CultureDetailsComponent implements OnInit {
       return '-';
     }
 
-    if (this.culture.id_sowing) {
+    /*
+    * On utilise en priorité source_type,
+    * calculé directement par le backend.
+    */
+    if (
+      this.culture.source_type === 'sowing' ||
+      this.culture.id_sowing
+    ) {
       return 'Semis';
     }
 
-    if (this.culture.id_test) {
-      return 'Test de viabilité';
+    if (
+      this.culture.source_type === 'test' ||
+      this.culture.id_test
+    ) {
+      return 'Test de germination';
     }
 
+    /*
+    * Culture créée directement
+    * depuis Matériel récolté
+    */
     return '-';
   }
 

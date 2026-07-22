@@ -99,6 +99,21 @@ export class ExsituFormService{
       this.cultureSourceTestCode = null;
     }
 
+    setCultureSourceFromSowing(
+      idSowing: number,
+      codeSowing: string | null
+    ): void {
+
+      this.cultureSourceType = 'sowing';
+
+      this.cultureSourceSowingId = idSowing;
+      this.cultureSourceSowingCode =
+        codeSowing || null;
+
+      this.cultureSourceTestId = null;
+      this.cultureSourceTestCode = null;
+    }
+
     addOccurrenceData(occurrence): void {
         let materials = this.materials$.getValue();
     

@@ -790,18 +790,51 @@
     }
 
     onCulture(element: any): void {
-      const idSowing = element?.id_sowing;
-      const idMaterial = this.exsituFormService.idMaterial;
-      const idHarvest = this.exsituFormService.idHarvest;
 
-      if (!idSowing || !idMaterial || !idHarvest) {
+      const idSowing =
+        element?.id_sowing;
+
+      const codeSowing =
+        element?.code || null;
+
+      const idMaterial =
+        this.exsituFormService.idMaterial;
+
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
+
+      if (
+        !idSowing ||
+        !idMaterial ||
+        !idHarvest
+      ) {
+
         console.error(
           'Impossible d’ouvrir Culture : identifiant du semis, du matériel ou de la récolte manquant.'
         );
+
         return;
       }
 
-      this.exsituFormService.currentTab = 'culture-table';
+
+      /*
+      * Culture ouverte depuis un Semis.
+      *
+      * Le matériel reste le matériel courant.
+      * Le Semis cliqué devient l'origine directe.
+      * Aucun Test de germination n'est associé.
+      */
+      this.exsituFormService
+        .setCultureSourceFromSowing(
+          idSowing,
+          codeSowing
+        );
+
+
+      this.exsituFormService.currentTab =
+        'culture-table';
+
 
       this.router.navigate([
         '/conservation_flora_exsitu/form/harvest',
