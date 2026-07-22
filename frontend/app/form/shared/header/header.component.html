@@ -67,19 +67,29 @@
         </div>
 
 
-        <!-- Colonne 4 -->
+        <!-- Colonne 4 - Contexte Culture uniquement -->
         <div
-          class="info-column"
-          *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
+          class="info-column culture-context-column"
+          *ngIf="
+            codeMaterial &&
+            (
+              exsituFormService.currentTab === 'culture-table' ||
+              exsituFormService.currentTab === 'culture-details'
+            )
+          "
         >
-          <div class="info-row">
-            <span class="info-label">N° du semis</span>
+          <div class="info-row culture-context-row">
+            <span class="info-label">
+              N° du semis
+            </span>
 
             <span class="info-value"></span>
           </div>
 
-          <div class="info-row">
-            <span class="info-label">N° du test de germination</span>
+          <div class="info-row culture-context-row">
+            <span class="info-label">
+              N° du test de germination
+            </span>
 
             <span class="info-value"></span>
           </div>
