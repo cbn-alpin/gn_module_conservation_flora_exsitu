@@ -461,3 +461,151 @@ mat-card-content {
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(123, 31, 162, 0.28);
 }
+
+/* =========================================================
+   CATÉGORIES - DÉTAIL D'UNE ACTION DE SEMIS
+   ========================================================= */
+
+.sowing-action-details-card
+.sowing-detail-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  width: 100%;
+
+  margin: 16px 0 10px;
+  padding: 8px 5px 9px;
+
+  border-bottom: 1px solid #c8e6c9;
+
+  box-sizing: border-box;
+}
+
+
+/* Petit accent vert */
+.sowing-action-details-card
+.sowing-detail-section-header::after {
+  content: '';
+
+  position: absolute;
+
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #43a047;
+
+  border-radius: 2px;
+}
+
+
+/* Icône */
+
+.sowing-action-details-card
+.sowing-detail-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #e8f5e9;
+
+  border: 1px solid #c8e6c9;
+  border-radius: 7px;
+}
+
+
+.sowing-action-details-card
+.sowing-detail-section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #2e7d32;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+/* Texte */
+
+.sowing-action-details-card
+.sowing-detail-section-text {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.sowing-action-details-card
+.sowing-detail-section-title {
+  color: #1b5e20;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.sowing-action-details-card
+.sowing-detail-section-subtitle {
+  margin-top: 1px;
+
+  color: #607d63;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   SOUS-CATÉGORIES
+   ========================================================= */
+
+.sowing-action-details-card
+.sowing-detail-subsection-header {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin: 8px 0 10px;
+  padding: 7px 10px;
+
+  color: #2e7d32;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f1f8e9 0%,
+      #fbfefb 100%
+    );
+
+  border-left: 3px solid #66bb6a;
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+.sowing-action-details-card
+.sowing-detail-subsection-header mat-icon {
+  width: 17px;
+  height: 17px;
+
+  color: #43a047;
+
+  font-size: 17px;
+  line-height: 17px;
+}
