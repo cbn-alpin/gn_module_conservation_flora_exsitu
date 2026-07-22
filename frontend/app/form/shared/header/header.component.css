@@ -9,7 +9,7 @@
 /* Les trois colonnes dans une seule bande */
 .header-info-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   width: 100%;
 
   background-color: #ffffff;
@@ -38,7 +38,7 @@
 /* Une ligne : libellé puis valeur */
 .info-row {
   display: grid;
-  grid-template-columns: 130px minmax(0, 1fr);
+  grid-template-columns: 165px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
 

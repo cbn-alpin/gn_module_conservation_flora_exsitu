@@ -41,30 +41,49 @@
       </div>
     </div>
 
-    <!-- Colonne 3 -->
-    <div
-      class="info-column"
-      *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
-    >
-      <div class="info-row">
-        <span class="info-label">N° de récolte</span>
-
-        <span class="info-value">
-          {{ codeMaterial }}
-        </span>
-      </div>
-
-      <div class="info-row">
-        <span class="info-label">Taxon</span>
-
-        <span
-          class="info-value taxon-value"
-          [matTooltip]="taxonTooltip"
+        <!-- Colonne 3 -->
+        <div
+          class="info-column"
+          *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
         >
-          {{ taxonName || 'Non défini' }}
-        </span>
+          <div class="info-row">
+            <span class="info-label">N° de récolte</span>
+
+            <span class="info-value">
+              {{ codeMaterial }}
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">Taxon</span>
+
+            <span
+              class="info-value taxon-value"
+              [matTooltip]="taxonTooltip"
+            >
+              {{ taxonName || 'Non défini' }}
+            </span>
+          </div>
+        </div>
+
+
+        <!-- Colonne 4 -->
+        <div
+          class="info-column"
+          *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
+        >
+          <div class="info-row">
+            <span class="info-label">N° du semis</span>
+
+            <span class="info-value"></span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">N° du test de germination</span>
+
+            <span class="info-value"></span>
+          </div>
+        </div>
+
       </div>
     </div>
-
-  </div>
-</div>
