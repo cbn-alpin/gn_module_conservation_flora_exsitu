@@ -109,32 +109,36 @@
 }
 
 /* =========================================================
-   ONGLET CULTURE - COULEUR SPÉCIFIQUE
-   Même comportement que les autres onglets
+   ONGLET CULTURE
+   Même comportement que les autres onglets,
+   avec identité marron au survol et à l'état actif
    ========================================================= */
 
-/* Texte Culture */
-.tab a.tablinks.culture-tab,
-.tab a.tablinks.culture-tab:hover,
+/* Repos : même gris que les autres onglets */
+.tab a.tablinks.culture-tab {
+  color: #4f5d52;
+}
+
+/*
+ * L'icône Culture suit TOUJOURS la couleur du texte.
+ * Cette règle bloque la règle générale qui la remet en vert.
+ */
+.tab a.tablinks.culture-tab .culture-tab-icon {
+  color: currentColor !important;
+}
+
+
+/* Survol : marron Culture */
+.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover {
+  color: #5d4037 !important;
+  background-color: #f1f8e9;
+  border-bottom-color: #8d6e63 !important;
+}
+
+
+/* Actif : marron Culture */
 .tab a.tablinks.culture-tab.active,
 .tab a.tablinks.culture-tab.active:hover {
-  color: #4e342e !important;
-}
-
-/* Icône Culture : reste marron dans TOUS les états */
-.tab a.tablinks.culture-tab .example-tab-icon,
-.tab a.tablinks.culture-tab:hover .example-tab-icon,
-.tab a.tablinks.culture-tab.active .example-tab-icon,
-.tab a.tablinks.culture-tab.active:hover .example-tab-icon {
   color: #5d4037 !important;
-}
-
-/* Barre de sélection spécifique à Culture */
-.tab a.tablinks.culture-tab.active {
   border-bottom-color: #6d4c41 !important;
-}
-
-/* Barre au survol */
-.tab a.tablinks.culture-tab:not(.disabled):not(.active):hover {
-  border-bottom-color: #8d6e63 !important;
 }
