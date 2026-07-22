@@ -67,6 +67,9 @@ export class CultureComponent implements OnInit {
   public idMaterial: number | null = null;
   public codeMaterial: string | null = null;
 
+  public associatedSowingCode: string | null = null;
+  public associatedTestCode: string | null = null;
+
   private existingCultures: any[] = [];
   private initialFormState: any = null;
   private cancelDialogOpen = false;
@@ -280,6 +283,37 @@ export class CultureComponent implements OnInit {
     this.idMaterial = this.exsituFormService.idMaterial;
 
     this.loadAssociatedMaterialCode();
+
+    /*
+    * En modification, on utilise les relations
+    * réellement enregistrées dans la Culture.
+    *
+    * En création, on utilise le contexte depuis
+    * lequel la partie Culture a été ouverte.
+    */
+    if (
+      this.modalData?.edit &&
+      this.modalData?.culture
+    ) {
+
+      this.associatedSowingCode =
+        this.modalData.culture.code_sowing ||
+        null;
+
+      this.associatedTestCode =
+        this.modalData.culture.code_test ||
+        null;
+
+    } else {
+
+      this.associatedSowingCode =
+        this.modalData?.code_sowing ||
+        null;
+
+      this.associatedTestCode =
+        this.modalData?.code_test ||
+        null;
+    }
 
     if (this.idMaterial) {
 
@@ -526,6 +560,38 @@ export class CultureComponent implements OnInit {
     const payload: any = {
       ...raw
     };
+
+    /*
+    * Relations d'origine de la Culture.
+    *
+    * Cas actuel :
+    * Culture ouverte depuis Matériel récolté
+    * => id_sowing = null
+    * => id_test = null
+    */
+    if (
+      this.modalData?.edit &&
+      this.modalData?.culture
+    ) {
+
+      payload.id_sowing =
+        this.modalData.culture.id_sowing ??
+        null;
+
+      payload.id_test =
+        this.modalData.culture.id_test ??
+        null;
+
+    } else {
+
+      payload.id_sowing =
+        this.modalData?.id_sowing ??
+        null;
+
+      payload.id_test =
+        this.modalData?.id_test ??
+        null;
+    }
 
     if (
       Array.isArray(raw.id_actor) &&

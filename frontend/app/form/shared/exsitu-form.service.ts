@@ -21,6 +21,22 @@ export class ExsituFormService{
     public idMaterial: number;
     public idSeed: number;
     public idTest: number;
+    /*
+    * Contexte d'origine de la partie Culture.
+    *
+    * Pour une Culture ouverte directement depuis
+    * un matériel récolté :
+    *
+    * id_sowing = null
+    * id_test = null
+    */
+    public cultureSourceType: 'material' | 'sowing' | 'test' | null = null;
+
+    public cultureSourceSowingId: number | null = null;
+    public cultureSourceSowingCode: string | null = null;
+
+    public cultureSourceTestId: number | null = null;
+    public cultureSourceTestCode: string | null = null;
     public idTestChange = new BehaviorSubject<number>(null);
     public idStorage: number | null = null;
     public id_storage: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
@@ -70,6 +86,17 @@ export class ExsituFormService{
     setIdMaterial(id: number) {
       this.idMaterial = id;
       this.idMaterialChange.next(id);
+    }
+
+    setCultureSourceFromMaterial(): void {
+
+      this.cultureSourceType = 'material';
+
+      this.cultureSourceSowingId = null;
+      this.cultureSourceSowingCode = null;
+
+      this.cultureSourceTestId = null;
+      this.cultureSourceTestCode = null;
     }
 
     addOccurrenceData(occurrence): void {

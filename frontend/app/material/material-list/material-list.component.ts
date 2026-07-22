@@ -233,21 +233,47 @@ export class MaterialListComponent implements OnInit {
     }
 
     goToCulture(material: any): void {
-      const idMaterial = material?.id_material;
-      const idHarvest = this.exsituFormService.idHarvest;
+
+      const idMaterial =
+        material?.id_material;
+
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
 
       if (!idMaterial || !idHarvest) {
+
         console.error(
           'Impossible d’ouvrir Culture : identifiant du matériel ou de la récolte manquant.'
         );
+
         return;
       }
 
-      this.exsituFormService.setIdMaterial(idMaterial);
-      this.exsituFormService.currentTab = 'culture-table';
+
+      this.exsituFormService.setIdMaterial(
+        idMaterial
+      );
+
+
+      /*
+      * Culture ouverte directement depuis
+      * Matériel récolté.
+      *
+      * Aucun Semis ni Test n'est associé.
+      */
+      this.exsituFormService
+        .setCultureSourceFromMaterial();
+
+
+      this.exsituFormService.currentTab =
+        'culture-table';
+
 
       this.router.navigate([
+
         `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/culture-table`
+
       ]);
     }
 

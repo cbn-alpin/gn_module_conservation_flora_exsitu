@@ -131,7 +131,30 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
         width: '900px',
         maxWidth: '95vw',
         maxHeight: '90vh',
-        disableClose: true
+        disableClose: true,
+
+        data: {
+
+          sourceType:
+            this.exsituFormService
+              .cultureSourceType,
+
+          id_sowing:
+            this.exsituFormService
+              .cultureSourceSowingId,
+
+          code_sowing:
+            this.exsituFormService
+              .cultureSourceSowingCode,
+
+          id_test:
+            this.exsituFormService
+              .cultureSourceTestId,
+
+          code_test:
+            this.exsituFormService
+              .cultureSourceTestCode
+        }
       }
     );
 

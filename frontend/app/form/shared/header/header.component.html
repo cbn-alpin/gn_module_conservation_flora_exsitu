@@ -79,19 +79,36 @@
           "
         >
           <div class="info-row culture-context-row">
+
             <span class="info-label">
               N° du semis
             </span>
 
-            <span class="info-value"></span>
+            <span class="info-value">
+              {{
+                exsituFormService
+                  .cultureSourceSowingCode ||
+                '-'
+              }}
+            </span>
+
           </div>
 
+
           <div class="info-row culture-context-row">
+
             <span class="info-label">
               N° du test de germination
             </span>
 
-            <span class="info-value"></span>
+            <span class="info-value">
+              {{
+                exsituFormService
+                  .cultureSourceTestCode ||
+                '-'
+              }}
+            </span>
+
           </div>
         </div>
 

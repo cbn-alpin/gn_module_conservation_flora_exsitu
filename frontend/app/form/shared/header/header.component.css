@@ -115,3 +115,8 @@
   color: #4e342e;
   font-weight: 600;
 }
+
+/* Espacement entre les libellés Culture et leurs valeurs */
+.culture-context-row .info-value {
+  margin-left: 10px;
+}
