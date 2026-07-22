@@ -625,3 +625,111 @@ textarea {
     0 -4px 10px
     rgba(46, 125, 50, 0.08);
 }
+
+/* =========================================================
+   SEMIS ASSOCIÉ À L'ACTION
+   ========================================================= */
+
+.sowing-action-form-card
+.sowing-associated-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 14px 20px 0;
+  padding: 9px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f1f8e9 0%,
+      #fbfffb 100%
+    );
+
+  border: 1px solid #c8e6c9;
+  border-radius: 9px;
+}
+
+
+/* Icône */
+
+.sowing-action-form-card
+.sowing-associated-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+
+  border: 1px solid #a5d6a7;
+  border-radius: 7px;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #2e7d32;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+/* Texte */
+
+.sowing-action-form-card
+.sowing-associated-banner-content {
+  display: flex;
+  align-items: baseline;
+
+  gap: 9px;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner-label {
+  color: #607d63;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner-value {
+  color: #1b5e20;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+/* =========================================================
+   STABILITÉ DU DIALOG ACTION SEMIS
+   ========================================================= */
+
+/*
+ * La classe est appliquée directement au MatDialog.
+ *
+ * "both-edges" réserve la même place à gauche et à droite
+ * lorsque la scrollbar apparaît.
+ *
+ * Le titre et le bandeau "Semis associé" restent donc
+ * parfaitement centrés et ne bougent plus horizontalement.
+ */
+::ng-deep
+.sowing-action-dialog-panel
+.mat-mdc-dialog-surface {
+  overflow-y: auto;
+
+  scrollbar-gutter: stable both-edges;
+}

@@ -20,6 +20,31 @@
   </mat-card-header>
 
   <mat-card-content>
+    <!-- Semis associé à l'action -->
+    <div
+      class="sowing-associated-banner"
+      *ngIf="idSowing"
+    >
+
+      <div class="sowing-associated-banner-icon">
+        <mat-icon>link</mat-icon>
+      </div>
+
+      <div class="sowing-associated-banner-content">
+
+        <span class="sowing-associated-banner-label">
+          Semis associé
+        </span>
+
+        <strong class="sowing-associated-banner-value">
+          {{ dialogData?.sowingCode || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
     <form [formGroup]="germinationForm" class="semis-form">
       <div
         class="action-section-header full-width"
