@@ -45,21 +45,7 @@
                 else plainCultureCode
               "
             >
-              <span class="culture-code-prefix">
-                {{ element.code_culture.slice(0, 1) }}
-              </span>
-
-              <span class="culture-code-year">
-                {{ element.code_culture.slice(1, 5) }}
-              </span>
-
-              <span class="culture-code-separator">
-                {{ element.code_culture.slice(5, 6) }}
-              </span>
-
-              <span class="culture-code-sequence">
-                {{ element.code_culture.slice(6, 10) }}
-              </span>
+              <span class="culture-code-prefix">{{ element.code_culture.slice(0, 1) }}</span><span class="culture-code-year">{{ element.code_culture.slice(1, 5) }}</span><span class="culture-code-separator">{{ element.code_culture.slice(5, 6) }}</span><span class="culture-code-sequence">{{ element.code_culture.slice(6, 10) }}</span>
             </ng-container>
 
             <ng-template #plainCultureCode>
