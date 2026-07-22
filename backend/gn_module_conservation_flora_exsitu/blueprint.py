@@ -1630,8 +1630,69 @@ def create_culture(id_material):
 )
 @json_resp
 def list_cultures_by_material(id_material):
+
     repo = CultureRepository()
 
+    source_type = request.args.get(
+        "source_type"
+    )
+
+    id_sowing = request.args.get(
+        "id_sowing",
+        type=int
+    )
+
+
+    # -----------------------------------------
+    # Culture ouverte depuis Matériel récolté
+    #
+    # id_material = courant
+    # id_sowing = NULL
+    # id_test = NULL
+    # -----------------------------------------
+    if source_type == "material":
+
+        return repo.get_direct_by_material(
+            id_material
+        ), 200
+
+
+    # -----------------------------------------
+    # Culture ouverte depuis un Semis
+    #
+    # id_material = courant
+    # id_sowing = Semis courant
+    # id_test = NULL
+    # -----------------------------------------
+    if source_type == "sowing":
+
+        if not id_sowing:
+
+            return {
+                "error": (
+                    "L'identifiant du semis "
+                    "est obligatoire"
+                )
+            }, 400
+
+        try:
+
+            return repo.get_all_by_sowing(
+                id_material,
+                id_sowing
+            ), 200
+
+        except ValueError as e:
+
+            return {
+                "error": str(e)
+            }, 400
+
+
+    # -----------------------------------------
+    # Sans contexte :
+    # comportement historique conservé
+    # -----------------------------------------
     return repo.get_all_by_material(
         id_material
     ), 200

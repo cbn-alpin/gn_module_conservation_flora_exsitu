@@ -25,30 +25,90 @@ export class CultureTableService {
     this.moduleBaseUrl = this.cfg.getModuleBackendUrl();
   }
 
-  // Récupérer les cultures d’un matériel
-  getCulturesByMaterial(
+  // Cultures créées directement depuis le matériel
+  getDirectCulturesByMaterial(
     idMaterial: number
   ): Observable<any[]> {
+
     return this.api.get<any[]>(
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures`
+
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures?source_type=material`
+
     );
   }
 
-  // Charger et actualiser la liste des cultures
-  loadCultures(idMaterial: number): void {
-    this.getCulturesByMaterial(idMaterial).subscribe({
-      next: (cultures) => {
-        console.log('Liste des cultures :', cultures);
 
-        this.culturesSubject.next(cultures || []);
+  // Cultures associées à un Semis précis
+  getCulturesBySowing(
+    idMaterial: number,
+    idSowing: number
+  ): Observable<any[]> {
+
+    return this.api.get<any[]>(
+
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures?source_type=sowing&id_sowing=${idSowing}`
+
+    );
+  }
+
+
+  // Charger la bonne liste selon le contexte Culture
+  loadCultures(
+    idMaterial: number,
+    sourceType: 'material' | 'sowing' = 'material',
+    idSowing: number | null = null
+  ): void {
+
+    let request$: Observable<any[]>;
+
+
+    if (
+      sourceType === 'sowing' &&
+      idSowing
+    ) {
+
+      request$ =
+        this.getCulturesBySowing(
+          idMaterial,
+          idSowing
+        );
+
+    } else {
+
+      request$ =
+        this.getDirectCulturesByMaterial(
+          idMaterial
+        );
+
+    }
+
+
+    request$.subscribe({
+
+      next: (cultures) => {
+
+        console.log(
+          'Liste des cultures :',
+          cultures
+        );
+
+        this.culturesSubject.next(
+          cultures || []
+        );
+
       },
 
       error: (err) => {
+
         console.error(
           'Erreur lors de la récupération des cultures :',
           err
         );
+
+        this.culturesSubject.next([]);
+
       }
+
     });
   }
 

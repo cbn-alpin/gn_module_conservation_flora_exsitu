@@ -106,9 +106,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
       });
     });
 
-    if (this.idMaterial) {
-      this.cultureTableService.loadCultures(this.idMaterial);
-    }
+    this.loadCurrentCultures();
   }
 
   ngAfterViewInit(): void {
@@ -122,6 +120,57 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     this.dataSource.paginator = this.paginatorRef;
     this.paginatorRef.length = this.dataSource.data.length;
+  }
+
+  private loadCurrentCultures(): void {
+
+    if (!this.idMaterial) {
+      return;
+    }
+
+
+    const sourceType =
+      this.exsituFormService
+        .cultureSourceType;
+
+
+    const idSowing =
+      this.exsituFormService
+        .cultureSourceSowingId;
+
+
+    /*
+    * Culture depuis Semis
+    *
+    * A | S1 | NULL
+    */
+    if (
+      sourceType === 'sowing' &&
+      idSowing
+    ) {
+
+      this.cultureTableService
+        .loadCultures(
+          this.idMaterial,
+          'sowing',
+          idSowing
+        );
+
+      return;
+    }
+
+
+    /*
+    * Culture directe depuis Matériel
+    *
+    * A | NULL | NULL
+    */
+    this.cultureTableService
+      .loadCultures(
+        this.idMaterial,
+        'material',
+        null
+      );
   }
 
   addFicheCulture(): void {
@@ -161,9 +210,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(
       (result) => {
         if (result && this.idMaterial) {
-          this.cultureTableService.loadCultures(
-            this.idMaterial
-          );
+          this.loadCurrentCultures();
         }
       }
     );
@@ -199,9 +246,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
                   : 'Culture supprimée avec succès'
               );
 
-              this.cultureTableService.loadCultures(
-                this.idMaterial!
-              );
+              this.loadCurrentCultures();
             },
 
             error: (err) => {
@@ -248,9 +293,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
           dialogRef.afterClosed().subscribe(
             (result) => {
               if (result && this.idMaterial) {
-                this.cultureTableService.loadCultures(
-                  this.idMaterial
-                );
+                this.loadCurrentCultures();
               }
             }
           );

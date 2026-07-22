@@ -1263,6 +1263,81 @@ class CultureRepository:
             for (id_culture,) in culture_ids
         ]
 
+    def get_direct_by_material(
+        self,
+        id_material: int
+    ):
+        """
+        Cultures créées directement depuis
+        le matériel récolté.
+
+        id_material = matériel courant
+        id_sowing = NULL
+        id_test = NULL
+        """
+
+        culture_ids = (
+            db.session.query(
+                TCulture.id_culture
+            )
+            .filter(
+                TCulture.id_material == id_material,
+                TCulture.id_sowing.is_(None),
+                TCulture.id_test.is_(None)
+            )
+            .order_by(
+                TCulture.date_start.desc(),
+                TCulture.id_culture.desc()
+            )
+            .all()
+        )
+
+        return [
+            self.get_with_labels_by_id(id_culture)
+            for (id_culture,) in culture_ids
+        ]
+
+
+    def get_all_by_sowing(
+        self,
+        id_material: int,
+        id_sowing: int
+    ):
+        """
+        Cultures associées à un Semis précis.
+
+        id_material = matériel courant
+        id_sowing = semis courant
+        id_test = NULL
+        """
+
+        self._validate_source(
+            id_material,
+            id_sowing=id_sowing,
+            id_test=None
+        )
+
+        culture_ids = (
+            db.session.query(
+                TCulture.id_culture
+            )
+            .filter(
+                TCulture.id_material == id_material,
+                TCulture.id_sowing == id_sowing,
+                TCulture.id_test.is_(None)
+            )
+            .order_by(
+                TCulture.date_start.desc(),
+                TCulture.id_culture.desc()
+            )
+            .all()
+        )
+
+        return [
+            self.get_with_labels_by_id(id_culture)
+            for (id_culture,) in culture_ids
+        ]
+
     def update(
         self,
         id_material: int,
