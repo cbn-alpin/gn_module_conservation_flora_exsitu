@@ -76,17 +76,26 @@
             </a>
 
             <!-- Culture -->
+            <!-- Culture
+                Accessible uniquement depuis les boutons Culture
+                de Matériel récolté / Semis / Test de germination
+            -->
             <a
             class="tablinks culture-tab"
-            [class.disabled]="!idMaterial"
+            [class.disabled]="
+                exsituFormService.currentTab !== 'culture-table' &&
+                exsituFormService.currentTab !== 'culture-details'
+            "
             [ngClass]="{
                 active:
                 exsituFormService.currentTab === 'culture-table' ||
                 exsituFormService.currentTab === 'culture-details'
             }"
-            (click)="idMaterial ? goToTab('culture-table') : null"
             >
-            <mat-icon class="example-tab-icon culture-tab-icon">local_florist</mat-icon>
+            <mat-icon class="example-tab-icon culture-tab-icon">
+                local_florist
+            </mat-icon>
+
             Culture
             </a>
               

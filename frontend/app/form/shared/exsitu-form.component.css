@@ -117,6 +117,15 @@
 /* Repos : même gris que les autres onglets */
 .tab a.tablinks.culture-tab {
   color: #4f5d52;
+  cursor: default;
+}
+
+/*
+ * L'onglet Culture est uniquement un indicateur visuel.
+ * L'accès à Culture se fait depuis les boutons dédiés.
+ */
+.tab a.tablinks.culture-tab.disabled {
+  cursor: not-allowed;
 }
 
 /*
