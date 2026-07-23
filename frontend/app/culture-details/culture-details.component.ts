@@ -124,6 +124,33 @@ export class CultureDetailsComponent implements OnInit {
             return;
           }
 
+          /*
+          * Culture provenant d'un Test
+          * de germination.
+          *
+          * On restaure aussi le code du Test
+          * pour l'en-tête.
+          */
+          if (
+            culture?.id_test
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromTest(
+
+                Number(
+                  culture.id_test
+                ),
+
+                culture.source_code ||
+                culture.code_test ||
+                null
+
+              );
+
+            return;
+          }
+
 
           /*
           * Culture créée directement

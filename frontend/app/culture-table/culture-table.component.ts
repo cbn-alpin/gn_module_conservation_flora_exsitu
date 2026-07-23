@@ -874,6 +874,9 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     const idSowing =
       element?.id_sowing;
+    
+    const idTest =
+      element?.id_test;
 
 
     if (
@@ -915,6 +918,40 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
         'sowing',
 
         idSowing,
+
+        'culture-details',
+
+        idCulture
+
+      ]);
+
+      return;
+
+      
+    }
+
+    /*
+    * Culture provenant d'un Test
+    * de germination.
+    *
+    * On conserve obligatoirement le Test
+    * dans l'URL.
+    */
+    if (idTest) {
+
+      this.router.navigate([
+
+        '/conservation_flora_exsitu/form/harvest',
+
+        idHarvest,
+
+        'material',
+
+        idMaterial,
+
+        'test',
+
+        idTest,
 
         'culture-details',
 

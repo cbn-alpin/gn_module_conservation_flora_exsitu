@@ -432,7 +432,8 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         * depuis le matériel récolté.
         */
         if (
-          !urlSegments.includes('sowing')
+          !urlSegments.includes('sowing') &&
+          !urlSegments.includes('test')
         ) {
 
           this.exsituFormService
@@ -469,6 +470,44 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
             this.exsituFormService
               .setCultureSourceFromSowing(
                 idSowing,
+                null
+              );
+
+          }
+
+        }
+
+        /*
+        * Culture provenant d'un Test
+        * de germination.
+        *
+        * /material/A1/test/T1/culture-details/C1
+        */
+        if (
+          urlSegments.includes('test')
+        ) {
+
+          const testIndex =
+            urlSegments.indexOf('test') + 1;
+
+          const idTest =
+            Number(
+              urlSegments[
+                testIndex
+              ]
+            );
+
+
+          if (
+            testIndex <
+              urlSegments.length &&
+            !isNaN(idTest) &&
+            idTest > 0
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromTest(
+                idTest,
                 null
               );
 
