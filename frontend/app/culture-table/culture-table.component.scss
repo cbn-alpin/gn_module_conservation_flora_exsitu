@@ -111,6 +111,7 @@
 /* Tableau */
 .culture-list-table {
   width: 100%;
+  table-layout: fixed;
   overflow: hidden;
 
   background-color: #ffffff;
@@ -158,10 +159,41 @@
   background-color: #faf5f2;
 }
 
-/* Colonne du numéro de culture */
+/* =========================================================
+   LARGEURS FIXES DES COLONNES
+   Empêche les titres de bouger selon le contenu des lignes
+   ========================================================= */
+
+/* N° culture */
 :host ::ng-deep
 .culture-list-table .mat-column-code_culture {
+  width: 26%;
   font-weight: 800;
+}
+
+/* Date de début */
+:host ::ng-deep
+.culture-list-table .mat-column-date_start {
+  width: 20%;
+}
+
+/* Date de fin */
+:host ::ng-deep
+.culture-list-table .mat-column-date_end {
+  width: 20%;
+}
+
+/* Statut */
+:host ::ng-deep
+.culture-list-table .mat-column-status {
+  width: 24%;
+}
+
+/* Actions */
+:host ::ng-deep
+.culture-list-table .mat-column-actions {
+  width: 90px;
+  text-align: center;
 }
 
 /* Parties colorées du code C2026_0001 */
@@ -253,12 +285,6 @@
 
 /* Colonne Actions */
 .culture-actions-cell {
-  text-align: center;
-}
-
-:host ::ng-deep
-.culture-list-table .mat-column-actions {
-  width: 90px;
   text-align: center;
 }
 
