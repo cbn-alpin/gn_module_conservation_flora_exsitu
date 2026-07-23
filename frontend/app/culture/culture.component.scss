@@ -20,6 +20,7 @@
    ========================================================= */
 
 .culture-form-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,6 +54,42 @@
   font-size: 20px;
   font-weight: 800;
   letter-spacing: 0.2px;
+}
+
+/* =========================================================
+   BOUTON RETOUR
+   ========================================================= */
+
+.culture-back-button {
+  position: absolute;
+
+  left: 16px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  min-width: 100px;
+
+  color: #ffffff !important;
+
+  background-color: #6d4c41 !important;
+
+  border-radius: 5px;
+}
+
+
+.culture-back-button:hover {
+  background-color: #4e342e !important;
+}
+
+
+.culture-back-button mat-icon {
+  color: #ffffff !important;
 }
 
 /* =========================================================

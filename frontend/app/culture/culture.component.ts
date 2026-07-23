@@ -32,6 +32,10 @@ import {
 } from '../services/french-date-adapter';
 
 import {
+  Router
+} from '@angular/router';
+
+import {
   filter,
   take
 } from 'rxjs/operators';
@@ -80,6 +84,7 @@ export class CultureComponent implements OnInit {
     private cultureService: CultureService,
     private exsituFormService: ExsituFormService,
     private cfg: ConfigService,
+    private router: Router,
     private toast: CommonService,
     private dialogService: DialogService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
@@ -860,6 +865,118 @@ export class CultureComponent implements OnInit {
 
         this.formSubmitted = false;
       });
+  }
+
+  onBack(): void {
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+    const idMaterial =
+      this.idMaterial ||
+      this.exsituFormService.idMaterial;
+
+
+    /*
+    * On récupère l'origine réelle de la Culture.
+    *
+    * En modification :
+    * données enregistrées dans la Culture.
+    *
+    * En création :
+    * contexte transmis depuis la liste Culture.
+    */
+    const idSowing =
+      this.modalData?.culture?.id_sowing ??
+      this.modalData?.id_sowing ??
+      this.exsituFormService
+        .cultureSourceSowingId ??
+      null;
+
+
+    const idTest =
+      this.modalData?.culture?.id_test ??
+      this.modalData?.id_test ??
+      this.exsituFormService
+        .cultureSourceTestId ??
+      null;
+
+
+    if (!idHarvest) {
+
+      console.error(
+        'Impossible de revenir en arrière : idHarvest manquant.'
+      );
+
+      return;
+    }
+
+
+    /*
+    * On ferme d'abord la fiche Culture.
+    */
+    this.dialogRef.close();
+
+
+    /*
+    * Culture provenant d'un Semis
+    *
+    * A1 | S1 | NULL
+    *
+    * => retour à Semis
+    */
+    if (
+      idSowing &&
+      idMaterial
+    ) {
+
+      this.router.navigate([
+
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/semis-table`
+
+      ]);
+
+      return;
+    }
+
+
+    /*
+    * Culture provenant d'un Test
+    * de germination
+    *
+    * A1 | NULL | T1
+    *
+    * => retour à Test de germination
+    */
+    if (
+      idTest &&
+      idMaterial
+    ) {
+
+      this.router.navigate([
+
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/germination-table`
+
+      ]);
+
+      return;
+    }
+
+
+    /*
+    * Culture provenant directement
+    * du matériel récolté
+    *
+    * A1 | NULL | NULL
+    *
+    * => retour à Matériel récolté
+    */
+    this.router.navigate([
+
+      `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material-form`
+
+    ]);
+
   }
 
   onCancel(): void {
