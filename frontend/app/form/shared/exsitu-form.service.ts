@@ -114,6 +114,21 @@ export class ExsituFormService{
       this.cultureSourceTestCode = null;
     }
 
+    setCultureSourceFromTest(
+      idTest: number,
+      codeTest: string | null
+    ): void {
+
+      this.cultureSourceType = 'test';
+
+      this.cultureSourceSowingId = null;
+      this.cultureSourceSowingCode = null;
+
+      this.cultureSourceTestId = idTest;
+      this.cultureSourceTestCode =
+        codeTest || null;
+    }
+
     addOccurrenceData(occurrence): void {
         let materials = this.materials$.getValue();
     
