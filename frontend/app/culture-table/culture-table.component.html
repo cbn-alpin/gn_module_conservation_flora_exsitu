@@ -22,8 +22,183 @@
   <mat-card-content class="culture-list-content">
 
     <ng-container
-      *ngIf="dataSource.data.length > 0; else noCultureData"
+      *ngIf="allCultures.length > 0; else noCultureData"
     >
+
+    <!-- ===================================================
+          FILTRES DES CULTURES
+          =================================================== -->
+
+      <div class="culture-filters-card">
+
+        <div class="culture-filters-header">
+
+          <div class="culture-filters-title">
+
+            <div class="culture-filters-icon">
+              <mat-icon>
+                filter_alt
+              </mat-icon>
+            </div>
+
+            <div>
+
+              <span>
+                Filtres des cultures
+              </span>
+
+              <small>
+                Affiner par N° culture, date de début
+                et statut
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <button
+            mat-button
+            type="button"
+            class="reset-culture-filter-button"
+            (click)="resetCultureFilters()"
+          >
+
+            <mat-icon>
+              autorenew
+            </mat-icon>
+
+            Réinitialiser
+
+          </button>
+
+        </div>
+
+
+        <div class="culture-filter-fields">
+
+          <!-- N° CULTURE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="culture-filter-field"
+          >
+
+            <mat-label>
+              N° culture
+            </mat-label>
+
+            <input
+              matInput
+              [(ngModel)]="cultureCodeFilter"
+              (ngModelChange)="
+                onCultureCodeFilterChange($event)
+              "
+              placeholder="Rechercher un N° culture"
+            >
+
+            <mat-icon matSuffix>
+              search
+            </mat-icon>
+
+          </mat-form-field>
+
+
+          <!-- À PARTIR DU -->
+
+          <mat-form-field
+            appearance="outline"
+            class="culture-filter-field"
+          >
+
+            <mat-label>
+              À partir du
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                cultureStartDateFromFilterPicker
+              "
+              [(ngModel)]="
+                cultureStartDateFromFilter
+              "
+              (dateChange)="
+                onCultureStartDateFromFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="
+                cultureStartDateFromFilterPicker
+              "
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #cultureStartDateFromFilterPicker
+            >
+            </mat-datepicker>
+
+          </mat-form-field>
+
+
+          <!-- STATUT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="culture-filter-field"
+          >
+
+            <mat-label>
+              Statut
+            </mat-label>
+
+            <mat-select
+              [value]="cultureStatusFilter"
+              (selectionChange)="
+                onCultureStatusFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les statuts
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let status of
+                  cultureStatusFilterOptions
+                "
+                [value]="status"
+              >
+
+                {{ status }}
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+
+      <!-- Liste filtrée -->
+
+      <ng-container
+        *ngIf="
+          dataSource.data.length > 0;
+          else noFilteredCultures
+        "
+      >
 
       <table
         mat-table
@@ -204,7 +379,37 @@
       >
       </mat-paginator>
 
-    </ng-container>
+      </ng-container>
+
+
+      <!-- Aucun résultat après filtrage -->
+
+      <ng-template #noFilteredCultures>
+
+        <div class="no-filtered-cultures">
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+          <div>
+
+            <strong>
+              Aucune culture ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez les critères ou réinitialisez
+              les filtres.
+            </span>
+
+          </div>
+
+        </div>
+
+      </ng-template>
+
+      </ng-container>
 
     <!-- Aucune culture -->
     <ng-template #noCultureData>

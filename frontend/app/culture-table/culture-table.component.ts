@@ -66,6 +66,25 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
   rowPerPage = 5;
 
+  public allCultures: Culture[] = [];
+
+  public cultureCodeFilter = '';
+
+  public cultureStartDateFromFilter:
+    Date | null = null;
+
+  public cultureStatusFilter:
+    string | null = null;
+
+  public cultureStatusFilterOptions:
+    string[] = [];
+
+
+  private readonly cultureStatusOrder = [
+    'Culture active',
+    'Culture terminée'
+  ];
+
   displayedColumns: string[] = [
     'code_culture',
     'date_start',
@@ -112,17 +131,16 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     this.restoreSowingCodeFromContext();
 
 
-    this.cultureTableService.cultures$.subscribe((cultures) => {
-      this.dataSource.data = cultures || [];
+    this.cultureTableService.cultures$.subscribe(
+      (cultures) => {
 
-      setTimeout(() => {
-        this.syncPaginator();
+        this.allCultures =
+          cultures || [];
 
-        if (this.paginatorRef) {
-          this.paginatorRef.firstPage();
-        }
-      });
-    });
+        this.applyCultureFilters();
+
+      }
+    );
 
     this.loadCurrentCultures();
   }
@@ -138,6 +156,343 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     this.dataSource.paginator = this.paginatorRef;
     this.paginatorRef.length = this.dataSource.data.length;
+  }
+
+  /* =========================================================
+    FILTRES DE LA LISTE DES CULTURES
+    ========================================================= */
+
+  private getCultureDateFilterKey(
+    value: any
+  ): string {
+
+    if (!value) {
+      return '';
+    }
+
+
+    /*
+    * Date provenant directement de l'API.
+    */
+    if (typeof value === 'string') {
+
+      const datePart =
+        value.split('T')[0];
+
+      if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+          datePart
+        )
+      ) {
+        return datePart;
+      }
+
+    }
+
+
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return '';
+    }
+
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, '0');
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, '0');
+
+
+    return `${year}-${month}-${day}`;
+  }
+
+
+  /*
+  * Filtres de base :
+  *
+  * - N° culture
+  * - Date "À partir du"
+  *
+  * Le Statut est ensuite appliqué séparément
+  * afin que ses options restent dynamiques.
+  */
+  private getCulturesMatchingBaseFilters():
+    Culture[] {
+
+    const normalizedCode =
+      String(
+        this.cultureCodeFilter || ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const selectedDateKey =
+      this.getCultureDateFilterKey(
+        this.cultureStartDateFromFilter
+      );
+
+
+    return this.allCultures.filter(
+      (culture) => {
+
+        const cultureCode =
+          String(
+            culture?.code_culture || ''
+          )
+            .trim()
+            .toLowerCase();
+
+
+        const cultureDateKey =
+          this.getCultureDateFilterKey(
+            culture?.date_start
+          );
+
+
+        const matchesCode =
+          !normalizedCode ||
+          cultureCode.includes(
+            normalizedCode
+          );
+
+
+        const matchesDate =
+          !selectedDateKey ||
+          (
+            !!cultureDateKey &&
+            cultureDateKey >=
+              selectedDateKey
+          );
+
+
+        return (
+          matchesCode &&
+          matchesDate
+        );
+
+      }
+    );
+  }
+
+
+  /*
+  * Rend le filtre Statut dynamique
+  * selon les cultures encore disponibles
+  * après application du N° culture
+  * et de la Date.
+  */
+  private updateCultureStatusFilterOptions(
+    baseCultures: Culture[]
+  ): void {
+
+    let selectedStatus =
+      this.cultureStatusFilter;
+
+
+    const availableStatuses =
+      Array.from(
+        new Set(
+          baseCultures
+            .map(
+              culture =>
+                this.getStatusLabel(
+                  culture
+                )
+            )
+            .filter(
+              status => !!status
+            )
+        )
+      );
+
+
+    const orderMap =
+      new Map(
+        this.cultureStatusOrder.map(
+          (status, index) => [
+            status,
+            index
+          ]
+        )
+      );
+
+
+    const statusOptions =
+      availableStatuses.sort(
+        (a, b) => {
+
+          const indexA =
+            orderMap.has(a)
+              ? orderMap.get(a)!
+              : Number.MAX_SAFE_INTEGER;
+
+          const indexB =
+            orderMap.has(b)
+              ? orderMap.get(b)!
+              : Number.MAX_SAFE_INTEGER;
+
+
+          if (indexA !== indexB) {
+            return indexA - indexB;
+          }
+
+
+          return a.localeCompare(
+            b,
+            'fr'
+          );
+
+        }
+      );
+
+
+    /*
+    * Si le statut sélectionné n'existe
+    * plus avec les autres filtres,
+    * on le retire automatiquement.
+    */
+    if (
+      selectedStatus &&
+      !statusOptions.includes(
+        selectedStatus
+      )
+    ) {
+
+      selectedStatus = null;
+
+    }
+
+
+    this.cultureStatusFilter =
+      selectedStatus;
+
+    this.cultureStatusFilterOptions =
+      statusOptions;
+  }
+
+
+  public applyCultureFilters(): void {
+
+    /*
+    * 1. N° culture + Date
+    */
+    const baseCultures =
+      this.getCulturesMatchingBaseFilters();
+
+
+    /*
+    * 2. Mise à jour dynamique
+    *    des statuts disponibles.
+    */
+    this.updateCultureStatusFilterOptions(
+      baseCultures
+    );
+
+
+    /*
+    * 3. Application finale du Statut.
+    */
+    const filteredCultures =
+      baseCultures.filter(
+        culture => {
+
+          const status =
+            this.getStatusLabel(
+              culture
+            );
+
+
+          return (
+            !this.cultureStatusFilter ||
+            status ===
+              this.cultureStatusFilter
+          );
+
+        }
+      );
+
+
+    this.dataSource.data =
+      filteredCultures;
+
+
+    /*
+    * Retour à la première page
+    * après chaque filtre.
+    */
+    setTimeout(() => {
+
+      this.syncPaginator();
+
+      if (this.paginatorRef) {
+        this.paginatorRef.firstPage();
+      }
+
+    });
+  }
+
+
+  public onCultureCodeFilterChange(
+    value: string
+  ): void {
+
+    this.cultureCodeFilter =
+      value || '';
+
+    this.applyCultureFilters();
+  }
+
+
+  public onCultureStartDateFromFilterChange(
+    value: Date | null
+  ): void {
+
+    this.cultureStartDateFromFilter =
+      value;
+
+    this.applyCultureFilters();
+  }
+
+
+  public onCultureStatusFilterChange(
+    value: string | null
+  ): void {
+
+    this.cultureStatusFilter =
+      value;
+
+    this.applyCultureFilters();
+  }
+
+
+  public resetCultureFilters(): void {
+
+    this.cultureCodeFilter = '';
+
+    this.cultureStartDateFromFilter =
+      null;
+
+    this.cultureStatusFilter =
+      null;
+
+    this.applyCultureFilters();
   }
 
   private restoreSowingCodeFromContext(): void {
