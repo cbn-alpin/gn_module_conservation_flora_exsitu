@@ -24,6 +24,10 @@ import {
   SemisTableService
 } from '../semis-table/semis-table.service';
 
+import {
+  DataService
+} from '../services/data.service';
+
 export interface Culture {
   id_culture: number;
   code_culture: string;
@@ -109,6 +113,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     private cultureTableService: CultureTableService,
     private cultureService: CultureService,
     private semisTableService: SemisTableService,
+    private dataService: DataService,
     private dialog: MatDialog,
     private dialogService: DialogService,
     private toast: CommonService
@@ -129,6 +134,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     * pour l'en-tête et la fiche Culture.
     */
     this.restoreSowingCodeFromContext();
+    this.restoreTestCodeFromContext();
 
 
     this.cultureTableService.cultures$.subscribe(
@@ -567,6 +573,73 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
           console.error(
             'Impossible de restaurer le code du Semis associé à la Culture :',
+            err
+          );
+
+        }
+
+      });
+
+  }
+
+  private restoreTestCodeFromContext(): void {
+
+    const sourceType =
+      this.exsituFormService
+        .cultureSourceType;
+
+    const idTest =
+      this.exsituFormService
+        .cultureSourceTestId;
+
+
+    if (
+      sourceType !== 'test' ||
+      !idTest
+    ) {
+
+      return;
+    }
+
+
+    /*
+    * Si le code est déjà connu après le clic
+    * sur le bouton Culture, inutile de le recharger.
+    */
+    if (
+      this.exsituFormService
+        .cultureSourceTestCode
+    ) {
+
+      return;
+    }
+
+
+    /*
+    * Cas navigation / F5 :
+    * l'id_test vient de l'URL.
+    * On recharge le Test pour récupérer son code.
+    */
+    this.dataService
+      .getTestWithLabels(
+        idTest
+      )
+      .subscribe({
+
+        next: (test) => {
+
+          this.exsituFormService
+            .setCultureSourceFromTest(
+              idTest,
+              test?.code || null
+            );
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Impossible de restaurer le code du Test de germination associé à la Culture :',
             err
           );
 

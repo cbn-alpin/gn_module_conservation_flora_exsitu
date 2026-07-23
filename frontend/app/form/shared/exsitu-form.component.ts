@@ -281,9 +281,15 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         * /material/A1/culture-table
         *
         * => A1 | NULL | NULL
+        *
+        * Attention :
+        * une URL contenant "test" ne doit surtout
+        * pas être considérée comme une Culture
+        * directe du matériel.
         */
         if (
-          !urlSegments.includes('sowing')
+          !urlSegments.includes('sowing') &&
+          !urlSegments.includes('test')
         ) {
 
           this.exsituFormService
@@ -321,6 +327,42 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
             this.exsituFormService
               .setCultureSourceFromSowing(
                 idSowing,
+                null
+              );
+
+          }
+
+        }
+
+        /*
+        * Cas 3 :
+        * /material/A1/test/T1/culture-table
+        *
+        * => A1 | NULL | T1
+        */
+        if (
+          urlSegments.includes('test')
+        ) {
+
+          const testIndex =
+            urlSegments.indexOf('test') + 1;
+
+          const idTest =
+            Number(
+              urlSegments[testIndex]
+            );
+
+
+          if (
+            testIndex <
+              urlSegments.length &&
+            !isNaN(idTest) &&
+            idTest > 0
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromTest(
+                idTest,
                 null
               );
 
