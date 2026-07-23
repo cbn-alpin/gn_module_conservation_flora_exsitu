@@ -421,6 +421,9 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     const idHarvest =
       this.exsituFormService.idHarvest;
 
+    const idSowing =
+      element?.id_sowing;
+
 
     if (
       !idCulture ||
@@ -440,6 +443,42 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
       'culture-details';
 
 
+    /*
+    * Culture provenant d'un Semis.
+    *
+    * On conserve obligatoirement le Semis
+    * dans l'URL.
+    */
+    if (idSowing) {
+
+      this.router.navigate([
+
+        '/conservation_flora_exsitu/form/harvest',
+
+        idHarvest,
+
+        'material',
+
+        idMaterial,
+
+        'sowing',
+
+        idSowing,
+
+        'culture-details',
+
+        idCulture
+
+      ]);
+
+      return;
+    }
+
+
+    /*
+    * Culture créée directement depuis
+    * le matériel récolté.
+    */
     this.router.navigate([
 
       '/conservation_flora_exsitu/form/harvest',

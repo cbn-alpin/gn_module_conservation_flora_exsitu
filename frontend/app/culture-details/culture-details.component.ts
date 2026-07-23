@@ -15,6 +15,10 @@ import {
   CultureService
 } from '../culture/culture.service';
 
+import {
+  ExsituFormService
+} from '../form/shared/exsitu-form.service';
+
 @Component({
   selector: 'app-culture-details',
   templateUrl: './culture-details.component.html',
@@ -45,7 +49,8 @@ export class CultureDetailsComponent implements OnInit {
 
   constructor(
     public router: Router,
-    private cultureService: CultureService
+    private cultureService: CultureService,
+    private exsituFormService: ExsituFormService
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +94,51 @@ export class CultureDetailsComponent implements OnInit {
       .subscribe({
 
         next: (culture) => {
+
           this.culture = culture;
+
+
+          /*
+          * Culture provenant d'un Semis.
+          *
+          * On restaure aussi le code du Semis
+          * pour l'en-tête.
+          */
+          if (
+            culture?.id_sowing
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromSowing(
+
+                Number(
+                  culture.id_sowing
+                ),
+
+                culture.source_code ||
+                culture.code_sowing ||
+                null
+
+              );
+
+            return;
+          }
+
+
+          /*
+          * Culture créée directement
+          * depuis le matériel récolté.
+          */
+          if (
+            !culture?.id_sowing &&
+            !culture?.id_test
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromMaterial();
+
+          }
+
         },
 
         error: (err) => {

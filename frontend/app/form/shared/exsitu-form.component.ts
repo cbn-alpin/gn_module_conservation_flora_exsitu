@@ -378,8 +378,59 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
               ]
             );
 
-          this.exsituFormService.idMaterial =
-            this.idMaterial;
+          this.exsituFormService.setIdMaterial(
+            this.idMaterial
+          );
+
+        }
+
+
+        /*
+        * Culture créée directement
+        * depuis le matériel récolté.
+        */
+        if (
+          !urlSegments.includes('sowing')
+        ) {
+
+          this.exsituFormService
+            .setCultureSourceFromMaterial();
+
+        }
+
+
+        /*
+        * Culture provenant d'un Semis.
+        */
+        if (
+          urlSegments.includes('sowing')
+        ) {
+
+          const sowingIndex =
+            urlSegments.indexOf('sowing') + 1;
+
+          const idSowing =
+            Number(
+              urlSegments[
+                sowingIndex
+              ]
+            );
+
+
+          if (
+            sowingIndex <
+              urlSegments.length &&
+            !isNaN(idSowing) &&
+            idSowing > 0
+          ) {
+
+            this.exsituFormService
+              .setCultureSourceFromSowing(
+                idSowing,
+                null
+              );
+
+          }
 
         }
 
