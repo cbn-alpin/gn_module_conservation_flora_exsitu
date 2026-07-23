@@ -1338,6 +1338,47 @@ class CultureRepository:
             for (id_culture,) in culture_ids
         ]
 
+    def get_all_by_test(
+        self,
+        id_material: int,
+        id_test: int
+    ):
+        """
+        Cultures associées à un Test
+        de germination précis.
+
+        id_material = matériel courant
+        id_sowing = NULL
+        id_test = test courant
+        """
+
+        self._validate_source(
+            id_material,
+            id_sowing=None,
+            id_test=id_test
+        )
+
+        culture_ids = (
+            db.session.query(
+                TCulture.id_culture
+            )
+            .filter(
+                TCulture.id_material == id_material,
+                TCulture.id_sowing.is_(None),
+                TCulture.id_test == id_test
+            )
+            .order_by(
+                TCulture.date_start.desc(),
+                TCulture.id_culture.desc()
+            )
+            .all()
+        )
+
+        return [
+            self.get_with_labels_by_id(id_culture)
+            for (id_culture,) in culture_ids
+        ]
+
     def update(
         self,
         id_material: int,

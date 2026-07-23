@@ -51,12 +51,26 @@ export class CultureTableService {
     );
   }
 
+  // Cultures associées à un Test précis
+  getCulturesByTest(
+    idMaterial: number,
+    idTest: number
+  ): Observable<any[]> {
+
+    return this.api.get<any[]>(
+
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures?source_type=test&id_test=${idTest}`
+
+    );
+  }
+
 
   // Charger la bonne liste selon le contexte Culture
   loadCultures(
     idMaterial: number,
-    sourceType: 'material' | 'sowing' = 'material',
-    idSowing: number | null = null
+    sourceType: 'material' | 'sowing' | 'test' = 'material',
+    idSowing: number | null = null,
+    idTest: number | null = null
   ): void {
 
     let request$: Observable<any[]>;
@@ -71,6 +85,17 @@ export class CultureTableService {
         this.getCulturesBySowing(
           idMaterial,
           idSowing
+        );
+
+    } else if (
+      sourceType === 'test' &&
+      idTest
+    ) {
+
+      request$ =
+        this.getCulturesByTest(
+          idMaterial,
+          idTest
         );
 
     } else {

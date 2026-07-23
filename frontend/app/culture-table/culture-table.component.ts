@@ -592,6 +592,9 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
       this.exsituFormService
         .cultureSourceSowingId;
 
+    const idTest =
+      this.exsituFormService
+        .cultureSourceTestId;
 
     /*
     * Culture depuis Semis
@@ -608,6 +611,27 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
           this.idMaterial,
           'sowing',
           idSowing
+        );
+
+      return;
+    }
+
+    /*
+    * Culture depuis Test de germination
+    *
+    * A | NULL | T1
+    */
+    if (
+      sourceType === 'test' &&
+      idTest
+    ) {
+
+      this.cultureTableService
+        .loadCultures(
+          this.idMaterial,
+          'test',
+          null,
+          idTest
         );
 
       return;

@@ -1642,6 +1642,11 @@ def list_cultures_by_material(id_material):
         type=int
     )
 
+    id_test = request.args.get(
+        "id_test",
+        type=int
+    )
+
 
     # -----------------------------------------
     # Culture ouverte depuis Matériel récolté
@@ -1680,6 +1685,38 @@ def list_cultures_by_material(id_material):
             return repo.get_all_by_sowing(
                 id_material,
                 id_sowing
+            ), 200
+
+        except ValueError as e:
+
+            return {
+                "error": str(e)
+            }, 400
+
+    # -----------------------------------------
+    # Culture ouverte depuis
+    # un Test de germination
+    #
+    # id_material = courant
+    # id_sowing = NULL
+    # id_test = Test courant
+    # -----------------------------------------
+    if source_type == "test":
+
+        if not id_test:
+
+            return {
+                "error": (
+                    "L'identifiant du test "
+                    "est obligatoire"
+                )
+            }, 400
+
+        try:
+
+            return repo.get_all_by_test(
+                id_material,
+                id_test
             ), 200
 
         except ValueError as e:
