@@ -86,6 +86,16 @@ export const routes: Routes = [
                 path: 'harvest/:id_harvest/material/:idMaterial/sowing/:idSowing/culture-details/:id_culture',
                 component: CultureDetailsComponent,
             },
+
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/test/:idTest/culture-table',
+                component: CultureTableComponent,
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/test/:idTest/culture-details/:id_culture',
+                component: CultureDetailsComponent,
+            },
+
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/culture-table',
                 component: CultureTableComponent,

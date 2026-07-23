@@ -234,27 +234,65 @@ export class GerminationTableComponent implements OnInit {
   }
 
   onCulture(element: any): void {
-    const idTest = element?.id_test;
-    const idMaterial = this.exsituFormService.idMaterial;
-    const idHarvest = this.exsituFormService.idHarvest;
 
-    if (!idTest || !idMaterial || !idHarvest) {
+    const idTest =
+      element?.id_test;
+
+    const codeTest =
+      element?.code || null;
+
+    const idMaterial =
+      this.exsituFormService.idMaterial;
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+
+    if (
+      !idTest ||
+      !idMaterial ||
+      !idHarvest
+    ) {
+
       console.error(
         'Impossible d’ouvrir Culture : identifiant du test, du matériel ou de la récolte manquant.'
       );
+
       return;
     }
 
-    this.exsituFormService.currentTab = 'culture-table';
+
+    /*
+    * Culture ouverte depuis
+    * un Test de germination.
+    *
+    * id_material = matériel courant
+    * id_sowing   = NULL
+    * id_test     = test courant
+    */
+    this.exsituFormService
+      .setCultureSourceFromTest(
+        idTest,
+        codeTest
+      );
+
+
+    this.exsituFormService.currentTab =
+      'culture-table';
+
 
     this.router.navigate([
       '/conservation_flora_exsitu/form/harvest',
       idHarvest,
       'material',
       idMaterial,
+      'test',
+      idTest,
       'culture-table'
     ]);
   }
+
+
   onRowClick(row: any): void {
     const idTest = row.id_test;
     const idMaterial = this.exsituFormService.idMaterial;
