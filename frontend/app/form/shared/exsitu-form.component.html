@@ -104,9 +104,15 @@
     
     <!-- Les header -->
 
-    <div class="mb-5" *ngIf="exsituFormService.currentTab !== 'harvest'">
+    <div
+        *ngIf="exsituFormService.currentTab !== 'harvest'"
+        [class.mb-5]="
+            exsituFormService.currentTab !== 'culture-table' &&
+            exsituFormService.currentTab !== 'culture-details'
+        "
+        >
         <cs-header></cs-header>
-    </div>
+        </div>
 
     
 

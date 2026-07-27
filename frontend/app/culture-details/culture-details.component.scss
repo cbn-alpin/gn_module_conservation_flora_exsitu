@@ -12,7 +12,13 @@
    ========================================================= */
 
 .return-button {
-  margin: 18px 15px 10px;
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
 }
 
 .return-button button {
@@ -36,7 +42,7 @@
    ========================================================= */
 
 .culture-info-panel {
-  margin: 18px 15px 26px;
+  margin: 0 15px 26px;
 
   overflow: hidden;
 

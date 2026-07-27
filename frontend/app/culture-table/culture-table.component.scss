@@ -3,7 +3,13 @@
    ========================================================= */
 
 .culture-list-return-button {
-  margin: 18px 15px 10px;
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
 }
 
 
