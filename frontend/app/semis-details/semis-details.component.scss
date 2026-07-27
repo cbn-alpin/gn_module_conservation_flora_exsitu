@@ -184,8 +184,15 @@ mat-card-content,
 }
 
 .return-button {
-  margin: 20px 0 10px 10px; /* haut, droite, bas, gauche */
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
 }
+
 .return-button button {
   font-weight: bold;
   background-color: #d21919;
@@ -323,7 +330,7 @@ mat-card-content,
 
 /* Page principale : Les Informations du semis */
 .sowing-info-panel {
-  margin: 18px 15px 26px 15px;
+  margin: 0 15px 26px;
   border: 1px solid #d8ead8;
   border-radius: 18px;
   overflow: hidden;
