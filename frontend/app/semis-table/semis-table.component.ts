@@ -10,6 +10,13 @@
   import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
   import { CommonService } from '@geonature_common/service/common.service';
   import { MatPaginator } from '@angular/material/paginator';
+  import {
+    DateAdapter
+  } from '@angular/material/core';
+
+  import {
+    FrenchDateAdapter
+  } from '../services/french-date-adapter';
 
   export interface Semis {
     code: any;
@@ -24,8 +31,16 @@
   @Component({
     selector: 'app-semis-table',
     templateUrl: './semis-table.component.html',
-    styleUrls: ['./semis-table.component.scss']
+    styleUrls: ['./semis-table.component.scss'],
+
+    providers: [
+      {
+        provide: DateAdapter,
+        useClass: FrenchDateAdapter
+      }
+    ]
   })
+
   export class SemisTableComponent implements OnInit, AfterViewInit {
     idMaterial: number | null = null;
     sowings:any;
