@@ -28,6 +28,14 @@ import {
   DataService
 } from '../services/data.service';
 
+import {
+  DateAdapter
+} from '@angular/material/core';
+
+import {
+  FrenchDateAdapter
+} from '../services/french-date-adapter';
+
 export interface Culture {
   id_culture: number;
   code_culture: string;
@@ -60,8 +68,16 @@ export interface Culture {
 @Component({
   selector: 'app-culture-table',
   templateUrl: './culture-table.component.html',
-  styleUrls: ['./culture-table.component.scss']
+  styleUrls: ['./culture-table.component.scss'],
+
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: FrenchDateAdapter
+    }
+  ]
 })
+
 export class CultureTableComponent implements OnInit, AfterViewInit {
 
   idMaterial: number | null = null;
