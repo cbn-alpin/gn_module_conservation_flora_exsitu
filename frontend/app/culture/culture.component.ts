@@ -32,10 +32,6 @@ import {
 } from '../services/french-date-adapter';
 
 import {
-  Router
-} from '@angular/router';
-
-import {
   filter,
   take
 } from 'rxjs/operators';
@@ -84,7 +80,6 @@ export class CultureComponent implements OnInit {
     private cultureService: CultureService,
     private exsituFormService: ExsituFormService,
     private cfg: ConfigService,
-    private router: Router,
     private toast: CommonService,
     private dialogService: DialogService,
     @Inject(MAT_DIALOG_DATA) public modalData: any

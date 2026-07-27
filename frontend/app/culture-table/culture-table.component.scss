@@ -1,3 +1,33 @@
+/* =========================================================
+   RETOUR VERS L'ORIGINE DE LA CULTURE
+   ========================================================= */
+
+.culture-list-return-button {
+  margin: 18px 15px 10px;
+}
+
+
+.culture-list-return-button button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+
+  background-color: #6d4c41 !important;
+}
+
+
+.culture-list-return-button button:hover {
+  background-color: #4e342e !important;
+}
+
+
+.culture-list-return-button mat-icon {
+  color: #ffffff !important;
+}
+
 /* Carte principale de la liste des cultures */
 .culture-list-card {
   margin: 0;

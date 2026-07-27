@@ -151,6 +151,88 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     this.loadCurrentCultures();
   }
 
+  onBackToSource(): void {
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+    const idMaterial =
+      this.idMaterial ||
+      this.exsituFormService.idMaterial;
+
+    const sourceType =
+      this.exsituFormService
+        .cultureSourceType;
+
+
+    if (!idHarvest) {
+
+      console.error(
+        'Impossible de revenir en arrière : idHarvest manquant.'
+      );
+
+      return;
+    }
+
+
+    /*
+    * Culture ouverte depuis un Semis
+    */
+    if (
+      sourceType === 'sowing' &&
+      idMaterial
+    ) {
+
+      this.exsituFormService.currentTab =
+        'semis-table';
+
+      this.router.navigate([
+
+        `/conservation_flora_exsitu/form/harvest/${idHarvest}/material/${idMaterial}/semis-table`
+
+      ]);
+
+      return;
+    }
+
+
+    /*
+    * Culture ouverte depuis
+    * un Test de germination
+    */
+    if (
+      sourceType === 'test' &&
+      idMaterial
+    ) {
+
+      this.exsituFormService.currentTab =
+        'germination-table';
+
+      this.router.navigate([
+
+        `/conservation_flora_exsitu/form/harvest/${idHarvest}/material/${idMaterial}/germination-table`
+
+      ]);
+
+      return;
+    }
+
+
+    /*
+    * Culture ouverte directement
+    * depuis Matériel récolté
+    */
+    this.exsituFormService.currentTab =
+      'materials';
+
+    this.router.navigate([
+
+      `/conservation_flora_exsitu/form/harvest/${idHarvest}/material-form`
+
+    ]);
+
+  }
+
   ngAfterViewInit(): void {
     this.syncPaginator();
   }
