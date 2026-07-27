@@ -213,6 +213,13 @@ background-color: #ffffff;
 
 .semis-list-table {
   width: 100%;
+
+  /*
+   * Empêche le navigateur de recalculer
+   * les colonnes selon les lignes filtrées.
+   */
+  table-layout: fixed;
+
   overflow: hidden;
   border: 1px solid #d8ead8;
   border-radius: 12px;
@@ -224,22 +231,35 @@ background-color: #ffffff;
   background: #e8f5e9;
 }
 
-:host ::ng-deep .semis-list-table .mat-mdc-header-cell {
+:host ::ng-deep
+.semis-list-table .mat-mdc-header-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
   color: #1b5e20;
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.2px;
   text-transform: uppercase;
+
   border-bottom: 1px solid #c8e6c9;
 }
 
-:host ::ng-deep .semis-list-table .mat-mdc-row {
-  height: 44px;
-}
 
-:host ::ng-deep .semis-list-table .mat-mdc-cell {
+:host ::ng-deep
+.semis-list-table .mat-mdc-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
   color: #263238;
   font-size: 13px;
+
   border-bottom: 1px solid #edf7ed;
 }
 
@@ -248,17 +268,67 @@ background-color: #ffffff;
   background-color: rgb(235, 250, 235) !important;
 }
 
-:host ::ng-deep .semis-list-table .mat-column-code {
+/* =========================================================
+   LARGEURS FIXES DES COLONNES SEMIS
+   ========================================================= */
+
+/* Code */
+:host ::ng-deep
+.semis-list-table .mat-column-code {
+  width: 14%;
   font-weight: 800;
 }
 
-:host ::ng-deep .semis-list-table .mat-column-emergence_rate {
-  font-weight: 750;
+
+/* % de levée */
+:host ::ng-deep
+.semis-list-table .mat-column-emergence_rate {
+  width: 16%;
+
   color: #1b5e20;
+  font-weight: 750;
 }
 
-:host ::ng-deep .semis-list-table .mat-column-actions {
-  width: 72px;
+
+/* Date début */
+:host ::ng-deep
+.semis-list-table .mat-column-start_date {
+  width: 12%;
+}
+
+
+/* Date fin */
+:host ::ng-deep
+.semis-list-table .mat-column-end_date {
+  width: 12%;
+}
+
+
+/* Durée */
+:host ::ng-deep
+.semis-list-table .mat-column-duration {
+  width: 10%;
+}
+
+
+/* Méthode */
+:host ::ng-deep
+.semis-list-table .mat-column-id_sowing_method {
+  width: 14%;
+}
+
+
+/* Substrat */
+:host ::ng-deep
+.semis-list-table .mat-column-substrate {
+  width: 14%;
+}
+
+
+/* Actions */
+:host ::ng-deep
+.semis-list-table .mat-column-actions {
+  width: 8%;
   text-align: center;
 }
 
