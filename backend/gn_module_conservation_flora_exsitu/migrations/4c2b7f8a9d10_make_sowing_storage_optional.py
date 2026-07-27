@@ -1012,8 +1012,43 @@ def upgrade():
 
         schema='pr_conservation_flora_exsitu'
     )
+
+    # Liaison entre les actions et la Culture
+    op.add_column(
+        't_action',
+        sa.Column(
+            'id_culture',
+            sa.Integer(),
+            nullable=True
+        ),
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    op.create_foreign_key(
+        'fk_t_action_id_culture',
+        't_action',
+        't_culture',
+        ['id_culture'],
+        ['id_culture'],
+        source_schema='pr_conservation_flora_exsitu',
+        referent_schema='pr_conservation_flora_exsitu',
+        ondelete='SET NULL'
+    )
     
 def downgrade():
+
+    op.drop_constraint(
+        'fk_t_action_id_culture',
+        't_action',
+        schema='pr_conservation_flora_exsitu',
+        type_='foreignkey'
+    )
+
+    op.drop_column(
+        't_action',
+        'id_culture',
+        schema='pr_conservation_flora_exsitu'
+    )
     
     op.execute("""
         DROP TABLE IF EXISTS

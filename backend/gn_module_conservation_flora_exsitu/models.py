@@ -901,6 +901,14 @@ class TAction(db.Model):
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_sowing.id_sowing", ondelete="SET NULL")
     )
+    id_culture = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_culture.id_culture",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
     date_start = db.Column(db.DateTime, nullable=False)
     date_end = db.Column(db.DateTime)
 
@@ -978,6 +986,7 @@ class TAction(db.Model):
             "id_action": self.id_action,
             "id_test": self.id_test,
             "id_sowing": self.id_sowing,
+            "id_culture": self.id_culture,
             "date_start": self.date_start.isoformat() if self.date_start else None,
             "date_end": self.date_end.isoformat() if self.date_end else None,
             "id_actor": self.id_actor,
