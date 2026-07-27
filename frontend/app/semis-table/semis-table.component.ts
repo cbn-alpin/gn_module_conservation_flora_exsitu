@@ -725,6 +725,34 @@
 
       return value.replace(/[A-Za-z0-9]/g, (char) => boldItalicChars[char] || char);
     }
+
+    onBackToMaterial(): void {
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+
+    if (!idHarvest) {
+
+      console.error(
+        'Impossible de revenir au matériel récolté : idHarvest manquant.'
+      );
+
+      return;
+    }
+
+
+    this.exsituFormService.currentTab =
+      'materials';
+
+
+    this.router.navigate([
+
+      `/conservation_flora_exsitu/form/harvest/${idHarvest}/material-form`
+
+    ]);
+
+  }
   
     onDelete(element: any) {
       if (!this.idMaterial || !element?.id_sowing) {
