@@ -56,13 +56,21 @@
                  
 
             <!-- Semis -->
-            <a class="tablinks"
-                [class.disabled]="!idMaterial"
+            <a
+            class="tablinks"
+            [class.disabled]="!idMaterial"
+            [ngClass]="{
+                active:
+                exsituFormService.currentTab === 'semis-table' ||
+                exsituFormService.currentTab === 'semis-details'
+            }"
+            (click)="idMaterial ? goToTab('semis-table') : null"
+            >
+            <mat-icon class="example-tab-icon">
+                grain
+            </mat-icon>
 
-                [ngClass]="{ active: exsituFormService.currentTab === 'semis-table' }"
-                (click)="idMaterial ? goToTab('semis-table') : null">
-                <mat-icon class="example-tab-icon">grain</mat-icon>
-                Semis
+            Semis
             </a>
 
 
