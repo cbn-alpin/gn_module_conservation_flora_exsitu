@@ -1037,18 +1037,19 @@ def upgrade():
     
 def downgrade():
 
-    op.drop_constraint(
-        'fk_t_action_id_culture',
-        't_action',
-        schema='pr_conservation_flora_exsitu',
-        type_='foreignkey'
-    )
+    op.execute("""
+        ALTER TABLE
+        pr_conservation_flora_exsitu.t_action
+        DROP CONSTRAINT IF EXISTS
+        fk_t_action_id_culture;
+    """)
 
-    op.drop_column(
-        't_action',
-        'id_culture',
-        schema='pr_conservation_flora_exsitu'
-    )
+    op.execute("""
+        ALTER TABLE
+        pr_conservation_flora_exsitu.t_action
+        DROP COLUMN IF EXISTS
+        id_culture;
+    """)
     
     op.execute("""
         DROP TABLE IF EXISTS
