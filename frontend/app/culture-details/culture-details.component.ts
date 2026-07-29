@@ -84,6 +84,7 @@ export class CultureDetailsComponent implements OnInit {
     }
 
     this.loadCultureDetails();
+    this.loadCultureActions();
   }
 
 
@@ -178,6 +179,56 @@ export class CultureDetailsComponent implements OnInit {
       });
   }
 
+  loadCultureActions(): void {
+
+    this.cultureService
+      .getCultureActions(
+        this.idCulture
+      )
+      .subscribe({
+
+        next: (actions) => {
+
+          /*
+          * Le backend retourne :
+          * label_action_type
+          * label_actor
+          *
+          * On les adapte aux noms déjà utilisés
+          * dans le HTML de Détails Culture.
+          */
+          this.actionDataSource.data =
+            (actions || []).map(
+              (action: any) => ({
+                ...action,
+
+                action_type_label:
+                  action.label_action_type ||
+                  action.action_type_label ||
+                  '-',
+
+                actor_label:
+                  action.label_actor ||
+                  action.actor_label ||
+                  '-'
+              })
+            );
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Erreur lors du chargement des actions de la Culture :',
+            err
+          );
+
+          this.actionDataSource.data = [];
+
+        }
+
+      });
+  }
 
   getSourceLabel(): string {
 

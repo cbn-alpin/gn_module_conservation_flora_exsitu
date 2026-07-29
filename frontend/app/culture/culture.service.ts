@@ -49,4 +49,13 @@ export class CultureService {
     );
   }
 
+  getCultureActions(
+    idCulture: number
+  ): Observable<any[]> {
+
+    return this.dataService.getCultureActions(
+      idCulture
+    );
+  }
+
 }

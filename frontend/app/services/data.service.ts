@@ -352,6 +352,16 @@ export class DataService {
     );
   }
 
+  // Récupérer les actions d’une Culture
+  getCultureActions(
+    idCulture: number
+  ): Observable<any[]> {
+
+    return this.api.get<any[]>(
+      `${this.moduleBaseUrl}/cultures/${idCulture}/actions`
+    );
+  }
+
   // Modifier une culture
   updateCulture(
     idMaterial: number,
