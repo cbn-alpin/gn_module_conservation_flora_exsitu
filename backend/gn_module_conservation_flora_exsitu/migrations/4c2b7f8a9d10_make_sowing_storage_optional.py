@@ -321,6 +321,139 @@ def upgrade():
             AND n.cd_nomenclature = ev.cd_nomenclature
         );
     """)
+    # Stades de développement physiologique des Cultures
+    op.execute("""
+        INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source
+        )
+        SELECT
+            'CFE_PHYSIOLOGICAL_STAGE',
+            'Stade physiologique',
+            'Nomenclature des stades de développement physiologique d’une Culture.',
+            'Stade physiologique',
+            'Nomenclature des stades de développement physiologique d’une Culture.',
+            'conservation_flora_exsitu'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHYSIOLOGICAL_STAGE'
+        );
+
+        WITH physiological_stage_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHYSIOLOGICAL_STAGE'
+        ),
+        expected_values AS (
+            SELECT *
+            FROM (
+                VALUES
+                    (
+                        'rad',
+                        'radicule',
+                        'Radicule',
+                        'Stade physiologique correspondant à la radicule',
+                        '.001'
+                    ),
+                    (
+                        'cot',
+                        'cotyledons',
+                        'Cotylédon(s)',
+                        'Stade physiologique correspondant aux cotylédons',
+                        '.002'
+                    ),
+                    (
+                        'plantule',
+                        'plantule',
+                        'Plantule',
+                        'Stade physiologique de plantule',
+                        '.003'
+                    ),
+                    (
+                        'juv',
+                        'juvenile',
+                        'Juvénile',
+                        'Stade physiologique juvénile',
+                        '.004'
+                    ),
+                    (
+                        'adu',
+                        'adulte',
+                        'Adulte',
+                        'Stade physiologique adulte',
+                        '.005'
+                    ),
+                    (
+                        'adu_veg',
+                        'adulteVegetatif',
+                        'Adulte végétatif',
+                        'Stade adulte en développement végétatif',
+                        '.006'
+                    ),
+                    (
+                        'adu_fle',
+                        'adulteEnFleur',
+                        'Adulte en fleur',
+                        'Stade adulte en fleur',
+                        '.007'
+                    ),
+                    (
+                        'adu_fru',
+                        'adulteEnFruit',
+                        'Adulte en fruit',
+                        'Stade adulte en fruit',
+                        '.008'
+                    ),
+                    (
+                        'aut',
+                        'autres',
+                        'Autres',
+                        'Autre stade de développement physiologique',
+                        '.009'
+                    )
+            ) AS v(
+                cd_nomenclature,
+                mnemonique,
+                label,
+                definition,
+                hierarchy
+            )
+        )
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            pst.id_type,
+            ev.cd_nomenclature,
+            ev.mnemonique,
+            ev.label,
+            ev.definition,
+            ev.label,
+            ev.definition,
+            'conservation_flora_exsitu',
+            ev.hierarchy
+        FROM physiological_stage_type pst
+        CROSS JOIN expected_values ev
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = pst.id_type
+            AND n.cd_nomenclature = ev.cd_nomenclature
+        );
+    """)
     op.execute("""
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
@@ -1334,6 +1467,18 @@ def downgrade():
                 WHERE id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
                 AND cd_nomenclature = 'aut'
         );
+    """)
+    # Suppression de la nomenclature des stades physiologiques
+    op.execute("""
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHYSIOLOGICAL_STAGE'
+        );
+
+        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_PHYSIOLOGICAL_STAGE';
     """)
     # Suppression de la nomenclature des types de transplantation
     op.execute("""
