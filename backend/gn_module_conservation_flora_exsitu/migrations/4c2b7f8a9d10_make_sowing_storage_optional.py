@@ -454,6 +454,99 @@ def upgrade():
             AND n.cd_nomenclature = ev.cd_nomenclature
         );
     """)
+
+    # Localisations principales des actions de Culture
+    op.execute("""
+        INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source
+        )
+        SELECT
+            'CFE_MAIN_LOCATION',
+            'Localisation principale',
+            'Nomenclature des localisations principales des actions de Culture.',
+            'Localisation principale',
+            'Nomenclature des localisations principales des actions de Culture.',
+            'conservation_flora_exsitu'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_MAIN_LOCATION'
+        );
+
+        WITH main_location_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_MAIN_LOCATION'
+        ),
+        expected_values AS (
+            SELECT *
+            FROM (
+                VALUES
+                    (
+                        'site_culture',
+                        'siteCulture',
+                        'Site de culture',
+                        'Localisation principale sur un site de culture',
+                        '.001'
+                    ),
+                    (
+                        'labo',
+                        'laboratoire',
+                        'Laboratoire',
+                        'Localisation principale en laboratoire',
+                        '.002'
+                    ),
+                    (
+                        'jardin',
+                        'jardin',
+                        'Jardin',
+                        'Localisation principale dans un jardin',
+                        '.003'
+                    )
+            ) AS v(
+                cd_nomenclature,
+                mnemonique,
+                label,
+                definition,
+                hierarchy
+            )
+        )
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            mlt.id_type,
+            ev.cd_nomenclature,
+            ev.mnemonique,
+            ev.label,
+            ev.definition,
+            ev.label,
+            ev.definition,
+            'conservation_flora_exsitu',
+            ev.hierarchy
+        FROM main_location_type mlt
+        CROSS JOIN expected_values ev
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = mlt.id_type
+            AND n.cd_nomenclature = ev.cd_nomenclature
+        );
+    """)
+
     op.execute("""
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
@@ -1468,6 +1561,19 @@ def downgrade():
                 AND cd_nomenclature = 'aut'
         );
     """)
+    # Suppression de la nomenclature des localisations principales
+    op.execute("""
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_MAIN_LOCATION'
+        );
+
+        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_MAIN_LOCATION';
+    """)
+
     # Suppression de la nomenclature des stades physiologiques
     op.execute("""
         DELETE FROM ref_nomenclatures.t_nomenclatures
