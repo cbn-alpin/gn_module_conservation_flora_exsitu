@@ -1860,7 +1860,7 @@ def get_culture_transplantation(
         }, 404
 
     return transplantation, 200
-    
+
 @blueprint.route(
     "/materials/<int:id_material>/cultures/<int:id_culture>",
     methods=["PUT"]
@@ -2169,7 +2169,47 @@ def get_actions_by_id_test(id_test):
     except Exception as e:
         current_app.logger.error(f"Erreur lors du chargement des actions pour le test {id_test}: {e}")
         return jsonify({"error": "Erreur interne du serveur"}), 500
+@blueprint.route(
+    "/cultures/<int:id_culture>/actions",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def get_actions_by_id_culture(
+    id_culture
+):
+    try:
+        culture = (
+            CultureRepository()
+            .get_by_id(id_culture)
+        )
 
+        if not culture:
+            return {
+                "error": "Culture non trouvée"
+            }, 404
+
+        actions = (
+            ActionRepository()
+            .get_actions_by_id_culture(
+                id_culture
+            )
+        )
+
+        return actions, 200
+
+    except Exception:
+        current_app.logger.exception(
+            "get_actions_by_id_culture failed "
+            f"for Culture {id_culture}"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
 @blueprint.route("/actions/<int:id_action>/with-labels", methods=["GET"])
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @json_resp
