@@ -197,6 +197,40 @@ def upgrade():
         AND cd_nomenclature = 'tra';
     """)
 
+    # Type d'action réservé aux actions de Culture
+    op.execute("""
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'transp',
+            'transplantation',
+            'Transplantation',
+            'Action de transplantation réalisée dans le cadre du suivi d’une Culture',
+            'Transplantation',
+            'Action de transplantation réalisée dans le cadre du suivi d’une Culture',
+            'conservation_flora_exsitu',
+            '.007'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_ACTION_TYPE'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type =
+                ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'transp'
+        );
+    """)
+
     op.execute("""
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
@@ -1210,6 +1244,17 @@ def downgrade():
                 WHERE id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
                 AND cd_nomenclature = 'aut'
         );
+    """)
+
+    # Suppression du type d'action Culture : Transplantation
+    op.execute("""
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        )
+        AND cd_nomenclature = 'transp';
     """)
 
     op.execute("""
