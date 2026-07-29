@@ -1834,7 +1834,33 @@ def create_culture_transplantation(
         return {
             "error": "Erreur interne du serveur"
         }, 500
-        
+@blueprint.route(
+    "/actions/<int:id_action>/transplantation",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def get_culture_transplantation(
+    id_action
+):
+    transplantation = (
+        CultureActionTransplantationRepository()
+        .get_by_action(id_action)
+    )
+
+    if not transplantation:
+        return {
+            "error": (
+                "Action de transplantation "
+                "non trouvée"
+            )
+        }, 404
+
+    return transplantation, 200
+    
 @blueprint.route(
     "/materials/<int:id_material>/cultures/<int:id_culture>",
     methods=["PUT"]
