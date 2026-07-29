@@ -1,0 +1,40 @@
+<mat-card class="culture-action-card">
+
+  <mat-card-header>
+
+    <mat-card-title>
+      Ajouter une action de Culture
+    </mat-card-title>
+
+  </mat-card-header>
+
+
+  <mat-card-content>
+
+    <p>
+      Culture associée :
+      <strong>
+        {{
+          dialogData?.codeCulture ||
+          dialogData?.idCulture ||
+          '-'
+        }}
+      </strong>
+    </p>
+
+  </mat-card-content>
+
+
+  <mat-card-actions align="end">
+
+    <button
+      mat-button
+      type="button"
+      (click)="onCancel()"
+    >
+      Annuler
+    </button>
+
+  </mat-card-actions>
+
+</mat-card>
