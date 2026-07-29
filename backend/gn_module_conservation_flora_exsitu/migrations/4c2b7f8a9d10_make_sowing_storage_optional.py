@@ -1384,8 +1384,190 @@ def upgrade():
         referent_schema='pr_conservation_flora_exsitu',
         ondelete='SET NULL'
     )
-    
+
+    # Table spécifique aux actions de transplantation de Culture
+    op.create_table(
+        't_culture_action_transplantation',
+
+        sa.Column(
+            'id_culture_action_transplantation',
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False
+        ),
+
+        sa.Column(
+            'id_action',
+            sa.Integer(),
+            nullable=False
+        ),
+
+        sa.Column(
+            'id_type',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'intervention_quantity',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'in_progress_quantity',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'packaging',
+            sa.String(length=100),
+            nullable=True
+        ),
+
+        sa.Column(
+            'substrat',
+            JSONB(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'id_physiological_development_stage',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'id_main_location',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'precise_location',
+            sa.String(length=100),
+            nullable=True
+        ),
+
+        sa.Column(
+            'remarks',
+            sa.Text(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'meta_create_by',
+            sa.Integer(),
+            nullable=False
+        ),
+
+        sa.Column(
+            'meta_create_date',
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text('now()')
+        ),
+
+        sa.Column(
+            'meta_update_by',
+            sa.Integer(),
+            nullable=True
+        ),
+
+        sa.Column(
+            'meta_update_date',
+            sa.DateTime(),
+            nullable=True
+        ),
+
+        sa.PrimaryKeyConstraint(
+            'id_culture_action_transplantation',
+            name='pk_t_culture_action_transplantation'
+        ),
+
+        sa.UniqueConstraint(
+            'id_action',
+            name='uq_t_culture_action_transplantation_id_action'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_action'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_action.id_action'
+            ],
+            name='fk_t_culture_action_transplantation_id_action',
+            ondelete='CASCADE'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_type'],
+            [
+                'ref_nomenclatures.'
+                't_nomenclatures.id_nomenclature'
+            ],
+            name='fk_t_culture_action_transplantation_id_type',
+            ondelete='SET NULL'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_physiological_development_stage'],
+            [
+                'ref_nomenclatures.'
+                't_nomenclatures.id_nomenclature'
+            ],
+            name=(
+                'fk_culture_transplantation_'
+                'physiological_stage'
+            ),
+            ondelete='SET NULL'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['id_main_location'],
+            [
+                'ref_nomenclatures.'
+                't_nomenclatures.id_nomenclature'
+            ],
+            name=(
+                'fk_t_culture_action_transplantation_'
+                'id_main_location'
+            ),
+            ondelete='SET NULL'
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['meta_create_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_transplantation_'
+                'meta_create_by'
+            )
+        ),
+
+        sa.ForeignKeyConstraint(
+            ['meta_update_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_transplantation_'
+                'meta_update_by'
+            ),
+            ondelete='SET NULL'
+        ),
+
+        schema='pr_conservation_flora_exsitu'
+    )
+
+
 def downgrade():
+
+    # Suppression des actions de transplantation de Culture
+    op.execute("""
+        DROP TABLE IF EXISTS
+        pr_conservation_flora_exsitu.
+        t_culture_action_transplantation;
+    """)
 
     op.execute("""
         ALTER TABLE
