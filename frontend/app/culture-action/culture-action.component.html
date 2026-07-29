@@ -1,40 +1,317 @@
-<mat-card class="culture-action-card">
-
-  <mat-card-header>
-
-    <mat-card-title>
-      Ajouter une action de Culture
-    </mat-card-title>
-
+<mat-card class="culture-action-form-card">
+  <mat-card-header class="culture-action-dialog-header">
+    <mat-card-title>Ajouter une action de Culture</mat-card-title>
   </mat-card-header>
 
-
   <mat-card-content>
+    <div class="culture-associated-banner">
+      <div class="culture-associated-banner-icon"><mat-icon>link</mat-icon></div>
+      <div class="culture-associated-banner-text">
+        <span>Culture associée</span>
+        <strong>{{ dialogData?.codeCulture || dialogData?.idCulture || '-' }}</strong>
+      </div>
+    </div>
 
-    <p>
-      Culture associée :
-      <strong>
-        {{
-          dialogData?.codeCulture ||
-          dialogData?.idCulture ||
-          '-'
-        }}
-      </strong>
-    </p>
-
-  </mat-card-content>
-
-
-  <mat-card-actions align="end">
-
-    <button
-      mat-button
-      type="button"
-      (click)="onCancel()"
+    <form
+      [formGroup]="cultureActionForm"
+      class="culture-action-form"
+      (ngSubmit)="onSubmit()"
     >
-      Annuler
-    </button>
+      <div class="section-header">
+        <div class="section-icon"><mat-icon>assignment</mat-icon></div>
+        <div>
+          <strong>Identification de l'action</strong>
+          <span>Type d'action et période de réalisation</span>
+        </div>
+      </div>
 
-  </mat-card-actions>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Type d'action</mat-label>
+          <input matInput value="Transplantation" disabled>
+          <mat-icon matSuffix>swap_horiz</mat-icon>
+        </mat-form-field>
 
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Date de début</mat-label>
+          <input
+            matInput
+            [matDatepicker]="startDatePicker"
+            formControlName="date_start"
+            required
+          >
+          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #startDatePicker></mat-datepicker>
+          <mat-error *ngIf="cultureActionForm.get('date_start')?.hasError('required')">
+            La date de début est obligatoire.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Date de fin</mat-label>
+          <input matInput [matDatepicker]="endDatePicker" formControlName="date_end">
+          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #endDatePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div
+        class="business-error"
+        *ngIf="cultureActionForm.hasError('dateEndBeforeStart')"
+      >
+        La date de fin doit être postérieure ou égale à la date de début.
+      </div>
+
+      <div class="section-header">
+        <div class="section-icon"><mat-icon>swap_horiz</mat-icon></div>
+        <div>
+          <strong>Paramètres de transplantation</strong>
+          <span>Type, quantités et conditionnement de l'intervention</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Type de transplantation</mat-label>
+          <mat-select formControlName="id_type">
+            <mat-option [value]="null">Aucun</mat-option>
+            <mat-option
+              *ngFor="let option of transplantationTypeOptions"
+              [value]="option.id_nomenclature"
+            >
+              {{ getOptionLabel(option) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Quantité intervention</mat-label>
+          <input
+            matInput
+            type="number"
+            min="1"
+            formControlName="intervention_quantity"
+          >
+          <mat-error *ngIf="cultureActionForm.get('intervention_quantity')?.hasError('min')">
+            La quantité doit être supérieure à 0.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Quantité en cours</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            formControlName="in_progress_quantity"
+          >
+          <mat-error *ngIf="cultureActionForm.get('in_progress_quantity')?.hasError('min')">
+            La quantité ne peut pas être négative.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row" *ngIf="showPackagingField">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Conditionnement</mat-label>
+          <input matInput maxlength="100" formControlName="packaging">
+          <mat-hint align="end">
+            {{ cultureActionForm.get('packaging')?.value?.length || 0 }}/100
+          </mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="subsection-header">
+        <mat-icon>terrain</mat-icon>
+        <span>Composition du substrat</span>
+      </div>
+
+      <div class="substrate-toolbar">
+        <div>
+          <strong>Substrats utilisés</strong>
+          <span>Type, catégorie et pourcentage</span>
+        </div>
+        <button
+          mat-stroked-button
+          type="button"
+          class="add-substrate-button"
+          (click)="addSubstrate()"
+        >
+          <mat-icon>add</mat-icon>
+          Ajouter un substrat
+        </button>
+      </div>
+
+      <div formArrayName="substrat" class="substrate-list">
+        <div
+          *ngFor="let substrate of substrates.controls; let index = index"
+          [formGroupName]="index"
+          class="substrate-row"
+        >
+          <div class="substrate-index">{{ index + 1 }}</div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Type de substrat</mat-label>
+            <input matInput formControlName="type">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Catégorie</mat-label>
+            <mat-select formControlName="category">
+              <mat-option [value]="null">Aucune</mat-option>
+              <mat-option value="principal">Principal</mat-option>
+              <mat-option value="secondary">Secondaire</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Pourcentage</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              max="100"
+              formControlName="percentage"
+            >
+            <span matSuffix>%</span>
+            <mat-error
+              *ngIf="
+                substrate.get('percentage')?.hasError('min') ||
+                substrate.get('percentage')?.hasError('max')
+              "
+            >
+              Valeur comprise entre 0 et 100.
+            </mat-error>
+          </mat-form-field>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="remove-substrate-button"
+            matTooltip="Supprimer ce substrat"
+            (click)="removeSubstrate(index)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-substrate-state" *ngIf="substrates.length === 0">
+        <mat-icon>info</mat-icon>
+        <span>Aucun substrat renseigné.</span>
+      </div>
+
+      <div class="substrate-total" *ngIf="substrates.length > 0">
+        <span>Total renseigné</span>
+        <strong>{{ substratePercentageTotal }} %</strong>
+      </div>
+
+      <div class="section-header">
+        <div class="section-icon"><mat-icon>place</mat-icon></div>
+        <div>
+          <strong>Développement et localisation</strong>
+          <span>Stade physiologique et emplacement de la Culture</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Phase de développement physiologique</mat-label>
+          <mat-select formControlName="id_physiological_development_stage">
+            <mat-option [value]="null">Aucune</mat-option>
+            <mat-option
+              *ngFor="let option of physiologicalStageOptions"
+              [value]="option.id_nomenclature"
+            >
+              {{ getOptionLabel(option) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Localisation principale</mat-label>
+          <mat-select formControlName="id_main_location">
+            <mat-option [value]="null">Aucune</mat-option>
+            <mat-option
+              *ngFor="let option of mainLocationOptions"
+              [value]="option.id_nomenclature"
+            >
+              {{ getOptionLabel(option) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Localisation précise</mat-label>
+          <input matInput maxlength="100" formControlName="precise_location">
+          <mat-hint align="end">
+            {{ cultureActionForm.get('precise_location')?.value?.length || 0 }}/100
+          </mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="section-header">
+        <div class="section-icon"><mat-icon>person</mat-icon></div>
+        <div>
+          <strong>Suivi et informations complémentaires</strong>
+          <span>Personne ayant effectué l'action et remarques générales</span>
+        </div>
+      </div>
+
+      <div class="form-row follow-up-row">
+        <div class="form-group half-width observer-field">
+          <small>Effectué par</small>
+          <pnx-observers
+            [bindAllItem]="true"
+            [parentFormControl]="cultureActionForm.controls.id_actor"
+            [codeList]="observersListCode"
+            [multiSelect]="true"
+            matTooltipPosition="above"
+          ></pnx-observers>
+        </div>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Remarques générales (Notes)</mat-label>
+          <textarea matInput rows="4" formControlName="remarks"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="culture-action-form-actions">
+        <button
+          mat-raised-button
+          type="button"
+          class="reset-button"
+          [disabled]="isSubmitting"
+          (click)="onReset()"
+        >
+          <mat-icon>autorenew</mat-icon>
+          Réinitialiser
+        </button>
+
+        <div class="right-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            class="cancel-button"
+            [disabled]="isSubmitting"
+            (click)="onCancel()"
+          >
+            Annuler
+          </button>
+
+          <button
+            mat-raised-button
+            type="submit"
+            class="save-button"
+            [disabled]="isSubmitting"
+          >
+            <mat-icon>{{ isSubmitting ? 'hourglass_top' : 'save' }}</mat-icon>
+            {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
 </mat-card>
