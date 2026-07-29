@@ -31,7 +31,8 @@ from .models import(
     TSowing,
     TStorage,
     TTest,
-    TCulture
+    TCulture,
+    TCultureActionTransplantation
 )
 
 
@@ -2222,6 +2223,52 @@ class ActionRepository:
             for row in results
         ]
 
+class CultureActionTransplantationRepository:
+
+    def create(
+        self,
+        data: dict
+    ):
+        try:
+            transplantation = (
+                TCultureActionTransplantation(
+                    **data
+                )
+            )
+
+            db.session.add(
+                transplantation
+            )
+
+            db.session.commit()
+
+            return transplantation.to_dic()
+
+        except SQLAlchemyError as error:
+            db.session.rollback()
+            raise error
+
+
+    def get_by_action(
+        self,
+        id_action: int
+    ):
+        transplantation = (
+            db.session.query(
+                TCultureActionTransplantation
+            )
+            .filter(
+                TCultureActionTransplantation
+                .id_action == id_action
+            )
+            .first()
+        )
+
+        if not transplantation:
+            return None
+
+        return transplantation.to_dic()
+        
 class ActionReplicateRepository:
     def create(self, data):
         try:
