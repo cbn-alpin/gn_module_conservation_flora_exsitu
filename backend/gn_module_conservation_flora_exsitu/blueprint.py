@@ -6,7 +6,8 @@ from .repositories import (
     SowingRepository,
     TestRepository,
     ActionRepository,
-    CultureRepository
+    CultureRepository,
+    CultureActionTransplantationRepository
 )
 from .models import (
     TSowing,
@@ -1758,7 +1759,82 @@ def get_culture(id_culture):
 
     return culture, 200
 
+@blueprint.route(
+    "/cultures/<int:id_culture>/actions/transplantation",
+    methods=["POST"]
+)
+@permissions.check_cruved_scope(
+    "C",
+    module_code=MODULE_CODE
+)
+@json_resp
+def create_culture_transplantation(
+    id_culture
+):
+    try:
+        culture = (
+            CultureRepository()
+            .get_by_id(id_culture)
+        )
 
+        if not culture:
+            return {
+                "error": "Culture non trouvée"
+            }, 404
+
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        transplantation_data = (
+            data.get("transplantation")
+            or {}
+        )
+
+        result = (
+            CultureActionTransplantationRepository()
+            .create_with_action(
+                id_culture=id_culture,
+                action_data=action_data,
+                transplantation_data=(
+                    transplantation_data
+                ),
+                meta_create_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        return {
+            "message": (
+                "Action de transplantation "
+                "créée avec succès"
+            ),
+            **result
+        }, 201
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "create_culture_transplantation failed"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+        
 @blueprint.route(
     "/materials/<int:id_material>/cultures/<int:id_culture>",
     methods=["PUT"]
