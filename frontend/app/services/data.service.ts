@@ -362,6 +362,18 @@ export class DataService {
     );
   }
 
+  // Créer une action de transplantation pour une Culture
+  createCultureTransplantation(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.post<any>(
+      `${this.moduleBaseUrl}/cultures/${idCulture}/actions/transplantation`,
+      data
+    );
+  }
+
   // Modifier une culture
   updateCulture(
     idMaterial: number,
