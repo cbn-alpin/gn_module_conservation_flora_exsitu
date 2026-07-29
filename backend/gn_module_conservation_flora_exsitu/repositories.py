@@ -1822,6 +1822,95 @@ class ActionRepository:
             }
             for row in results
         ]
+
+    def get_actions_by_id_culture(
+        self,
+        id_culture: int
+    ):
+        ActionType = aliased(
+            TNomenclatures
+        )
+
+        Actor = aliased(
+            User
+        )
+
+        results = (
+            db.session.query(
+                TAction.id_action,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.meta_create_date,
+                ActionType.cd_nomenclature.label(
+                    "code_action_type"
+                ),
+                ActionType.label_default.label(
+                    "label_action_type"
+                ),
+                Actor.nom_role.label(
+                    "nom_actor"
+                ),
+                Actor.prenom_role.label(
+                    "prenom_actor"
+                )
+            )
+            .outerjoin(
+                ActionType,
+                TAction.id_action_type ==
+                ActionType.id_nomenclature
+            )
+            .outerjoin(
+                Actor,
+                TAction.id_actor ==
+                Actor.id_role
+            )
+            .filter(
+                TAction.id_culture ==
+                id_culture
+            )
+            .order_by(
+                TAction.date_start.desc(),
+                TAction.id_action.desc()
+            )
+            .all()
+        )
+
+        return [
+            {
+                "id_action":
+                    row.id_action,
+
+                "date_start": (
+                    row.date_start.isoformat()
+                    if row.date_start
+                    else None
+                ),
+
+                "date_end": (
+                    row.date_end.isoformat()
+                    if row.date_end
+                    else None
+                ),
+
+                "meta_create_date": (
+                    row.meta_create_date.isoformat()
+                    if row.meta_create_date
+                    else None
+                ),
+
+                "code_action_type":
+                    row.code_action_type,
+
+                "label_action_type":
+                    row.label_action_type,
+
+                "label_actor": (
+                    f"{row.prenom_actor or ''} "
+                    f"{row.nom_actor or ''}"
+                ).strip()
+            }
+            for row in results
+        ]
     
     def get_action_with_labels_by_id(self, id_action: int):
         ActionType = aliased(TNomenclatures)
