@@ -2224,7 +2224,105 @@ class ActionRepository:
         ]
 
 class CultureActionTransplantationRepository:
+    def create_with_action(
+        self,
+        id_culture: int,
+        action_data: dict,
+        transplantation_data: dict,
+        meta_create_by: int
+    ):
+        try:
+            id_action_type = db.session.execute(
+                text("""
+                    SELECT n.id_nomenclature
+                    FROM ref_nomenclatures.t_nomenclatures n
+                    JOIN ref_nomenclatures.bib_nomenclatures_types t
+                        ON t.id_type = n.id_type
+                    WHERE t.mnemonique = 'CFE_ACTION_TYPE'
+                    AND n.cd_nomenclature = 'transp'
+                """)
+            ).scalar()
 
+            if not id_action_type:
+                raise ValueError(
+                    "Le type d'action Transplantation est introuvable."
+                )
+
+            date_start = action_data.get(
+                "date_start"
+            )
+
+            date_end = action_data.get(
+                "date_end"
+            )
+
+            if isinstance(date_start, str):
+                date_start = isoparse(
+                    date_start
+                )
+
+            if isinstance(date_end, str):
+                date_end = isoparse(
+                    date_end
+                )
+
+            action = TAction(
+                id_culture=id_culture,
+                id_sowing=None,
+                id_test=None,
+                date_start=date_start,
+                date_end=date_end,
+                id_actor=action_data.get(
+                    "id_actor"
+                ),
+                id_action_type=id_action_type,
+                meta_create_by=meta_create_by
+            )
+
+            db.session.add(action)
+            db.session.flush()
+
+            specific_data = dict(
+                transplantation_data or {}
+            )
+
+            specific_data.pop(
+                "id_action",
+                None
+            )
+
+            specific_data.pop(
+                "meta_create_by",
+                None
+            )
+
+            transplantation = (
+                TCultureActionTransplantation(
+                    id_action=action.id_action,
+                    meta_create_by=meta_create_by,
+                    **specific_data
+                )
+            )
+
+            db.session.add(
+                transplantation
+            )
+
+            db.session.commit()
+
+            return {
+                "action": action.to_dic(),
+                "transplantation":
+                    transplantation.to_dic()
+            }
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
     def create(
         self,
         data: dict
@@ -2268,7 +2366,7 @@ class CultureActionTransplantationRepository:
             return None
 
         return transplantation.to_dic()
-        
+
 class ActionReplicateRepository:
     def create(self, data):
         try:
