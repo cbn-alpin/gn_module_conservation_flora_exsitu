@@ -1011,7 +1011,155 @@ class TAction(db.Model):
 
 
         }
+@serializable
+class TCultureActionTransplantation(db.Model):
+    __tablename__ = "t_culture_action_transplantation"
 
+    __table_args__ = (
+        db.UniqueConstraint(
+            "id_action",
+            name="uq_t_culture_action_transplantation_id_action"
+        ),
+        {
+            "schema": "pr_conservation_flora_exsitu"
+        }
+    )
+
+    id_culture_action_transplantation = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    id_action = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_action.id_action",
+            ondelete="CASCADE"
+        ),
+        nullable=False
+    )
+
+    id_type = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    intervention_quantity = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
+    in_progress_quantity = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
+    packaging = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    substrat = db.Column(
+        JSONB,
+        nullable=True
+    )
+
+    id_physiological_development_stage = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    id_main_location = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    precise_location = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    remarks = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=False
+    )
+
+    meta_create_date = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
+
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    meta_update_date = db.Column(
+        db.DateTime,
+        nullable=True,
+        onupdate=sa.func.now()
+    )
+
+    def to_dic(self):
+        return {
+            "id_culture_action_transplantation":
+                self.id_culture_action_transplantation,
+            "id_action": self.id_action,
+            "id_type": self.id_type,
+            "intervention_quantity":
+                self.intervention_quantity,
+            "in_progress_quantity":
+                self.in_progress_quantity,
+            "packaging": self.packaging,
+            "substrat": self.substrat,
+            "id_physiological_development_stage":
+                self.id_physiological_development_stage,
+            "id_main_location":
+                self.id_main_location,
+            "precise_location":
+                self.precise_location,
+            "remarks": self.remarks,
+            "meta_create_by":
+                self.meta_create_by,
+            "meta_create_date": (
+                self.meta_create_date.isoformat()
+                if self.meta_create_date
+                else None
+            ),
+            "meta_update_by":
+                self.meta_update_by,
+            "meta_update_date": (
+                self.meta_update_date.isoformat()
+                if self.meta_update_date
+                else None
+            )
+        }
 @serializable
 class TActionReplicate(db.Model):
     __tablename__ = 't_action_replicate'
