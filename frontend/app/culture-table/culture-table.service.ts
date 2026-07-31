@@ -25,95 +25,42 @@ export class CultureTableService {
     this.moduleBaseUrl = this.cfg.getModuleBackendUrl();
   }
 
-  // Cultures créées directement depuis le matériel
-  getDirectCulturesByMaterial(
+  /*
+   * Récupérer toutes les Cultures liées
+   * au même matériel récolté.
+   *
+   * La réponse contient ensemble :
+   * - les Cultures directes du matériel ;
+   * - les Cultures provenant d'un Semis ;
+   * - les Cultures provenant d'un Test.
+   */
+  getCulturesByMaterial(
     idMaterial: number
   ): Observable<any[]> {
 
     return this.api.get<any[]>(
-
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures?source_type=material`
-
+      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures`
     );
   }
 
 
-  // Cultures associées à un Semis précis
-  getCulturesBySowing(
-    idMaterial: number,
-    idSowing: number
-  ): Observable<any[]> {
-
-    return this.api.get<any[]>(
-
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures?source_type=sowing&id_sowing=${idSowing}`
-
-    );
-  }
-
-  // Cultures associées à un Test précis
-  getCulturesByTest(
-    idMaterial: number,
-    idTest: number
-  ): Observable<any[]> {
-
-    return this.api.get<any[]>(
-
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures?source_type=test&id_test=${idTest}`
-
-    );
-  }
-
-
-  // Charger la bonne liste selon le contexte Culture
+  /*
+   * Charger la liste complète des Cultures
+   * du matériel récolté courant.
+   */
   loadCultures(
-    idMaterial: number,
-    sourceType: 'material' | 'sowing' | 'test' = 'material',
-    idSowing: number | null = null,
-    idTest: number | null = null
+    idMaterial: number
   ): void {
 
-    let request$: Observable<any[]>;
-
-
-    if (
-      sourceType === 'sowing' &&
-      idSowing
-    ) {
-
-      request$ =
-        this.getCulturesBySowing(
-          idMaterial,
-          idSowing
-        );
-
-    } else if (
-      sourceType === 'test' &&
-      idTest
-    ) {
-
-      request$ =
-        this.getCulturesByTest(
-          idMaterial,
-          idTest
-        );
-
-    } else {
-
-      request$ =
-        this.getDirectCulturesByMaterial(
-          idMaterial
-        );
-
-    }
-
-
-    request$.subscribe({
+    this.getCulturesByMaterial(
+      idMaterial
+    )
+    .subscribe({
 
       next: (cultures) => {
 
         console.log(
-          'Liste des cultures :',
+          'Liste complète des cultures du matériel :',
           cultures
         );
 

@@ -756,71 +756,19 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     }
 
 
-    const sourceType =
-      this.exsituFormService
-        .cultureSourceType;
-
-
-    const idSowing =
-      this.exsituFormService
-        .cultureSourceSowingId;
-
-    const idTest =
-      this.exsituFormService
-        .cultureSourceTestId;
-
     /*
-    * Culture depuis Semis
-    *
-    * A | S1 | NULL
-    */
-    if (
-      sourceType === 'sowing' &&
-      idSowing
-    ) {
-
-      this.cultureTableService
-        .loadCultures(
-          this.idMaterial,
-          'sowing',
-          idSowing
-        );
-
-      return;
-    }
-
-    /*
-    * Culture depuis Test de germination
-    *
-    * A | NULL | T1
-    */
-    if (
-      sourceType === 'test' &&
-      idTest
-    ) {
-
-      this.cultureTableService
-        .loadCultures(
-          this.idMaterial,
-          'test',
-          null,
-          idTest
-        );
-
-      return;
-    }
-
-
-    /*
-    * Culture directe depuis Matériel
-    *
-    * A | NULL | NULL
-    */
+     * La liste affichée est toujours la liste
+     * complète du matériel récolté.
+     *
+     * Le contexte Matériel / Semis / Test
+     * reste toutefois conservé pour :
+     * - la création d'une nouvelle Culture ;
+     * - le bouton Retour ;
+     * - la navigation vers les détails.
+     */
     this.cultureTableService
       .loadCultures(
-        this.idMaterial,
-        'material',
-        null
+        this.idMaterial
       );
   }
 
