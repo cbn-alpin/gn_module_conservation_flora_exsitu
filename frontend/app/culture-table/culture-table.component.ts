@@ -90,15 +90,33 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
   public cultureCodeFilter = '';
 
+  public cultureSourceTypeFilter:
+    string | null = null;
+
+  public cultureSourceFilter:
+    string | null = null;
+
   public cultureStartDateFromFilter:
     Date | null = null;
 
   public cultureStatusFilter:
     string | null = null;
 
+  public cultureSourceTypeFilterOptions:
+    string[] = [];
+
+  public cultureSourceFilterOptions:
+    string[] = [];
+
   public cultureStatusFilterOptions:
     string[] = [];
 
+
+  private readonly cultureSourceTypeOrder = [
+    '-',
+    'Semis',
+    'Test de germination'
+  ];
 
   private readonly cultureStatusOrder = [
     'Culture active',
@@ -397,97 +415,274 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     );
   }
 
+    private getUniqueCultureFilterValues(
+    values: string[],
+    preferredOrder: string[] = []
+  ): string[] {
 
-  /*
-  * Rend le filtre Statut dynamique
-  * selon les cultures encore disponibles
-  * après application du N° culture
-  * et de la Date.
-  */
-  private updateCultureStatusFilterOptions(
-    baseCultures: Culture[]
-  ): void {
-
-    let selectedStatus =
-      this.cultureStatusFilter;
-
-
-    const availableStatuses =
+    const uniqueValues =
       Array.from(
         new Set(
-          baseCultures
-            .map(
-              culture =>
-                this.getStatusLabel(
-                  culture
-                )
-            )
-            .filter(
-              status => !!status
-            )
+          values.filter(
+            value => !!value
+          )
         )
       );
 
 
     const orderMap =
       new Map(
-        this.cultureStatusOrder.map(
-          (status, index) => [
-            status,
+        preferredOrder.map(
+          (value, index) => [
+            value,
             index
           ]
         )
       );
 
 
-    const statusOptions =
-      availableStatuses.sort(
-        (a, b) => {
+    return uniqueValues.sort(
+      (a, b) => {
 
-          const indexA =
-            orderMap.has(a)
-              ? orderMap.get(a)!
-              : Number.MAX_SAFE_INTEGER;
+        const indexA =
+          orderMap.has(a)
+            ? orderMap.get(a)!
+            : Number.MAX_SAFE_INTEGER;
 
-          const indexB =
-            orderMap.has(b)
-              ? orderMap.get(b)!
-              : Number.MAX_SAFE_INTEGER;
-
-
-          if (indexA !== indexB) {
-            return indexA - indexB;
-          }
+        const indexB =
+          orderMap.has(b)
+            ? orderMap.get(b)!
+            : Number.MAX_SAFE_INTEGER;
 
 
-          return a.localeCompare(
-            b,
-            'fr'
-          );
-
+        if (indexA !== indexB) {
+          return indexA - indexB;
         }
-      );
+
+
+        return a.localeCompare(
+          b,
+          'fr',
+          {
+            numeric: true,
+            sensitivity: 'base'
+          }
+        );
+
+      }
+    );
+  }
+
+
+  /*
+  * Rend Type d'origine, Origine et Statut
+  * dynamiques entre eux et avec les filtres
+  * N° culture et Date.
+  */
+  private updateCultureSelectFilterOptions(
+    baseCultures: Culture[]
+  ): void {
+
+    let selectedSourceType =
+      this.cultureSourceTypeFilter;
+
+    let selectedSource =
+      this.cultureSourceFilter;
+
+    let selectedStatus =
+      this.cultureStatusFilter;
+
+
+    let sourceTypeOptions: string[] = [];
+    let sourceOptions: string[] = [];
+    let statusOptions: string[] = [];
 
 
     /*
-    * Si le statut sélectionné n'existe
-    * plus avec les autres filtres,
-    * on le retire automatiquement.
+    * Trois passages permettent de retirer
+    * automatiquement une sélection devenue
+    * impossible après modification d'un filtre.
     */
-    if (
-      selectedStatus &&
-      !statusOptions.includes(
-        selectedStatus
-      )
+    for (
+      let pass = 0;
+      pass < 3;
+      pass++
     ) {
 
-      selectedStatus = null;
+      const culturesForSourceTypes =
+        baseCultures.filter(
+          culture => {
+
+            const source =
+              this.getSourceLabel(
+                culture
+              );
+
+            const status =
+              this.getStatusLabel(
+                culture
+              );
+
+
+            return (
+              (
+                !selectedSource ||
+                source === selectedSource
+              ) &&
+              (
+                !selectedStatus ||
+                status === selectedStatus
+              )
+            );
+
+          }
+        );
+
+
+      sourceTypeOptions =
+        this.getUniqueCultureFilterValues(
+          culturesForSourceTypes.map(
+            culture =>
+              this.getSourceTypeLabel(
+                culture
+              )
+          ),
+          this.cultureSourceTypeOrder
+        );
+
+
+      if (
+        selectedSourceType &&
+        !sourceTypeOptions.includes(
+          selectedSourceType
+        )
+      ) {
+        selectedSourceType = null;
+      }
+
+
+      const culturesForSources =
+        baseCultures.filter(
+          culture => {
+
+            const sourceType =
+              this.getSourceTypeLabel(
+                culture
+              );
+
+            const status =
+              this.getStatusLabel(
+                culture
+              );
+
+
+            return (
+              (
+                !selectedSourceType ||
+                sourceType ===
+                  selectedSourceType
+              ) &&
+              (
+                !selectedStatus ||
+                status === selectedStatus
+              )
+            );
+
+          }
+        );
+
+
+      sourceOptions =
+        this.getUniqueCultureFilterValues(
+          culturesForSources.map(
+            culture =>
+              this.getSourceLabel(
+                culture
+              )
+          ),
+          ['-']
+        );
+
+
+      if (
+        selectedSource &&
+        !sourceOptions.includes(
+          selectedSource
+        )
+      ) {
+        selectedSource = null;
+      }
+
+
+      const culturesForStatuses =
+        baseCultures.filter(
+          culture => {
+
+            const sourceType =
+              this.getSourceTypeLabel(
+                culture
+              );
+
+            const source =
+              this.getSourceLabel(
+                culture
+              );
+
+
+            return (
+              (
+                !selectedSourceType ||
+                sourceType ===
+                  selectedSourceType
+              ) &&
+              (
+                !selectedSource ||
+                source === selectedSource
+              )
+            );
+
+          }
+        );
+
+
+      statusOptions =
+        this.getUniqueCultureFilterValues(
+          culturesForStatuses.map(
+            culture =>
+              this.getStatusLabel(
+                culture
+              )
+          ),
+          this.cultureStatusOrder
+        );
+
+
+      if (
+        selectedStatus &&
+        !statusOptions.includes(
+          selectedStatus
+        )
+      ) {
+        selectedStatus = null;
+      }
 
     }
 
 
+    this.cultureSourceTypeFilter =
+      selectedSourceType;
+
+    this.cultureSourceFilter =
+      selectedSource;
+
     this.cultureStatusFilter =
       selectedStatus;
+
+    this.cultureSourceTypeFilterOptions =
+      sourceTypeOptions;
+
+    this.cultureSourceFilterOptions =
+      sourceOptions;
 
     this.cultureStatusFilterOptions =
       statusOptions;
@@ -497,27 +692,37 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
   public applyCultureFilters(): void {
 
     /*
-    * 1. N° culture + Date
+    * 1. N° culture + Date.
     */
     const baseCultures =
       this.getCulturesMatchingBaseFilters();
 
 
     /*
-    * 2. Mise à jour dynamique
-    *    des statuts disponibles.
+    * 2. Options dynamiques :
+    *    Type d'origine / Origine / Statut.
     */
-    this.updateCultureStatusFilterOptions(
+    this.updateCultureSelectFilterOptions(
       baseCultures
     );
 
 
     /*
-    * 3. Application finale du Statut.
+    * 3. Application finale des filtres.
     */
     const filteredCultures =
       baseCultures.filter(
         culture => {
+
+          const sourceType =
+            this.getSourceTypeLabel(
+              culture
+            );
+
+          const source =
+            this.getSourceLabel(
+              culture
+            );
 
           const status =
             this.getStatusLabel(
@@ -525,10 +730,28 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
             );
 
 
-          return (
+          const matchesSourceType =
+            !this.cultureSourceTypeFilter ||
+            sourceType ===
+              this.cultureSourceTypeFilter;
+
+
+          const matchesSource =
+            !this.cultureSourceFilter ||
+            source ===
+              this.cultureSourceFilter;
+
+
+          const matchesStatus =
             !this.cultureStatusFilter ||
             status ===
-              this.cultureStatusFilter
+              this.cultureStatusFilter;
+
+
+          return (
+            matchesSourceType &&
+            matchesSource &&
+            matchesStatus
           );
 
         }
@@ -539,10 +762,6 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
       filteredCultures;
 
 
-    /*
-    * Retour à la première page
-    * après chaque filtre.
-    */
     setTimeout(() => {
 
       this.syncPaginator();
@@ -561,6 +780,28 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     this.cultureCodeFilter =
       value || '';
+
+    this.applyCultureFilters();
+  }
+
+
+  public onCultureSourceTypeFilterChange(
+    value: string | null
+  ): void {
+
+    this.cultureSourceTypeFilter =
+      value;
+
+    this.applyCultureFilters();
+  }
+
+
+  public onCultureSourceFilterChange(
+    value: string | null
+  ): void {
+
+    this.cultureSourceFilter =
+      value;
 
     this.applyCultureFilters();
   }
@@ -591,6 +832,12 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
   public resetCultureFilters(): void {
 
     this.cultureCodeFilter = '';
+
+    this.cultureSourceTypeFilter =
+      null;
+
+    this.cultureSourceFilter =
+      null;
 
     this.cultureStartDateFromFilter =
       null;

@@ -488,9 +488,11 @@
   display: grid;
 
   grid-template-columns:
-    minmax(220px, 1.2fr)
-    minmax(190px, 1fr)
-    minmax(190px, 1fr);
+    minmax(170px, 1.15fr)
+    repeat(
+      4,
+      minmax(150px, 1fr)
+    );
 
   gap: 14px;
 

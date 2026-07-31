@@ -63,8 +63,8 @@
               </span>
 
               <small>
-                Affiner par N° culture, date de début
-                et statut
+                Affiner par N° culture, type d’origine,
+                origine, date de début et statut
               </small>
 
             </div>
@@ -115,6 +115,87 @@
             <mat-icon matSuffix>
               search
             </mat-icon>
+
+          </mat-form-field>
+
+          <!-- TYPE D'ORIGINE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="culture-filter-field"
+          >
+
+            <mat-label>
+              Type d’origine
+            </mat-label>
+
+            <mat-select
+              [value]="cultureSourceTypeFilter"
+              (selectionChange)="
+                onCultureSourceTypeFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les types d’origine
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let sourceType of
+                  cultureSourceTypeFilterOptions
+                "
+                [value]="sourceType"
+              >
+
+                {{ sourceType }}
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- ORIGINE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="culture-filter-field"
+          >
+
+            <mat-label>
+              Origine
+            </mat-label>
+
+            <mat-select
+              [value]="cultureSourceFilter"
+              (selectionChange)="
+                onCultureSourceFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Toutes les origines
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let source of
+                  cultureSourceFilterOptions
+                "
+                [value]="source"
+              >
+
+                {{ source }}
+
+              </mat-option>
+
+            </mat-select>
 
           </mat-form-field>
 
