@@ -491,7 +491,7 @@
 }
 
 
-/* Ajouter action : volontairement disabled */
+/* Ajouter une action de Culture */
 
 .culture-add-action-button {
   position: absolute;
@@ -509,10 +509,8 @@
   border-radius: 8px;
 }
 
-.culture-add-action-button:disabled {
-  opacity: 0.48;
-
-  cursor: not-allowed;
+.culture-add-action-button:hover {
+  background-color: #6d4c41 !important;
 }
 
 

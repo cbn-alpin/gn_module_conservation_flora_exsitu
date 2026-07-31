@@ -8,6 +8,10 @@ import {
 } from '@angular/material/table';
 
 import {
+  MatDialog
+} from '@angular/material/dialog';
+
+import {
   Router
 } from '@angular/router';
 
@@ -18,6 +22,10 @@ import {
 import {
   ExsituFormService
 } from '../form/shared/exsitu-form.service';
+
+import {
+  CultureActionComponent
+} from '../culture-action/culture-action.component';
 
 @Component({
   selector: 'app-culture-details',
@@ -50,7 +58,8 @@ export class CultureDetailsComponent implements OnInit {
   constructor(
     public router: Router,
     private cultureService: CultureService,
-    private exsituFormService: ExsituFormService
+    private exsituFormService: ExsituFormService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -225,6 +234,43 @@ export class CultureDetailsComponent implements OnInit {
 
           this.actionDataSource.data = [];
 
+        }
+
+      });
+  }
+
+  onAddCultureAction(): void {
+
+    if (!this.idCulture) {
+      return;
+    }
+
+    const dialogRef =
+      this.dialog.open(
+        CultureActionComponent,
+        {
+          width: '1000px',
+          height: '90vh',
+          maxWidth: '95vw',
+          disableClose: true,
+
+          data: {
+            idCulture: this.idCulture,
+
+            codeCulture:
+              this.culture?.code_culture ||
+              null
+          }
+        }
+      );
+
+
+    dialogRef
+      .afterClosed()
+      .subscribe(result => {
+
+        if (result) {
+          this.loadCultureActions();
         }
 
       });

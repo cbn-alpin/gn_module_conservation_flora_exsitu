@@ -339,11 +339,7 @@
         mat-button
         type="button"
         class="culture-add-action-button"
-        disabled
-        matTooltip="
-          La gestion des actions de Culture
-          sera disponible ultérieurement
-        "
+        (click)="onAddCultureAction()"
       >
 
         <mat-icon>
