@@ -1862,6 +1862,81 @@ def get_culture_transplantation(
     return transplantation, 200
 
 @blueprint.route(
+    "/actions/<int:id_action>/transplantation",
+    methods=["PUT"]
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE
+)
+@json_resp
+def update_culture_transplantation(
+    id_action
+):
+    try:
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        transplantation_data = (
+            data.get("transplantation")
+            or {}
+        )
+
+        result = (
+            CultureActionTransplantationRepository()
+            .update_with_action(
+                id_action=id_action,
+                action_data=action_data,
+                transplantation_data=(
+                    transplantation_data
+                ),
+                meta_update_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        if not result:
+            return {
+                "error": (
+                    "Action de transplantation "
+                    "non trouvée"
+                )
+            }, 404
+
+        return {
+            "message": (
+                "Action de transplantation "
+                "mise à jour avec succès"
+            ),
+            "transplantation": result
+        }, 200
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "update_culture_transplantation failed "
+            f"for action {id_action}"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+@blueprint.route(
     "/materials/<int:id_material>/cultures/<int:id_culture>",
     methods=["PUT"]
 )
