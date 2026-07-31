@@ -384,6 +384,18 @@ export class DataService {
     );
   }
 
+  // Modifier une action de transplantation
+  updateCultureTransplantation(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.put<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/transplantation`,
+      data
+    );
+  }
+
   // Modifier une culture
   updateCulture(
     idMaterial: number,

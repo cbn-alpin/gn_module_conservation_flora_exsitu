@@ -80,4 +80,16 @@ export class CultureService {
       );
   }
 
+
+  updateCultureTransplantation(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .updateCultureTransplantation(
+        idAction,
+        data
+      );
+  }
 }
