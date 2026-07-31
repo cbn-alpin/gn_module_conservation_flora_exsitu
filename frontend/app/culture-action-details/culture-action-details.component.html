@@ -1,0 +1,314 @@
+<mat-card class="culture-action-details-card">
+
+  <mat-card-header class="culture-action-details-header">
+
+    <mat-card-title>
+      Détails de l’action de Culture
+    </mat-card-title>
+
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Fermer"
+      (click)="onClose()"
+    >
+      <mat-icon>
+        close
+      </mat-icon>
+    </button>
+
+  </mat-card-header>
+
+
+  <mat-card-content>
+
+    <div class="culture-action-associated-banner">
+
+      <mat-icon>
+        local_florist
+      </mat-icon>
+
+      <span>
+        Culture associée
+      </span>
+
+      <strong>
+        {{
+          dialogData?.codeCulture ||
+          '-'
+        }}
+      </strong>
+
+    </div>
+
+
+    <div
+      class="culture-action-loading"
+      *ngIf="isLoading"
+    >
+      Chargement des détails...
+    </div>
+
+
+    <div
+      class="culture-action-error"
+      *ngIf="
+        !isLoading &&
+        errorMessage
+      "
+    >
+      {{ errorMessage }}
+    </div>
+
+
+    <ng-container
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        transplantation
+      "
+    >
+
+      <section class="culture-action-detail-section">
+
+        <h3>
+          Identification de l’action
+        </h3>
+
+        <div class="culture-action-detail-grid">
+
+          <div>
+            <span>Type d’action</span>
+            <strong>Transplantation</strong>
+          </div>
+
+          <div>
+            <span>Date de début</span>
+            <strong>
+              {{
+                transplantation.date_start
+                  ? (
+                      transplantation.date_start
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Date de fin</span>
+            <strong>
+              {{
+                transplantation.date_end
+                  ? (
+                      transplantation.date_end
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Effectué par</span>
+            <strong>
+              {{
+                transplantation.actor_label ||
+                '-'
+              }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="culture-action-detail-section">
+
+        <h3>
+          Paramètres de transplantation
+        </h3>
+
+        <div class="culture-action-detail-grid">
+
+          <div>
+            <span>Type de transplantation</span>
+            <strong>
+              {{
+                transplantation
+                  .transplantation_type_label ||
+                '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Quantité intervention</span>
+            <strong>
+              {{
+                transplantation
+                  .intervention_quantity ??
+                '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Quantité en cours</span>
+            <strong>
+              {{
+                transplantation
+                  .in_progress_quantity ??
+                '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Conditionnement</span>
+            <strong>
+              {{
+                transplantation.packaging ||
+                '-'
+              }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="culture-action-detail-section">
+
+        <h3>
+          Substrat
+        </h3>
+
+        <div
+          class="culture-action-substrate-list"
+          *ngIf="
+            substrates.length > 0;
+            else noSubstrate
+          "
+        >
+
+          <div
+            class="culture-action-substrate-item"
+            *ngFor="
+              let substrate of substrates
+            "
+          >
+
+            <strong>
+              {{ substrate.type || '-' }}
+            </strong>
+
+            <span>
+              {{ substrate.category || '-' }}
+            </span>
+
+            <span>
+              {{
+                substrate.percentage !== null &&
+                substrate.percentage !== undefined
+                  ? substrate.percentage + ' %'
+                  : '-'
+              }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <ng-template #noSubstrate>
+          <span class="culture-action-empty-value">
+            -
+          </span>
+        </ng-template>
+
+      </section>
+
+
+      <section class="culture-action-detail-section">
+
+        <h3>
+          Développement et localisation
+        </h3>
+
+        <div class="culture-action-detail-grid">
+
+          <div>
+            <span>Stade physiologique</span>
+            <strong>
+              {{
+                transplantation
+                  .physiological_stage_label ||
+                '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Localisation principale</span>
+            <strong>
+              {{
+                transplantation
+                  .main_location_label ||
+                '-'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Localisation précise</span>
+            <strong>
+              {{
+                transplantation
+                  .precise_location ||
+                '-'
+              }}
+            </strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="culture-action-detail-section">
+
+        <h3>
+          Remarques générales
+        </h3>
+
+        <p class="culture-action-remarks">
+          {{
+            transplantation.remarks ||
+            '-'
+          }}
+        </p>
+
+      </section>
+
+    </ng-container>
+
+  </mat-card-content>
+
+
+  <mat-card-actions align="end">
+
+    <button
+      mat-raised-button
+      type="button"
+      class="culture-action-close-button"
+      (click)="onClose()"
+    >
+      Fermer
+    </button>
+
+  </mat-card-actions>
+
+</mat-card>

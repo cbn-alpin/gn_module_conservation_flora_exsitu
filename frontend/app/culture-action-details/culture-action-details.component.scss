@@ -1,0 +1,177 @@
+.culture-action-details-card {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+
+.culture-action-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 18px;
+
+  color: #4e342e;
+  background:
+    linear-gradient(
+      90deg,
+      #efebe9 0%,
+      #faf7f5 100%
+    );
+
+  border-bottom: 1px solid #d7ccc8;
+}
+
+
+.culture-action-details-header mat-card-title {
+  margin: 0;
+
+  color: #4e342e;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+
+.culture-action-associated-banner {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin: 14px 0;
+  padding: 10px 12px;
+
+  color: #5d4037;
+  background-color: #efebe9;
+
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+}
+
+
+.culture-action-associated-banner mat-icon {
+  color: #6d4c41;
+}
+
+
+.culture-action-detail-section {
+  margin-top: 16px;
+  padding: 14px;
+
+  border: 1px solid #d7ccc8;
+  border-radius: 10px;
+
+  background-color: #ffffff;
+}
+
+
+.culture-action-detail-section h3 {
+  margin: 0 0 12px;
+
+  color: #5d4037;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.culture-action-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 12px 18px;
+}
+
+
+.culture-action-detail-grid > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.culture-action-detail-grid span {
+  color: #8a746d;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.culture-action-detail-grid strong {
+  color: #3e2723;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+
+.culture-action-substrate-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.culture-action-substrate-item {
+  display: grid;
+
+  grid-template-columns:
+    minmax(180px, 1fr)
+    minmax(130px, 0.8fr)
+    90px;
+
+  gap: 12px;
+
+  padding: 8px 10px;
+
+  background-color: #faf7f5;
+
+  border: 1px solid #efebe9;
+  border-radius: 7px;
+}
+
+
+.culture-action-empty-value,
+.culture-action-remarks {
+  color: #5f514d;
+  font-size: 13px;
+}
+
+
+.culture-action-loading,
+.culture-action-error {
+  padding: 24px;
+
+  text-align: center;
+}
+
+
+.culture-action-error {
+  color: #c62828;
+}
+
+
+.culture-action-close-button {
+  color: #ffffff !important;
+  background-color: #6d4c41 !important;
+}
+
+
+@media (max-width: 700px) {
+
+  .culture-action-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .culture-action-substrate-item {
+    grid-template-columns: 1fr;
+  }
+
+}

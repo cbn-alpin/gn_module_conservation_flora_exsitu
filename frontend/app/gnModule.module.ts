@@ -80,6 +80,10 @@ import {
   CultureActionComponent
 } from './culture-action/culture-action.component';
 
+import {
+  CultureActionDetailsComponent
+} from './culture-action-details/culture-action-details.component';
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -144,6 +148,7 @@ registerLocaleData(localeFr);
     CultureTableComponent,
     CultureDetailsComponent,
     CultureActionComponent,
+    CultureActionDetailsComponent,
   ],
   providers: [
     HarvestStoreService, 
