@@ -2569,6 +2569,153 @@ class CultureActionTransplantationRepository:
 
         return result
 
+
+    def update_with_action(
+        self,
+        id_action: int,
+        action_data: dict,
+        transplantation_data: dict,
+        meta_update_by: int
+    ):
+        try:
+            action = (
+                db.session.query(TAction)
+                .filter(
+                    TAction.id_action ==
+                    id_action,
+                    TAction.id_culture.isnot(None)
+                )
+                .first()
+            )
+
+            transplantation = (
+                db.session.query(
+                    TCultureActionTransplantation
+                )
+                .filter(
+                    TCultureActionTransplantation
+                    .id_action ==
+                    id_action
+                )
+                .first()
+            )
+
+            if (
+                not action
+                or not transplantation
+            ):
+                return None
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            transplantation_data = dict(
+                transplantation_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start",
+                action.date_start
+            )
+
+            date_end = action_data.get(
+                "date_end",
+                action.date_end
+            )
+
+            if isinstance(date_start, str):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(date_end, str):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action.date_start = date_start
+            action.date_end = date_end
+
+            if "id_actor" in action_data:
+                action.id_actor = (
+                    action_data.get("id_actor")
+                )
+
+            action.meta_update_by = (
+                meta_update_by
+            )
+
+            action.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            editable_fields = (
+                "id_type",
+                "intervention_quantity",
+                "in_progress_quantity",
+                "packaging",
+                "substrat",
+                "id_physiological_development_stage",
+                "id_main_location",
+                "precise_location",
+                "remarks"
+            )
+
+            for field_name in editable_fields:
+                if (
+                    field_name
+                    in transplantation_data
+                ):
+                    setattr(
+                        transplantation,
+                        field_name,
+                        transplantation_data[
+                            field_name
+                        ]
+                    )
+
+            transplantation.meta_update_by = (
+                meta_update_by
+            )
+
+            transplantation.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            db.session.commit()
+
+            return self.get_by_action(
+                id_action
+            )
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
 class ActionReplicateRepository:
     def create(self, data):
         try:
