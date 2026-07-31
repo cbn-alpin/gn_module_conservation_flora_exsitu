@@ -2440,21 +2440,134 @@ class CultureActionTransplantationRepository:
         self,
         id_action: int
     ):
-        transplantation = (
+        TransplantationType = aliased(
+            TNomenclatures
+        )
+
+        PhysiologicalStage = aliased(
+            TNomenclatures
+        )
+
+        MainLocation = aliased(
+            TNomenclatures
+        )
+
+        Actor = aliased(
+            User
+        )
+
+        row = (
             db.session.query(
+                TCultureActionTransplantation,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.id_actor,
+
+                TransplantationType.label_fr.label(
+                    "transplantation_type_label_fr"
+                ),
+                TransplantationType.label_default.label(
+                    "transplantation_type_label_default"
+                ),
+
+                PhysiologicalStage.label_fr.label(
+                    "physiological_stage_label_fr"
+                ),
+                PhysiologicalStage.label_default.label(
+                    "physiological_stage_label_default"
+                ),
+
+                MainLocation.label_fr.label(
+                    "main_location_label_fr"
+                ),
+                MainLocation.label_default.label(
+                    "main_location_label_default"
+                ),
+
+                Actor.prenom_role.label(
+                    "actor_first_name"
+                ),
+                Actor.nom_role.label(
+                    "actor_last_name"
+                )
+            )
+            .join(
+                TAction,
+                TAction.id_action ==
+                TCultureActionTransplantation.id_action
+            )
+            .outerjoin(
+                TransplantationType,
+                TransplantationType.id_nomenclature ==
+                TCultureActionTransplantation.id_type
+            )
+            .outerjoin(
+                PhysiologicalStage,
+                PhysiologicalStage.id_nomenclature ==
                 TCultureActionTransplantation
+                .id_physiological_development_stage
+            )
+            .outerjoin(
+                MainLocation,
+                MainLocation.id_nomenclature ==
+                TCultureActionTransplantation
+                .id_main_location
+            )
+            .outerjoin(
+                Actor,
+                Actor.id_role ==
+                TAction.id_actor
             )
             .filter(
-                TCultureActionTransplantation
-                .id_action == id_action
+                TCultureActionTransplantation.id_action ==
+                id_action
             )
             .first()
         )
 
-        if not transplantation:
+        if not row:
             return None
 
-        return transplantation.to_dic()
+        transplantation = row[0]
+        result = transplantation.to_dic()
+
+        result.update({
+            "date_start": (
+                row.date_start.isoformat()
+                if row.date_start
+                else None
+            ),
+
+            "date_end": (
+                row.date_end.isoformat()
+                if row.date_end
+                else None
+            ),
+
+            "id_actor": row.id_actor,
+
+            "actor_label": (
+                f"{row.actor_first_name or ''} "
+                f"{row.actor_last_name or ''}"
+            ).strip() or None,
+
+            "transplantation_type_label": (
+                row.transplantation_type_label_fr
+                or row.transplantation_type_label_default
+            ),
+
+            "physiological_stage_label": (
+                row.physiological_stage_label_fr
+                or row.physiological_stage_label_default
+            ),
+
+            "main_location_label": (
+                row.main_location_label_fr
+                or row.main_location_label_default
+            )
+        })
+
+        return result
 
 class ActionReplicateRepository:
     def create(self, data):
