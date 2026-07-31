@@ -27,6 +27,10 @@ import {
   CultureActionComponent
 } from '../culture-action/culture-action.component';
 
+import {
+  CultureActionDetailsComponent
+} from '../culture-action-details/culture-action-details.component';
+
 @Component({
   selector: 'app-culture-details',
   templateUrl: './culture-details.component.html',
@@ -274,6 +278,36 @@ export class CultureDetailsComponent implements OnInit {
         }
 
       });
+  }
+
+  onOpenCultureActionDetails(
+    action: any
+  ): void {
+
+    if (
+      !action?.id_action ||
+      action?.code_action_type !== 'transp'
+    ) {
+      return;
+    }
+
+    this.dialog.open(
+      CultureActionDetailsComponent,
+      {
+        width: '900px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+
+        data: {
+          idAction:
+            Number(action.id_action),
+
+          codeCulture:
+            this.culture?.code_culture ||
+            null
+        }
+      }
+    );
   }
 
   getSourceLabel(): string {

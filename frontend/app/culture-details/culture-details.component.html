@@ -492,7 +492,40 @@
             mat-cell
             *matCellDef="let element"
           >
-            -
+
+            <button
+              mat-icon-button
+              type="button"
+              class="culture-action-details-button"
+              matTooltip="Voir les détails"
+              aria-label="Voir les détails de l’action"
+              *ngIf="
+                element.code_action_type ===
+                'transp'
+              "
+              (click)="
+                onOpenCultureActionDetails(
+                  element
+                )
+              "
+            >
+
+              <mat-icon>
+                visibility
+              </mat-icon>
+
+            </button>
+
+
+            <span
+              *ngIf="
+                element.code_action_type !==
+                'transp'
+              "
+            >
+              -
+            </span>
+
           </td>
 
         </ng-container>
