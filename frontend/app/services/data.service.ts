@@ -374,6 +374,16 @@ export class DataService {
     );
   }
 
+  // Récupérer les données d’une transplantation
+  getCultureTransplantation(
+    idAction: number
+  ): Observable<any> {
+
+    return this.api.get<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/transplantation`
+    );
+  }
+
   // Modifier une culture
   updateCulture(
     idMaterial: number,

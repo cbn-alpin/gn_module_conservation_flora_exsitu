@@ -70,4 +70,14 @@ export class CultureService {
       );
   }
 
+  getCultureTransplantation(
+    idAction: number
+  ): Observable<any> {
+
+    return this.dataService
+      .getCultureTransplantation(
+        idAction
+      );
+  }
+
 }
