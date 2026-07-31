@@ -203,27 +203,46 @@
 /* N° culture */
 :host ::ng-deep
 .culture-list-table .mat-column-code_culture {
-  width: 26%;
+  width: 17%;
   font-weight: 800;
 }
+
+
+/* Type d’origine */
+:host ::ng-deep
+.culture-list-table .mat-column-source_type {
+  width: 18%;
+}
+
+
+/* Origine */
+:host ::ng-deep
+.culture-list-table .mat-column-source {
+  width: 15%;
+  font-weight: 700;
+}
+
 
 /* Date de début */
 :host ::ng-deep
 .culture-list-table .mat-column-date_start {
-  width: 20%;
+  width: 13%;
 }
+
 
 /* Date de fin */
 :host ::ng-deep
 .culture-list-table .mat-column-date_end {
-  width: 20%;
+  width: 13%;
 }
+
 
 /* Statut */
 :host ::ng-deep
 .culture-list-table .mat-column-status {
-  width: 24%;
+  width: 14%;
 }
+
 
 /* Actions */
 :host ::ng-deep

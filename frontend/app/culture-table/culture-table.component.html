@@ -245,6 +245,59 @@
           </td>
         </ng-container>
 
+        <!-- Type d’origine -->
+
+        <ng-container
+          matColumnDef="source_type"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Type d’origine
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+            {{
+              getSourceTypeLabel(
+                element
+              )
+            }}
+          </td>
+
+        </ng-container>
+
+
+        <!-- Origine -->
+
+        <ng-container
+          matColumnDef="source"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Origine
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+            {{
+              getSourceLabel(
+                element
+              )
+            }}
+          </td>
+
+        </ng-container>
+
         <!-- Date de début -->
         <ng-container matColumnDef="date_start">
           <th mat-header-cell *matHeaderCellDef>

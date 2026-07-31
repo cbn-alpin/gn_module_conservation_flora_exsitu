@@ -107,6 +107,8 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     'code_culture',
+    'source_type',
+    'source',
     'date_start',
     'date_end',
     'status',
@@ -1091,6 +1093,29 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
     this.onDetails(element);
 
   }
+
+  getSourceTypeLabel(
+    culture: Culture
+  ): string {
+
+    if (
+      culture.source_type === 'sowing' ||
+      culture.id_sowing
+    ) {
+      return 'Semis';
+    }
+
+    if (
+      culture.source_type === 'test' ||
+      culture.id_test
+    ) {
+      return 'Test de germination';
+    }
+
+    return '-';
+  }
+
+
 
   getSourceLabel(culture: Culture): string {
     if (culture.source_code) {
