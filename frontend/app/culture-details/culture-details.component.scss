@@ -853,6 +853,51 @@
 }
 
 
+/* Même disposition des colonnes que dans Semis */
+
+:host ::ng-deep
+.culture-actions-table {
+  width: 100%;
+
+  table-layout: fixed;
+}
+
+
+/* Début */
+
+:host ::ng-deep
+.culture-actions-table
+.mat-column-date_start {
+  width: 130px;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+
+/* Type d'action */
+
+:host ::ng-deep
+.culture-actions-table
+.mat-column-action_type {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+}
+
+
+/* Agent */
+
+:host ::ng-deep
+.culture-actions-table
+.mat-column-actor {
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+}
+
+
+/* Action */
+
 :host ::ng-deep
 .culture-actions-table
 .mat-column-actions {
@@ -860,7 +905,55 @@
   min-width: 96px;
   max-width: 96px;
 
+  padding-right: 8px !important;
+  padding-left: 8px !important;
+
   text-align: center !important;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+th.mat-column-actions,
+:host ::ng-deep
+.culture-actions-table
+td.mat-column-actions {
+  text-align: center !important;
+}
+
+
+/* Même position des flèches de tri que dans Semis */
+
+:host ::ng-deep
+.culture-actions-table
+.mat-sort-header-container {
+  display: inline-flex;
+  align-items: center;
+
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.mat-sort-header-content {
+  flex: 0 1 auto;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.mat-sort-header-arrow {
+  width: 12px;
+  min-width: 12px;
+  height: 12px;
+
+  margin-left: 4px;
+
+  color: #4e342e;
+
+  transform: scale(0.75);
+  transform-origin: center;
 }
 
 
