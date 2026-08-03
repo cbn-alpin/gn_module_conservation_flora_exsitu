@@ -563,6 +563,32 @@ table tr.mat-row {
   font-weight: 600;
 }
 
+.sowing-action-list-card
+.no-data strong,
+.sowing-action-list-card
+.no-data span {
+  display: block;
+}
+
+
+.sowing-action-list-card
+.no-data strong {
+  color: #1b5e20;
+
+  font-size: 13px;
+}
+
+
+.sowing-action-list-card
+.no-data span {
+  margin-top: 3px;
+
+  color: #607d63;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
 @media (max-width: 900px) {
   .sowing-action-list-card .sowing-action-filters-header {
     align-items: flex-start;

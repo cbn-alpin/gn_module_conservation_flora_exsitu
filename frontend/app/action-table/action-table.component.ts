@@ -554,6 +554,13 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     this.applySowingActionFilters();
   }
 
+  public get hasSowingActions(): boolean {
+
+    return (
+      this.allSowingActions.length > 0
+    );
+  }
+
   onDelete(action: Action): void {
     this.dialogService
       .confirmDialog({ message: 'Étes vous certain de vouloir supprimer cette action ?' })

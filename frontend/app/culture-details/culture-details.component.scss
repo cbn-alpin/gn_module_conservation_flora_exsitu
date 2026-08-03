@@ -411,11 +411,11 @@
 
   border:
     1px solid #d7ccc8;
-  border-radius: 14px;
+  border-radius: 18px;
 
   box-shadow:
-    0 4px 14px
-    rgba(78, 52, 46, 0.11);
+    0 6px 18px
+    rgba(78, 52, 46, 0.10);
 }
 
 
@@ -444,50 +444,57 @@
 
 
 /* Titre */
-
 .culture-actions-title {
   display: flex;
   align-items: center;
+  justify-content: center;
 
   gap: 10px;
 
-  text-align: left;
+  text-align: center;
 }
+
 
 .culture-actions-title-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
 
-  color: #5d4037;
+  color: #6d4c41;
+  background-color: #efebe9;
 
-  background: #ffffff;
-
-  border:
-    1px solid #d7ccc8;
-  border-radius: 8px;
+  border-radius: 50%;
 }
 
-.culture-actions-title h3 {
+
+.culture-actions-title-text {
+  text-align: center;
+}
+
+
+.culture-actions-title-text h3 {
   margin: 0;
 
   color: #4e342e;
 
-  font-size: 17px;
+  font-size: 21px;
   font-weight: 850;
+  line-height: 1.2;
 }
 
-.culture-actions-title span {
+
+.culture-actions-title-text small {
   display: block;
 
   margin-top: 2px;
 
   color: #7b6a64;
 
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 
@@ -495,22 +502,32 @@
 
 .culture-add-action-button {
   position: absolute;
-
   left: 16px;
 
+  min-height: 36px;
+  padding: 6px 12px;
+
   color: #ffffff !important;
+  background-color: #8d6e63 !important;
 
-  background-color:
-    #8d6e63 !important;
+  border: 1px solid #6d4c41 !important;
+  border-radius: 999px;
 
-  border:
-    1px solid #6d4c41 !important;
+  font-weight: 500;
 
-  border-radius: 8px;
+  box-shadow:
+    0 3px 8px
+    rgba(109, 76, 65, 0.20);
 }
+
 
 .culture-add-action-button:hover {
   background-color: #6d4c41 !important;
+}
+
+
+.culture-add-action-button mat-icon {
+  color: #ffffff !important;
 }
 
 .culture-action-details-button {
@@ -581,6 +598,15 @@
   background-color: #efebe9;
 
   border-radius: 50%;
+}
+
+.culture-action-filters-title mat-icon {
+  width: 19px;
+  height: 19px;
+
+  color: #6a1b9a;
+
+  font-size: 19px;
 }
 
 
@@ -840,17 +866,20 @@
 /* Message aucune action */
 
 .culture-actions-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-top: 12px;
+  padding: 18px;
 
-  gap: 10px;
+  color: #7b6a64;
+  background-color: #fdf9f7;
 
-  padding: 22px 16px;
+  border:
+    1px dashed #d7ccc8;
+  border-radius: 12px;
 
-  color: #6d5a53;
+  text-align: center;
 
-  text-align: left;
+  font-style: normal;
+  font-weight: 600;
 }
 
 .culture-actions-empty mat-icon {

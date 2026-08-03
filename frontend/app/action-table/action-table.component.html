@@ -183,8 +183,49 @@
     </mat-paginator>
 
     <!-- Aucune donnée -->
-    <div class="no-data" *ngIf="dataSource.data.length === 0">
-      {{ idSowing ? 'Aucune action ne correspond aux filtres.' : 'Aucune action enregistrée pour ce test.' }}
+    <div
+      class="no-data"
+      *ngIf="
+        dataSource.data.length === 0
+      "
+    >
+
+      <ng-container
+        *ngIf="
+          idSowing;
+          else emptyTestActions
+        "
+      >
+
+        <strong>
+          {{
+            hasSowingActions
+              ? 'Aucune action ne correspond aux filtres.'
+              : 'Aucune action de semis enregistrée.'
+          }}
+        </strong>
+
+        <span *ngIf="hasSowingActions">
+          Modifiez ou réinitialisez les filtres
+          pour afficher les actions.
+        </span>
+
+        <span *ngIf="!hasSowingActions">
+          Utilisez le bouton Ajouter une action
+          pour enregistrer la première action.
+        </span>
+
+      </ng-container>
+
+
+      <ng-template #emptyTestActions>
+
+        <strong>
+          Aucune action enregistrée pour ce test.
+        </strong>
+
+      </ng-template>
+
     </div>
   </mat-card-content>
 </mat-card>
