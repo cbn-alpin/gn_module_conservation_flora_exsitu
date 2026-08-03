@@ -564,6 +564,20 @@ table tr.mat-row {
 }
 
 .sowing-action-list-card
+.sowing-no-data-icon {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  margin: 0 auto 7px;
+
+  color: #43a047;
+
+  font-size: 24px;
+}
+
+.sowing-action-list-card
 .no-data strong,
 .sowing-action-list-card
 .no-data span {
