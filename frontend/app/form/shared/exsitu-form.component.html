@@ -82,29 +82,35 @@
                 <mat-icon class="example-tab-icon">check_circle</mat-icon>
                 Test de Viabilité
             </a>
-
             <!-- Culture -->
-            <!-- Culture
-                Accessible uniquement depuis les boutons Culture
-                de Matériel récolté / Semis / Test de germination
-            -->
+
             <a
             class="tablinks culture-tab"
             [class.disabled]="
-                exsituFormService.currentTab !== 'culture-table' &&
-                exsituFormService.currentTab !== 'culture-details'
+                !exsituFormService.idMaterial
             "
             [ngClass]="{
                 active:
-                exsituFormService.currentTab === 'culture-table' ||
-                exsituFormService.currentTab === 'culture-details'
+                exsituFormService.currentTab ===
+                    'culture-table' ||
+                exsituFormService.currentTab ===
+                    'culture-details'
             }"
+            (click)="
+                exsituFormService.idMaterial
+                ? goToTab('culture-table')
+                : null
+            "
             >
-            <mat-icon class="example-tab-icon culture-tab-icon">
+
+            <mat-icon
+                class="example-tab-icon culture-tab-icon"
+            >
                 local_florist
             </mat-icon>
 
             Culture
+
             </a>
               
         </div>

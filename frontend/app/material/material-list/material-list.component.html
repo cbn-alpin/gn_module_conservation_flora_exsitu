@@ -88,8 +88,19 @@
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
-      [ngClass]="{ 'highlighted': row.id_material === exsituFormService.idMaterial }"
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          let i = index;
+          columns: displayedColumns;
+        "
+        [ngClass]="{
+          highlighted:
+            row.id_material ===
+            exsituFormService.idMaterial
+        }"
+        (click)="selectMaterial(row)"
       ></tr>
     </table>
     <mat-paginator

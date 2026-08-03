@@ -232,6 +232,37 @@ export class MaterialListComponent implements OnInit {
       this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/stock`]);
     }
 
+    selectMaterial(
+      material: any
+    ): void {
+
+      const idMaterial =
+        Number(
+          material?.id_material
+        );
+
+      if (!idMaterial) {
+        return;
+      }
+
+      /*
+      * Le matériel sélectionné devient
+      * le contexte de l'onglet Culture.
+      */
+      this.exsituFormService
+        .setIdMaterial(
+          idMaterial
+        );
+
+      /*
+      * Un accès par l'onglet supérieur Culture
+      * correspond toujours à un accès direct
+      * depuis le matériel récolté.
+      */
+      this.exsituFormService
+        .setCultureSourceFromMaterial();
+    }
+
     goToCulture(material: any): void {
 
       const idMaterial =

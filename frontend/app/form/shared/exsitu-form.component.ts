@@ -92,39 +92,32 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         else if (
           tab === 'culture-table' &&
           this.exsituFormService.idHarvest &&
-          this.idMaterial
+          this.exsituFormService.idMaterial
         ) {
 
-          /*
-          * Culture associée à un Semis précis.
-          */
-          if (
-            this.exsituFormService
-              .cultureSourceType === 'sowing' &&
-            this.exsituFormService
-              .cultureSourceSowingId
-          ) {
-
-            this.router.navigate([
-
-              `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/sowing/${this.exsituFormService.cultureSourceSowingId}/culture-table`
-
-            ]);
-
-            return;
-          }
+          const idMaterial =
+            this.exsituFormService.idMaterial;
 
 
           /*
-          * Culture directe du matériel récolté.
-          */
+           * Un clic sur l'onglet supérieur Culture
+           * ouvre toujours la Culture directement
+           * depuis le matériel récolté sélectionné.
+           *
+           * Le Semis et le Test de germination
+           * ne sont donc pas préremplis.
+           */
           this.exsituFormService
             .setCultureSourceFromMaterial();
 
 
+          this.idMaterial =
+            idMaterial;
+
+
           this.router.navigate([
 
-            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/culture-table`
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/culture-table`
 
           ]);
 
