@@ -1,6 +1,8 @@
 import {
+  AfterViewInit,
   Component,
-  OnInit
+  OnInit,
+  ViewChild
 } from '@angular/core';
 
 import {
@@ -32,6 +34,10 @@ import {
 } from '../culture-action-details/culture-action-details.component';
 
 import {
+  MatPaginator
+} from '@angular/material/paginator';
+
+import {
   Sort
 } from '@angular/material/sort';
 
@@ -40,7 +46,8 @@ import {
   templateUrl: './culture-details.component.html',
   styleUrls: ['./culture-details.component.scss']
 })
-export class CultureDetailsComponent implements OnInit {
+export class CultureDetailsComponent
+  implements OnInit, AfterViewInit {
 
   idMaterial = 0;
   idCulture = 0;
@@ -55,6 +62,9 @@ export class CultureDetailsComponent implements OnInit {
    */
   actionDataSource =
     new MatTableDataSource<any>([]);
+
+  @ViewChild(MatPaginator)
+  actionPaginator!: MatPaginator;
 
   private allCultureActions: any[] = [];
 
@@ -130,6 +140,12 @@ export class CultureDetailsComponent implements OnInit {
 
     this.loadCultureDetails();
     this.loadCultureActions();
+  }
+
+  ngAfterViewInit(): void {
+
+    this.actionDataSource.paginator =
+      this.actionPaginator;
   }
 
 
@@ -643,6 +659,18 @@ export class CultureDetailsComponent implements OnInit {
       this.sortCultureActions(
         filteredActions
       );
+
+    setTimeout(() => {
+
+      if (this.actionPaginator) {
+
+        this.actionDataSource.paginator =
+          this.actionPaginator;
+
+        this.actionPaginator.firstPage();
+      }
+
+    });
   }
 
 

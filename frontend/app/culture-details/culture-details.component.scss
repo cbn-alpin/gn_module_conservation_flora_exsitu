@@ -428,18 +428,18 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 64px;
-  padding: 0 16px;
+  min-height: 74px;
+  padding: 10px 16px 14px;
 
   background:
     linear-gradient(
-      90deg,
-      #efebe9 0%,
-      #ffffff 100%
+      180deg,
+      #ffffff 0%,
+      #fdf9f7 100%
     );
 
-  border-bottom:
-    1px solid #d7ccc8;
+  border-top:
+    1px solid #eee5e1;
 }
 
 
@@ -527,7 +527,7 @@
    ========================================================= */
 
 .culture-action-filters-card {
-  margin: 14px 14px 4px;
+  margin: 16px 16px 18px;
   padding: 16px;
 
   background:
@@ -648,10 +648,10 @@
   color: #ffffff !important;
 
   background-color:
-    #8d6e63 !important;
+    #8e24aa !important;
 
   border:
-    1px solid #6d4c41 !important;
+    1px solid #7b1fa2 !important;
   border-radius: 999px;
 
   font-size: 13px;
@@ -663,7 +663,7 @@
 
 .culture-action-reset-filter-button:hover {
   background-color:
-    #6d4c41 !important;
+    #7b1fa2 !important;
 }
 
 
@@ -681,9 +681,9 @@
 /* Contenu liste */
 
 .culture-actions-content {
-  padding: 14px;
+  padding: 0 16px 16px;
 
-  background-color: #fdfbf9;
+  background-color: #ffffff;
 }
 
 
@@ -696,17 +696,19 @@
 
   background: #ffffff;
 
-  border:
-    1px solid #ded5d1;
-  border-radius: 10px;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 12px
+    rgba(78, 52, 46, 0.08);
 }
 
 :host ::ng-deep
 .culture-actions-table
 .mat-mdc-header-row {
-  height: 42px;
+  height: 52px;
 
-  background-color: #efebe9;
+  background-color: #fdf9f7;
 }
 
 :host ::ng-deep
@@ -723,6 +725,117 @@
     1px solid #d7ccc8;
 }
 
+:host ::ng-deep
+.culture-actions-table
+.mat-mdc-row {
+  height: 58px;
+
+  transition:
+    background-color 0.15s ease;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.mat-mdc-row
+.mat-mdc-cell {
+  color: #3e3431;
+
+  font-size: 14px;
+
+  border-bottom:
+    1px solid #f0e8e4;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row:hover
+.mat-mdc-cell {
+  background-color:
+    #fdf5f1 !important;
+}
+
+
+.culture-action-date-pill {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  color: #6d4c41;
+  background-color: #fdf9f7;
+
+  border:
+    1px solid #d7ccc8;
+  border-radius: 999px;
+
+  font-weight: 700;
+}
+
+
+.culture-action-type-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 12px;
+
+  color: #4e342e;
+  background-color: #efebe9;
+
+  border-radius: 999px;
+
+  font-weight: 800;
+}
+
+
+.culture-action-agent-cell {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #4f4541;
+}
+
+
+.culture-action-agent-cell mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #8d6e63;
+
+  font-size: 18px;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.mat-column-actions {
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+
+  text-align: center !important;
+}
+
+
+:host ::ng-deep
+.culture-actions-content
+.mat-mdc-paginator {
+  margin-top: 10px;
+
+  background-color: #fdf9f7;
+
+  border-top:
+    1px solid #f0e8e4;
+}
+
+
+.culture-action-hidden-paginator {
+  display: none;
+}
 
 /* Message aucune action */
 
