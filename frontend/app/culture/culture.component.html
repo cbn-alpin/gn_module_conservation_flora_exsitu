@@ -44,9 +44,52 @@
               N° de semis associé
             </span>
 
-            <strong>
-              {{ associatedSowingCode || '-' }}
-            </strong>
+            <mat-form-field
+              *ngIf="
+                showSourceSelectors;
+                else fixedSowingSource
+              "
+              appearance="outline"
+              class="culture-associated-source-select"
+            >
+
+              <mat-select
+                placeholder="Aucun"
+                aria-label="N° de semis associé"
+                [value]="selectedSowingId"
+                (selectionChange)="
+                  onSowingSelectionChange(
+                    $event.value
+                  )
+                "
+              >
+
+                <mat-option [value]="null">
+                  Aucun
+                </mat-option>
+
+                <mat-option
+                  *ngFor="
+                    let sowing of
+                    availableSowings
+                  "
+                  [value]="sowing.id_sowing"
+                >
+                  {{ sowing.code }}
+                </mat-option>
+
+              </mat-select>
+
+            </mat-form-field>
+
+
+            <ng-template #fixedSowingSource>
+
+              <strong>
+                {{ associatedSowingCode || '-' }}
+              </strong>
+
+            </ng-template>
 
           </div>
 
@@ -57,9 +100,52 @@
               N° de test de germination associé
             </span>
 
-            <strong>
-              {{ associatedTestCode || '-' }}
-            </strong>
+            <mat-form-field
+              *ngIf="
+                showSourceSelectors;
+                else fixedTestSource
+              "
+              appearance="outline"
+              class="culture-associated-source-select"
+            >
+
+              <mat-select
+                placeholder="Aucun"
+                aria-label="N° de test de germination associé"
+                [value]="selectedTestId"
+                (selectionChange)="
+                  onTestSelectionChange(
+                    $event.value
+                  )
+                "
+              >
+
+                <mat-option [value]="null">
+                  Aucun
+                </mat-option>
+
+                <mat-option
+                  *ngFor="
+                    let test of
+                    availableTests
+                  "
+                  [value]="test.id_test"
+                >
+                  {{ test.code }}
+                </mat-option>
+
+              </mat-select>
+
+            </mat-form-field>
+
+
+            <ng-template #fixedTestSource>
+
+              <strong>
+                {{ associatedTestCode || '-' }}
+              </strong>
+
+            </ng-template>
 
           </div>
 

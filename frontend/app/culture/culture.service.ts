@@ -41,6 +41,27 @@ export class CultureService {
     );
   }
 
+  getSowingsByMaterial(
+    idMaterial: number
+  ): Observable<any[]> {
+
+    return this.dataService
+      .getSowingsByMaterial(
+        idMaterial
+      );
+  }
+
+
+  getTestsByMaterial(
+    idMaterial: number
+  ): Observable<any[]> {
+
+    return this.dataService
+      .getTestsByMaterial(
+        idMaterial
+      );
+  }
+
   getCultureById(
     idCulture: number
   ): Observable<any> {

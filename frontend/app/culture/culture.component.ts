@@ -67,8 +67,20 @@ export class CultureComponent implements OnInit {
   public idMaterial: number | null = null;
   public codeMaterial: string | null = null;
 
-  public associatedSowingCode: string | null = null;
-  public associatedTestCode: string | null = null;
+  public associatedSowingCode:
+    string | null = null;
+
+  public associatedTestCode:
+    string | null = null;
+
+  public availableSowings: any[] = [];
+  public availableTests: any[] = [];
+
+  public selectedSowingId:
+    number | null = null;
+
+  public selectedTestId:
+    number | null = null;
 
   private existingCultures: any[] = [];
   private initialFormState: any = null;
@@ -279,10 +291,115 @@ export class CultureComponent implements OnInit {
       });
   }
 
+  public get showSourceSelectors(): boolean {
+
+    return !!(
+      !this.modalData?.edit &&
+      !this.modalData?.id_sowing &&
+      !this.modalData?.id_test
+    );
+  }
+
+
+  private loadAvailableSources(): void {
+
+    if (
+      !this.idMaterial ||
+      !this.showSourceSelectors
+    ) {
+      return;
+    }
+
+
+    this.cultureService
+      .getSowingsByMaterial(
+        this.idMaterial
+      )
+      .subscribe({
+
+        next: (sowings) => {
+
+          this.availableSowings =
+            sowings || [];
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Erreur lors du chargement des semis associés :',
+            error
+          );
+
+          this.availableSowings = [];
+        }
+
+      });
+
+
+    this.cultureService
+      .getTestsByMaterial(
+        this.idMaterial
+      )
+      .subscribe({
+
+        next: (tests) => {
+
+          this.availableTests =
+            tests || [];
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Erreur lors du chargement des tests de germination associés :',
+            error
+          );
+
+          this.availableTests = [];
+        }
+
+      });
+  }
+
+
+  public onSowingSelectionChange(
+    idSowing: number | null
+  ): void {
+
+    this.selectedSowingId =
+      idSowing ?? null;
+
+    /*
+     * Un Semis sélectionné exclut
+     * automatiquement le Test.
+     */
+    if (this.selectedSowingId) {
+      this.selectedTestId = null;
+    }
+  }
+
+
+  public onTestSelectionChange(
+    idTest: number | null
+  ): void {
+
+    this.selectedTestId =
+      idTest ?? null;
+
+    /*
+     * Un Test sélectionné exclut
+     * automatiquement le Semis.
+     */
+    if (this.selectedTestId) {
+      this.selectedSowingId = null;
+    }
+  }
+
   ngOnInit(): void {
     this.idMaterial = this.exsituFormService.idMaterial;
 
     this.loadAssociatedMaterialCode();
+    this.loadAvailableSources();
 
     /*
     * En modification, on utilise les relations
@@ -582,8 +699,15 @@ export class CultureComponent implements OnInit {
         this.modalData.culture.id_test ??
         null;
 
-    } else {
+    } else if (
+      this.modalData?.id_sowing ||
+      this.modalData?.id_test
+    ) {
 
+      /*
+       * Création ouverte depuis le bouton
+       * Culture d'un Semis ou d'un Test.
+       */
       payload.id_sowing =
         this.modalData?.id_sowing ??
         null;
@@ -591,6 +715,18 @@ export class CultureComponent implements OnInit {
       payload.id_test =
         this.modalData?.id_test ??
         null;
+
+    } else {
+
+      /*
+       * Création directe depuis
+       * le matériel récolté.
+       */
+      payload.id_sowing =
+        this.selectedSowingId;
+
+      payload.id_test =
+        this.selectedTestId;
     }
 
     if (
@@ -857,6 +993,11 @@ export class CultureComponent implements OnInit {
         this.cultureForm.markAsPristine();
         this.cultureForm.markAsUntouched();
         this.cultureForm.updateValueAndValidity();
+
+        if (this.showSourceSelectors) {
+          this.selectedSowingId = null;
+          this.selectedTestId = null;
+        }
 
         this.formSubmitted = false;
       });
