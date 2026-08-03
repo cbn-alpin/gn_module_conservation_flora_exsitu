@@ -766,9 +766,11 @@ export class CultureDetailsComponent
       this.dialog.open(
         CultureActionComponent,
         {
-          width: '1000px',
+          width: '900px',
           height: '90vh',
           maxWidth: '95vw',
+          panelClass:
+            'culture-action-dialog-panel',
           disableClose: true,
 
           data: {

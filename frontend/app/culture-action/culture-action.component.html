@@ -1,6 +1,6 @@
 <mat-card class="culture-action-form-card">
   <mat-card-header class="culture-action-dialog-header">
-    <mat-card-title>Ajouter une action de Culture</mat-card-title>
+    <mat-card-title>Ajouter une action de culture</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
@@ -25,35 +25,141 @@
         </div>
       </div>
 
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="third-width">
-          <mat-label>Type d'action</mat-label>
-          <input matInput value="Transplantation" disabled>
-          <mat-icon matSuffix>swap_horiz</mat-icon>
-        </mat-form-field>
+            <div class="form-group full-width">
 
-        <mat-form-field appearance="outline" class="third-width">
-          <mat-label>Date de début</mat-label>
-          <input
-            matInput
-            [matDatepicker]="startDatePicker"
-            formControlName="date_start"
+        <mat-form-field
+          appearance="outline"
+          class="
+            full-width
+            culture-action-type-required
+          "
+        >
+
+          <mat-label>
+            Type d'action
+          </mat-label>
+
+          <mat-select
+            formControlName="id_action_type"
             required
           >
-          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #startDatePicker></mat-datepicker>
-          <mat-error *ngIf="cultureActionForm.get('date_start')?.hasError('required')">
-            La date de début est obligatoire.
+
+            <mat-option
+              *ngFor="
+                let actionType of
+                cultureActionTypeOptions
+              "
+              [value]="
+                actionType.id_nomenclature
+              "
+            >
+
+              {{
+                getOptionLabel(
+                  actionType
+                )
+              }}
+
+            </mat-option>
+
+          </mat-select>
+
+
+          <mat-error
+            *ngIf="
+              cultureActionForm
+                .get('id_action_type')
+                ?.hasError('required')
+            "
+          >
+            Le type d’action est obligatoire
+            pour enregistrer une action de culture.
           </mat-error>
+
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="third-width">
-          <mat-label>Date de fin</mat-label>
-          <input matInput [matDatepicker]="endDatePicker" formControlName="date_end">
-          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #endDatePicker></mat-datepicker>
-        </mat-form-field>
       </div>
+
+
+            <ng-container
+        *ngIf="showTransplantationForm"
+      >
+
+        <div class="form-row">
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+
+            <mat-label>
+              Date de début
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                startDatePicker
+              "
+              formControlName="date_start"
+              required
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="startDatePicker"
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #startDatePicker
+            >
+            </mat-datepicker>
+
+            <mat-error
+              *ngIf="
+                cultureActionForm
+                  .get('date_start')
+                  ?.hasError('required')
+              "
+            >
+              La date de début est obligatoire.
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+
+            <mat-label>
+              Date de fin
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                endDatePicker
+              "
+              formControlName="date_end"
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="endDatePicker"
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #endDatePicker
+            >
+            </mat-datepicker>
+
+          </mat-form-field>
+
+        </div>
 
       <div
         class="business-error"
@@ -312,6 +418,9 @@
           </button>
         </div>
       </div>
+
+    </ng-container>
+
     </form>
   </mat-card-content>
 </mat-card>

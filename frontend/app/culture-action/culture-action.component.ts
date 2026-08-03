@@ -31,6 +31,8 @@ interface CultureActionDialogData {
 export class CultureActionComponent implements OnInit {
   public cultureActionForm: FormGroup;
   public observersListCode: any;
+  public cultureActionTypeOptions: any[] = [];
+
   public transplantationTypeOptions: any[] = [];
   public physiologicalStageOptions: any[] = [];
   public mainLocationOptions: any[] = [];
@@ -51,7 +53,16 @@ export class CultureActionComponent implements OnInit {
   ) {
     this.cultureActionForm = this.fb.group(
       {
-        date_start: [null, Validators.required],
+        id_action_type: [
+          null,
+          Validators.required
+        ],
+
+        date_start: [
+          null,
+          Validators.required
+        ],
+
         date_end: [null],
         id_actor: [[]],
         id_type: [null],
@@ -90,6 +101,37 @@ export class CultureActionComponent implements OnInit {
 
   get substrates(): FormArray {
     return this.cultureActionForm.get('substrat') as FormArray;
+  }
+
+  get showTransplantationForm(): boolean {
+
+    const selectedId =
+      Number(
+        this.cultureActionForm
+          .get('id_action_type')
+          ?.value
+      );
+
+
+    const selectedActionType =
+      this.cultureActionTypeOptions.find(
+        option =>
+          Number(
+            option?.id_nomenclature
+          ) === selectedId
+      );
+
+
+    return (
+      String(
+        selectedActionType
+          ?.cd_nomenclature ||
+        ''
+      )
+        .trim()
+        .toLowerCase() ===
+      'transp'
+    );
   }
 
   get showPackagingField(): boolean {
@@ -132,6 +174,7 @@ export class CultureActionComponent implements OnInit {
 
         this.substrates.clear();
         this.cultureActionForm.reset({
+          id_action_type: null,
           date_start: null,
           date_end: null,
           id_actor: [],
@@ -222,6 +265,31 @@ export class CultureActionComponent implements OnInit {
   }
 
   private loadNomenclatures(): void {
+    this.loadNomenclature(
+      'CFE_ACTION_TYPE',
+
+      options => {
+
+        /*
+        * Pour le moment, Transplantation
+        * est la seule action de Culture
+        * disponible.
+        */
+        this.cultureActionTypeOptions =
+          options.filter(
+            option =>
+              String(
+                option?.cd_nomenclature ||
+                ''
+              )
+                .trim()
+                .toLowerCase() ===
+              'transp'
+          );
+      },
+
+      'types d’action de Culture'
+    );
     this.loadNomenclature(
       'CFE_TRANSPLANTATION_TYPE',
       options => (this.transplantationTypeOptions = options),
