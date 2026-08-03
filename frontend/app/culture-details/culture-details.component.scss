@@ -522,6 +522,161 @@
   background-color: #efebe9;
 }
 
+/* =========================================================
+   FILTRES DES ACTIONS CULTURE
+   ========================================================= */
+
+.culture-action-filters-card {
+  margin: 14px 14px 4px;
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fdf9f7 0%,
+      #ffffff 100%
+    );
+
+  border:
+    1px solid #d7ccc8;
+  border-radius: 14px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(78, 52, 46, 0.06);
+}
+
+
+.culture-action-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+
+.culture-action-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #5d4037;
+}
+
+
+.culture-action-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  color: #6d4c41;
+
+  background-color: #efebe9;
+
+  border-radius: 50%;
+}
+
+
+.culture-action-filters-title span {
+  display: block;
+
+  color: #4e342e;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+.culture-action-filters-title small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #7b6a64;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+.culture-action-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1.2fr)
+    minmax(160px, 1fr)
+    minmax(160px, 1fr);
+
+  gap: 14px;
+
+  align-items: end;
+}
+
+
+.culture-action-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.culture-action-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.culture-action-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+.culture-action-reset-filter-button {
+  min-height: 34px;
+  padding: 5px 13px;
+
+  color: #ffffff !important;
+
+  background-color:
+    #8d6e63 !important;
+
+  border:
+    1px solid #6d4c41 !important;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+.culture-action-reset-filter-button:hover {
+  background-color:
+    #6d4c41 !important;
+}
+
+
+.culture-action-reset-filter-button mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+}
 
 /* Contenu liste */
 
@@ -634,6 +789,26 @@
 
   .culture-add-action-button {
     position: static;
+  }
+
+}
+
+@media (
+  max-width: 900px
+) {
+
+  .culture-action-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+
+  .culture-action-filter-fields {
+    grid-template-columns: 1fr;
+
+    width: 100%;
   }
 
 }

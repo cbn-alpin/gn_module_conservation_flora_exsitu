@@ -378,11 +378,194 @@
 
     </div>
 
+    <div class="culture-action-filters-card">
+
+      <div class="culture-action-filters-header">
+
+        <div class="culture-action-filters-title">
+
+          <div class="culture-action-filters-icon">
+
+            <mat-icon>
+              filter_alt
+            </mat-icon>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Filtres des actions
+            </span>
+
+            <small>
+              Affiner par type, période et ordre des dates
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <button
+          mat-button
+          type="button"
+          class="culture-action-reset-filter-button"
+          (click)="resetCultureActionFilters()"
+        >
+
+          <mat-icon>
+            autorenew
+          </mat-icon>
+
+          Réinitialiser
+
+        </button>
+
+      </div>
+
+
+      <div class="culture-action-filter-fields">
+
+        <mat-form-field
+          appearance="outline"
+          class="culture-action-filter-field"
+        >
+
+          <mat-label>
+            Type d'action
+          </mat-label>
+
+          <mat-select
+            [value]="cultureActionTypeFilter"
+            (selectionChange)="
+              onCultureActionTypeFilterChange(
+                $event.value
+              )
+            "
+          >
+
+            <mat-option [value]="null">
+              Tous les types
+            </mat-option>
+
+            <mat-option
+              *ngFor="
+                let actionType of
+                cultureActionTypeFilterOptions
+              "
+              [value]="actionType"
+            >
+              {{ actionType }}
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+
+
+        <mat-form-field
+          appearance="outline"
+          class="culture-action-filter-field"
+        >
+
+          <mat-label>
+            À partir du
+          </mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="
+              cultureActionStartDateFromPicker
+            "
+            [(ngModel)]="
+              cultureActionStartDateFromFilter
+            "
+            (dateChange)="
+              onCultureActionStartDateFromFilterChange(
+                $event.value
+              )
+            "
+          >
+
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="
+              cultureActionStartDateFromPicker
+            "
+          >
+          </mat-datepicker-toggle>
+
+          <mat-datepicker
+            #cultureActionStartDateFromPicker
+          >
+          </mat-datepicker>
+
+        </mat-form-field>
+
+
+        <mat-form-field
+          appearance="outline"
+          class="culture-action-filter-field"
+        >
+
+          <mat-label>
+            Jusqu’au
+          </mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="
+              cultureActionStartDateToPicker
+            "
+            [(ngModel)]="
+              cultureActionStartDateToFilter
+            "
+            (dateChange)="
+              onCultureActionStartDateToFilterChange(
+                $event.value
+              )
+            "
+          >
+
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="
+              cultureActionStartDateToPicker
+            "
+          >
+          </mat-datepicker-toggle>
+
+          <mat-datepicker
+            #cultureActionStartDateToPicker
+          >
+          </mat-datepicker>
+
+        </mat-form-field>
+
+      </div>
+
+    </div>
+
 
     <div class="culture-actions-content">
 
       <table
         mat-table
+        matSort
+        [matSortActive]="
+          cultureActionSortActive
+        "
+        [matSortDirection]="
+          cultureActionSortDirection
+        "
+        [matSortDisableClear]="true"
+        (matSortChange)="
+          onCultureActionSortChange(
+            $event
+          )
+        "
         [dataSource]="actionDataSource"
         class="culture-actions-table"
       >
@@ -396,6 +579,7 @@
           <th
             mat-header-cell
             *matHeaderCellDef
+            mat-sort-header="date_start"
           >
             Début
           </th>
@@ -428,6 +612,7 @@
           <th
             mat-header-cell
             *matHeaderCellDef
+            mat-sort-header="action_type"
           >
             Type d'action
           </th>
@@ -558,7 +743,6 @@
           actionDataSource.data.length === 0
         "
       >
-
         <mat-icon>
           info
         </mat-icon>
@@ -567,16 +751,24 @@
         <div>
 
           <strong>
-            Aucune action de culture enregistrée.
+            {{
+              hasCultureActions
+                ? 'Aucune action ne correspond aux filtres.'
+                : 'Aucune action de culture enregistrée.'
+            }}
           </strong>
 
-          <span>
-            La gestion des actions de Culture
-            sera développée dans une prochaine étape.
+          <span *ngIf="hasCultureActions">
+            Modifiez ou réinitialisez les filtres
+            pour afficher les actions.
+          </span>
+
+          <span *ngIf="!hasCultureActions">
+            Utilisez le bouton Ajouter une action
+            pour enregistrer la première action.
           </span>
 
         </div>
-
       </div>
 
     </div>

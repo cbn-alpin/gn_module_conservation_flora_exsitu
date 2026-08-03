@@ -31,6 +31,10 @@ import {
   CultureActionDetailsComponent
 } from '../culture-action-details/culture-action-details.component';
 
+import {
+  Sort
+} from '@angular/material/sort';
+
 @Component({
   selector: 'app-culture-details',
   templateUrl: './culture-details.component.html',
@@ -51,6 +55,34 @@ export class CultureDetailsComponent implements OnInit {
    */
   actionDataSource =
     new MatTableDataSource<any>([]);
+
+  private allCultureActions: any[] = [];
+
+  public cultureActionTypeFilter:
+    string | null = null;
+
+  public cultureActionStartDateFromFilter:
+    Date | null = null;
+
+  public cultureActionStartDateToFilter:
+    Date | null = null;
+
+  public cultureActionSortActive =
+    'date_start';
+
+  public cultureActionSortDirection:
+    'asc' | 'desc' = 'desc';
+
+  public cultureActionTypeFilterOptions:
+    string[] = [];
+
+
+  private readonly cultureActionTypeFilterOrder = [
+    'Transplantation',
+    'Observation',
+    'Traitement',
+    'Prélèvement'
+  ];
 
   displayedActionColumns: string[] = [
     'date_start',
@@ -210,7 +242,7 @@ export class CultureDetailsComponent implements OnInit {
           * On les adapte aux noms déjà utilisés
           * dans le HTML de Détails Culture.
           */
-          this.actionDataSource.data =
+          this.allCultureActions =
             (actions || []).map(
               (action: any) => ({
                 ...action,
@@ -227,6 +259,13 @@ export class CultureDetailsComponent implements OnInit {
               })
             );
 
+
+          this.updateCultureActionTypeFilterOptions(
+            this.allCultureActions
+          );
+
+          this.applyCultureActionFilters();
+
         },
 
         error: (err) => {
@@ -236,11 +275,457 @@ export class CultureDetailsComponent implements OnInit {
             err
           );
 
+          this.allCultureActions = [];
+
+          this.cultureActionTypeFilterOptions =
+            [];
+
           this.actionDataSource.data = [];
 
         }
 
       });
+  }
+
+  private getCultureActionDateKey(
+    value: any
+  ): string {
+
+    if (!value) {
+      return '';
+    }
+
+
+    if (typeof value === 'string') {
+
+      const datePart =
+        value.split('T')[0];
+
+      if (
+        /^\d{4}-\d{2}-\d{2}$/
+          .test(datePart)
+      ) {
+        return datePart;
+      }
+
+    }
+
+
+    const date =
+      new Date(value);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return '';
+    }
+
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(
+        2,
+        '0'
+      );
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    return `${year}-${month}-${day}`;
+  }
+
+
+  private getCultureActionDateTimestamp(
+    value: any
+  ): number {
+
+    const dateKey =
+      this.getCultureActionDateKey(
+        value
+      );
+
+    if (!dateKey) {
+      return 0;
+    }
+
+
+    const timestamp =
+      new Date(
+        `${dateKey}T00:00:00`
+      ).getTime();
+
+
+    return Number.isNaN(timestamp)
+      ? 0
+      : timestamp;
+  }
+
+
+  private updateCultureActionTypeFilterOptions(
+    actionsForOptions:
+      any[] = this.allCultureActions
+  ): void {
+
+    const presentActionTypes =
+      new Set(
+        actionsForOptions
+          .map(
+            action =>
+              action.action_type_label ||
+              '-'
+          )
+          .filter(
+            label =>
+              !!label &&
+              label !== '-'
+          )
+      );
+
+
+    const orderedActionTypes =
+      this.cultureActionTypeFilterOrder
+        .filter(
+          label =>
+            presentActionTypes.has(
+              label
+            )
+        );
+
+
+    const additionalActionTypes =
+      Array.from(
+        presentActionTypes
+      )
+        .filter(
+          label =>
+            !this
+              .cultureActionTypeFilterOrder
+              .includes(label)
+        )
+        .sort(
+          (a, b) =>
+            a.localeCompare(
+              b,
+              'fr'
+            )
+        );
+
+
+    this.cultureActionTypeFilterOptions = [
+      ...orderedActionTypes,
+      ...additionalActionTypes
+    ];
+
+
+    if (
+      this.cultureActionTypeFilter &&
+      !this
+        .cultureActionTypeFilterOptions
+        .includes(
+          this.cultureActionTypeFilter
+        )
+    ) {
+      this.cultureActionTypeFilter =
+        null;
+    }
+  }
+
+
+  private sortCultureActions(
+    actions: any[]
+  ): any[] {
+
+    const active =
+      this.cultureActionSortActive;
+
+    const direction =
+      this.cultureActionSortDirection;
+
+
+    return [...actions].sort(
+      (actionA, actionB) => {
+
+        let valueA: any;
+        let valueB: any;
+
+
+        if (
+          active === 'date_start'
+        ) {
+
+          valueA =
+            this.getCultureActionDateTimestamp(
+              actionA.date_start
+            );
+
+          valueB =
+            this.getCultureActionDateTimestamp(
+              actionB.date_start
+            );
+
+        } else if (
+          active === 'action_type'
+        ) {
+
+          const typeA =
+            actionA.action_type_label ||
+            '';
+
+          const typeB =
+            actionB.action_type_label ||
+            '';
+
+          const indexA =
+            this
+              .cultureActionTypeFilterOrder
+              .indexOf(typeA);
+
+          const indexB =
+            this
+              .cultureActionTypeFilterOrder
+              .indexOf(typeB);
+
+
+          valueA =
+            indexA === -1
+              ? 999
+              : indexA;
+
+          valueB =
+            indexB === -1
+              ? 999
+              : indexB;
+
+        } else {
+
+          valueA =
+            actionA[active];
+
+          valueB =
+            actionB[active];
+
+        }
+
+
+        let comparison = 0;
+
+
+        if (
+          typeof valueA === 'number' &&
+          typeof valueB === 'number'
+        ) {
+
+          comparison =
+            valueA - valueB;
+
+        } else {
+
+          comparison =
+            String(valueA || '')
+              .localeCompare(
+                String(valueB || ''),
+                'fr'
+              );
+
+        }
+
+
+        if (comparison === 0) {
+
+          comparison =
+            Number(
+              actionA.id_action || 0
+            ) -
+            Number(
+              actionB.id_action || 0
+            );
+
+        }
+
+
+        return direction === 'asc'
+          ? comparison
+          : -comparison;
+      }
+    );
+  }
+
+
+  public applyCultureActionFilters(): void {
+
+    const selectedDateFrom =
+      this.getCultureActionDateKey(
+        this
+          .cultureActionStartDateFromFilter
+      );
+
+    const selectedDateTo =
+      this.getCultureActionDateKey(
+        this
+          .cultureActionStartDateToFilter
+      );
+
+
+    const actionsMatchingDates =
+      this.allCultureActions.filter(
+        action => {
+
+          const actionDate =
+            this.getCultureActionDateKey(
+              action.date_start
+            );
+
+
+          const matchesDateFrom =
+            !selectedDateFrom ||
+            (
+              !!actionDate &&
+              actionDate >=
+                selectedDateFrom
+            );
+
+
+          const matchesDateTo =
+            !selectedDateTo ||
+            (
+              !!actionDate &&
+              actionDate <=
+                selectedDateTo
+            );
+
+
+          return (
+            matchesDateFrom &&
+            matchesDateTo
+          );
+
+        }
+      );
+
+
+    this.updateCultureActionTypeFilterOptions(
+      actionsMatchingDates
+    );
+
+
+    const filteredActions =
+      actionsMatchingDates.filter(
+        action => {
+
+          const actionType =
+            action.action_type_label ||
+            '-';
+
+
+          return (
+            !this.cultureActionTypeFilter ||
+            actionType ===
+              this.cultureActionTypeFilter
+          );
+
+        }
+      );
+
+
+    this.actionDataSource.data =
+      this.sortCultureActions(
+        filteredActions
+      );
+  }
+
+
+  public onCultureActionTypeFilterChange(
+    value: string | null
+  ): void {
+
+    this.cultureActionTypeFilter =
+      value;
+
+    this.applyCultureActionFilters();
+  }
+
+
+  public onCultureActionStartDateFromFilterChange(
+    value: Date | null
+  ): void {
+
+    this.cultureActionStartDateFromFilter =
+      value;
+
+    this.applyCultureActionFilters();
+  }
+
+
+  public onCultureActionStartDateToFilterChange(
+    value: Date | null
+  ): void {
+
+    this.cultureActionStartDateToFilter =
+      value;
+
+    this.applyCultureActionFilters();
+  }
+
+
+  public onCultureActionSortChange(
+    sort: Sort
+  ): void {
+
+    this.cultureActionSortActive =
+      sort.active ||
+      'date_start';
+
+    this.cultureActionSortDirection =
+      sort.direction ||
+      'desc';
+
+    this.applyCultureActionFilters();
+  }
+
+
+  public resetCultureActionFilters(): void {
+
+    this.cultureActionTypeFilter =
+      null;
+
+    this.cultureActionStartDateFromFilter =
+      null;
+
+    this.cultureActionStartDateToFilter =
+      null;
+
+    this.cultureActionSortActive =
+      'date_start';
+
+    this.cultureActionSortDirection =
+      'desc';
+
+
+    this.updateCultureActionTypeFilterOptions(
+      this.allCultureActions
+    );
+
+    this.applyCultureActionFilters();
+  }
+
+
+  public get hasCultureActions(): boolean {
+
+    return (
+      this.allCultureActions.length > 0
+    );
   }
 
   onAddCultureAction(): void {
