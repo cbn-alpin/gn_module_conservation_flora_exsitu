@@ -87,6 +87,26 @@ export class MaterialListComponent implements OnInit {
         
     }
 
+    onBackToHarvest(): void {
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
+      if (!idHarvest) {
+        console.error(
+          'Impossible de revenir à la récolte : idHarvest manquant.'
+        );
+
+        return;
+      }
+
+      this.exsituFormService.currentTab =
+        'harvest';
+
+      this.router.navigate([
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}`
+      ]);
+    }
+
     calculateNbRow() {
       let wH = window.innerHeight;
       let listHeight = wH - 400;

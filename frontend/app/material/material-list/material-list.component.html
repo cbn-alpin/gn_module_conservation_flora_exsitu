@@ -1,4 +1,26 @@
-<button mat-raised-button class="button-success uppercase" (click)="addModalMaterial()">Ajouter matériel</button>
+<!-- RETOUR VERS LA RÉCOLTE -->
+<div class="material-list-return-button">
+
+  <button
+    mat-raised-button
+    type="button"
+    (click)="onBackToHarvest()"
+  >
+    <mat-icon>arrow_back</mat-icon>
+
+    Retour
+  </button>
+
+</div>
+
+<button
+  mat-raised-button
+  class="button-success uppercase"
+  (click)="addModalMaterial()"
+>
+  Ajouter matériel
+</button>
+
 <div id="matlist-container" class="card mt-2">
   <div class="mt-2" 
     #dataTableContainer

@@ -121,6 +121,7 @@
     <div
         *ngIf="exsituFormService.currentTab !== 'harvest'"
         [class.mb-5]="
+            exsituFormService.currentTab !== 'materials' &&
             exsituFormService.currentTab !== 'culture-table' &&
             exsituFormService.currentTab !== 'culture-details' &&
             exsituFormService.currentTab !== 'semis-table' &&
