@@ -28,7 +28,11 @@
         <span class="info-label">Date</span>
 
         <span class="info-value">
-          {{ harvest?.date_start || 'Non renseignée' }}
+          {{
+            harvest?.date_start
+              ? (harvest.date_start | date:'dd/MM/yyyy')
+              : 'Non renseignée'
+          }}
         </span>
       </div>
 
