@@ -388,32 +388,62 @@ def get_harvest_details(harvest_id):
             .scalar()
         )
 
-        commune_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
-        departement_id = db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
+        geographical_precision_code = (
+            db.session.query(TNomenclatures.cd_nomenclature)
+            .filter(
+                TNomenclatures.id_nomenclature
+                == harvest.id_geographical_precision
+            )
+            .scalar()
+        )
 
-        location_name = "Localisation inconnue"
-        id_area_type = None
+        area_name = None
 
-        # Vérification si on a une localisation
         if harvest.id_area:
-            area = db.session.query(LAreas.area_name, LAreas.id_type).filter(LAreas.id_area == harvest.id_area).first()
+            area_name = (
+                db.session.query(LAreas.area_name)
+                .filter(LAreas.id_area == harvest.id_area)
+                .scalar()
+            )
 
-            if area:
-                if area.id_type == commune_id:
-                    location_name = area.area_name
-                    id_area_type = "Commune"
-                elif area.id_type == departement_id:
-                    location_name = area.area_name
-                    id_area_type = "Département"
+        precision_value = (
+            f"{harvest.precision} m"
+            if harvest.precision is not None
+            else "Non renseignée"
+        )
 
-        # Vérification si une géométrie existe (et qu'on n'a pas déjà une commune ou département)
-        if not harvest.id_area and harvest.geom:
-            location_name = "Précise"
-            id_area_type = "Localisation"
+        location_name = "Non renseignée"
+        id_area_type = "Localisation"
 
-        if not harvest.geom:
-            location_name = "Inconnue"
-            id_area_type = "Localisation"
+        if geographical_precision_code == "com":
+            location_name = (
+                f"(C) {area_name}"
+                if area_name
+                else "Non renseignée"
+            )
+
+            id_area_type = "Commune"
+
+        elif geographical_precision_code == "dept":
+            location_name = (
+                f"(D) {area_name}"
+                if area_name
+                else "Non renseignée"
+            )
+
+            id_area_type = "Département"
+
+        elif geographical_precision_code == "nl":
+            location_name = "Non localisable"
+            id_area_type = "Non localisable"
+
+        elif geographical_precision_code == "ptapp":
+            location_name = f"(PA) {precision_value}"
+            id_area_type = "Pointage approximatif"
+
+        elif geographical_precision_code == "ptp":
+            location_name = f"(PP) {precision_value}"
+            id_area_type = "Pointage précis"
 
         # Récupération de l'observateur principal
         main_observer = (
