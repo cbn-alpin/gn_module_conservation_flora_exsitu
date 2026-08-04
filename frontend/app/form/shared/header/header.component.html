@@ -2,7 +2,7 @@
   <div class="header-info-grid">
 
     <!-- Colonne 1 -->
-    <div class="info-column">
+    <div class="info-column harvest-context-column">
       <div class="info-row">
         <span class="info-label">Type de récolte</span>
 
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Colonne 2 -->
-    <div class="info-column">
+    <div class="info-column harvest-context-column">
       <div class="info-row">
         <span class="info-label">Date</span>
 
@@ -43,7 +43,7 @@
 
         <!-- Colonne 3 -->
         <div
-          class="info-column"
+          class="info-column material-context-column"
           *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
         >
           <div class="info-row">

@@ -90,6 +90,61 @@
 }
 
 /* =========================================================
+   CONTEXTE RÉCOLTE DANS L'EN-TÊTE
+   ========================================================= */
+
+.harvest-context-column {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(234, 244, 253, 0.85) 0%,
+      rgba(247, 251, 255, 0.55) 100%
+    );
+}
+
+
+.harvest-context-column .info-label {
+  color: #0d4f8b;
+}
+
+
+.harvest-context-column .info-value {
+  color: #123f63;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   CONTEXTE MATÉRIEL RÉCOLTÉ DANS L'EN-TÊTE
+   ========================================================= */
+
+.material-context-column {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(243, 246, 234, 0.90) 0%,
+      rgba(249, 251, 244, 0.55) 100%
+    );
+
+  border-left: 2px solid #a7b77a;
+  border-radius: 6px;
+
+  padding-left: 10px;
+}
+
+
+.material-context-column .info-label {
+  color: #405021;
+}
+
+
+.material-context-column .info-value {
+  color: #334018;
+  font-weight: 600;
+}
+
+
+/* =========================================================
    CONTEXTE CULTURE DANS L'EN-TÊTE
    ========================================================= */
 
@@ -107,9 +162,11 @@
   padding-left: 10px;
 }
 
+
 .culture-context-column .info-label {
   color: #6d4c41;
 }
+
 
 .culture-context-column .info-value {
   color: #4e342e;
