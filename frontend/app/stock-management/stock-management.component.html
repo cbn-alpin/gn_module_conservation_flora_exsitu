@@ -1,3 +1,18 @@
+<!-- RETOUR VERS MATÉRIEL RÉCOLTÉ -->
+<div class="stock-list-return-button">
+
+  <button
+    mat-raised-button
+    type="button"
+    (click)="onBackToMaterial()"
+  >
+    <mat-icon>arrow_back</mat-icon>
+
+    Retour
+  </button>
+
+</div>
+
 <div class="container-fluid">
   <div class="stock-summary">
     <p><strong>Quantité initiale globale :</strong> {{ totalInitialQuantity }}</p>

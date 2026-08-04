@@ -1,3 +1,39 @@
+/* =========================================================
+   RETOUR VERS MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+.germination-list-return-button {
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
+}
+
+
+.germination-list-return-button button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+}
+
+
+.germination-list-return-button button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.germination-list-return-button mat-icon {
+  color: #ffffff !important;
+}
 
 .right-panel {
   padding-bottom: 20px;

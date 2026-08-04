@@ -75,6 +75,24 @@ import { ActivatedRoute } from '@angular/router';
       });
     }
 
+     onBackToMaterial(): void {
+       const idHarvest = this.exsituFormService.idHarvest;
+
+       if (!idHarvest) {
+         console.error(
+           'Impossible de revenir au matériel récolté : idHarvest manquant.'
+         );
+
+         return;
+       }
+
+       this.exsituFormService.currentTab = 'materials';
+
+       this.router.navigate([
+         `/conservation_flora_exsitu/form/harvest/${idHarvest}/material-form`
+       ]);
+     }
+
 
      getTestByCode(code :any): void {
       this.api.getActionByCode(code).subscribe({

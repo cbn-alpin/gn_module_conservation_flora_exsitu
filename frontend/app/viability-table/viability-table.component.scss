@@ -1,3 +1,39 @@
+/* =========================================================
+   RETOUR VERS MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+.viability-list-return-button {
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
+}
+
+
+.viability-list-return-button button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+}
+
+
+.viability-list-return-button button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.viability-list-return-button mat-icon {
+  color: #ffffff !important;
+}
 
 .right-panel {
   padding-bottom: 20px;
