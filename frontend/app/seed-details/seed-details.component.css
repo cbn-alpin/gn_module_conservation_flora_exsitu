@@ -1,3 +1,41 @@
+/* =========================================================
+   RETOUR VERS MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+.seed-details-return-button {
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
+}
+
+
+.seed-details-return-button button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+}
+
+
+.seed-details-return-button button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.seed-details-return-button mat-icon {
+  color: #ffffff !important;
+}
+
+
 .info-block {
   background-color: #f8f9fa;
   padding: 1rem;

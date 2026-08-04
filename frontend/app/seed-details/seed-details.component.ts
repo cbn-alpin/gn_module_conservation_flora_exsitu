@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from '@librairies/rxjs';
 import { DataService } from '../services/data.service';
 import { ConfigService } from '../services/config.service';
@@ -29,7 +30,8 @@ export class SeedDetailsComponent implements OnInit {
         private dataService: DataService,
         private exsituService: ExsituFormService,
         private dialogService: DialogService,
-        private _commonService: CommonService
+        private _commonService: CommonService,
+        private router: Router
     ){
         this.taxhubEditFormUrl = this.cfg.getTaxHubFrontendUrl();
     }
@@ -58,6 +60,26 @@ export class SeedDetailsComponent implements OnInit {
             console.error('Erreur chargement infos complètes :', err);
           }
         });
+    }
+
+    onBackToMaterial(): void {
+        const idHarvest =
+            this.exsituService.idHarvest;
+
+        if (!idHarvest) {
+            console.error(
+                'Impossible de revenir au matériel récolté : idHarvest manquant.'
+            );
+
+            return;
+        }
+
+        this.exsituService.currentTab =
+            'materials';
+
+        this.router.navigate([
+            `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material-form`
+        ]);
     }
 
     lightboxVisible = false;

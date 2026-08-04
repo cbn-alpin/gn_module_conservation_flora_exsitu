@@ -119,17 +119,18 @@
     <!-- Les header -->
 
     <div
-        *ngIf="exsituFormService.currentTab !== 'harvest'"
-        [class.mb-5]="
-            exsituFormService.currentTab !== 'materials' &&
-            exsituFormService.currentTab !== 'culture-table' &&
-            exsituFormService.currentTab !== 'culture-details' &&
-            exsituFormService.currentTab !== 'semis-table' &&
-            exsituFormService.currentTab !== 'semis-details' &&
-            exsituFormService.currentTab !== 'germination-table' &&
-            exsituFormService.currentTab !== 'viability-table' &&
-            exsituFormService.currentTab !== 'stock'
-        "
+    *ngIf="exsituFormService.currentTab !== 'harvest'"
+    [class.mb-5]="
+        exsituFormService.currentTab !== 'materials' &&
+        exsituFormService.currentTab !== 'seed' &&
+        exsituFormService.currentTab !== 'culture-table' &&
+        exsituFormService.currentTab !== 'culture-details' &&
+        exsituFormService.currentTab !== 'semis-table' &&
+        exsituFormService.currentTab !== 'semis-details' &&
+        exsituFormService.currentTab !== 'germination-table' &&
+        exsituFormService.currentTab !== 'viability-table' &&
+        exsituFormService.currentTab !== 'stock'
+    "
     >
         <cs-header></cs-header>
     </div>
