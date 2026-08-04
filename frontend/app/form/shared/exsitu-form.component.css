@@ -148,3 +148,90 @@
   color: #5d4037 !important;
   border-bottom-color: #6d4c41 !important;
 }
+
+
+/* =========================================================
+   COULEURS DES AUTRES ONGLETS
+   ========================================================= */
+/* Récolte : bleu azur */
+.tab a.tablinks.harvest-tab {
+  --tab-accent-color: #1e88e5;
+  --tab-text-color: #0d4f8b;
+  --tab-background-color: #eaf4fd;
+}
+
+
+/* Matériels récoltés : vert olive */
+.tab a.tablinks.materials-tab {
+  --tab-accent-color: #7a8f45;
+  --tab-text-color: #405021;
+  --tab-background-color: #f3f6ea;
+}
+
+
+/* Semence : jaune doré */
+.tab a.tablinks.seed-tab {
+  --tab-accent-color: #c89500;
+  --tab-text-color: #684b00;
+  --tab-background-color: #fff6d8;
+}
+
+
+/* Stockage : gris ardoise */
+.tab a.tablinks.stock-tab {
+  --tab-accent-color: #607d8b;
+  --tab-text-color: #344955;
+  --tab-background-color: #eef2f4;
+}
+
+
+/* Test de germination : turquoise */
+.tab a.tablinks.germination-tab {
+  --tab-accent-color: #00897b;
+  --tab-text-color: #00564e;
+  --tab-background-color: #e5f6f3;
+}
+
+
+/* Test de viabilité : orange */
+.tab a.tablinks.viability-tab {
+  --tab-accent-color: #e07a1f;
+  --tab-text-color: #7a3b00;
+  --tab-background-color: #fff0e3;
+}
+
+/* Survol des onglets colorés */
+.tab a.tablinks.themed-tab:not(.disabled):not(.active):hover {
+  color: var(--tab-text-color);
+  background-color: var(--tab-background-color);
+  border-bottom-color: var(--tab-accent-color);
+}
+
+
+/* Couleur du logo au survol */
+.tab
+  a.tablinks.themed-tab:not(.disabled):not(.active):hover
+  .example-tab-icon {
+  color: var(--tab-accent-color);
+}
+
+
+/* Onglet coloré sélectionné */
+.tab a.tablinks.themed-tab.active,
+.tab a.tablinks.themed-tab.active:hover {
+  color: var(--tab-text-color);
+  background-color: var(--tab-background-color);
+  border-bottom-color: var(--tab-accent-color);
+
+  font-weight: 600;
+
+  box-shadow:
+    0 -1px 4px rgba(0, 0, 0, 0.10);
+}
+
+
+/* Couleur du logo de l’onglet sélectionné */
+.tab a.tablinks.themed-tab.active .example-tab-icon,
+.tab a.tablinks.themed-tab.active:hover .example-tab-icon {
+  color: var(--tab-accent-color);
+}

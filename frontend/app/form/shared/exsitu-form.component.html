@@ -3,7 +3,7 @@
     <div class="tab mb-2">
         <div class="tab-left">
             <!-- Récolte (Toujours activé) -->
-            <a class="tablinks"
+            <a class="tablinks themed-tab harvest-tab"
                 [class.active]="exsituFormService.currentTab === 'harvest'"
                 (click)="goToTab('harvest')"
             >
@@ -13,7 +13,7 @@
 
             <!-- Matériel récolté (Activé après ajout de la récolte) -->
             <a 
-                class="tablinks" 
+                class="tablinks themed-tab materials-tab"
                 [class.disabled]="!exsituFormService.idHarvest"
                 [ngClass]="{ active: exsituFormService.currentTab === 'materials' }"
                 (click)="goToTab('materials')"
@@ -24,7 +24,7 @@
 
             <!-- Semence (Activé après avoir choisi un matériel) -->
             <a 
-                class="tablinks" 
+                class="tablinks themed-tab seed-tab"
                 [class.disabled]="!idSeed"
                 [ngClass]="{ active: exsituFormService.currentTab === 'seed' }"
                 (click)="idMaterial ? goToTab('seed') : null">
@@ -34,7 +34,7 @@
 
             <!-- Stockage (Activé après avoir choisi un matériel) -->
             <a 
-                class="tablinks" 
+                class="tablinks themed-tab stock-tab"
                 [class.disabled]="!idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'stock' }"
                 (click)="idMaterial ? goToTab('stock') : null">
@@ -44,7 +44,7 @@
 
             <!-- Test de germination -->
             <a 
-                class="tablinks"
+                class="tablinks themed-tab germination-tab"
                 [class.disabled]="!idMaterial"
 
                 [ngClass]="{ active: exsituFormService.currentTab === 'germination-table' }"
@@ -75,7 +75,7 @@
 
 
             
-            <a class="tablinks"
+            <a class="tablinks themed-tab viability-tab"
                 [class.disabled]="!idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'viability-table' }"
                 (click)="idMaterial ? goToTab('viability-table') : null">
