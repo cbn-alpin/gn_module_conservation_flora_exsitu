@@ -254,22 +254,33 @@ table tr.mat-row:hover {
   cursor: pointer;
 }
 
+/* Message lorsqu’aucun test de viabilité n’existe */
 .alert-card {
-  margin: 20px auto;
-  padding: 16px;
-  max-width: 600px;
-  text-align: center;
-  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 8px;
+
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 16px;
+
+  color: #7a3b00;
+  font-size: 16px;
+  text-align: center;
+
+  background-color: #fff0e3;
+
+  border: 1px solid #f2c79f;
+  border-radius: 12px;
+
+  box-shadow: none;
 }
 
-.warning-card {
-  background-color: #fff3cd; 
-  color: #856404; 
-  border: 1px solid #ffeeba;
+
+.alert-card mat-icon {
+  color: #f44336 !important;
 }
 ::ng-deep .text-green {
   color: green;

@@ -6,8 +6,21 @@
         class="button-success uppercase">Ajouter une action</button>
 </div>
 <div class="card mt-2">
+
   <div class="table-container">
-      <table mat-table [dataSource]="dataSource" class="mat-table">
+
+    <ng-container
+      *ngIf="
+        dataSource.data.length > 0;
+        else noStockActions
+      "
+    >
+
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="mat-table"
+      >
         <ng-container matColumnDef="action_type">
             <th mat-header-cell *matHeaderCellDef> Type d'action </th>
             <td mat-cell *matCellDef="let element"> 
@@ -66,15 +79,50 @@
             </mat-menu>
           </td>
         </ng-container>
-        <!-- Lignes de l'en-tête et des données -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"></tr>
+              <!-- Lignes de l'en-tête et des données -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns"
+      >
+      </tr>
+
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          let i = index;
+          columns: displayedColumns;
+        "
+      >
+      </tr>
+
       </table>
+
       <mat-paginator
-          (page)="onPaginateChange()"
-          [pageSize]="rowPerPage"
-          [length]="totalActions"
-      ></mat-paginator>
+        (page)="onPaginateChange()"
+        [pageSize]="rowPerPage"
+        [length]="totalActions"
+      >
+      </mat-paginator>
+
+    </ng-container>
+
+
+    <ng-template #noStockActions>
+
+      <mat-card class="stock-empty-card mt-4">
+
+        <mat-icon color="warn">
+          info
+        </mat-icon>
+
+        Aucune action enregistrée pour « {{ title }} ».
+
+      </mat-card>
+
+    </ng-template>
+
   </div>
+
 </div>
   

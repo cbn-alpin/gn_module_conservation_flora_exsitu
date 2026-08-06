@@ -13,4 +13,34 @@
   color: #f44336 !important;
 }
 
+
+/* Message lorsqu’aucune action de stockage n’existe */
+.stock-empty-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 16px;
+
+  color: #344955;
+  font-size: 16px;
+  text-align: center;
+
+  background-color: #eef2f4;
+
+  border: 1px solid #c5d0d5;
+  border-radius: 12px;
+
+  box-shadow: none;
+}
+
+
+.stock-empty-card mat-icon {
+  color: #f44336 !important;
+}
+
   

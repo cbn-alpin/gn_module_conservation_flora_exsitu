@@ -255,22 +255,33 @@ table tr.mat-row:hover {
   cursor: pointer;
 }
 
+/* Message lorsqu’aucun test de germination n’existe */
 .alert-card {
-  margin: 20px auto;
-  padding: 16px;
-  max-width: 600px;
-  text-align: center;
-  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 8px;
+
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 16px;
+
+  color: #00564e;
+  font-size: 16px;
+  text-align: center;
+
+  background-color: #e5f6f3;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 12px;
+
+  box-shadow: none;
 }
 
-.warning-card {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
+
+.alert-card mat-icon {
+  color: #f44336 !important;
 }
 
 

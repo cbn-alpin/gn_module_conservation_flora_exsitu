@@ -37,15 +37,22 @@
 
   <mat-card-content class="material-list-content">
 
-    <div
-      id="matlist-container"
-      #dataTableContainer
+    <ng-container
+      *ngIf="
+        dataSource.data.length > 0;
+        else noMaterialData
+      "
     >
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        class="mat-table"
+
+      <div
+        id="matlist-container"
+        #dataTableContainer
       >
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="mat-table"
+        >
       <!-- N° de Récolte -->
       <ng-container matColumnDef="code_material">
         <th mat-header-cell *matHeaderCellDef > N° récolte </th>
@@ -156,10 +163,28 @@
         [pageSizeOptions]="[5, 10, 25, 100]"
         [showFirstLastButtons]="true"
         (page)="onPaginateChange()"
-      ></mat-paginator>
+      >
+      </mat-paginator>
 
     </div>
 
-  </mat-card-content>
+  </ng-container>
+
+
+  <ng-template #noMaterialData>
+
+    <mat-card class="material-empty-card mt-4">
+
+      <mat-icon color="warn">
+        info
+      </mat-icon>
+
+      Aucun matériel récolté enregistré pour cette récolte.
+
+    </mat-card>
+
+  </ng-template>
+
+</mat-card-content>
 
 </mat-card>
