@@ -5,7 +5,7 @@
   "
 >
     <!-- Les onglets -->
-    <div class="tab mb-2">
+    <div class="tab">
         <div class="tab-left">
             <!-- Récolte (Toujours activé) -->
             <a class="tablinks themed-tab harvest-tab"
@@ -118,9 +118,230 @@
 
             </a>
               
+              
         </div>
     </div>
-    
+
+
+    <!-- =====================================================
+         BARRE DE PROGRESSION DU WORKFLOW
+         ===================================================== -->
+
+<!-- =====================================================
+     BARRE DE PROGRESSION DU WORKFLOW
+     ===================================================== -->
+
+<div
+    class="workflow-progress"
+    aria-hidden="true"
+    [ngClass]="{
+        'progress-harvest':
+            exsituFormService.currentTab ===
+            'harvest',
+
+        'progress-materials':
+            exsituFormService.currentTab ===
+            'materials',
+
+        'progress-seed':
+            exsituFormService.currentTab ===
+            'seed',
+
+        'progress-stock':
+            exsituFormService.currentTab ===
+            'stock',
+
+        'progress-germination':
+            exsituFormService.currentTab ===
+                'germination-table' ||
+            exsituFormService.currentTab ===
+                'germination-add' ||
+            exsituFormService.currentTab ===
+                'germination-details',
+
+        'progress-semis':
+            exsituFormService.currentTab ===
+                'semis-table' ||
+            exsituFormService.currentTab ===
+                'semis-add' ||
+            exsituFormService.currentTab ===
+                'semis-details',
+
+        'progress-viability':
+            exsituFormService.currentTab ===
+                'viability-table' ||
+            exsituFormService.currentTab ===
+                'viability-add' ||
+            exsituFormService.currentTab ===
+                'viability-details',
+
+        'progress-culture':
+            exsituFormService.currentTab ===
+                'culture-table' ||
+            exsituFormService.currentTab ===
+                'culture-details'
+    }"
+>
+
+    <div class="workflow-progress-track">
+
+        <!-- Récolte -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Récolte
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Matériels récoltés -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Matériels récoltés
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Semence -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Semence
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Stockage -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Stockage
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Test de germination -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Test de germination
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Semis -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Semis
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Test de Viabilité -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Test de Viabilité
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+
+        <!-- Culture -->
+        <div class="workflow-progress-slot">
+
+            <span class="workflow-progress-measure">
+                <span class="workflow-progress-icon-space">
+                </span>
+
+                Culture
+            </span>
+
+            <span class="workflow-progress-segment">
+            </span>
+
+            <span class="workflow-progress-marker">
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
     <!-- Les header -->
 
     <div

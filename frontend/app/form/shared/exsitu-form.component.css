@@ -45,6 +45,445 @@
   padding: 4px 8px 0;
 }
 
+
+/* =========================================================
+   BARRE DE PROGRESSION SOUS LES ONGLETS
+   ========================================================= */
+
+/* =========================================================
+   BARRE DE PROGRESSION SOUS LES ONGLETS
+   ========================================================= */
+
+.workflow-progress {
+  /*
+   * Couleur de secours.
+   * Elle est remplacée par la couleur
+   * correspondant à la partie active.
+   */
+  --workflow-progress-color: #1e88e5;
+
+  width: 100%;
+  padding: 8px 0 10px;
+
+  background-color: #ffffff;
+}
+
+
+/* Couleur Récolte */
+.workflow-progress.progress-harvest {
+  --workflow-progress-color: #1e88e5;
+}
+
+
+/* Couleur Matériels récoltés */
+.workflow-progress.progress-materials {
+  --workflow-progress-color: #7a8f45;
+}
+
+
+/* Couleur Semence */
+.workflow-progress.progress-seed {
+  --workflow-progress-color: #c89500;
+}
+
+
+/* Couleur Stockage */
+.workflow-progress.progress-stock {
+  --workflow-progress-color: #607d8b;
+}
+
+
+/* Couleur Test de germination */
+.workflow-progress.progress-germination {
+  --workflow-progress-color: #00897b;
+}
+
+
+/* Couleur Semis */
+.workflow-progress.progress-semis {
+  --workflow-progress-color: #2e7d32;
+}
+
+
+/* Couleur Test de Viabilité */
+.workflow-progress.progress-viability {
+  --workflow-progress-color: #e07a1f;
+}
+
+
+/* Couleur Culture */
+.workflow-progress.progress-culture {
+  --workflow-progress-color: #6d4c41;
+}
+
+
+/* Conteneur général de la progression */
+.workflow-progress-track {
+  position: relative;
+
+  display: flex;
+  flex-wrap: nowrap;
+
+  width: 100%;
+  height: 22px;
+  gap: 4px;
+  padding: 0 8px;
+
+  box-sizing: border-box;
+}
+
+
+/* Ligne grise représentant le parcours total */
+.workflow-progress-track::before {
+  content: '';
+
+  position: absolute;
+
+  top: 50%;
+  right: 8px;
+  left: 8px;
+
+  height: 6px;
+
+  background-color: #e4e9ee;
+
+  border: 1px solid #d6dde4;
+  border-radius: 999px;
+
+  box-shadow:
+    inset 0 1px 2px rgba(30, 41, 59, 0.12);
+
+  transform: translateY(-50%);
+}
+
+
+/*
+ * Chaque emplacement reproduit la largeur
+ * de l’onglet correspondant.
+ */
+.workflow-progress-slot {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  padding: 0 14px;
+
+  box-sizing: border-box;
+}
+
+
+/*
+ * Texte invisible utilisé uniquement pour
+ * conserver l’alignement avec les onglets.
+ */
+.workflow-progress-measure {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  visibility: hidden;
+}
+
+
+.workflow-progress-icon-space {
+  flex: 0 0 21px;
+
+  width: 21px;
+  height: 21px;
+}
+
+
+/* Partie colorée de la progression */
+.workflow-progress-segment {
+  position: absolute;
+  z-index: 1;
+
+  top: 50%;
+  right: -2px;
+  left: -2px;
+
+  height: 6px;
+
+  background-color:
+    var(--workflow-progress-color);
+
+  border-radius: 999px;
+
+  opacity: 0;
+
+  transform:
+    translateY(-50%)
+    scaleX(0);
+
+  transform-origin: left center;
+
+  transition:
+    transform 0.38s ease,
+    opacity 0.22s ease,
+    background-color 0.25s ease;
+
+  filter:
+    drop-shadow(
+      0 1px 2px
+      var(--workflow-progress-color)
+    );
+}
+
+
+/* Repère circulaire de l’étape active */
+.workflow-progress-marker {
+  position: absolute;
+  z-index: 3;
+
+  top: 50%;
+  left: 50%;
+
+  width: 14px;
+  height: 14px;
+
+  background-color:
+    var(--workflow-progress-color);
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  opacity: 0;
+
+  transform:
+    translate(-50%, -50%)
+    scale(0.55);
+
+  box-shadow:
+    0 0 0 3px
+      var(--workflow-progress-color),
+    0 3px 9px
+      rgba(30, 41, 59, 0.28);
+
+  transition:
+    opacity 0.20s ease,
+    transform 0.30s ease,
+    background-color 0.25s ease;
+}
+
+
+/* Petit point lumineux au centre */
+.workflow-progress-marker::before {
+  content: '';
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 4px;
+  height: 4px;
+
+  background-color: #ffffff;
+
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+
+/* Halo animé autour de l’étape active */
+.workflow-progress-marker::after {
+  content: '';
+
+  position: absolute;
+
+  inset: -7px;
+
+  border: 2px solid
+    var(--workflow-progress-color);
+  border-radius: 50%;
+
+  opacity: 0;
+
+  animation:
+    workflow-progress-pulse
+    2.2s ease-out infinite;
+}
+
+
+/* =========================================================
+   ÉTAPES DÉJÀ PARCOURUES
+   ========================================================= */
+
+/* Avant Matériels récoltés */
+.progress-materials
+  .workflow-progress-slot:nth-child(-n + 1)
+  .workflow-progress-segment,
+
+/* Avant Semence */
+.progress-seed
+  .workflow-progress-slot:nth-child(-n + 2)
+  .workflow-progress-segment,
+
+/* Avant Stockage */
+.progress-stock
+  .workflow-progress-slot:nth-child(-n + 3)
+  .workflow-progress-segment,
+
+/* Avant Germination */
+.progress-germination
+  .workflow-progress-slot:nth-child(-n + 4)
+  .workflow-progress-segment,
+
+/* Avant Semis */
+.progress-semis
+  .workflow-progress-slot:nth-child(-n + 5)
+  .workflow-progress-segment,
+
+/* Avant Viabilité */
+.progress-viability
+  .workflow-progress-slot:nth-child(-n + 6)
+  .workflow-progress-segment,
+
+/* Avant Culture */
+.progress-culture
+  .workflow-progress-slot:nth-child(-n + 7)
+  .workflow-progress-segment {
+  opacity: 1;
+
+  transform:
+    translateY(-50%)
+    scaleX(1);
+}
+
+
+/* =========================================================
+   MOITIÉ DE L’ÉTAPE ACTIVE
+   ========================================================= */
+
+.progress-harvest
+  .workflow-progress-slot:nth-child(1)
+  .workflow-progress-segment,
+
+.progress-materials
+  .workflow-progress-slot:nth-child(2)
+  .workflow-progress-segment,
+
+.progress-seed
+  .workflow-progress-slot:nth-child(3)
+  .workflow-progress-segment,
+
+.progress-stock
+  .workflow-progress-slot:nth-child(4)
+  .workflow-progress-segment,
+
+.progress-germination
+  .workflow-progress-slot:nth-child(5)
+  .workflow-progress-segment,
+
+.progress-semis
+  .workflow-progress-slot:nth-child(6)
+  .workflow-progress-segment,
+
+.progress-viability
+  .workflow-progress-slot:nth-child(7)
+  .workflow-progress-segment,
+
+.progress-culture
+  .workflow-progress-slot:nth-child(8)
+  .workflow-progress-segment {
+  opacity: 1;
+
+  transform:
+    translateY(-50%)
+    scaleX(0.5);
+}
+
+
+/* =========================================================
+   REPÈRE DE L’ÉTAPE ACTIVE
+   ========================================================= */
+
+.progress-harvest
+  .workflow-progress-slot:nth-child(1)
+  .workflow-progress-marker,
+
+.progress-materials
+  .workflow-progress-slot:nth-child(2)
+  .workflow-progress-marker,
+
+.progress-seed
+  .workflow-progress-slot:nth-child(3)
+  .workflow-progress-marker,
+
+.progress-stock
+  .workflow-progress-slot:nth-child(4)
+  .workflow-progress-marker,
+
+.progress-germination
+  .workflow-progress-slot:nth-child(5)
+  .workflow-progress-marker,
+
+.progress-semis
+  .workflow-progress-slot:nth-child(6)
+  .workflow-progress-marker,
+
+.progress-viability
+  .workflow-progress-slot:nth-child(7)
+  .workflow-progress-marker,
+
+.progress-culture
+  .workflow-progress-slot:nth-child(8)
+  .workflow-progress-marker {
+  opacity: 1;
+
+  transform:
+    translate(-50%, -50%)
+    scale(1);
+}
+
+
+/* Animation douce du halo */
+@keyframes workflow-progress-pulse {
+  0% {
+    opacity: 0.45;
+
+    transform: scale(0.65);
+  }
+
+  70% {
+    opacity: 0;
+
+    transform: scale(1.35);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform: scale(1.35);
+  }
+}
+
+
+/* Désactivation de l’animation si demandée par le système */
+@media (prefers-reduced-motion: reduce) {
+  .workflow-progress-segment,
+  .workflow-progress-marker {
+    transition: none;
+  }
+
+  .workflow-progress-marker::after {
+    animation: none;
+  }
+}
+
+
 /* Apparence générale des onglets */
 .tab a.tablinks {
   display: inline-flex;
