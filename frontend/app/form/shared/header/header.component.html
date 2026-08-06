@@ -1,55 +1,85 @@
 <div class="header-bar" *ngIf="exsituFormService.harvest">
+
   <div class="header-info-grid">
 
-    <!-- Colonne 1 -->
-    <div class="info-column harvest-context-column">
-      <div class="info-row">
-        <span class="info-label">Type de récolte</span>
+    <!-- =====================================================
+         SECTION RÉCOLTE
+         ===================================================== -->
+    <div class="info-section harvest-info-section">
 
-        <span class="info-value">
-          {{ harvest?.harvest_type || 'Non renseigné' }}
-        </span>
+      <div class="info-section-title harvest-section-title">
+        Info de Récolte
       </div>
 
-      <div class="info-row">
-        <span class="info-label">
-          Localisation
-        </span>
+      <div class="info-section-body two-columns">
 
-        <span class="info-value">
-          {{ harvest?.location_name || 'Non renseignée' }}
-        </span>
+        <!-- Sous-colonne 1 -->
+        <div class="info-column harvest-context-column">
+          <div class="info-row">
+            <span class="info-label">Type de récolte</span>
+
+            <span class="info-value">
+              {{ harvest?.harvest_type || 'Non renseigné' }}
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">
+              Localisation
+            </span>
+
+            <span class="info-value">
+              {{ harvest?.location_name || 'Non renseignée' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Sous-colonne 2 -->
+        <div class="info-column harvest-context-column">
+          <div class="info-row">
+            <span class="info-label">Date</span>
+
+            <span class="info-value">
+              {{
+                harvest?.date_start
+                  ? (harvest.date_start | date:'dd/MM/yyyy')
+                  : 'Non renseignée'
+              }}
+            </span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-label">Observateur</span>
+
+            <span class="info-value">
+              {{ harvest?.observateur || 'N/A' }}
+            </span>
+          </div>
+        </div>
+
       </div>
+
     </div>
 
-    <!-- Colonne 2 -->
-    <div class="info-column harvest-context-column">
-      <div class="info-row">
-        <span class="info-label">Date</span>
 
-        <span class="info-value">
-          {{
-            harvest?.date_start
-              ? (harvest.date_start | date:'dd/MM/yyyy')
-              : 'Non renseignée'
-          }}
-        </span>
+    <!-- =====================================================
+         SECTION MATÉRIEL RÉCOLTÉ
+         ===================================================== -->
+    <div
+      class="info-section material-info-section"
+      *ngIf="
+        codeMaterial &&
+        exsituFormService.currentTab !== 'materials'
+      "
+    >
+
+      <div class="info-section-title material-section-title">
+        Info de Matériel récolté
       </div>
 
-      <div class="info-row">
-        <span class="info-label">Observateur</span>
+      <div class="info-section-body">
 
-        <span class="info-value">
-          {{ harvest?.observateur || 'N/A' }}
-        </span>
-      </div>
-    </div>
-
-        <!-- Colonne 3 -->
-        <div
-          class="info-column material-context-column"
-          *ngIf="codeMaterial && exsituFormService.currentTab !== 'materials'"
-        >
+        <div class="info-column material-context-column">
           <div class="info-row">
             <span class="info-label">N° de récolte</span>
 
@@ -70,20 +100,34 @@
           </div>
         </div>
 
+      </div>
 
-        <!-- Colonne 4 - Contexte Culture uniquement -->
-        <div
-          class="info-column culture-context-column"
-          *ngIf="
-            codeMaterial &&
-            (
-              exsituFormService.currentTab === 'culture-table' ||
-              exsituFormService.currentTab === 'culture-details'
-            )
-          "
-        >
+    </div>
+
+
+    <!-- =====================================================
+         SECTION CULTURE
+         ===================================================== -->
+    <div
+      class="info-section culture-info-section"
+      *ngIf="
+        codeMaterial &&
+        (
+          exsituFormService.currentTab === 'culture-table' ||
+          exsituFormService.currentTab === 'culture-details'
+        )
+      "
+    >
+
+      <div class="info-section-title culture-section-title">
+        Info de Culture
+      </div>
+
+      <div class="info-section-body">
+
+        <div class="info-column culture-context-column">
+
           <div class="info-row culture-context-row">
-
             <span class="info-label">
               N° du semis
             </span>
@@ -95,12 +139,9 @@
                 '-'
               }}
             </span>
-
           </div>
 
-
           <div class="info-row culture-context-row">
-
             <span class="info-label">
               N° du test de germination
             </span>
@@ -112,9 +153,14 @@
                 '-'
               }}
             </span>
-
           </div>
+
         </div>
 
       </div>
+
     </div>
+
+  </div>
+
+</div>

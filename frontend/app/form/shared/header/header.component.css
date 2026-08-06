@@ -6,19 +6,90 @@
   border-bottom: 1px solid #b8c1cc;
 }
 
-/* Les trois colonnes dans une seule bande */
+
+/* =========================================================
+   STRUCTURE GÉNÉRALE DES BLOCS D'INFORMATION
+   ========================================================= */
+
 .header-info-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
   width: 100%;
+}
+
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
 
   background-color: #ffffff;
+
   border: 1px solid #d5dbe3;
   border-radius: 7px;
+
   box-shadow: 0 2px 6px rgba(30, 41, 59, 0.08);
 
   overflow: hidden;
 }
+
+
+.harvest-info-section {
+  flex: 2 1 0;
+}
+
+
+.material-info-section,
+.culture-info-section {
+  flex: 1 1 0;
+}
+
+
+.info-section-title {
+  padding: 8px 14px;
+
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-align: center;
+
+  border-bottom: 1px solid #dce2e8;
+}
+
+
+.harvest-section-title {
+  color: #0d4f8b;
+  background-color: #eaf4fd;
+  border-bottom-color: #cfe1f2;
+}
+
+
+.material-section-title {
+  color: #405021;
+  background-color: #f3f6ea;
+  border-bottom-color: #d5ddc1;
+}
+
+
+.culture-section-title {
+  color: #6d4c41;
+  background-color: #efebe9;
+  border-bottom-color: #d8cbc5;
+}
+
+
+.info-section-body {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+
+.info-section-body.two-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 
 /* Une colonne contient deux lignes */
 .info-column {
@@ -30,10 +101,12 @@
   padding: 10px 20px;
 }
 
-/* Séparation légère entre les trois colonnes */
+
+/* Séparation légère entre sous-colonnes */
 .info-column + .info-column {
   border-left: 1px solid #dce2e8;
 }
+
 
 /* Une ligne : libellé puis valeur */
 .info-row {
@@ -45,6 +118,7 @@
   min-height: 24px;
 }
 
+
 /* Libellé */
 .info-label {
   color: #475569;
@@ -53,10 +127,12 @@
   white-space: nowrap;
 }
 
+
 /* Deux-points après le libellé */
 .info-label::after {
   content: " :";
 }
+
 
 /* Valeur */
 .info-value {
@@ -71,15 +147,30 @@
   white-space: nowrap;
 }
 
+
 /* Taxon */
 .taxon-value {
   color: #334155;
   font-style: italic;
 }
 
+
 /* Adaptation sur les petits écrans */
-@media (max-width: 950px) {
+@media (max-width: 1200px) {
   .header-info-grid {
+    flex-direction: column;
+  }
+
+  .harvest-info-section,
+  .material-info-section,
+  .culture-info-section {
+    flex: 1 1 auto;
+  }
+}
+
+
+@media (max-width: 950px) {
+  .info-section-body.two-columns {
     grid-template-columns: 1fr;
   }
 
