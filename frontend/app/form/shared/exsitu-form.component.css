@@ -702,3 +702,19 @@
 .tab a.tablinks.themed-tab.active:hover .example-tab-icon {
   color: var(--tab-accent-color);
 }
+
+
+/* =========================================================
+   MASQUER LA BARRE DE LA PAGE PENDANT L'OUVERTURE D'UNE FICHE
+   ========================================================= */
+
+/*
+ * Angular Material ajoute automatiquement cette classe
+ * lors de l'ouverture d'une fenêtre.
+ *
+ * On masque uniquement la barre extérieure de la page.
+ * Le défilement interne de la fiche reste disponible.
+ */
+::ng-deep html.cdk-global-scrollblock {
+  overflow-y: hidden !important;
+}
