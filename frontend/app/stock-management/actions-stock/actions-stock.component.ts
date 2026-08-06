@@ -76,11 +76,11 @@ export class ActionsStockComponent implements OnInit {
       const data = isEdit ? { ...baseData, ...action } : baseData;
     
       const dialogRef = this.dialog.open(ActionModalComponent, {
-        width: '70%',
+        width: '900px',
         height: '80%',
         data: { data, edit: isEdit }
       });
-    
+          
       dialogRef.afterClosed().subscribe(() => {
         this.loadActions();
         this.onGetStockSummary()

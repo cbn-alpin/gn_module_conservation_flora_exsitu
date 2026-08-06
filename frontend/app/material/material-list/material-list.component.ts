@@ -214,7 +214,7 @@ export class MaterialListComponent implements OnInit {
     
     addModalMaterial(): void {
       const dialogRef = this.dialog.open(MaterialModalComponent, {
-        width: '100%',
+        width: '900px',
         height: '90%',
       });
       dialogRef.afterClosed().subscribe(result => {
