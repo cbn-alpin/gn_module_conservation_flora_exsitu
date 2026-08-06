@@ -1024,6 +1024,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
       CultureComponent,
       {
         width: '900px',
+        height: '90vh',
         maxWidth: '95vw',
         maxHeight: '90vh',
         disableClose: true,
@@ -1125,6 +1126,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
             CultureComponent,
             {
               width: '900px',
+              height: '90vh',
               maxWidth: '95vw',
               maxHeight: '90vh',
               disableClose: true,
