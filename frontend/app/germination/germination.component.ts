@@ -51,6 +51,8 @@ export class GerminationComponent implements OnInit {
   public supportOptions: any[] = [];
   public substrateOptions: any[] = [];
 
+  public codeMaterial: string | null = null;
+
   private readonly supportOrder = [
     'Boite de pétri',
     'Pastilles de Tourbe',
@@ -121,9 +123,31 @@ export class GerminationComponent implements OnInit {
   }
   
 
-  idMaterial: number;
-  idSeed: number;
-  ngOnInit(): void {
+idMaterial: number;
+idSeed: number;
+
+
+private loadAssociatedMaterialCode(): void {
+  if (!this.idMaterial) {
+    return;
+  }
+
+  this.api
+    .getMaterialInfos(this.idMaterial)
+    .subscribe({
+      next: (material) => {
+        this.codeMaterial =
+          material?.code_material || null;
+      },
+
+      error: () => {
+        this.codeMaterial = null;
+      }
+    });
+}
+
+
+ngOnInit(): void {
     this.filteredTest$ = this.codeTest.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -134,8 +158,13 @@ export class GerminationComponent implements OnInit {
       ))
     );
   
-    this.idMaterial = this.exsituFormService.idMaterial;
-    this.idSeed = this.exsituFormService.idSeed;
+    this.idMaterial =
+      this.exsituFormService.idMaterial;
+
+    this.idSeed =
+      this.exsituFormService.idSeed;
+
+    this.loadAssociatedMaterialCode();
 
     this.dataSource.data = [];
   

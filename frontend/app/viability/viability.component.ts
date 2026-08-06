@@ -48,6 +48,8 @@ export class ViabilityComponent implements OnInit {
   additionalDataForm: FormGroup;
   formsDefinition;
 
+  public codeMaterial: string | null = null;
+
   codeTest = new FormControl();
   filteredTest$: Observable<string[]>;
 
@@ -106,6 +108,28 @@ export class ViabilityComponent implements OnInit {
 
   idMaterial: number;
   idSeed: number;
+
+
+  private loadAssociatedMaterialCode(): void {
+    if (!this.idMaterial) {
+      return;
+    }
+
+    this.api
+      .getMaterialInfos(this.idMaterial)
+      .subscribe({
+        next: (material) => {
+          this.codeMaterial =
+            material?.code_material || null;
+        },
+
+        error: () => {
+          this.codeMaterial = null;
+        }
+      });
+  }
+
+
   ngOnInit(): void {
     this.filteredTest$ = this.codeTest.valueChanges.pipe(
       startWith(''),
@@ -117,8 +141,13 @@ export class ViabilityComponent implements OnInit {
       ))
     );
   
-    this.idMaterial = this.exsituFormService.idMaterial;
-    this.idSeed = this.exsituFormService.idSeed;
+    this.idMaterial =
+      this.exsituFormService.idMaterial;
+
+    this.idSeed =
+      this.exsituFormService.idSeed;
+
+    this.loadAssociatedMaterialCode();
 
     this.dataSource.data = [];
   

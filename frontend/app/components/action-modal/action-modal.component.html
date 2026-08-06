@@ -1,10 +1,51 @@
+<mat-card
+  class="stock-form-card"
+  *ngIf="actionForm"
+>
 
-<div mat-dialog-title>
-  <h3 *ngIf="!edit">Ajout d'une action</h3>
-  <h3 *ngIf="edit">Modification de l'action</h3>
-</div>
-<mat-dialog-content class="mat-typography" *ngIf="actionForm">
-  <div class="row row-0 mr-3 mt-2">
+  <mat-card-header class="stock-form-header">
+
+    <div class="stock-title-wrapper">
+
+      <mat-card-title>
+        {{
+          edit
+            ? 'Modifier une fiche de Stockage'
+            : 'Ajouter une fiche de Stockage'
+        }}
+      </mat-card-title>
+
+    </div>
+
+  </mat-card-header>
+
+
+  <mat-card-content class="stock-form-content">
+
+    <div class="stock-material-banner">
+
+      <div class="stock-material-banner-icon">
+        <mat-icon>link</mat-icon>
+      </div>
+
+      <div class="stock-material-banner-text">
+
+        <span class="stock-material-banner-label">
+          N° du matériel récolté associé
+        </span>
+
+        <strong class="stock-material-banner-value">
+          {{ codeMaterial || idMaterial || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="stock-fields-content">
+
+      <div class="row row-0 mr-3 mt-2">
       <div class="col-6 padding-sm">
         <label> Type d'action *</label>
         <pnx-nomenclature
@@ -181,8 +222,10 @@
       </div>
     </mat-card-content>
   </mat-card>
-</mat-dialog-content>
-<mat-dialog-actions class="ml-3 mr-4 mb-3">
+    </div>
+
+  </mat-card-content>
+<div class="stock-form-actions">
   <div class="flex-actions">
     <button
       color="warn"
@@ -213,5 +256,7 @@
       <mat-icon style="vertical-align: middle">save</mat-icon>
     </button>
   </div>
-</mat-dialog-actions>
+</div>
+
+</mat-card>
 

@@ -1,3 +1,141 @@
+/* =========================================================
+   FICHE DE GERMINATION
+   ========================================================= */
+
+.germination-form-card {
+  width: 100%;
+  overflow: visible;
+
+  background-color: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px rgba(0, 137, 123, 0.10);
+}
+
+
+.germination-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 58px;
+  padding: 0 20px;
+  padding-top: 8px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e5f6f3 0%,
+      #f5fcfb 55%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #b2dfdb;
+}
+
+
+.germination-title-wrapper {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+.germination-form-header mat-card-title {
+  display: block;
+
+  width: 100%;
+  margin: 0;
+
+  color: #00564e;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
+
+.germination-form-content {
+  background-color: #f8fdfc;
+}
+
+
+.germination-material-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 14px 20px 0;
+  padding: 9px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e5f6f3 0%,
+      #fbfffe 100%
+    );
+
+  border: 1px solid #b2dfdb;
+  border-radius: 9px;
+}
+
+
+.germination-material-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 30px;
+  height: 30px;
+
+  background-color: #ffffff;
+
+  border: 1px solid #80cbc4;
+  border-radius: 7px;
+}
+
+
+.germination-material-banner-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #00897b;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.germination-material-banner-text {
+  display: flex;
+  align-items: baseline;
+
+  gap: 9px;
+}
+
+
+.germination-material-banner-label {
+  color: #527b77;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.germination-material-banner-value {
+  color: #00564e;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
 .semis-form {
   padding: 20px;
 }

@@ -41,6 +41,8 @@ export class ActionModalComponent implements OnInit {
     public allowSubmitForGerminationMovement = false;
     public currentModulePath: string
     idMaterial: number | null = null;
+    public codeMaterial: string | null = null;
+
     public isInitialStorage = false;
 
 
@@ -66,9 +68,17 @@ export class ActionModalComponent implements OnInit {
 
     }
 
-    ngOnInit(): void {          
-        this.edit = this.data.edit || false;    
-        this.initForm();
+    ngOnInit(): void {
+      this.edit =
+        this.data.edit || false;
+
+      this.idMaterial =
+        this.data?.data?.id_material ??
+        this.exsituFormService.idMaterial;
+
+      this.loadAssociatedMaterialCode();
+
+      this.initForm();
         this.additionalDataForm = this.actionForm.get('additional_data') as FormGroup;
         this.listenQuantityChanges();
         this.auteurs_code = this.cfg.getObsCode()
@@ -100,10 +110,26 @@ export class ActionModalComponent implements OnInit {
         this.moduleService.currentModule$.subscribe((module) => {
           this.currentModulePath = module.module_path.toLowerCase();
         });
-
-        this.idMaterial = this.exsituFormService.idMaterial
-        console.log(this.idMaterial)
         
+    }
+
+    private loadAssociatedMaterialCode(): void {
+      if (!this.idMaterial) {
+        return;
+      }
+
+      this.api
+        .getMaterialInfos(this.idMaterial)
+        .subscribe({
+          next: (material) => {
+            this.codeMaterial =
+              material?.code_material || null;
+          },
+
+          error: () => {
+            this.codeMaterial = null;
+          }
+        });
     }
 
     initForm(){

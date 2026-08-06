@@ -27,6 +27,7 @@
 
   min-height: 58px;
   padding: 0 20px;
+  padding-top: 8px;
 
   background:
     linear-gradient(
@@ -560,32 +561,37 @@ textarea {
   font-size: 13px;
 }
 
-/* Contenu du bandeau Culture */
 .culture-material-banner-content {
   display: flex;
   flex-direction: column;
 
+  width: 100%;
   gap: 5px;
 }
 
 
-/* Deux références sur la même ligne */
+/* Références affichées sur deux lignes */
 .culture-associated-sources {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
 
-  gap: 24px;
+  width: 100%;
+  gap: 6px;
 }
 
 
-/* Une référence */
+/* Une référence par ligne */
 .culture-associated-source {
-  display: flex;
-  align-items: baseline;
+  display: grid;
+  grid-template-columns:
+    235px
+    minmax(0, 1fr);
 
-  gap: 6px;
+  align-items: center;
 
-  font-size: 11px;
+  min-height: 30px;
+  gap: 9px;
 }
 
 
@@ -593,6 +599,7 @@ textarea {
 .culture-associated-source span {
   color: #7b6a64;
 
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -601,13 +608,15 @@ textarea {
 .culture-associated-source strong {
   color: #4e342e;
 
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 850;
 }
+
 
 /* Listes d'origine en création directe */
 .culture-associated-source-select {
-  width: 175px;
+  width: 100%;
+  max-width: 240px;
   margin: 0;
 }
 

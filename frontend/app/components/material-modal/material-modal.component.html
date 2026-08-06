@@ -1,10 +1,27 @@
+<mat-card class="material-form-card">
 
-<div mat-dialog-title>
-  <h3 *ngIf="!(materialFormService.occurrence | async)">Ajout matériel</h3>
-  <h3 *ngIf="(materialFormService.occurrence | async)">Modification matériel</h3>
-</div>
-<mat-dialog-content class="wrapper">
-  <div class="row row-0 mr-3 mt-2">
+  <mat-card-header class="material-form-header">
+
+    <div class="material-title-wrapper">
+
+      <mat-card-title>
+        {{
+          (materialFormService.occurrence | async)
+            ? 'Modifier une fiche de Matériel récolté'
+            : 'Ajouter une fiche de Matériel récolté'
+        }}
+      </mat-card-title>
+
+    </div>
+
+  </mat-card-header>
+
+
+  <mat-card-content
+    class="wrapper material-form-content"
+  >
+
+    <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
         <label>Numéro de récolte *</label>
         <input
@@ -201,8 +218,8 @@
     </mat-card-content>
   </mat-card>
 
-</mat-dialog-content>
-<mat-dialog-actions>
+</mat-card-content>
+<div class="material-form-actions">
   <div class="button-container">
     <div>
       <button
@@ -243,4 +260,6 @@
       </ng-template>
     </div>
   </div>
-</mat-dialog-actions>
+</div>
+
+</mat-card>
