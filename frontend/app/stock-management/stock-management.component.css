@@ -34,6 +34,76 @@
   color: #ffffff !important;
 }
 
+
+/* =========================================================
+   FICHE DE STOCKAGE
+   ========================================================= */
+
+.stock-list-card {
+  margin: 0;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #c5d0d5;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 14px rgba(52, 73, 85, 0.12);
+}
+
+
+.stock-list-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 52px;
+  padding: 0 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #eef2f4 0%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #c5d0d5;
+}
+
+
+.stock-title-wrapper {
+  position: absolute;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+
+.stock-title-wrapper mat-card-title {
+  margin: 0;
+
+  color: #344955;
+
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+}
+
+
+.stock-list-content {
+  padding: 12px 14px 10px !important;
+
+  background-color: #f8fafb;
+}
+
+
 ::ng-deep .cdk-overlay-container {
     z-index: 1000 !important;
 }

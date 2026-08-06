@@ -13,26 +13,84 @@
 
 </div>
 
-<div class="container-fluid">
-  <div class="stock-summary">
-    <p><strong>Quantité initiale globale :</strong> {{ totalInitialQuantity }}</p>
-    <p><strong>Quantité actuelle globale :</strong> {{ totalCurrentQuantity }}</p>
-  </div>
-  
-  <div class="row">
-    <div class="col-md-6 col-12 mb-4">
-      <cfe-actions-stock [title]="'Salle de pré-séchage'" [placeCode]="constants.PLACE_CODES.PRE_DRYING_ROOM"></cfe-actions-stock>
+<mat-card class="stock-list-card">
+
+  <mat-card-header class="stock-list-header">
+
+    <div class="stock-title-wrapper">
+      <mat-card-title>
+        Fiche de Stockage
+      </mat-card-title>
     </div>
-    <div class="col-md-6 col-12 mb-4">
-      <cfe-actions-stock [title]="'Salle de séchage'" [placeCode]="constants.PLACE_CODES.DRYING_ROOM"></cfe-actions-stock>
+
+  </mat-card-header>
+
+  <mat-card-content class="stock-list-content">
+
+    <div class="container-fluid">
+
+      <div class="stock-summary">
+
+        <p>
+          <strong>Quantité initiale globale :</strong>
+          {{ totalInitialQuantity }}
+        </p>
+
+        <p>
+          <strong>Quantité actuelle globale :</strong>
+          {{ totalCurrentQuantity }}
+        </p>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-6 col-12 mb-4">
+          <cfe-actions-stock
+            [title]="'Salle de pré-séchage'"
+            [placeCode]="
+              constants.PLACE_CODES.PRE_DRYING_ROOM
+            "
+          >
+          </cfe-actions-stock>
+        </div>
+
+        <div class="col-md-6 col-12 mb-4">
+          <cfe-actions-stock
+            [title]="'Salle de séchage'"
+            [placeCode]="
+              constants.PLACE_CODES.DRYING_ROOM
+            "
+          >
+          </cfe-actions-stock>
+        </div>
+
+        <div class="col-md-6 col-12 mb-4">
+          <cfe-actions-stock
+            [title]="'Chambre froide'"
+            [placeCode]="
+              constants.PLACE_CODES.COLD_ROOM
+            "
+          >
+          </cfe-actions-stock>
+        </div>
+
+        <div class="col-md-6 col-12 mb-4">
+          <cfe-actions-stock
+            [title]="'Congélateur'"
+            [placeCode]="
+              constants.PLACE_CODES.FREEZER
+            "
+          >
+          </cfe-actions-stock>
+        </div>
+
+      </div>
+
     </div>
-    <div class="col-md-6 col-12 mb-4">
-      <cfe-actions-stock [title]="'Chambre froide'" [placeCode]="constants.PLACE_CODES.COLD_ROOM"></cfe-actions-stock>
-    </div>
-    <div class="col-md-6 col-12 mb-4">
-      <cfe-actions-stock [title]="'Congélateur'" [placeCode]="constants.PLACE_CODES.FREEZER"></cfe-actions-stock>
-    </div>
-  </div>
-</div>
+
+  </mat-card-content>
+
+</mat-card>
 
   

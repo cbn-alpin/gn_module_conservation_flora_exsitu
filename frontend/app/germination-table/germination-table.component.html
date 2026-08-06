@@ -13,19 +13,40 @@
 
 </div>
 
-<mat-card>
-  <mat-card-header class="header-with-button">
-    <button mat-button class="gray-button" (click)="addFicheGermination()">
-      <mat-icon>add</mat-icon> Ajouter un TG
+<mat-card class="germination-list-card">
+
+  <mat-card-header class="germination-list-header">
+
+    <button
+      mat-button
+      class="germination-add-button"
+      (click)="addFicheGermination()"
+    >
+      <mat-icon>add</mat-icon>
+
+      Ajouter une fiche de germination
     </button>
-    <div class="title-wrapper">
-      <mat-card-title>Fiche de Germination</mat-card-title>
+
+    <div class="germination-title-wrapper">
+      <mat-card-title>
+        Fiche de Germination
+      </mat-card-title>
     </div>
+
   </mat-card-header>
 
-  <mat-card-content>
-    <ng-container *ngIf="dataSource.data.length > 0; else noGerminationData">
-      <table mat-table [dataSource]="dataSource">
+  <mat-card-content class="germination-list-content">
+
+    <ng-container
+      *ngIf="
+        dataSource.data.length > 0;
+        else noGerminationData
+      "
+    >
+      <table
+        mat-table
+        [dataSource]="dataSource"
+      >
 
         <!-- N° test de germination -->
         <ng-container matColumnDef="code">

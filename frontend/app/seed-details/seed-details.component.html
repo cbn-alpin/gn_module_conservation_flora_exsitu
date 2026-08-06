@@ -13,7 +13,24 @@
 
 </div>
 
-<div class="wrapper" *ngIf="seed">
+<mat-card class="seed-details-card">
+
+  <mat-card-header class="seed-details-header">
+
+    <div class="seed-details-title-wrapper">
+      <mat-card-title>
+        Fiche de Semence
+      </mat-card-title>
+    </div>
+
+  </mat-card-header>
+
+  <mat-card-content class="seed-details-content">
+
+    <div
+      class="wrapper"
+      *ngIf="seed"
+    >
   <div class="row row-0">
     <div class="col-6">
       <div class="info-block">
@@ -251,6 +268,13 @@
               </mat-card>
           </ng-template>
       </div>
+
     </div>
+
   </div>
+
 </div>
+
+  </mat-card-content>
+
+</mat-card>

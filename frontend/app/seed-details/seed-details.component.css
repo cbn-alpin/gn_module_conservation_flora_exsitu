@@ -36,6 +36,75 @@
 }
 
 
+/* =========================================================
+   FICHE DE SEMENCE
+   ========================================================= */
+
+.seed-details-card {
+  margin: 0;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #ead391;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 14px rgba(104, 75, 0, 0.12);
+}
+
+
+.seed-details-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 52px;
+  padding: 0 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff6d8 0%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #ead391;
+}
+
+
+.seed-details-title-wrapper {
+  position: absolute;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+
+.seed-details-title-wrapper mat-card-title {
+  margin: 0;
+
+  color: #684b00;
+
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+}
+
+
+.seed-details-content {
+  padding: 12px 14px 10px !important;
+
+  background-color: #fffdf7;
+}
+
+
 .info-block {
   background-color: #f8f9fa;
   padding: 1rem;

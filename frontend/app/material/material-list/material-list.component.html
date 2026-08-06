@@ -13,19 +13,39 @@
 
 </div>
 
-<button
-  mat-raised-button
-  class="button-success uppercase"
-  (click)="addModalMaterial()"
->
-  Ajouter matériel
-</button>
+<mat-card class="material-list-card">
 
-<div id="matlist-container" class="card mt-2">
-  <div class="mt-2" 
-    #dataTableContainer
-  >
-    <table mat-table [dataSource]="dataSource" class="mat-table">
+  <mat-card-header class="material-list-header">
+
+    <button
+      mat-button
+      class="material-add-button"
+      (click)="addModalMaterial()"
+    >
+      <mat-icon>add</mat-icon>
+
+      Ajouter une fiche de matériel récolté
+    </button>
+
+    <div class="material-title-wrapper">
+      <mat-card-title>
+        Fiche des Matériels récoltés
+      </mat-card-title>
+    </div>
+
+  </mat-card-header>
+
+  <mat-card-content class="material-list-content">
+
+    <div
+      id="matlist-container"
+      #dataTableContainer
+    >
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="mat-table"
+      >
       <!-- N° de Récolte -->
       <ng-container matColumnDef="code_material">
         <th mat-header-cell *matHeaderCellDef > N° récolte </th>
@@ -125,12 +145,16 @@
         (click)="selectMaterial(row)"
       ></tr>
     </table>
-    <mat-paginator
-          [length]="totalMaterials"
-          [pageSize]="rowPerPage"    
-          [pageSizeOptions]="[5, 10, 25, 100]"  
-          [showFirstLastButtons]="true" 
-          (page)="onPaginateChange()"
-        ></mat-paginator>
-  </div>
-</div>
+      <mat-paginator
+        [length]="totalMaterials"
+        [pageSize]="rowPerPage"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        [showFirstLastButtons]="true"
+        (page)="onPaginateChange()"
+      ></mat-paginator>
+
+    </div>
+
+  </mat-card-content>
+
+</mat-card>
