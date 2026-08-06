@@ -1,4 +1,9 @@
-<div style="background-color: white;">
+<div
+  style="background-color: white;"
+  [class.workflow-page-background]="
+    exsituFormService.currentTab !== 'harvest'
+  "
+>
     <!-- Les onglets -->
     <div class="tab mb-2">
         <div class="tab-left">

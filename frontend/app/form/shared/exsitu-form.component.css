@@ -1,3 +1,14 @@
+/* =========================================================
+   FOND DES PARTIES DU WORKFLOW
+   ========================================================= */
+
+.workflow-page-background {
+  min-height: calc(100vh - 60px);
+
+  background-color: #ffffff;
+}
+
+
 /* Navigation principale */
 .tab {
   display: flex;
