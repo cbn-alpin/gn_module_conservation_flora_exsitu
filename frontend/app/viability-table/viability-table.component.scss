@@ -145,11 +145,21 @@
   line-height: 20px;
 }
 
-
 .viability-list-content {
   padding: 12px 14px 10px !important;
 
   background-color: #fffaf6;
+}
+
+
+/* Menu Actions identique à Semis et Culture */
+.actions-trigger-red {
+  color: #f44336 !important;
+}
+
+
+.actions-trigger-red mat-icon {
+  color: #f44336 !important;
 }
 
 

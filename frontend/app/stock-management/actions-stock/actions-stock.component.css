@@ -1,6 +1,16 @@
 .table-container {
-    overflow-x: auto;
+  overflow-x: auto;
 }
-  
+
+
+/* Menu Actions identique à Semis et Culture */
+.actions-trigger-red {
+  color: #f44336 !important;
+}
+
+
+.actions-trigger-red mat-icon {
+  color: #f44336 !important;
+}
 
   
