@@ -9,6 +9,23 @@
 }
 
 
+/* =========================================================
+   ZONE DE CONTENU COMMUNE AUX PARTIES DU WORKFLOW
+   ========================================================= */
+
+.workflow-content-scroll {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-gutter: stable;
+}
+
+
 /* Navigation principale */
 .tab {
   display: flex;

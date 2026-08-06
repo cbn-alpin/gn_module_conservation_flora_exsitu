@@ -162,57 +162,147 @@
         
     </div>
 
-    <div *ngIf="exsituFormService.currentTab === 'materials'"
-        [ngStyle]="{ 'height.px': cardContentHeight - 110 }"
-    >
-        <!-- <div class="col-xl-6 h-100" style="overflow-y: auto;">
-            <cs-material-form></cs-material-form>
-        </div> -->
-        <div class="col-md-12">
-            <cs-material-list></cs-material-list>
-        </div>
+<!-- Onglet Matériels récoltés -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'materials'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <div class="col-md-12">
+        <cs-material-list>
+        </cs-material-list>
     </div>
-
-    <!-- Onglet Semence -->
-    <div *ngIf="exsituFormService.currentTab === 'seed'"
-        [ngStyle]="{ 'height.px': cardContentHeight - 110 }"
-        style="overflow-y: scroll"
-        >
-        <cs-seed-details></cs-seed-details>
-    </div>
-
-    <!-- Onglet Stockage -->
-    <div *ngIf="exsituFormService.currentTab === 'stock'"
-        [ngStyle]="{ 'height.px': cardContentHeight - 110 }"
-        style="overflow-y: scroll"
-        >
-        <cfe-stock-management></cfe-stock-management>
-    </div>
+</div>
 
 
-    <div *ngIf="exsituFormService.currentTab === 'germination-table'">
-        <app-germination-table></app-germination-table>
-    </div>
+<!-- Onglet Semence -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'seed'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <cs-seed-details>
+    </cs-seed-details>
+</div>
 
-    <div *ngIf="exsituFormService.currentTab === 'germination-add'"
-    >
-            <app-germination></app-germination>
-    </div> 
-    <div *ngIf="exsituFormService.currentTab === 'semis-table'">
-        <app-semis-table></app-semis-table>
-    </div>
 
-    <div *ngIf="exsituFormService.currentTab === 'semis-add'"
-    >
-            <app-semis></app-semis>
-    </div> 
-    <div *ngIf="exsituFormService.currentTab === 'viability-table'">
-        <app-viability-table></app-viability-table>
-    </div>
+<!-- Onglet Stockage -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'stock'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <cfe-stock-management>
+    </cfe-stock-management>
+</div>
 
-    <div *ngIf="exsituFormService.currentTab === 'culture-table'">
-        <app-culture-table></app-culture-table>
-    </div>
+
+<!-- Onglet Test de germination -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'germination-table'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <app-germination-table>
+    </app-germination-table>
+</div>
+
+
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'germination-add'
+    "
+>
+    <app-germination>
+    </app-germination>
+</div>
+
+
+<!-- Onglet Semis -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'semis-table'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <app-semis-table>
+    </app-semis-table>
+</div>
+
+
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'semis-add'
+    "
+>
+    <app-semis>
+    </app-semis>
+</div>
+
+
+<!-- Onglet Test de Viabilité -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'viability-table'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <app-viability-table>
+    </app-viability-table>
+</div>
+
+
+<!-- Onglet Culture -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'culture-table'
+    "
+    class="workflow-content-scroll"
+    [ngStyle]="{
+        'height.px':
+            cardContentHeight - 110
+    }"
+>
+    <app-culture-table>
+    </app-culture-table>
+</div>
 
     <div
         *ngIf="
