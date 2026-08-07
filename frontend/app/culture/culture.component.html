@@ -421,36 +421,17 @@
 
       <!-- Boutons -->
       <div class="culture-form-actions dual-buttons sticky-actions full-width">
-
-        <button
-          mat-button
-          type="button"
-          class="cancel-button"
-          (click)="onCancel()"
-        >
-          <mat-icon>close</mat-icon>
-          Annuler
+        <button mat-button class="cancel-button with-border" type="button" (click)="onCancel()">
+          <mat-icon>close</mat-icon> Annuler
         </button>
 
-        <button
-          mat-button
-          type="button"
-          class="reset-button"
-          (click)="onReset()"
-        >
-          <mat-icon>autorenew</mat-icon>
-          Réinitialiser
+        <button mat-button class="reset-button with-border" type="button" (click)="onReset()">
+          <mat-icon>autorenew</mat-icon> Réinitialiser
         </button>
 
-        <button
-          mat-button
-          type="submit"
-          class="save-button"
-        >
-          <mat-icon>save</mat-icon>
-          Enregistrer
+        <button mat-button class="save-button with-border" type="submit">
+          <mat-icon>save</mat-icon> Enregistrer
         </button>
-
       </div>
 
     </form>

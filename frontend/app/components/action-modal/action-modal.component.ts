@@ -17,6 +17,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModuleService } from '@geonature/services/module.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
+import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 
 
 
@@ -45,6 +46,8 @@ export class ActionModalComponent implements OnInit {
 
     public isInitialStorage = false;
 
+    private initialFormState: any = null;
+
 
     constructor(
         public dialogRef: MatDialogRef<ActionModalComponent>,
@@ -62,6 +65,7 @@ export class ActionModalComponent implements OnInit {
         public router: Router,
         public moduleService: ModuleService,
         public exsituFormService: ExsituFormService,
+        private dialogService: DialogService,
 
 
     ){
@@ -96,9 +100,12 @@ export class ActionModalComponent implements OnInit {
             }
         });
         this.loadContext();
+
         setTimeout(() => {
           this.fillForm(this.data.data);
+          this.captureInitialFormState();
         });
+
         this.actionForm.get('id_storage_action')?.valueChanges.subscribe(() => {
           this.evaluateEnableSubmit();
         });
@@ -131,6 +138,16 @@ export class ActionModalComponent implements OnInit {
           }
         });
     }
+
+    private captureInitialFormState(): void {
+      this.initialFormState =
+        JSON.parse(
+          JSON.stringify(
+            this.actionForm.getRawValue()
+          )
+        );
+    }
+
 
     initForm(){
         this.actionForm = this.fb.group({
@@ -407,14 +424,30 @@ export class ActionModalComponent implements OnInit {
     });
   
     if (actionData.id_actor) {
-      this._dfService.getObserversFromCode(this.storeService.cfeConfig.observers_list_code).subscribe(observersList => {
-        const selectedObserver = observersList.find(observer => observer.id_role === actionData.id_actor);
-        if (selectedObserver) {
-          this.actionForm.controls['id_actor'].setValue([selectedObserver]);
-        }
-      });
+      this._dfService
+        .getObserversFromCode(
+          this.storeService.cfeConfig.observers_list_code
+        )
+        .subscribe((observersList) => {
+          const selectedObserver =
+            observersList.find(
+              observer =>
+                observer.id_role ===
+                actionData.id_actor
+            );
+
+          if (selectedObserver) {
+            this.actionForm.controls[
+              'id_actor'
+            ].setValue([selectedObserver]);
+
+            this.captureInitialFormState();
+          }
+        });
     } else {
-      this.actionForm.controls['id_actor'].setValue([]);
+      this.actionForm.controls[
+        'id_actor'
+      ].setValue([]);
     }
   
     if (this.additionalDataForm) {
@@ -432,7 +465,57 @@ export class ActionModalComponent implements OnInit {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
   }
-  
+
+
+  onReset(): void {
+    if (!this.initialFormState) {
+      return;
+    }
+
+    this.dialogService
+      .confirmDialog({
+        message: this.edit
+          ? 'Êtes-vous certain de vouloir réinitialiser les modifications de cette fiche de stockage ?'
+          : 'Êtes-vous certain de vouloir réinitialiser cette fiche de stockage ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        this.actionForm.reset(
+          JSON.parse(
+            JSON.stringify(
+              this.initialFormState
+            )
+          )
+        );
+
+        this.actionForm.markAsPristine();
+        this.actionForm.markAsUntouched();
+        this.actionForm.updateValueAndValidity();
+
+        const storageActionId =
+          this.actionForm.get(
+            'id_storage_action'
+          )?.value;
+
+        if (storageActionId) {
+          this.getCodesNomenclature(
+            storageActionId
+          );
+        } else {
+          this.showDestinationField = false;
+          this.showInternalField = false;
+          this.showExternalField = false;
+          this.showInitialStockWarning = false;
+          this.isInitialStorage = false;
+        }
+
+        this.evaluateEnableSubmit();
+      });
+  }
+
 
   close(): void {
     this.dialogRef.close();

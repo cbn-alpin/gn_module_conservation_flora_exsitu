@@ -177,16 +177,34 @@
         </div>
 
 
-        <!-- Submit -->
+        <!-- Actions -->
         <div class="form-actions dual-buttons sticky-actions">
-          <button mat-button class="cancel-button with-border" type="button" (click)="onCancel()">
+          <button
+            mat-button
+            class="cancel-button with-border"
+            type="button"
+            (click)="onCancel()"
+          >
             <mat-icon>close</mat-icon>
             Annuler
           </button>
-        
-          <button mat-button class="save-button with-border" type="submit" (click)="onSubmit()"
-          [disabled]="germinationForm.invalid"
 
+          <button
+            mat-button
+            class="reset-button with-border"
+            type="button"
+            (click)="onReset()"
+          >
+            <mat-icon>autorenew</mat-icon>
+            Réinitialiser
+          </button>
+
+          <button
+            mat-button
+            class="save-button with-border"
+            type="submit"
+            (click)="onSubmit()"
+            [disabled]="germinationForm.invalid"
           >
             <mat-icon>save</mat-icon>
             Enregistrer

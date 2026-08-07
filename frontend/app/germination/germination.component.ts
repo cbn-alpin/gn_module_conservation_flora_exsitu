@@ -11,8 +11,9 @@ import { FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { map, startWith, switchMap, debounceTime } from 'rxjs/operators';
 import { DataService } from '../services/data.service';
-import { CommonService } from '@geonature_common/service/common.service';  
+import { CommonService } from '@geonature_common/service/common.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 
 interface Germination {
@@ -53,6 +54,8 @@ export class GerminationComponent implements OnInit {
 
   public codeMaterial: string | null = null;
 
+  private initialFormState: any = null;
+
   private readonly supportOrder = [
     'Boite de pétri',
     'Pastilles de Tourbe',
@@ -82,6 +85,7 @@ export class GerminationComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
 
     private _commonService: CommonService,
+    private dialogService: DialogService,
 
 
    ) {
@@ -185,9 +189,29 @@ ngOnInit(): void {
     this.loadSubstrateOptions();
   
     if (this.data?.edit && this.data?.test) {
-      console.log("📦 Test reçu pour édition :", this.data.test);
+      console.log(
+        '📦 Test reçu pour édition :',
+        this.data.test
+      );
+
       this.patchForm(this.data.test);
     }
+
+
+    /*
+    * En création :
+    * mémorise les valeurs vides et les valeurs par défaut.
+    *
+    * En modification :
+    * mémorise les valeurs chargées depuis le test existant.
+    */
+    this.initialFormState =
+      JSON.parse(
+        JSON.stringify(
+          this.germinationForm.getRawValue()
+        )
+      );
+
 
     this.exsituFormService.id_storage.subscribe((id) => {
       this.idStorage = id;
@@ -306,6 +330,38 @@ ngOnInit(): void {
   }
   onDelete(): void {
   }
+
+
+  onReset(): void {
+    if (!this.initialFormState) {
+      return;
+    }
+
+    this.dialogService
+      .confirmDialog({
+        message: this.data?.edit
+          ? 'Êtes-vous certain de vouloir réinitialiser les modifications de ce test de germination ?'
+          : 'Êtes-vous certain de vouloir réinitialiser cette fiche de germination ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        this.germinationForm.reset(
+          JSON.parse(
+            JSON.stringify(
+              this.initialFormState
+            )
+          )
+        );
+
+        this.germinationForm.markAsPristine();
+        this.germinationForm.markAsUntouched();
+        this.germinationForm.updateValueAndValidity();
+      });
+  }
+
 
   onCancel(): void {
     this.dialogRef.close();

@@ -3,11 +3,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { DataService } from '../../services/data.service';
 import { MaterialFormService } from '../../material/material-form/material-form.service';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { ConstantsService } from '../../services/constants.service';
 import { ConfigService } from '../../services/config.service';
 import { Observable } from 'rxjs';
 import { map, startWith, switchMap, debounceTime } from 'rxjs/operators';
+import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 
 
 @Component({
@@ -24,13 +25,17 @@ export class MaterialModalComponent implements OnInit {
     codeMaterialControl = new FormControl();
     filteredMaterials$: Observable<string[]>;
 
+    private initialFormState: any = null;
+    private initialParentCode: string = '';
+
     constructor(
         public dialogRef: MatDialogRef<MaterialModalComponent>,
         public exsituFormService: ExsituFormService,
         public api: DataService,
         public materialFormService: MaterialFormService,
         private constants: ConstantsService,
-        public cfg: ConfigService
+        public cfg: ConfigService,
+        private dialogService: DialogService
     ){
 
     }
@@ -71,6 +76,26 @@ export class MaterialModalComponent implements OnInit {
               });
             }
         });
+
+
+        this.initialFormState =
+          JSON.parse(
+            JSON.stringify(
+              this.materialForm.getRawValue()
+            )
+          );
+
+        this.initialParentCode =
+          this.codeMaterialControl.value ||
+          this.initialFormState?.code_parent ||
+          '';
+
+        this.codeMaterialControl.setValue(
+          this.initialParentCode,
+          {
+            emitEvent: false
+          }
+        );
     }
 
     private initializeMaterialForm() {
@@ -92,7 +117,74 @@ export class MaterialModalComponent implements OnInit {
           }
         );
       }
-    }    
+    }
+
+
+    onReset(): void {
+      if (!this.initialFormState) {
+        return;
+      }
+
+      const isEdit =
+        !!this.materialFormService
+          .occurrence
+          .getValue();
+
+      this.dialogService
+        .confirmDialog({
+          message: isEdit
+            ? 'Êtes-vous certain de vouloir réinitialiser les modifications de ce matériel récolté ?'
+            : 'Êtes-vous certain de vouloir réinitialiser cette fiche de matériel récolté ?'
+        })
+        .subscribe((yes) => {
+          if (!yes) {
+            return;
+          }
+
+          const formState =
+            JSON.parse(
+              JSON.stringify(
+                this.initialFormState
+              )
+            );
+
+          const initialTaxons =
+            formState.taxons || [];
+
+          delete formState.taxons;
+
+          const taxonsArray =
+            this.materialForm.get(
+              'taxons'
+            ) as FormArray;
+
+          taxonsArray.clear();
+
+          this.materialForm.reset(
+            formState
+          );
+
+          initialTaxons.forEach(
+            (taxon) => {
+              taxonsArray.push(
+                this.materialFormService
+                  .createTaxonControl(
+                    taxon.parentFormControl
+                  )
+              );
+            }
+          );
+
+          this.codeMaterialControl.reset(
+            this.initialParentCode
+          );
+
+          this.materialForm.markAsPristine();
+          this.materialForm.markAsUntouched();
+          this.materialForm.updateValueAndValidity();
+        });
+    }
+
 
     close(): void {
         this.materialFormService.occurrence.next(null);

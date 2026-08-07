@@ -1,8 +1,29 @@
-<div mat-dialog-title>
-  <h3 *ngIf="!edit">Ajout description</h3>
-  <h3 *ngIf="edit">Modification description</h3>
-</div>
-<mat-dialog-content class="wrapper" *ngIf="seedForm">
+<mat-card
+  class="seed-form-card"
+  *ngIf="seedForm"
+>
+
+  <mat-card-header class="seed-form-header">
+
+    <div class="seed-title-wrapper">
+
+      <mat-card-title>
+        {{
+          edit
+            ? 'Modifier une fiche de Semence'
+            : 'Ajouter une fiche de Semence'
+        }}
+      </mat-card-title>
+
+    </div>
+
+  </mat-card-header>
+
+
+  <mat-card-content
+    class="wrapper seed-form-content"
+  >
+
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
         <label>Longueur moyenne(mm)</label>
@@ -159,58 +180,59 @@
       </div>
     </mat-card-content>
   </mat-card>
-</mat-dialog-content>
-<mat-dialog-actions style="display: flex; justify-content: space-between; align-items: center;" class="ml-3 mr-4">
-  <div>
-    <button *ngIf="edit"
-        color="warn"
-        mat-raised-button
-        (click)="deleteDescription()"
-        matTooltip="Supprimer cette description">
-          Supprimer
-          <mat-icon style="vertical-align: middle">delete</mat-icon>
+  </mat-card-content>
+
+
+  <div
+    class="seed-form-actions"
+    [class.three-actions]="!edit"
+    [class.four-actions]="edit"
+  >
+
+    <button
+      *ngIf="edit"
+      mat-button
+      type="button"
+      class="delete-button with-border"
+      (click)="deleteDescription()"
+      matTooltip="Supprimer cette description"
+    >
+      <mat-icon>delete</mat-icon>
+      Supprimer
     </button>
+
+    <button
+      mat-button
+      type="button"
+      class="cancel-button with-border"
+      (click)="close()"
+    >
+      <mat-icon>close</mat-icon>
+      Annuler
+    </button>
+
+    <button
+      mat-button
+      type="button"
+      class="reset-button with-border"
+      (click)="onReset()"
+    >
+      <mat-icon>autorenew</mat-icon>
+      Réinitialiser
+    </button>
+
+    <button
+      mat-button
+      class="save-button with-border"
+      [mat-dialog-close]="true"
+      matTooltip="Enregistrer cette description"
+      (click)="submetData()"
+      [disabled]="!seedForm.valid"
+    >
+      <mat-icon>save</mat-icon>
+      Enregistrer
+    </button>
+
   </div>
-  <div>
-    <ng-container *ngIf="!edit; else modifButton">
-        <button
-            style="margin-right: 20px"
-            color="warn"
-            mat-raised-button
-            (click)="close()"
-          >
-            Retour
-        </button>
-      <button
-        mat-button [mat-dialog-close]="true"
-        matTooltip="Enregistrer ce matériel"
-        class="button-success"
-        (click)="submetData()"
-        [disabled]="!seedForm.valid"
-      >
-        Enregistrer
-        <mat-icon style="vertical-align: middle">save</mat-icon>
-      </button>
-    </ng-container>
-    <ng-template #modifButton>
-      <button
-        style="margin-right: 20px"
-        color="warn"
-        mat-raised-button
-        (click)="close()"
-      >
-        Annuler
-      </button>
-      <button
-        class="button-success uppercase"
-        mat-button [mat-dialog-close]="true"
-        matTooltip="Modifier et enregistrer ce description"
-        (click)="submetData()"
-        [disabled]="!seedForm.valid"
-      >
-        Enregistrer
-        <mat-icon style="vertical-align: middle">save</mat-icon>
-      </button>
-    </ng-template>
-  </div>
-</mat-dialog-actions>
+
+</mat-card>

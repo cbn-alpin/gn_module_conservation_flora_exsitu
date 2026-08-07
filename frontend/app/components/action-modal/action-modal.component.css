@@ -58,7 +58,7 @@
 
 
 .stock-form-content {
-  padding: 0 16px 16px !important;
+  padding: 0 16px 0 !important;
   overflow: visible;
 
   background-color: #f8fafb;
@@ -146,24 +146,92 @@
 
 .stock-form-actions {
   position: sticky;
-  bottom: 0;
+  bottom: 10px;
   z-index: 10;
 
-  padding: 18px 28px;
+  margin: 16px 20px 10px;
+  padding: 20px 28px;
 
-  background-color: #ffffff;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      #f1f5f7 100%
+    );
 
-  border-top: 1px solid #c5d0d5;
+  border: 1px solid #c5d0d5;
+  border-radius: 14px;
 
   box-shadow:
-    0 -4px 10px rgba(52, 73, 85, 0.08);
+    0 -6px 18px rgba(96, 125, 139, 0.08),
+    0 8px 20px rgba(52, 73, 85, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+
+  backdrop-filter: blur(4px);
 }
 
 
 .flex-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
   align-items: center;
-  justify-content: space-between;
+
+  column-gap: 12px;
 
   width: 100%;
+}
+
+
+.flex-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-width: 165px;
+  height: 42px;
+  padding: 0 18px;
+}
+
+
+.cancel-button {
+  justify-self: start;
+
+  color: #ffffff;
+
+  background-color: #f44336;
+}
+
+
+.reset-button {
+  justify-self: center;
+
+  color: #ffffff;
+
+  background-color: #8e24aa;
+}
+
+
+.save-button {
+  justify-self: center;
+
+  color: #ffffff;
+
+  background-color: #4caf50;
+}
+
+
+.create-button {
+  justify-self: end;
+
+  color: #ffffff;
+
+  background-color: #607d8b;
+}
+
+
+.reset-button mat-icon {
+  color: #ffffff !important;
 }

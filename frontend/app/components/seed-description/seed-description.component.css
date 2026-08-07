@@ -1,0 +1,185 @@
+/* =========================================================
+   FICHE DE SEMENCE
+   ========================================================= */
+
+.seed-form-card {
+  width: 100%;
+  overflow: visible;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e4d28f;
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px rgba(200, 149, 0, 0.10);
+}
+
+
+.seed-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 58px;
+  padding: 0 20px;
+  padding-top: 8px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff6d8 0%,
+      #fffbef 55%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #e4d28f;
+}
+
+
+.seed-title-wrapper {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+.seed-form-header mat-card-title {
+  display: block;
+
+  width: 100%;
+  margin: 0;
+
+  color: #684b00;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
+
+.seed-form-content {
+  padding: 18px 22px 0 !important;
+
+  box-sizing: border-box;
+
+  background-color: #fffdf7;
+}
+
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  background-color: #fffdf7;
+}
+
+
+.seed-form-actions {
+  position: sticky;
+  bottom: 10px;
+  z-index: 10;
+
+  align-items: center;
+
+  width: auto;
+  box-sizing: border-box;
+
+  margin: 16px 22px 10px;
+  padding: 20px 28px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      #fff9e8 100%
+    );
+
+  border: 1px solid #e4d28f;
+  border-radius: 14px;
+
+  box-shadow:
+    0 -6px 18px rgba(200, 149, 0, 0.08),
+    0 8px 20px rgba(104, 75, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+
+  backdrop-filter: blur(4px);
+}
+
+
+.seed-form-actions.three-actions {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  column-gap: 32px;
+}
+
+
+.seed-form-actions.four-actions {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  column-gap: 12px;
+}
+
+
+.seed-form-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-width: 165px;
+  height: 42px;
+  padding: 0 18px;
+}
+
+
+.delete-button {
+  justify-self: start;
+
+  color: #ffffff;
+
+  background-color: #d32f2f;
+}
+
+
+.cancel-button {
+  justify-self: start;
+
+  color: #ffffff;
+
+  background-color: #f44336;
+}
+
+
+.four-actions .cancel-button {
+  justify-self: center;
+}
+
+
+.reset-button {
+  justify-self: center;
+
+  color: #ffffff;
+
+  background-color: #8e24aa;
+}
+
+
+.save-button {
+  justify-self: end;
+
+  color: #ffffff;
+
+  background-color: #4caf50;
+}
+
+
+.check-section {
+  margin: 12px 0;
+}

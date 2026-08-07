@@ -218,48 +218,42 @@
     </mat-card-content>
   </mat-card>
 
-</mat-card-content>
-<div class="material-form-actions">
-  <div class="button-container">
-    <div>
+  <div class="material-form-actions">
+    <div class="button-container">
       <button
-        color="warn"
-        mat-raised-button
+        mat-button
+        type="button"
+        class="cancel-button with-border"
         (click)="close()"
       >
+        <mat-icon>close</mat-icon>
         Annuler
       </button>
-    </div>
 
-    <div>
-      <ng-container *ngIf="!(materialFormService.occurrence | async); else modifButton">
-        <button
-          mat-button
-          [mat-dialog-close]="true"
-          matTooltip="Enregistrer ce matériel"
-          [disabled]="!materialForm.valid"
-          class="button-success"
-          (click)="submetData()"
-        >
-          Enregistrer
-          <mat-icon style="vertical-align: middle">save</mat-icon>
-        </button>
-      </ng-container>
-      <ng-template #modifButton>
-        <button
-          class="button-success uppercase"
-          mat-button
-          [mat-dialog-close]="true"
-          [disabled]="!materialForm.valid"
-          matTooltip="Modifier et enregistrer ce matériel"
-          (click)="submetData()"
-        >
-          Enregistrer
-          <mat-icon style="vertical-align: middle">save</mat-icon>
-        </button>
-      </ng-template>
+      <button
+        mat-button
+        type="button"
+        class="reset-button with-border"
+        (click)="onReset()"
+      >
+        <mat-icon>autorenew</mat-icon>
+        Réinitialiser
+      </button>
+
+      <button
+        mat-button
+        class="save-button with-border"
+        [mat-dialog-close]="true"
+        matTooltip="Enregistrer ce matériel"
+        [disabled]="!materialForm.valid"
+        (click)="submetData()"
+      >
+        <mat-icon>save</mat-icon>
+        Enregistrer
+      </button>
     </div>
   </div>
-</div>
+
+</mat-card-content>
 
 </mat-card>

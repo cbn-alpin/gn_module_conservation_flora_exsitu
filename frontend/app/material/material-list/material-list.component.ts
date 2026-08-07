@@ -237,8 +237,8 @@ export class MaterialListComponent implements OnInit {
 
     openDescriptionSeddModal(id_material, mode, data): void {      
       const dialogRef = this.dialog.open(SeddDescriptionComponent, {
-        width: '100%',
-        height: '80%',
+        width: '900px',
+        height: '90vh',
         data: { id: id_material, mode: mode, seedData: data }
       });
       dialogRef.afterClosed().subscribe(() => {

@@ -37,6 +37,9 @@ export class SeddDescriptionComponent implements OnInit {
     existingPhotoMedias: any[] = [];
     existingUrlMedias: any[] = [];
 
+    private initialFormState: any = null;
+    private initialMediaUrls: string[] = [];
+
     
     constructor(
         private dataService: DataService,
@@ -63,9 +66,23 @@ export class SeddDescriptionComponent implements OnInit {
           if(value) {
               this.getCodesNomenclature(value)
           }
-        });                
-    }
+        });
 
+
+        this.initialFormState =
+          JSON.parse(
+            JSON.stringify(
+              this.seedForm.getRawValue()
+            )
+          );
+
+        this.initialMediaUrls =
+          JSON.parse(
+            JSON.stringify(
+              this.mediaUrlControls.getRawValue()
+            )
+          );
+    }
 
     private buildForm(seedData: any): void {
         const defaultValues = {
@@ -213,6 +230,49 @@ export class SeddDescriptionComponent implements OnInit {
         delete finalForm.id_media_type
         return finalForm;
     }
+
+    onReset(): void {
+      if (!this.initialFormState) {
+        return;
+      }
+
+      this.dialogService
+        .confirmDialog({
+          message: this.edit
+            ? 'Êtes-vous certain de vouloir réinitialiser les modifications de cette description de semence ?'
+            : 'Êtes-vous certain de vouloir réinitialiser cette description de semence ?'
+        })
+        .subscribe((yes) => {
+          if (!yes) {
+            return;
+          }
+
+          this.seedForm.reset(
+            JSON.parse(
+              JSON.stringify(
+                this.initialFormState
+              )
+            )
+          );
+
+          this.mediaUrlControls.clear();
+
+          this.initialMediaUrls.forEach(
+            (url) => {
+              this.mediaUrlControls.push(
+                new FormControl(url)
+              );
+            }
+          );
+
+          this.selectedFiles = [];
+
+          this.seedForm.markAsPristine();
+          this.seedForm.markAsUntouched();
+          this.seedForm.updateValueAndValidity();
+        });
+    }
+
 
     close(): void {
         this.dialogRef.close();

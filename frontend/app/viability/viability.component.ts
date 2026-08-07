@@ -13,6 +13,7 @@ import { DataService } from '../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';  
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ViabilityFormService } from './viability-form.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 
 interface Viability {
@@ -50,6 +51,8 @@ export class ViabilityComponent implements OnInit {
 
   public codeMaterial: string | null = null;
 
+  private initialFormState: any = null;
+
   codeTest = new FormControl();
   filteredTest$: Observable<string[]>;
 
@@ -65,6 +68,7 @@ export class ViabilityComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
 
     private _commonService: CommonService,
+    private dialogService: DialogService,
 
 
    ) {
@@ -162,13 +166,25 @@ export class ViabilityComponent implements OnInit {
         this.additionalDataForm.addControl(fieldName, this.fb.control(''));
       });
     }
-  
     this.getTestByCode(this.codeT);
   
     if (this.data?.edit && this.data?.test) {
-      console.log("📦 Test reçu pour édition :", this.data.test);
+      console.log(
+        '📦 Test reçu pour édition :',
+        this.data.test
+      );
+
       this.patchForm(this.data.test);
     }
+
+
+    this.initialFormState =
+      JSON.parse(
+        JSON.stringify(
+          this.germinationForm.getRawValue()
+        )
+      );
+
 
     this.exsituFormService.id_storage.subscribe((id) => {
       this.idStorage = id;
@@ -225,6 +241,38 @@ export class ViabilityComponent implements OnInit {
   }
   onDelete(): void {
   }
+
+
+  onReset(): void {
+    if (!this.initialFormState) {
+      return;
+    }
+
+    this.dialogService
+      .confirmDialog({
+        message: this.data?.edit
+          ? 'Êtes-vous certain de vouloir réinitialiser les modifications de ce test de viabilité ?'
+          : 'Êtes-vous certain de vouloir réinitialiser cette fiche de viabilité ?'
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        this.germinationForm.reset(
+          JSON.parse(
+            JSON.stringify(
+              this.initialFormState
+            )
+          )
+        );
+
+        this.germinationForm.markAsPristine();
+        this.germinationForm.markAsUntouched();
+        this.germinationForm.updateValueAndValidity();
+      });
+  }
+
 
   onCancel(): void {
     this.dialogRef.close();

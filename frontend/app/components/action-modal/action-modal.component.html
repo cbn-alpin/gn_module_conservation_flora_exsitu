@@ -228,32 +228,51 @@
 <div class="stock-form-actions">
   <div class="flex-actions">
     <button
-      color="warn"
-      mat-raised-button
+      mat-button
+      type="button"
+      class="cancel-button with-border"
       (click)="close()"
     >
-      Retour
+      <mat-icon>close</mat-icon>
+      Annuler
     </button>
+
     <button
       mat-button
-      class="button-success"
-      [disabled]="!allowSubmitForGerminationMovement"
+      type="button"
+      class="reset-button with-border"
+      (click)="onReset()"
+    >
+      <mat-icon>autorenew</mat-icon>
+      Réinitialiser
+    </button>
+
+    <button
+      mat-button
+      class="save-button with-border"
+      [mat-dialog-close]="true"
+      matTooltip="Enregistrer cette action"
+      (click)="submetData()"
+      [disabled]="
+        !actionForm.valid ||
+        showInitialStockWarning
+      "
+    >
+      <mat-icon>save</mat-icon>
+      Enregistrer
+    </button>
+
+    <button
+      mat-button
+      class="create-button with-border"
+      [disabled]="
+        !allowSubmitForGerminationMovement
+      "
       matTooltip="Ajouter et créer une nouvelle action"
       (click)="submetAndResetForm()"
     >
+      <mat-icon>add</mat-icon>
       Ajouter et créer
-      <mat-icon style="vertical-align: middle">add</mat-icon>
-    </button>
-    <button
-      mat-button [mat-dialog-close]="true"
-      matTooltip="Enregistrer cette action"
-      class="button-success"
-      (click)="submetData()"
-      [disabled]="!actionForm.valid || showInitialStockWarning"
-
-    >
-      Enregistrer
-      <mat-icon style="vertical-align: middle">save</mat-icon>
     </button>
   </div>
 </div>
