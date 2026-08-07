@@ -1,5 +1,16 @@
 <mat-card class="semis-form-card">
   <mat-card-header class="header-with-button centered-header semis-form-header">
+    <button
+      mat-raised-button
+      type="button"
+      class="semis-form-back-button"
+      (click)="onCancel()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
     <div class="title-wrapper centered-title">
       <mat-card-title>
         {{
@@ -358,10 +369,6 @@
 
       <!-- Boutons (pleine largeur) -->
       <div class="form-actions dual-buttons sticky-actions full-width">
-        <button mat-button class="cancel-button with-border" type="button" (click)="onCancel()">
-          <mat-icon>close</mat-icon> Annuler
-        </button>
-
         <button mat-button class="reset-button with-border" type="button" (click)="onReset()">
           <mat-icon>autorenew</mat-icon> Réinitialiser
         </button>
