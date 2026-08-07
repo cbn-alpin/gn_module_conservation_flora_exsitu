@@ -321,6 +321,7 @@ mat-form-field {
   z-index: 10;
   border-bottom: 1px solid #ccc;
 }
+
 .form-actions.dual-buttons.sticky-actions {
   position: sticky;
   bottom: 10px;
@@ -345,6 +346,7 @@ mat-form-field {
     );
 
   border: 1px solid #b2dfdb;
+  border-top: 1px solid #b2dfdb;
   border-radius: 14px;
 
   box-shadow:
@@ -354,7 +356,6 @@ mat-form-field {
 
   backdrop-filter: blur(4px);
 }
-
 
 .form-actions.dual-buttons.sticky-actions button {
   min-width: 165px;

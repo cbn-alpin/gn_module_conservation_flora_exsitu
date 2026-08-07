@@ -175,13 +175,17 @@
   padding: 16px 20px 0;
 }
 
-
 .stock-form-actions {
   position: sticky;
   bottom: 10px;
   z-index: 10;
 
-  margin: 16px 20px 10px;
+  box-sizing: border-box;
+
+  margin-top: 16px;
+  margin-right: 36px;
+  margin-bottom: 10px;
+  margin-left: 36px;
   padding: 20px 28px;
 
   background:
@@ -192,6 +196,7 @@
     );
 
   border: 1px solid #c5d0d5;
+  border-top: 1px solid #c5d0d5;
   border-radius: 14px;
 
   box-shadow:
@@ -201,7 +206,6 @@
 
   backdrop-filter: blur(4px);
 }
-
 
 .flex-actions {
   display: grid;

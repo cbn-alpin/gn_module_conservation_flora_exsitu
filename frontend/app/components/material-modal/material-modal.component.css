@@ -97,17 +97,18 @@
   background-color: #fbfcf7;
 }
 
-
 .material-form-actions {
   position: sticky;
   bottom: 10px;
   z-index: 10;
 
-  width: 100%;
+  width: calc(100% - 32px);
   box-sizing: border-box;
 
   margin-top: 16px;
+  margin-right: 16px;
   margin-bottom: 10px;
+  margin-left: 16px;
   padding: 20px 28px;
 
   background:
@@ -118,6 +119,7 @@
     );
 
   border: 1px solid #d5ddc1;
+  border-top: 1px solid #d5ddc1;
   border-radius: 14px;
 
   box-shadow:
