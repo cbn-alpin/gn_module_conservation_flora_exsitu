@@ -212,8 +212,6 @@
 }
 
 #matlist-container {
-    height: 80%;
-    overflow-y: auto;
     /* background-color: #95949833;
     box-shadow:
       2px 3px 4px 0px rgba(0, 0, 0, 0.2),

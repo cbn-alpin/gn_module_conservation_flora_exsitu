@@ -35,6 +35,26 @@
     class="wrapper seed-form-content"
   >
 
+    <div class="seed-material-banner">
+
+      <div class="seed-material-banner-icon">
+        <mat-icon>link</mat-icon>
+      </div>
+
+      <div class="seed-material-banner-text">
+
+        <span class="seed-material-banner-label">
+          N° du matériel récolté associé
+        </span>
+
+        <strong class="seed-material-banner-value">
+          {{ codeMaterial || data.id || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
   <div class="row row-0 mr-3 mt-2">
       <div class="col padding-sm">
         <label>Longueur moyenne(mm)</label>

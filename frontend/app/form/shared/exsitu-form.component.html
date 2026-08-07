@@ -373,10 +373,7 @@
             >
                 <ex-harvest-map></ex-harvest-map>
             </div>
-            <div class="col-xl-6 col-lg-7 col-sm-6"
-                style="overflow-y: scroll"
-                [ngStyle]="{ 'height.px': cardContentHeight }"
-            >
+            <div class="col-xl-6 col-lg-7 col-sm-6">
                 <ex-harvest-form></ex-harvest-form>
             </div>
         </div>
@@ -390,10 +387,6 @@
         'materials'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <div class="col-md-12">
         <cs-material-list>
@@ -409,10 +402,6 @@
         'seed'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <cs-seed-details>
     </cs-seed-details>
@@ -426,10 +415,6 @@
         'stock'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <cfe-stock-management>
     </cfe-stock-management>
@@ -443,10 +428,6 @@
         'germination-table'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <app-germination-table>
     </app-germination-table>
@@ -471,10 +452,6 @@
         'semis-table'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <app-semis-table>
     </app-semis-table>
@@ -499,15 +476,10 @@
         'viability-table'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <app-viability-table>
     </app-viability-table>
 </div>
-
 
 <!-- Onglet Culture -->
 <div
@@ -516,10 +488,6 @@
         'culture-table'
     "
     class="workflow-content-scroll"
-    [ngStyle]="{
-        'height.px':
-            cardContentHeight - 110
-    }"
 >
     <app-culture-table>
     </app-culture-table>

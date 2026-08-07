@@ -89,13 +89,90 @@
   text-align: center;
 }
 
-
 .seed-form-content {
-  padding: 18px 22px 0 !important;
+  padding: 0 22px 0 !important;
 
   box-sizing: border-box;
 
   background-color: #fffdf7;
+}
+
+
+/* =========================================================
+   MATÉRIEL RÉCOLTÉ ASSOCIÉ
+   ========================================================= */
+
+.seed-material-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 14px 14px 16px;
+  padding: 9px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff6d8 0%,
+      #fffdf7 100%
+    );
+
+  border: 1px solid #e4d28f;
+  border-radius: 9px;
+}
+
+
+.seed-material-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d8bd5f;
+  border-radius: 7px;
+}
+
+
+.seed-material-banner-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #c89500;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.seed-material-banner-text {
+  display: flex;
+  align-items: baseline;
+
+  gap: 9px;
+}
+
+
+.seed-material-banner-label {
+  color: #8a6a16;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.seed-material-banner-value {
+  color: #684b00;
+
+  font-size: 15px;
+  font-weight: 850;
 }
 
 
@@ -149,15 +226,11 @@
   justify-content: space-evenly;
 }
 
-
 .seed-form-actions.four-actions {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  column-gap: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
 }
-
 
 .seed-form-actions button {
   display: inline-flex;
@@ -194,13 +267,23 @@
   justify-self: center;
 }
 
-
 .reset-button {
   justify-self: center;
 
   color: #ffffff;
 
   background-color: #8e24aa;
+}
+
+
+.reset-button mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
 }
 
 

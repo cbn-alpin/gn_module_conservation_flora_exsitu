@@ -208,12 +208,9 @@
 }
 
 .flex-actions {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  display: flex;
   align-items: center;
-
-  column-gap: 12px;
+  justify-content: space-evenly;
 
   width: 100%;
 }
@@ -267,7 +264,12 @@
   background-color: #607d8b;
 }
 
-
 .reset-button mat-icon {
+  width: 20px;
+  height: 20px;
+
   color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
 }
