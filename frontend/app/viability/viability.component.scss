@@ -17,6 +17,8 @@
 
 
 .viability-form-header {
+  position: relative;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,6 +36,37 @@
     );
 
   border-bottom: 1px solid #f2c79f;
+}
+
+
+.viability-form-back-button {
+  position: absolute;
+  left: 20px;
+  top: calc(50% + 4px);
+
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+
+  z-index: 1;
+}
+
+
+.viability-form-back-button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.viability-form-back-button mat-icon {
+  color: #ffffff !important;
 }
 
 
@@ -292,11 +325,9 @@ mat-form-field {
   bottom: 10px;
   z-index: 10;
 
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
-
-  column-gap: 32px;
+  justify-content: space-evenly;
 
   width: 100%;
   box-sizing: border-box;
@@ -323,31 +354,30 @@ mat-form-field {
   backdrop-filter: blur(4px);
 }
 
-
 .form-actions.dual-buttons.sticky-actions button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 8px;
-
   min-width: 165px;
   height: 42px;
   padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 
-.cancel-button {
-  justify-self: start;
+.reset-button .mat-icon {
+  color: #fff !important;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
 }
 
 
 .reset-button {
   justify-self: center;
-
-  color: #ffffff;
-
   background-color: #8e24aa;
+  color: white;
 }
 
 
@@ -356,20 +386,17 @@ mat-form-field {
 }
 
 
-.reset-button mat-icon {
-  width: 20px;
-  height: 20px;
-
-  color: #ffffff !important;
-
-  font-size: 20px;
-  line-height: 20px;
-}
-
-
 .save-button {
   justify-self: end;
+  background-color: #4caf50;
+  color: white;
 }
+
+
+.save-button:hover {
+  background-color: #388e3c;
+}
+
 button[disabled] {
   opacity: 0.6;
   cursor: not-allowed;

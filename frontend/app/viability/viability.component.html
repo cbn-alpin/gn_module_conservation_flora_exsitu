@@ -2,6 +2,17 @@
 
   <mat-card-header class="viability-form-header">
 
+    <button
+      mat-raised-button
+      type="button"
+      class="viability-form-back-button"
+      (click)="onCancel()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
     <div class="viability-title-wrapper">
 
       <mat-card-title>
@@ -128,25 +139,9 @@
 
 
         <!-- Actions -->
-        <div class="form-actions dual-buttons sticky-actions">
-          <button
-            mat-button
-            class="cancel-button with-border"
-            type="button"
-            (click)="onCancel()"
-          >
-            <mat-icon>close</mat-icon>
-            Annuler
-          </button>
-
-          <button
-            mat-button
-            class="reset-button with-border"
-            type="button"
-            (click)="onReset()"
-          >
-            <mat-icon>autorenew</mat-icon>
-            Réinitialiser
+        <div class="form-actions dual-buttons sticky-actions full-width">
+          <button mat-button class="reset-button with-border" type="button" (click)="onReset()">
+            <mat-icon>autorenew</mat-icon> Réinitialiser
           </button>
 
           <button
@@ -156,8 +151,7 @@
             (click)="onSubmit()"
             [disabled]="germinationForm.invalid"
           >
-            <mat-icon>save</mat-icon>
-            Enregistrer
+            <mat-icon>save</mat-icon> Enregistrer
           </button>
         </div>
     </form>
