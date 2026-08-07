@@ -216,6 +216,8 @@ export class MaterialListComponent implements OnInit {
       const dialogRef = this.dialog.open(MaterialModalComponent, {
         width: '900px',
         height: '90vh',
+        disableClose: true,
+        autoFocus: false
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
@@ -239,6 +241,8 @@ export class MaterialListComponent implements OnInit {
       const dialogRef = this.dialog.open(SeddDescriptionComponent, {
         width: '900px',
         height: '90vh',
+        disableClose: true,
+        autoFocus: false,
         data: { id: id_material, mode: mode, seedData: data }
       });
       dialogRef.afterClosed().subscribe(() => {

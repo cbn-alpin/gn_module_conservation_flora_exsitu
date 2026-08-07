@@ -15,8 +15,9 @@
     0 3px 12px rgba(52, 73, 85, 0.10);
 }
 
-
 .stock-form-header {
+  position: relative;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,6 +35,37 @@
     );
 
   border-bottom: 1px solid #c5d0d5;
+}
+
+
+.stock-form-back-button {
+  position: absolute;
+  left: 20px;
+  top: calc(50% + 4px);
+
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+
+  z-index: 1;
+}
+
+
+.stock-form-back-button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.stock-form-back-button mat-icon {
+  color: #ffffff !important;
 }
 
 
@@ -174,7 +206,7 @@
 .flex-actions {
   display: grid;
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(3, minmax(0, 1fr));
   align-items: center;
 
   column-gap: 12px;

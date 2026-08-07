@@ -5,6 +5,17 @@
 
   <mat-card-header class="seed-form-header">
 
+    <button
+      mat-raised-button
+      type="button"
+      class="seed-form-back-button"
+      (click)="onCancel()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
     <div class="seed-title-wrapper">
 
       <mat-card-title>
@@ -199,16 +210,6 @@
     >
       <mat-icon>delete</mat-icon>
       Supprimer
-    </button>
-
-    <button
-      mat-button
-      type="button"
-      class="cancel-button with-border"
-      (click)="close()"
-    >
-      <mat-icon>close</mat-icon>
-      Annuler
     </button>
 
     <button

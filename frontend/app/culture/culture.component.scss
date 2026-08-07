@@ -40,6 +40,37 @@
   border-bottom: 1px solid #d7ccc8;
 }
 
+
+.culture-form-back-button {
+  position: absolute;
+  left: 20px;
+  top: calc(50% + 4px);
+
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+
+  z-index: 1;
+}
+
+
+.culture-form-back-button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.culture-form-back-button mat-icon {
+  color: #ffffff !important;
+}
+
 :host ::ng-deep
 .culture-form-header .mat-card-header-text {
   width: 100%;
@@ -211,10 +242,9 @@
   bottom: 10px;
   z-index: 10;
 
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
-  column-gap: 32px;
+  justify-content: space-evenly;
 
   width: 100%;
   box-sizing: border-box;

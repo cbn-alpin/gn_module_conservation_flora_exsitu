@@ -78,6 +78,8 @@ export class ActionsStockComponent implements OnInit {
       const dialogRef = this.dialog.open(ActionModalComponent, {
         width: '900px',
         height: '90vh',
+        disableClose: true,
+        autoFocus: false,
         data: { data, edit: isEdit }
       });
           

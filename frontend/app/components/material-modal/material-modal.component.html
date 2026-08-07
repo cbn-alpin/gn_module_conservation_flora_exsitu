@@ -2,6 +2,17 @@
 
   <mat-card-header class="material-form-header">
 
+    <button
+      mat-raised-button
+      type="button"
+      class="material-form-back-button"
+      (click)="onCancel()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
     <div class="material-title-wrapper">
 
       <mat-card-title>
@@ -220,16 +231,6 @@
 
   <div class="material-form-actions">
     <div class="button-container">
-      <button
-        mat-button
-        type="button"
-        class="cancel-button with-border"
-        (click)="close()"
-      >
-        <mat-icon>close</mat-icon>
-        Annuler
-      </button>
-
       <button
         mat-button
         type="button"

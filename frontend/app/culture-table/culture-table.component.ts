@@ -1028,6 +1028,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
         maxWidth: '95vw',
         maxHeight: '90vh',
         disableClose: true,
+        autoFocus: false,
 
         data: {
 
@@ -1130,6 +1131,7 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
               maxWidth: '95vw',
               maxHeight: '90vh',
               disableClose: true,
+              autoFocus: false,
 
               data: {
                 edit: true,

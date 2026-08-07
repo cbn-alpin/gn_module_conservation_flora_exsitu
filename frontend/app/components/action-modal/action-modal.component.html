@@ -5,6 +5,17 @@
 
   <mat-card-header class="stock-form-header">
 
+    <button
+      mat-raised-button
+      type="button"
+      class="stock-form-back-button"
+      (click)="onCancel()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
     <div class="stock-title-wrapper">
 
       <mat-card-title>
@@ -227,16 +238,6 @@
   </mat-card-content>
 <div class="stock-form-actions">
   <div class="flex-actions">
-    <button
-      mat-button
-      type="button"
-      class="cancel-button with-border"
-      (click)="close()"
-    >
-      <mat-icon>close</mat-icon>
-      Annuler
-    </button>
-
     <button
       mat-button
       type="button"
