@@ -30,7 +30,7 @@
             <!-- Semence (Activé après avoir choisi un matériel) -->
             <a 
                 class="tablinks themed-tab seed-tab"
-                [class.disabled]="!idSeed"
+                [class.disabled]="!idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'seed' }"
                 (click)="idMaterial ? goToTab('seed') : null">
                 <mat-icon class="example-tab-icon">description</mat-icon>

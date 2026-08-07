@@ -343,11 +343,6 @@ export class SeddDescriptionComponent implements OnInit {
                 ? `Semence du matériel ${this.toBoldText(this.codeMaterial)} non modifiée`
                 : 'Semence non modifiée'
             );
-          } else if (this.codeMaterial) {
-            this._commonService.translateToaster(
-              'info',
-              `Semence du matériel ${this.toBoldText(this.codeMaterial)} non créée`
-            );
           } else {
             this._commonService.translateToaster(
               'info',

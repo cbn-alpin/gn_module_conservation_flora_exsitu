@@ -73,7 +73,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}`]);
         }else if (tab === 'seed' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([
-            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/seed-details/${this.exsituFormService.idSeed}`
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/seed-details`
           ]);
         }else if (tab === 'stock' && this.exsituFormService.idHarvest && this.idMaterial) {
           this.router.navigate([
@@ -171,9 +171,15 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
         }
 
-        if (materialIndex < urlSegments.length) {
+        if (
+          seedIndex < urlSegments.length &&
+          !isNaN(Number(urlSegments[seedIndex]))
+        ) {
           this.idSeed = Number(urlSegments[seedIndex]);
           this.exsituFormService.idSeed = Number(urlSegments[seedIndex]);
+        } else {
+          this.idSeed = null;
+          this.exsituFormService.idSeed = null;
         }
       }
 

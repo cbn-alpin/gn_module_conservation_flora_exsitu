@@ -569,11 +569,6 @@ export class ActionModalComponent implements OnInit {
               ? `Fiche de stockage du matériel ${this.toBoldText(this.codeMaterial)} non modifiée`
               : 'Fiche de stockage non modifiée'
           );
-        } else if (this.codeMaterial) {
-          this._commonService.translateToaster(
-            'info',
-            `Fiche de stockage du matériel ${this.toBoldText(this.codeMaterial)} non créée`
-          );
         } else {
           this._commonService.translateToaster(
             'info',

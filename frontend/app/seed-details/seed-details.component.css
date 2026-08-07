@@ -76,6 +76,46 @@
 }
 
 
+.seed-details-form-button {
+  position: absolute;
+  left: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  min-height: 36px;
+  padding: 0 13px;
+
+  border: 1px solid #a77b00 !important;
+  border-radius: 9px;
+
+  background-color: #c89500 !important;
+
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 700;
+
+  box-shadow: 0 2px 6px rgba(200, 149, 0, 0.18);
+
+  z-index: 1;
+}
+
+
+.seed-details-form-button mat-icon {
+  flex-shrink: 0;
+
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+
+  color: #ffffff !important;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
 .seed-details-title-wrapper {
   position: absolute;
   left: 50%;
@@ -97,11 +137,40 @@
   letter-spacing: 0.2px;
 }
 
-
 .seed-details-content {
   padding: 12px 14px 10px !important;
 
   background-color: #fffdf7;
+}
+
+
+.seed-empty-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 16px;
+
+  background: #fff6d8;
+
+  color: #684b00;
+
+  font-size: 16px;
+  text-align: center;
+
+  border: 1px solid #ead391;
+  border-radius: 12px;
+
+  box-shadow: none;
+}
+
+
+.seed-empty-card mat-icon {
+  color: #f44336 !important;
 }
 
 

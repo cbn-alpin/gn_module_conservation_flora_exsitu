@@ -17,6 +17,24 @@
 
   <mat-card-header class="seed-details-header">
 
+    <button
+      *ngIf="seed !== undefined"
+      mat-button
+      type="button"
+      class="seed-details-form-button"
+      (click)="onAddOrEditSeed()"
+    >
+      <mat-icon>
+        {{ seed ? 'edit' : 'add' }}
+      </mat-icon>
+
+      {{
+        seed
+          ? 'Modifier la fiche de Semence'
+          : 'Ajouter une fiche de Semence'
+      }}
+    </button>
+
     <div class="seed-details-title-wrapper">
       <mat-card-title>
         Fiche de Semence
@@ -274,6 +292,15 @@
   </div>
 
 </div>
+
+    <mat-card
+      *ngIf="seed === null"
+      class="seed-empty-card mt-4"
+    >
+      <mat-icon color="warn">info</mat-icon>
+
+      Aucune semence enregistrée pour ce matériel.
+    </mat-card>
 
   </mat-card-content>
 

@@ -49,6 +49,10 @@ export const routes: Routes = [
                 component: SeedDetailsComponent
             },
             {
+                path: 'harvest/:idHarvest/material/:idMaterial/seed-details',
+                component: SeedDetailsComponent
+            },
+            {
                 path: 'harvest/:idHarvest/material/:idMaterial/stock',
                 component: StockManagementComponent
             },
