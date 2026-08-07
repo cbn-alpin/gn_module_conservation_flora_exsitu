@@ -714,6 +714,7 @@
         width: '900px',
         height: '90vh',
         disableClose: true,
+        autoFocus: false,
         data: {
           edit: true,
           test: normalizedSemis
@@ -932,7 +933,8 @@
           const dialogRef = this.dialog.open(SemisComponent, {
             width: '900px',
             height: '90vh',
-            disableClose: true
+            disableClose: true,
+            autoFocus: false
           });
         
           dialogRef.afterClosed().subscribe(result => {

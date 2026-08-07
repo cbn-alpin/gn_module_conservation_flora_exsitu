@@ -63,7 +63,8 @@ export class GerminationTableComponent implements OnInit {
 
           this.dialog.open(GerminationComponent, {
             width: '900px',
-            height: '90vh'
+            height: '90vh',
+            autoFocus: false
           });
 
           // Nettoyer l’URL pour éviter les réouvertures
@@ -222,6 +223,7 @@ export class GerminationTableComponent implements OnInit {
         const dialogRef = this.dialog.open(GerminationComponent, {
           width: '900px',
           height: '90vh',
+          autoFocus: false,
           data: { test: testFull, edit: true }
         });
 
@@ -336,7 +338,8 @@ export class GerminationTableComponent implements OnInit {
   addFicheGermination() {
     const dialogRef = this.dialog.open(GerminationComponent, {
       width: '900px',
-      height: '90vh'
+      height: '90vh',
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {

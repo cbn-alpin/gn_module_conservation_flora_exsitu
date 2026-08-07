@@ -62,7 +62,8 @@ import { ActivatedRoute } from '@angular/router';
 
             this.dialog.open(ViabilityComponent, {
               width: '900px',
-              height: '90vh'
+              height: '90vh',
+              autoFocus: false
             });
 
             this.router.navigate([], {
@@ -216,6 +217,7 @@ import { ActivatedRoute } from '@angular/router';
            const dialogRef = this.dialog.open(ViabilityComponent, {
              width: '900px',
              height: '90vh',
+             autoFocus: false,
              data: { test: testFull, edit: true }
            });
    
@@ -270,7 +272,8 @@ import { ActivatedRoute } from '@angular/router';
      addFicheGermination() {
        const dialogRef = this.dialog.open(ViabilityComponent, {
          width: '900px',
-         height: '90vh'
+         height: '90vh',
+         autoFocus: false
        });
    
        dialogRef.afterClosed().subscribe(result => {

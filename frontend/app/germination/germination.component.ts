@@ -55,6 +55,7 @@ export class GerminationComponent implements OnInit {
   public codeMaterial: string | null = null;
 
   private initialFormState: any = null;
+  private cancelDialogOpen = false;
 
   private readonly supportOrder = [
     'Boite de pétri',
@@ -216,6 +217,20 @@ ngOnInit(): void {
     this.exsituFormService.id_storage.subscribe((id) => {
       this.idStorage = id;
     });
+
+    this.dialogRef.disableClose = true;
+
+    this.dialogRef.backdropClick().subscribe(() => {
+      this.onCancel();
+    });
+
+    this.dialogRef.keydownEvents().subscribe((event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.onCancel();
+      }
+    });
+
     console.log(this.idStorage)
   }
 
@@ -362,9 +377,63 @@ ngOnInit(): void {
       });
   }
 
+  private toBoldText(value: string): string {
+    const boldItalicChars: Record<string, string> = {
+      A: '𝑨', B: '𝑩', C: '𝑪', D: '𝑫', E: '𝑬', F: '𝑭', G: '𝑮', H: '𝑯', I: '𝑰', J: '𝑱',
+      K: '𝑲', L: '𝑳', M: '𝑴', N: '𝑵', O: '𝑶', P: '𝑷', Q: '𝑸', R: '𝑹', S: '𝑺', T: '𝑻',
+      U: '𝑼', V: '𝑽', W: '𝑾', X: '𝑿', Y: '𝒀', Z: '𝒁',
+      a: '𝒂', b: '𝒃', c: '𝒄', d: '𝒅', e: '𝒆', f: '𝒇', g: '𝒈', h: '𝒉', i: '𝒊', j: '𝒋',
+      k: '𝒌', l: '𝒍', m: '𝒎', n: '𝒏', o: '𝒐', p: '𝒑', q: '𝒒', r: '𝒓', s: '𝒔', t: '𝒕',
+      u: '𝒖', v: '𝒗', w: '𝒘', x: '𝒙', y: '𝒚', z: '𝒛',
+      0: '𝟎', 1: '𝟏', 2: '𝟐', 3: '𝟑', 4: '𝟒', 5: '𝟓', 6: '𝟔', 7: '𝟕', 8: '𝟖', 9: '𝟗'
+    };
+
+    return value.replace(/[A-Za-z0-9]/g, (char) => boldItalicChars[char] || char);
+  }
+
 
   onCancel(): void {
-    this.dialogRef.close();
+    if (this.cancelDialogOpen) {
+      return;
+    }
+
+    this.cancelDialogOpen = true;
+
+    this.dialogService
+      .confirmDialog({
+        message: 'Étes vous certain de vouloir annuler ?'
+      })
+      .subscribe((yes) => {
+        this.cancelDialogOpen = false;
+
+        if (yes) {
+          const currentCode =
+            this.germinationForm.get('code')?.value ||
+            this.initialFormState?.code ||
+            '';
+
+          if (this.data?.edit) {
+            this._commonService.translateToaster(
+              'info',
+              currentCode
+                ? `Test de germination ${this.toBoldText(currentCode)} non modifié`
+                : 'Test de germination non modifié'
+            );
+          } else if (currentCode) {
+            this._commonService.translateToaster(
+              'info',
+              `Test de germination ${this.toBoldText(currentCode)} non créé`
+            );
+          } else {
+            this._commonService.translateToaster(
+              'info',
+              'Création du test de germination annulée'
+            );
+          }
+
+          this.dialogRef.close();
+        }
+      });
   }
 
   onView(): void {
