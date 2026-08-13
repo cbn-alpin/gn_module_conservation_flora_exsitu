@@ -47,17 +47,63 @@
 
     <div class="container-fluid">
 
-      <div class="stock-summary">
+      <div class="stock-summary-card">
 
-        <p>
-          <strong>Quantité initiale globale :</strong>
-          {{ totalInitialQuantity }}
-        </p>
+        <div class="stock-summary-header">
 
-        <p>
-          <strong>Quantité actuelle globale :</strong>
-          {{ totalCurrentQuantity }}
-        </p>
+          <div class="stock-summary-icon">
+            <mat-icon>description</mat-icon>
+          </div>
+
+          <div class="stock-summary-text">
+
+            <span class="stock-summary-title">
+              Synthèse des quantités
+            </span>
+
+            <span class="stock-summary-subtitle">
+              État global du matériel en stockage
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="stock-summary-quantities">
+
+          <div class="stock-summary-quantity seed-quantity">
+
+            <div class="stock-summary-quantity-header">
+              Quantité initiale globale
+            </div>
+
+            <strong class="stock-summary-quantity-value">
+              {{ totalInitialQuantity }}
+            </strong>
+
+            <small>
+              Quantité issue de la fiche de Semence
+            </small>
+
+          </div>
+
+          <div class="stock-summary-quantity current-stock-quantity">
+
+            <div class="stock-summary-quantity-header">
+              Quantité actuelle globale
+            </div>
+
+            <strong class="stock-summary-quantity-value">
+              {{ totalCurrentQuantity }}
+            </strong>
+
+            <small>
+              Quantité disponible après les mouvements de stockage
+            </small>
+
+          </div>
+
+        </div>
 
       </div>
 

@@ -248,11 +248,302 @@
   line-height: 20px;
 }
 
-
 .stock-list-content {
   padding: 12px 14px 10px !important;
 
   background-color: #f8fafb;
+}
+
+
+/* =========================================================
+   SYNTHÈSE DES QUANTITÉS
+   ========================================================= */
+
+.stock-summary-card {
+  width: 100%;
+  max-width: 560px;
+
+  margin: 2px auto 20px;
+  padding: 14px 16px 16px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f8fafb 100%
+    );
+
+  border: 1px solid #c5d0d5;
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px rgba(52, 73, 85, 0.08);
+}
+
+.stock-summary-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+  padding: 2px 0 9px;
+
+  border-bottom: 1px solid #e4d28f;
+}
+
+
+.stock-summary-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #c89500;
+
+  border-radius: 2px;
+}
+
+
+.stock-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #fff6d8;
+
+  border: 1px solid #e4d28f;
+  border-radius: 7px;
+}
+
+
+.stock-summary-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #c89500;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.stock-summary-text {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.stock-summary-title {
+  color: #344955;
+
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.1px;
+}
+
+
+.stock-summary-subtitle {
+  margin-top: 1px;
+
+  color: #71838c;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* =========================================================
+   QUANTITÉS SEMENCE / STOCKAGE
+   ========================================================= */
+
+.stock-summary-quantities {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+.stock-summary-quantity {
+  overflow: hidden;
+
+  text-align: center;
+
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+.stock-summary-quantity-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-height: 44px;
+  padding: 7px 10px;
+
+  box-sizing: border-box;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+.stock-summary-quantity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+
+  border-radius: 7px;
+}
+
+
+.stock-summary-quantity-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.stock-summary-quantity-value {
+  display: block;
+
+  padding: 10px 12px 4px;
+
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 22px;
+}
+
+
+.stock-summary-quantity small {
+  display: block;
+
+  min-height: 32px;
+  padding: 0 10px 10px;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 13px;
+}
+
+
+/* =========================================================
+   QUANTITÉ INITIALE : SEMENCE
+   ========================================================= */
+
+.seed-quantity {
+  border: 1px solid #e4d28f;
+}
+
+
+.seed-quantity .stock-summary-quantity-header {
+  color: #684b00;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff6d8 0%,
+      #fffdf7 100%
+    );
+
+  border-bottom: 1px solid #e4d28f;
+}
+
+
+.seed-quantity .stock-summary-quantity-icon {
+  color: #c89500;
+
+  border: 1px solid #e4d28f;
+}
+
+
+.seed-quantity .stock-summary-quantity-icon mat-icon {
+  color: #c89500;
+}
+
+
+.seed-quantity .stock-summary-quantity-value {
+  color: #684b00;
+}
+
+
+.seed-quantity small {
+  color: #8a7750;
+}
+
+
+/* =========================================================
+   QUANTITÉ ACTUELLE : STOCKAGE
+   ========================================================= */
+
+.current-stock-quantity {
+  border: 1px solid #c5d0d5;
+}
+
+
+.current-stock-quantity .stock-summary-quantity-header {
+  color: #344955;
+
+  background:
+    linear-gradient(
+      90deg,
+      #eef2f4 0%,
+      #f8fafb 100%
+    );
+
+  border-bottom: 1px solid #c5d0d5;
+}
+
+
+.current-stock-quantity .stock-summary-quantity-icon {
+  color: #607d8b;
+
+  border: 1px solid #c5d0d5;
+}
+
+
+.current-stock-quantity .stock-summary-quantity-icon mat-icon {
+  color: #607d8b;
+}
+
+
+.current-stock-quantity .stock-summary-quantity-value {
+  color: #344955;
+}
+
+
+.current-stock-quantity small {
+  color: #71838c;
 }
 
 
