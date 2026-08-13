@@ -255,6 +255,19 @@ table tr.mat-row:hover {
   cursor: pointer;
 }
 
+
+.germination-list-paginator {
+  margin-top: 8px;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 10px;
+}
+
+
 /* Message lorsqu’aucun test de germination n’existe */
 .alert-card {
   display: flex;

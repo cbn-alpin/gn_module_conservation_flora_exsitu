@@ -1,5 +1,6 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { GerminationComponent } from '../germination/germination.component';
@@ -21,12 +22,24 @@ export interface Germination {
   templateUrl: './germination-table.component.html',
   styleUrls: ['./germination-table.component.scss']
 })
-export class GerminationTableComponent implements OnInit {
+export class GerminationTableComponent implements OnInit, AfterViewInit {
   idMaterial: number | null = null;
   idStorage: number | null = null;
   codeT: any = 'ger';
   idGermination: any;
   dataSource = new MatTableDataSource<any>();
+
+  private paginatorRef!: MatPaginator;
+
+  @ViewChild(MatPaginator)
+  set paginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.paginatorRef = paginator;
+      this.syncPaginator();
+    }
+  }
+
+  rowPerPage = 5;
 
   @Output() view = new EventEmitter<Germination>();
   @Output() edit = new EventEmitter<Germination>();
@@ -50,6 +63,19 @@ export class GerminationTableComponent implements OnInit {
     private api: DataService,
     private route: ActivatedRoute
   ) {}
+
+  private syncPaginator(): void {
+    if (!this.paginatorRef) {
+      return;
+    }
+
+    this.dataSource.paginator =
+      this.paginatorRef;
+  }
+
+  ngAfterViewInit(): void {
+    this.syncPaginator();
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {

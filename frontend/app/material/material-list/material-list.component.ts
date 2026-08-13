@@ -29,7 +29,7 @@ import { ConfigService } from '../../services/config.service';
 export class MaterialListComponent implements OnInit {
     public totalMaterials: number;
     pagination = { offset: 0, limit: 10 };
-    rowPerPage: number;
+    rowPerPage = 5;
     @ViewChild('dataTable') dataTable: DatatableComponent;
     dataSource = new MatTableDataSource<any>();  
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -62,7 +62,6 @@ export class MaterialListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.calculateNbRow()
         combineLatest([this.exsituFormService.materials$, this.materialFormService.occurrence])
         .pipe(
             filter(([materials, occurrence]) => !!materials),
@@ -105,13 +104,6 @@ export class MaterialListComponent implements OnInit {
       this.router.navigate([
         `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}`
       ]);
-    }
-
-    calculateNbRow() {
-      let wH = window.innerHeight;
-      let listHeight = wH - 400;
-      this.rowPerPage = Math.round(listHeight / 70);
-       
     }
 
     onChangePage(event) {
@@ -162,7 +154,7 @@ export class MaterialListComponent implements OnInit {
 
     loadMaterials() {
         const pageIndex = this.paginator ? this.paginator.pageIndex + 1 : 1;
-        const pageSize = this.paginator ? this.paginator.pageSize : 10;
+        const pageSize = this.paginator ? this.paginator.pageSize : this.rowPerPage;
         let params = new HttpParams()
                   .set('page', pageIndex)
                   .set('limit', pageSize);        

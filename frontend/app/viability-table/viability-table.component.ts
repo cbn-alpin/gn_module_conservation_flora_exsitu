@@ -1,6 +1,7 @@
   
-  import { Component, Input, Output, EventEmitter,OnInit } from '@angular/core';
+  import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, ViewChild } from '@angular/core';
   import { MatTableDataSource } from '@angular/material/table';
+  import { MatPaginator } from '@angular/material/paginator';
   import { Router } from '@angular/router';
 import { ViabilityComponent } from '../viability/viability.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,7 +24,7 @@ import { ActivatedRoute } from '@angular/router';
     templateUrl: './viability-table.component.html',
     styleUrls: ['./viability-table.component.scss']
   })
-  export class ViabilityTableComponent  implements OnInit  {
+  export class ViabilityTableComponent implements OnInit, AfterViewInit {
    idMaterial: number | null = null;
      idStorage: number | null = null;
      codeT: any= 'via'
@@ -37,6 +38,18 @@ import { ActivatedRoute } from '@angular/router';
      ) {}
    
      dataSource = new MatTableDataSource<any>();
+
+     private paginatorRef!: MatPaginator;
+
+     @ViewChild(MatPaginator)
+     set paginator(paginator: MatPaginator) {
+       if (paginator) {
+         this.paginatorRef = paginator;
+         this.syncPaginator();
+       }
+     }
+
+     rowPerPage = 5;
    
      @Output() view = new EventEmitter<Viability>();
      @Output() edit = new EventEmitter<Viability>();
@@ -52,6 +65,19 @@ import { ActivatedRoute } from '@angular/router';
        'actions'
      ];
    
+     private syncPaginator(): void {
+       if (!this.paginatorRef) {
+         return;
+       }
+
+       this.dataSource.paginator =
+         this.paginatorRef;
+     }
+
+     ngAfterViewInit(): void {
+       this.syncPaginator();
+     }
+
      ngOnInit(): void {
       this.route.queryParams.subscribe(params => {
         this.loadTests();

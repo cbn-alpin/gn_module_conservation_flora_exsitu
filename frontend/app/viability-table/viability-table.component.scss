@@ -254,6 +254,19 @@ table tr.mat-row:hover {
   cursor: pointer;
 }
 
+
+.viability-list-paginator {
+  margin-top: 8px;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #f2c79f;
+  border-radius: 10px;
+}
+
+
 /* Message lorsqu’aucun test de viabilité n’existe */
 .alert-card {
   display: flex;

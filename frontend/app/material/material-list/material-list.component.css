@@ -153,6 +153,18 @@
 }
 
 
+.material-list-paginator {
+  margin-top: 8px;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d5ddc1;
+  border-radius: 10px;
+}
+
+
 /* Message lorsqu’aucun matériel récolté n’existe */
 .material-empty-card {
   display: flex;

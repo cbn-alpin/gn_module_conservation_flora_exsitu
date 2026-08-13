@@ -99,9 +99,12 @@
       </table>
 
       <mat-paginator
-        (page)="onPaginateChange()"
+        class="stock-list-paginator"
         [pageSize]="rowPerPage"
+        [pageSizeOptions]="[5, 10, 25, 100]"
         [length]="totalActions"
+        (page)="onPaginateChange()"
+        showFirstLastButtons
       >
       </mat-paginator>
 

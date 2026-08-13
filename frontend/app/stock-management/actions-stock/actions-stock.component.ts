@@ -22,7 +22,7 @@ export class ActionsStockComponent implements OnInit {
     dataSource = new MatTableDataSource<any>(); 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
-    rowPerPage: number;
+    rowPerPage = 5;
     public totalActions: number;
     displayedColumns: string[] = [
         'action_type',
@@ -43,13 +43,12 @@ export class ActionsStockComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-      this.calculateNbRow()
       this.loadActions();
     }
 
     loadActions(){
       const pageIndex = this.paginator ? this.paginator.pageIndex + 1 : 1;
-      const pageSize = this.paginator?.pageSize || this.rowPerPage || 10;
+      const pageSize = this.paginator?.pageSize || this.rowPerPage;
       
       let params = new HttpParams()
                   .set('page', pageIndex)
@@ -89,12 +88,6 @@ export class ActionsStockComponent implements OnInit {
       });
     }
     
-
-    calculateNbRow() {
-      let wH = window.innerHeight;
-      let listHeight = wH - 400;
-      this.rowPerPage = Math.round(listHeight / 170);
-    }
 
     onPaginateChange(){
       this.loadActions();
