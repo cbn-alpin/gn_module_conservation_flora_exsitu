@@ -223,18 +223,200 @@
   color: #f44336 !important;
 }
 
-
 .stock-list-paginator {
   margin-top: 8px;
 
   overflow: hidden;
 
-  background-color: #ffffff;
+  background:
+    linear-gradient(
+      90deg,
+      #f8fafb 0%,
+      #f1f5f6 50%,
+      #f8fafb 100%
+    );
 
   border: 1px solid #c5d0d5;
   border-radius: 10px;
+
+  box-shadow:
+    0 2px 7px rgba(52, 73, 85, 0.08);
 }
 
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-container {
+  display: flex;
+  align-items: center;
+
+  min-height: 56px;
+
+  padding: 0 14px;
+
+  color: #344955;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-page-size-label {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0 8px 0 0;
+
+  color: #607d8b;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-page-size-select {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 1px 4px rgba(52, 73, 85, 0.08);
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  color: #344955;
+
+  font-weight: 750;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-arrow {
+  color: #607d8b;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-range-actions {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-range-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 32px;
+  margin: 0 12px;
+  padding: 6px 11px;
+
+  box-sizing: border-box;
+
+  color: #344955;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  background-color: #eef2f4;
+
+  border: 1px solid #d5dde1;
+  border-radius: 999px;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  margin-left: 3px;
+
+  color: #607d8b;
+
+  background-color: #f2f5f6;
+
+  border-radius: 50%;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  background-color: #e1e8eb;
+
+  transform: translateY(-1px);
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-icon-button:disabled {
+  color: #91a2aa;
+
+  background-color: #f0f3f4;
+
+  opacity: 0.8;
+}
+
+
+:host ::ng-deep
+.stock-list-paginator
+.mat-mdc-paginator-icon {
+  width: 26px;
+  height: 26px;
+
+  fill: currentColor;
+}
 
 /* Message lorsqu’aucune action de stockage n’existe */
 .stock-empty-card {

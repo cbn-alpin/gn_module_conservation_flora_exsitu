@@ -455,10 +455,234 @@ background-color: #ffffff;
 
 .semis-list-paginator {
   margin-top: 8px;
-  border: 1px solid #d8ead8;
-  border-radius: 10px;
-  background: #ffffff;
+
   overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fbfffb 0%,
+      #f3faf4 50%,
+      #fbfffb 100%
+    );
+
+  border: 1px solid #c8e6c9;
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 7px rgba(46, 125, 50, 0.08);
+}
+
+
+/* =========================================================
+   CONTENU DE LA PAGINATION
+   ========================================================= */
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-container {
+  display: flex;
+  align-items: center;
+
+  min-height: 56px;
+
+  padding: 0 14px;
+
+  color: #355e3b;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size-label {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0 8px 0 0;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size-select {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-range-actions {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-range-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 32px;
+
+  box-sizing: border-box;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* =========================================================
+   LIBELLÉ "ÉLÉMENTS PAR PAGE"
+   ========================================================= */
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size-label {
+  color: #607d63;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   SÉLECTEUR DU NOMBRE D'ÉLÉMENTS
+   ========================================================= */
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 1px 4px rgba(46, 125, 50, 0.08);
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  color: #1b5e20;
+
+  font-weight: 750;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-arrow {
+  color: #2e7d32;
+}
+
+
+/* =========================================================
+   COMPTEUR DE LIGNES
+   ========================================================= */
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-range-label {
+  margin: 0 12px;
+
+  padding: 6px 11px;
+
+  color: #1b5e20;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  background-color: #e8f5e9;
+
+  border: 1px solid #d2ead4;
+  border-radius: 999px;
+}
+
+
+/* =========================================================
+   BOUTONS DE NAVIGATION
+   ========================================================= */
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-icon-button {
+  width: 40px;
+  height: 40px;
+
+  margin-left: 3px;
+
+  color: #2e7d32;
+
+  background-color: #f0f8f1;
+
+  border-radius: 50%;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  background-color: #dcefe0;
+
+  transform: translateY(-1px);
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-icon-button:disabled {
+  color: #78957c;
+
+  background-color: #edf5ee;
+
+  opacity: 0.8;
+}
+
+
+:host ::ng-deep
+.semis-list-paginator
+.mat-mdc-paginator-icon {
+  width: 26px;
+  height: 26px;
+
+  fill: currentColor;
 }
 
 .alert-card {

@@ -488,12 +488,195 @@ table tr.mat-row:hover {
 
   overflow: hidden;
 
-  background-color: #ffffff;
+  background:
+    linear-gradient(
+      90deg,
+      #fffaf6 0%,
+      #fff4ea 50%,
+      #fffaf6 100%
+    );
 
   border: 1px solid #f2c79f;
   border-radius: 10px;
+
+  box-shadow:
+    0 2px 7px rgba(224, 122, 31, 0.08);
 }
 
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-container {
+  display: flex;
+  align-items: center;
+
+  min-height: 56px;
+
+  padding: 0 14px;
+
+  color: #7a3b00;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-page-size-label {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0 8px 0 0;
+
+  color: #9a6230;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-page-size-select {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 1px 4px rgba(224, 122, 31, 0.08);
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  color: #7a3b00;
+
+  font-weight: 750;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-arrow {
+  color: #e07a1f;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-range-actions {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-range-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 32px;
+  margin: 0 12px;
+  padding: 6px 11px;
+
+  box-sizing: border-box;
+
+  color: #7a3b00;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  background-color: #fff0e3;
+
+  border: 1px solid #f3d5b7;
+  border-radius: 999px;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  margin-left: 3px;
+
+  color: #e07a1f;
+
+  background-color: #fff5ec;
+
+  border-radius: 50%;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  background-color: #fde6d2;
+
+  transform: translateY(-1px);
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-icon-button:disabled {
+  color: #b58d68;
+
+  background-color: #fcf2e9;
+
+  opacity: 0.8;
+}
+
+
+:host ::ng-deep
+.viability-list-paginator
+.mat-mdc-paginator-icon {
+  width: 26px;
+  height: 26px;
+
+  fill: currentColor;
+}
 
 /* Message lorsqu’aucun test de viabilité n’existe */
 .alert-card {
