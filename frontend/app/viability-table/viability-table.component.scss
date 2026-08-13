@@ -54,6 +54,89 @@
     0 4px 14px rgba(224, 122, 31, 0.12);
 }
 
+/* =========================================================
+   BANDEAU VIABILITÉ
+   ========================================================= */
+
+.viability-list-hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 18px 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fffaf6 0%,
+      #fff5ec 35%,
+      #fff0e3 50%,
+      #fff5ec 65%,
+      #fffaf6 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.viability-list-hero::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  background-color: #e07a1f;
+
+  border-radius: 0 0 999px 999px;
+
+  transform: translateX(-50%);
+}
+
+
+.viability-list-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #e07a1f;
+
+  background-color: #ffffff;
+
+  border: 1px solid #f2c79f;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(224, 122, 31, 0.14);
+}
+
+
+.viability-list-hero-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #e07a1f;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+/* =========================================================
+   TITRE VIABILITÉ
+   ========================================================= */
 
 .viability-list-header {
   position: relative;
@@ -62,14 +145,20 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 52px;
-  padding: 0 14px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px 6px;
+
+  box-sizing: border-box;
 
   background:
     linear-gradient(
       90deg,
-      #fff0e3 0%,
-      #ffffff 100%
+      #fffaf6 0%,
+      #fff5ec 35%,
+      #fff0e3 50%,
+      #fff5ec 65%,
+      #fffaf6 100%
     );
 
   border-bottom: 1px solid #f2c79f;
@@ -78,9 +167,10 @@
 
 .viability-title-wrapper {
   position: absolute;
+  top: 50%;
   left: 50%;
 
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 
   pointer-events: none;
   white-space: nowrap;
@@ -94,9 +184,9 @@
 
   font-size: 18px;
   font-weight: 850;
+  line-height: 18px;
   letter-spacing: 0.2px;
 }
-
 
 .viability-add-button {
   position: absolute;

@@ -46,32 +46,126 @@
   box-shadow: 0 4px 14px rgba(78, 52, 46, 0.12);
 }
 
-/* En-tête de la carte */
-.culture-list-header {
+/* =========================================================
+   BANDEAU CULTURE
+   ========================================================= */
+
+.culture-list-hero {
   position: relative;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  min-height: 52px;
-  padding: 0 14px;
+  padding: 12px 18px 0;
 
-  background: linear-gradient(
-    90deg,
-    #efebe9 0%,
-    #ffffff 100%
-  );
+  background:
+    linear-gradient(
+      90deg,
+      #fdfbf9 0%,
+      #f7f2ef 35%,
+      #efebe9 50%,
+      #f7f2ef 65%,
+      #fdfbf9 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.culture-list-hero::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  background-color: #6d4c41;
+
+  border-radius: 0 0 999px 999px;
+
+  transform: translateX(-50%);
+}
+
+
+.culture-list-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #6d4c41;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d7ccc8;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(78, 52, 46, 0.14);
+}
+
+
+.culture-list-hero-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #6d4c41;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+/* =========================================================
+   TITRE CULTURE
+   ========================================================= */
+
+.culture-list-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px 6px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fdfbf9 0%,
+      #f7f2ef 35%,
+      #efebe9 50%,
+      #f7f2ef 65%,
+      #fdfbf9 100%
+    );
 
   border-bottom: 1px solid #d7ccc8;
 }
 
+
 /* Centrage du titre Angular Material */
+
 :host ::ng-deep
 .culture-list-header .mat-mdc-card-header-text {
   width: 100%;
   margin: 0;
   text-align: center;
 }
+
 
 :host ::ng-deep
 .culture-list-header .mat-card-header-text {
@@ -80,20 +174,26 @@
   text-align: center;
 }
 
-/* Titre Fiche de Culture */
+
 .culture-list-header mat-card-title {
   margin: 0;
 
   color: #4e342e;
+
   font-size: 18px;
   font-weight: 850;
+  line-height: 18px;
   letter-spacing: 0.2px;
 }
 
+
 .culture-title-wrapper {
   position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+
+  transform: translate(-50%, -50%);
+
   pointer-events: none;
   white-space: nowrap;
 }

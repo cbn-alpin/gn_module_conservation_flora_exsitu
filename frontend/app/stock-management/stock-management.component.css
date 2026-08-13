@@ -53,6 +53,89 @@
     0 4px 14px rgba(52, 73, 85, 0.12);
 }
 
+/* =========================================================
+   BANDEAU STOCKAGE
+   ========================================================= */
+
+.stock-list-hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 18px 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f8fafb 0%,
+      #f3f6f7 35%,
+      #eef2f4 50%,
+      #f3f6f7 65%,
+      #f8fafb 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.stock-list-hero::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  background-color: #607d8b;
+
+  border-radius: 0 0 999px 999px;
+
+  transform: translateX(-50%);
+}
+
+
+.stock-list-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #607d8b;
+
+  background-color: #ffffff;
+
+  border: 1px solid #c5d0d5;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(52, 73, 85, 0.14);
+}
+
+
+.stock-list-hero-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #607d8b;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+/* =========================================================
+   TITRE STOCKAGE
+   ========================================================= */
 
 .stock-list-header {
   position: relative;
@@ -61,14 +144,20 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 52px;
-  padding: 0 14px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px 6px;
+
+  box-sizing: border-box;
 
   background:
     linear-gradient(
       90deg,
-      #eef2f4 0%,
-      #ffffff 100%
+      #f8fafb 0%,
+      #f3f6f7 35%,
+      #eef2f4 50%,
+      #f3f6f7 65%,
+      #f8fafb 100%
     );
 
   border-bottom: 1px solid #c5d0d5;
@@ -77,9 +166,10 @@
 
 .stock-title-wrapper {
   position: absolute;
+  top: 50%;
   left: 50%;
 
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 
   pointer-events: none;
   white-space: nowrap;
@@ -93,7 +183,60 @@
 
   font-size: 18px;
   font-weight: 850;
+  line-height: 18px;
   letter-spacing: 0.2px;
+}
+
+
+/* =========================================================
+   BOUTON AJOUT FACTICE
+   ========================================================= */
+
+.stock-list-add-button {
+  position: absolute;
+  left: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  min-height: 36px;
+  padding: 0 13px;
+
+  color: #ffffff !important;
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  background-color: #607d8b !important;
+
+  border: 1px solid #455a64 !important;
+  border-radius: 9px;
+
+  box-shadow:
+    0 2px 6px rgba(52, 73, 85, 0.20);
+}
+
+
+.stock-list-add-button:hover {
+  background-color: #455a64 !important;
+}
+
+
+.stock-list-add-button mat-icon {
+  flex-shrink: 0;
+
+  width: 20px;
+  height: 20px;
+  margin: 0;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
 }
 
 

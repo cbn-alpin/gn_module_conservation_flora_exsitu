@@ -54,6 +54,89 @@
     0 4px 14px rgba(0, 137, 123, 0.12);
 }
 
+/* =========================================================
+   BANDEAU GERMINATION
+   ========================================================= */
+
+.germination-list-hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 18px 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f5fdfc 0%,
+      #edf9f7 35%,
+      #e5f6f3 50%,
+      #edf9f7 65%,
+      #f5fdfc 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.germination-list-hero::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  background-color: #00897b;
+
+  border-radius: 0 0 999px 999px;
+
+  transform: translateX(-50%);
+}
+
+
+.germination-list-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #00897b;
+
+  background-color: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(0, 137, 123, 0.14);
+}
+
+
+.germination-list-hero-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #00897b;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+/* =========================================================
+   TITRE GERMINATION
+   ========================================================= */
 
 .germination-list-header {
   position: relative;
@@ -62,14 +145,20 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 52px;
-  padding: 0 14px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px 6px;
+
+  box-sizing: border-box;
 
   background:
     linear-gradient(
       90deg,
-      #e5f6f3 0%,
-      #ffffff 100%
+      #f5fdfc 0%,
+      #edf9f7 35%,
+      #e5f6f3 50%,
+      #edf9f7 65%,
+      #f5fdfc 100%
     );
 
   border-bottom: 1px solid #b2dfdb;
@@ -78,9 +167,10 @@
 
 .germination-title-wrapper {
   position: absolute;
+  top: 50%;
   left: 50%;
 
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 
   pointer-events: none;
   white-space: nowrap;
@@ -94,9 +184,9 @@
 
   font-size: 18px;
   font-weight: 850;
+  line-height: 18px;
   letter-spacing: 0.2px;
 }
-
 
 .germination-add-button {
   position: absolute;

@@ -54,6 +54,89 @@
     0 4px 14px rgba(104, 75, 0, 0.12);
 }
 
+/* =========================================================
+   BANDEAU SEMENCE
+   ========================================================= */
+
+.seed-details-hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 18px 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fffdf7 0%,
+      #fff9e8 35%,
+      #fff6d8 50%,
+      #fff9e8 65%,
+      #fffdf7 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.seed-details-hero::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  background-color: #c89500;
+
+  border-radius: 0 0 999px 999px;
+
+  transform: translateX(-50%);
+}
+
+
+.seed-details-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #c89500;
+
+  background-color: #ffffff;
+
+  border: 1px solid #ead391;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(200, 149, 0, 0.14);
+}
+
+
+.seed-details-hero-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #c89500;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+/* =========================================================
+   TITRE SEMENCE
+   ========================================================= */
 
 .seed-details-header {
   position: relative;
@@ -62,19 +145,24 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 52px;
-  padding: 0 14px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px 6px;
+
+  box-sizing: border-box;
 
   background:
     linear-gradient(
       90deg,
-      #fff6d8 0%,
-      #ffffff 100%
+      #fffdf7 0%,
+      #fff9e8 35%,
+      #fff6d8 50%,
+      #fff9e8 65%,
+      #fffdf7 100%
     );
 
   border-bottom: 1px solid #ead391;
 }
-
 
 .seed-details-form-button {
   position: absolute;
@@ -115,12 +203,12 @@
   line-height: 20px;
 }
 
-
 .seed-details-title-wrapper {
   position: absolute;
+  top: 50%;
   left: 50%;
 
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 
   pointer-events: none;
   white-space: nowrap;
@@ -134,6 +222,7 @@
 
   font-size: 18px;
   font-weight: 850;
+  line-height: 18px;
   letter-spacing: 0.2px;
 }
 

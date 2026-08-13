@@ -69,14 +69,15 @@ background-color: #ffffff;
   display: flex;
   align-items: center;
   position: relative;
-  height: 60px; 
+  height: 44px;
 }
 
 .title-wrapper {
   position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none; 
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .gray-button {
@@ -160,18 +161,114 @@ background-color: #ffffff;
   box-shadow: 0 4px 14px rgba(46, 125, 50, 0.10);
 }
 
-.semis-list-card .semis-list-header {
+
+/* =========================================================
+   BANDEAU SEMI
+   ========================================================= */
+
+.semis-list-hero {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 18px 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f7fff8 0%,
+      #eef9ef 35%,
+      #e8f5e9 50%,
+      #eef9ef 65%,
+      #f7fff8 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.semis-list-hero::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  background-color: #43a047;
+
+  border-radius: 0 0 999px 999px;
+
+  transform: translateX(-50%);
+}
+
+
+.semis-list-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
   height: 52px;
-  min-height: 52px;
-  padding: 0 14px;
-  background: linear-gradient(90deg, #e8f5e9 0%, #ffffff 100%);
+
+  color: #2e7d32;
+
+  background-color: #ffffff;
+
+  border: 1px solid #c8e6c9;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(46, 125, 50, 0.14);
+}
+
+
+.semis-list-hero-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #2e7d32;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+.semis-list-card .semis-list-header {
+  height: 48px;
+  min-height: 48px;
+  padding: 0 14px 6px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f7fff8 0%,
+      #eef9ef 35%,
+      #e8f5e9 50%,
+      #eef9ef 65%,
+      #f7fff8 100%
+    );
+
   border-bottom: 1px solid #d8ead8;
 }
 
 .semis-list-card .title-wrapper mat-card-title {
+  margin: 0;
+
   color: #1b5e20;
+
   font-size: 18px;
   font-weight: 850;
+  line-height: 18px;
   letter-spacing: 0.2px;
 }
 
