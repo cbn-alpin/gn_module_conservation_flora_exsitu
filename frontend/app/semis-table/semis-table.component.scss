@@ -151,6 +151,15 @@ background-color: #ffffff;
   background-color: rgb(235, 250, 235) !important;
 }
 
+:host {
+  display: block;
+
+  padding-bottom: 18px;
+
+  background-color: #ffffff;
+}
+
+
 /* Design compact de la liste des semis */
 .semis-list-card {
   margin: 0 15px;
