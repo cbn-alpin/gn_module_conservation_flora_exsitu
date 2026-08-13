@@ -145,11 +145,127 @@
   line-height: 20px;
 }
 
-
 .material-list-content {
   padding: 12px 14px 10px !important;
 
   background-color: #fbfcf7;
+}
+
+
+/* =========================================================
+   TABLEAU
+   ========================================================= */
+
+.material-list-table {
+  width: 100%;
+  table-layout: fixed;
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d5ddc1;
+  border-radius: 12px;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-header-row {
+  height: 42px;
+
+  background-color: #f3f6ea;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-header-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #405021;
+
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #d5ddc1;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-row {
+  height: 44px;
+
+  cursor: pointer;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #263238;
+
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #eef1e5;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: #f5f8ed;
+}
+
+
+/* =========================================================
+   LARGEURS FIXES DES COLONNES
+   ========================================================= */
+
+:host ::ng-deep
+.material-list-table .mat-column-code_material {
+  width: 16%;
+
+  color: #405021;
+  font-weight: 800;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-column-taxons {
+  width: 24%;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-column-harvest_material {
+  width: 19%;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-column-code_cultural_bank {
+  width: 14%;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-column-code_material_parent {
+  width: 17%;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-column-actions {
+  width: 10%;
+  text-align: center;
 }
 
 
@@ -231,7 +347,13 @@
 }
 
 .highlighted {
-    background-color: rgb(29, 218, 48) !important;
+  background-color: #edf3df !important;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-row.highlighted .mat-mdc-cell {
+  background-color: #edf3df !important;
 }
 
 /* 

@@ -145,11 +145,141 @@
   line-height: 20px;
 }
 
-
 .germination-list-content {
   padding: 12px 14px 10px !important;
 
   background-color: #f7fcfb;
+}
+
+
+/* =========================================================
+   TABLEAU
+   ========================================================= */
+
+.germination-list-table {
+  width: 100%;
+  table-layout: fixed;
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 12px;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-mdc-header-row {
+  height: 42px;
+
+  background-color: #e5f6f3;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-mdc-header-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #00564e;
+
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #b2dfdb;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-mdc-row {
+  height: 44px;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-mdc-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #263238;
+
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #e5f3f1;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: #eefaf8;
+}
+
+
+/* =========================================================
+   LARGEURS FIXES DES COLONNES
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list-table .mat-column-code {
+  width: 16%;
+
+  color: #00564e;
+  font-weight: 800;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-germination_rate {
+  width: 13%;
+
+  color: #00796b;
+  font-weight: 750;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-meta_create_date {
+  width: 12%;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-seed_initial_count {
+  width: 12%;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-photo_thermo_regime {
+  width: 17%;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-treatment {
+  width: 14%;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-pre_treatment {
+  width: 10%;
+  text-align: center;
+}
+
+
+:host ::ng-deep
+.germination-list-table .mat-column-actions {
+  width: 6%;
+  text-align: center;
 }
 
 

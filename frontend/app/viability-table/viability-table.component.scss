@@ -152,6 +152,122 @@
 }
 
 
+/* =========================================================
+   TABLEAU
+   ========================================================= */
+
+.viability-list-table {
+  width: 100%;
+  table-layout: fixed;
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #f2c79f;
+  border-radius: 12px;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-header-row {
+  height: 42px;
+
+  background-color: #fff0e3;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-header-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #7a3b00;
+
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #f2c79f;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-row {
+  height: 44px;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-cell {
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #263238;
+
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  border-bottom: 1px solid #f9e8d9;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: #fff7f0;
+}
+
+
+/* =========================================================
+   LARGEURS FIXES DES COLONNES
+   ========================================================= */
+
+:host ::ng-deep
+.viability-list-table .mat-column-code {
+  width: 20%;
+
+  color: #7a3b00;
+  font-weight: 800;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-column-meta_create_date {
+  width: 17%;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-column-seed_initial_count {
+  width: 15%;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-column-traitement {
+  width: 22%;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-column-pre_treatment {
+  width: 16%;
+  text-align: center;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-column-actions {
+  width: 10%;
+  text-align: center;
+}
+
+
 /* Menu Actions identique à Semis et Culture */
 .actions-trigger-red {
   color: #f44336 !important;

@@ -1,11 +1,22 @@
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <h3>{{ title }}</h3>
-  <button 
-        (click)="openActionModal()"
-        mat-raised-button
-        class="button-success uppercase">Ajouter une action</button>
+<div class="stock-actions-header">
+
+  <h3>
+    {{ title }}
+  </h3>
+
+  <button
+    (click)="openActionModal()"
+    mat-raised-button
+    class="button-success uppercase stock-action-add-button"
+  >
+    <mat-icon>add</mat-icon>
+
+    Ajouter une action
+  </button>
+
 </div>
-<div class="card mt-2">
+
+<div class="stock-actions-card mt-2">
 
   <div class="table-container">
 
@@ -19,7 +30,7 @@
       <table
         mat-table
         [dataSource]="dataSource"
-        class="mat-table"
+        class="stock-list-table"
       >
         <ng-container matColumnDef="action_type">
             <th mat-header-cell *matHeaderCellDef> Type d'action </th>
