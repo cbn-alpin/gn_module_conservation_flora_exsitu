@@ -376,9 +376,28 @@
 :host ::ng-deep
 .culture-list-table
 .culture-clickable-row:hover
+.mat-mdc-cell,
+
+:host ::ng-deep
+.culture-list-table
+.culture-clickable-row.action-row-active
 .mat-mdc-cell {
   background-color:
     #faf5f2;
+}
+
+
+:host ::ng-deep
+.culture-list-table
+.culture-clickable-row:hover
+.mat-mdc-cell:first-child,
+
+:host ::ng-deep
+.culture-list-table
+.culture-clickable-row.action-row-active
+.mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #6d4c41;
 }
 
 /* =========================================================

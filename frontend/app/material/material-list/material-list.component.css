@@ -218,12 +218,17 @@
   border-bottom: 1px solid #eef1e5;
 }
 
-
 :host ::ng-deep
 .material-list-table .mat-mdc-row:hover .mat-mdc-cell {
   background-color: #f5f8ed;
 }
 
+
+:host ::ng-deep
+.material-list-table .mat-mdc-row:hover .mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #667a32;
+}
 
 /* =========================================================
    LARGEURS FIXES DES COLONNES
@@ -350,10 +355,16 @@
   background-color: #edf3df !important;
 }
 
-
 :host ::ng-deep
 .material-list-table .mat-mdc-row.highlighted .mat-mdc-cell {
   background-color: #edf3df !important;
+}
+
+
+:host ::ng-deep
+.material-list-table .mat-mdc-row.highlighted .mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #667a32;
 }
 
 /* 

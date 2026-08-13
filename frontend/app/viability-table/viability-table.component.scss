@@ -218,8 +218,21 @@
 
 
 :host ::ng-deep
-.viability-list-table .mat-mdc-row:hover .mat-mdc-cell {
+.viability-list-table .mat-mdc-row:hover .mat-mdc-cell,
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-row.action-row-active .mat-mdc-cell {
   background-color: #fff7f0;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-row:hover .mat-mdc-cell:first-child,
+
+:host ::ng-deep
+.viability-list-table .mat-mdc-row.action-row-active .mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #e07a1f;
 }
 
 

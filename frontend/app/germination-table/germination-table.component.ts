@@ -41,6 +41,20 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
 
   rowPerPage = 5;
 
+  public activeActionRowId: number | null = null;
+
+  public setActiveActionRow(row: any): void {
+    this.activeActionRowId = row.id_test;
+  }
+
+  public clearActiveActionRow(): void {
+    this.activeActionRowId = null;
+  }
+
+  public isActionRowActive(row: any): boolean {
+    return this.activeActionRowId === row.id_test;
+  }
+
   @Output() view = new EventEmitter<Germination>();
   @Output() edit = new EventEmitter<Germination>();
   @Output() delete = new EventEmitter<Germination>();

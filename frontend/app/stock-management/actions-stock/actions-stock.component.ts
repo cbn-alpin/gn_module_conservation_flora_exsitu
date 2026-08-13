@@ -24,6 +24,21 @@ export class ActionsStockComponent implements OnInit {
     @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
     rowPerPage = 5;
     public totalActions: number;
+
+    public activeActionRowId: number | null = null;
+
+    public setActiveActionRow(row: any): void {
+      this.activeActionRowId = row.id_storage;
+    }
+
+    public clearActiveActionRow(): void {
+      this.activeActionRowId = null;
+    }
+
+    public isActionRowActive(row: any): boolean {
+      return this.activeActionRowId === row.id_storage;
+    }
+
     displayedColumns: string[] = [
         'action_type',
         'quantity',

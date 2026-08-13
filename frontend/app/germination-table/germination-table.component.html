@@ -111,24 +111,30 @@
               mat-icon-button
               class="actions-trigger-red"
               [matMenuTriggerFor]="menu"
+              (menuOpened)="setActiveActionRow(element)"
+              (menuClosed)="clearActiveActionRow()"
               (click)="$event.stopPropagation()"
               aria-label="Actions"
             >
               <mat-icon>more_vert</mat-icon>
             </button>
+
             <mat-menu #menu="matMenu">
               <button mat-menu-item color="primary" (click)="onAddAction(element)">
                 <mat-icon color="primary">add</mat-icon>
                 <span class="text-green">Ajouter une action</span>
               </button>
+
               <button mat-menu-item (click)="onEdit(element)">
                 <mat-icon>edit</mat-icon>
                 <span>Éditer</span>
               </button>
+
               <button mat-menu-item color="warn" (click)="onDelete(element)">
                 <mat-icon color="warn">delete</mat-icon>
                 <span class="text-red">Supprimer</span>
               </button>
+
               <button mat-menu-item class="culture-action" (click)="onCulture(element)">
                 <mat-icon>local_florist</mat-icon>
                 <span>Culture</span>
@@ -138,7 +144,14 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="onRowClick(row)">
+
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns;"
+          class="clickable-row"
+          [class.action-row-active]="isActionRowActive(row)"
+          (click)="onRowClick(row)"
+        >
         </tr>
       </table>
 

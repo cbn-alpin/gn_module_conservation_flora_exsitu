@@ -96,6 +96,8 @@
               mat-icon-button
               class="actions-trigger-red"
               [matMenuTriggerFor]="menu"
+              (menuOpened)="setActiveActionRow(element)"
+              (menuClosed)="clearActiveActionRow()"
               (click)="$event.stopPropagation()"
               aria-label="Actions"
             >
@@ -120,7 +122,13 @@
 
         <!-- Lignes du tableau -->
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row" (click)="onRowClick(row)">
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns;"
+          class="clickable-row"
+          [class.action-row-active]="isActionRowActive(row)"
+          (click)="onRowClick(row)"
+        >
         </tr>
       </table>
 

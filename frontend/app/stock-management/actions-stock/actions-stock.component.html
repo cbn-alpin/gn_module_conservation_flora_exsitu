@@ -70,6 +70,8 @@
               mat-icon-button
               class="actions-trigger-red"
               [matMenuTriggerFor]="menu"
+              (menuOpened)="setActiveActionRow(element)"
+              (menuClosed)="clearActiveActionRow()"
               aria-label="Actions"
             >
               <mat-icon>more_vert</mat-icon>
@@ -104,6 +106,7 @@
           let i = index;
           columns: displayedColumns;
         "
+        [class.action-row-active]="isActionRowActive(row)"
       >
       </tr>
 

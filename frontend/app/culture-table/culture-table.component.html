@@ -455,6 +455,8 @@
               mat-icon-button
               class="actions-trigger-red"
               [matMenuTriggerFor]="cultureActionsMenu"
+              (menuOpened)="setActiveActionRow(element)"
+              (menuClosed)="clearActiveActionRow()"
               (click)="$event.stopPropagation()"
               matTooltip="Actions"
             >
@@ -514,6 +516,7 @@
             columns: displayedColumns
           "
           class="culture-clickable-row"
+          [class.action-row-active]="isActionRowActive(row)"
           (click)="onRowClick(row)"
         >
         </tr>

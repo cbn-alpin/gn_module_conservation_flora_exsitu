@@ -150,10 +150,22 @@
   border-bottom: 1px solid #e8edef;
 }
 
+:host ::ng-deep
+.stock-list-table .mat-mdc-row:hover .mat-mdc-cell,
 
 :host ::ng-deep
-.stock-list-table .mat-mdc-row:hover .mat-mdc-cell {
+.stock-list-table .mat-mdc-row.action-row-active .mat-mdc-cell {
   background-color: #f3f6f7;
+}
+
+
+:host ::ng-deep
+.stock-list-table .mat-mdc-row:hover .mat-mdc-cell:first-child,
+
+:host ::ng-deep
+.stock-list-table .mat-mdc-row.action-row-active .mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #607d8b;
 }
 
 

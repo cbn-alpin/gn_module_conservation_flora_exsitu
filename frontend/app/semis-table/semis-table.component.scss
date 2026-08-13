@@ -268,6 +268,21 @@ background-color: #ffffff;
   background-color: rgb(235, 250, 235) !important;
 }
 
+
+:host ::ng-deep
+.semis-list-table
+.mat-mdc-row.clickable-row:hover
+.mat-mdc-cell:first-child,
+
+:host ::ng-deep
+.semis-list-table
+.mat-mdc-row.clickable-row.action-row-active
+.mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #2e7d32;
+}
+
+
 /* =========================================================
    LARGEURS FIXES DES COLONNES SEMIS
    ========================================================= */

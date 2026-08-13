@@ -86,6 +86,20 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
   rowPerPage = 5;
 
+  public activeActionRowId: number | null = null;
+
+  public setActiveActionRow(row: any): void {
+    this.activeActionRowId = row.id_culture;
+  }
+
+  public clearActiveActionRow(): void {
+    this.activeActionRowId = null;
+  }
+
+  public isActionRowActive(row: any): boolean {
+    return this.activeActionRowId === row.id_culture;
+  }
+
   public allCultures: Culture[] = [];
 
   public cultureCodeFilter = '';
