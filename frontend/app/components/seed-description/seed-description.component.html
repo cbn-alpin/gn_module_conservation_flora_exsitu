@@ -221,6 +221,16 @@
   >
 
     <button
+      mat-button
+      type="button"
+      class="reset-button with-border"
+      (click)="onReset()"
+    >
+      <mat-icon>autorenew</mat-icon>
+      Réinitialiser
+    </button>
+
+    <button
       *ngIf="edit"
       mat-button
       type="button"
@@ -230,16 +240,6 @@
     >
       <mat-icon>delete</mat-icon>
       Supprimer
-    </button>
-
-    <button
-      mat-button
-      type="button"
-      class="reset-button with-border"
-      (click)="onReset()"
-    >
-      <mat-icon>autorenew</mat-icon>
-      Réinitialiser
     </button>
 
     <button

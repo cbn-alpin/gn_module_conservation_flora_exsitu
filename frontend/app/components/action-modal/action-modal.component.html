@@ -250,6 +250,19 @@
 
     <button
       mat-button
+      class="create-button with-border"
+      [disabled]="
+        !allowSubmitForGerminationMovement
+      "
+      matTooltip="Ajouter et créer une nouvelle action"
+      (click)="submetAndResetForm()"
+    >
+      <mat-icon>add</mat-icon>
+      Ajouter et créer
+    </button>
+
+    <button
+      mat-button
       class="save-button with-border"
       [mat-dialog-close]="true"
       matTooltip="Enregistrer cette action"
@@ -261,19 +274,6 @@
     >
       <mat-icon>save</mat-icon>
       Enregistrer
-    </button>
-
-    <button
-      mat-button
-      class="create-button with-border"
-      [disabled]="
-        !allowSubmitForGerminationMovement
-      "
-      matTooltip="Ajouter et créer une nouvelle action"
-      (click)="submetAndResetForm()"
-    >
-      <mat-icon>add</mat-icon>
-      Ajouter et créer
     </button>
   </div>
 </div>
