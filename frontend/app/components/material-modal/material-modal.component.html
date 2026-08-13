@@ -27,10 +27,29 @@
 
   </mat-card-header>
 
-
   <mat-card-content
     class="wrapper material-form-content"
   >
+
+    <div class="material-material-banner">
+
+      <div class="material-material-banner-icon">
+        <mat-icon>link</mat-icon>
+      </div>
+
+      <div class="material-material-banner-text">
+
+        <span class="material-material-banner-label">
+          N° du matériel récolté associé
+        </span>
+
+        <strong class="material-material-banner-value">
+          {{ materialForm.controls.code_material.value || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
 
     <div class="material-section-header">
       <div class="material-section-icon">

@@ -88,13 +88,90 @@
   text-align: center;
 }
 
-
 .material-form-content {
-  padding: 16px 20px 0 !important;
+  padding: 0 20px 0 !important;
 
   box-sizing: border-box;
 
   background-color: #fbfcf7;
+}
+
+
+/* =========================================================
+   MATÉRIEL RÉCOLTÉ ASSOCIÉ
+   ========================================================= */
+
+.material-material-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 14px 16px 0;
+  padding: 9px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f3f6ea 0%,
+      #fbfcf7 100%
+    );
+
+  border: 1px solid #d5ddc1;
+  border-radius: 9px;
+}
+
+
+.material-material-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #ffffff;
+
+  border: 1px solid #c2ce9f;
+  border-radius: 7px;
+}
+
+
+.material-material-banner-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #667a32;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.material-material-banner-text {
+  display: flex;
+  align-items: baseline;
+
+  gap: 9px;
+}
+
+
+.material-material-banner-label {
+  color: #747d62;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.material-material-banner-value {
+  color: #405021;
+
+  font-size: 15px;
+  font-weight: 850;
 }
 
 
