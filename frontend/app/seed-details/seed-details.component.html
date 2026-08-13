@@ -59,66 +59,165 @@
     >
   <div class="row row-0">
     <div class="col-6">
-      <div class="info-block">
-        <div class="info-row">
-          <strong>Longueur moyenne :</strong>
-          {{ seed.length !== null && seed.length !== undefined ? seed.length + ' mm' : 'Non renseignée' }}
-        </div>
-        <div class="info-row">
-          <strong>Largeur moyenne :</strong>
-          {{ seed.width !== null && seed.width !== undefined ? seed.width + ' mm' : 'Non renseignée' }}
-        </div>
-        <div class="info-row">
-          <strong>Épaisseur moyenne :</strong>
-          {{ seed.thickness !== null && seed.thickness !== undefined ? seed.thickness + ' mm' : 'Non renseignée' }}
-        </div>
-        <div class="info-row">
-          <strong>État du lot :</strong> {{ seed.material_quality_label || 'Non renseigné' }}
-        </div>
-        <div class="info-row">
-          <strong>Masse totale :</strong>
-          {{ seed.total_mass !== null && seed.total_mass !== undefined ? seed.total_mass + ' g' : 'Non renseignée' }}
-        </div>
-        <div class="info-row">
-          <strong>Nombre de graines échantillonnées :</strong> {{ seed.sample_count || 'Non renseigné' }}
-        </div>
-        <div class="info-row">
-          <strong>Masse des graines échantillonnées :</strong>
-          {{ seed.sample_mass !== null && seed.sample_mass !== undefined ? seed.sample_mass + ' g' : 'Non renseignée' }}
-        </div>
-        <div class="info-row">
-          <strong>Nombre total de graines calculé :</strong> {{ seed.total_count || 'Non renseigné' }}
-        </div>
-        <div class="info-row">
-          <strong>Photo disponible :</strong> {{ seed.has_photo ? 'Oui' : 'Non' }}
-        </div>
-        <div class="info-row">
-          <strong>Remarques :</strong> {{ seed.remarks || 'Non renseigné'}}
-        </div>
-      </div>
+      <div class="seed-details-left-panel">
 
-      <div class="info-row" *ngIf="mediaFiles?.length > 0">
-        <h3>Photo(s) :</h3>
-        <div class="media-gallery">
-          <div *ngFor="let media of mediaFiles" class="media-item position-relative">
-            <img *ngIf="media.type === 'file'" 
-                 [src]="cfg.getBackendUrl() + media.url" 
-                 alt="{{ media.title }}" 
-                 class="media-preview"
-                 (click)="openLightbox(cfg.getBackendUrl() + media.url)" />
-            
-            <img *ngIf="media.type === 'url'" 
-                 [src]="media.url"
-                 (click)="openLightbox(media.url)" 
-                 alt="{{ media.title }}" 
-                 class="media-preview" />
-            
-            <a *ngIf="media.type === 'url'" [href]="media.url" target="_blank">Ouvrir dans un nouvel onglet</a>
-          
-            <button matTooltip="Supprimer la photo" class="btn-delete-media" (click)="deleteMedia(media.id_media)">✕</button>
+        <div class="seed-details-info-card">
+          <div class="seed-details-section-header">
+            <div class="seed-details-section-icon">
+              <mat-icon>straighten</mat-icon>
+            </div>
+
+            <div class="seed-details-section-text">
+              <span class="seed-details-section-title">
+                Caractéristiques morphologiques du lot
+              </span>
+
+              <span class="seed-details-section-subtitle">
+                Dimensions et qualité physique des semences
+              </span>
+            </div>
           </div>
-          
+
+          <div class="info-row">
+            <strong>Longueur moyenne :</strong>
+            {{ seed.length !== null && seed.length !== undefined ? seed.length + ' mm' : 'Non renseignée' }}
+          </div>
+
+          <div class="info-row">
+            <strong>Largeur moyenne :</strong>
+            {{ seed.width !== null && seed.width !== undefined ? seed.width + ' mm' : 'Non renseignée' }}
+          </div>
+
+          <div class="info-row">
+            <strong>Épaisseur moyenne :</strong>
+            {{ seed.thickness !== null && seed.thickness !== undefined ? seed.thickness + ' mm' : 'Non renseignée' }}
+          </div>
+
+          <div class="info-row">
+            <strong>État du lot :</strong>
+            {{ seed.material_quality_label || 'Non renseigné' }}
+          </div>
         </div>
+
+        <div class="seed-details-info-card">
+          <div class="seed-details-section-header">
+            <div class="seed-details-section-icon">
+              <mat-icon>grain</mat-icon>
+            </div>
+
+            <div class="seed-details-section-text">
+              <span class="seed-details-section-title">
+                Masse et estimation du lot
+              </span>
+
+              <span class="seed-details-section-subtitle">
+                Masse, échantillonnage et estimation du nombre de graines
+              </span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <strong>Masse totale :</strong>
+            {{ seed.total_mass !== null && seed.total_mass !== undefined ? seed.total_mass + ' g' : 'Non renseignée' }}
+          </div>
+
+          <div class="info-row">
+            <strong>Nombre de graines échantillonnées :</strong>
+            {{ seed.sample_count || 'Non renseigné' }}
+          </div>
+
+          <div class="info-row">
+            <strong>Masse des graines échantillonnées :</strong>
+            {{ seed.sample_mass !== null && seed.sample_mass !== undefined ? seed.sample_mass + ' g' : 'Non renseignée' }}
+          </div>
+
+          <div class="info-row">
+            <strong>Nombre total de graines calculé :</strong>
+            {{ seed.total_count || 'Non renseigné' }}
+          </div>
+        </div>
+
+        <div class="seed-details-info-card">
+          <div class="seed-details-section-header">
+            <div class="seed-details-section-icon">
+              <mat-icon>photo_camera</mat-icon>
+            </div>
+
+            <div class="seed-details-section-text">
+              <span class="seed-details-section-title">
+                Médias et informations complémentaires
+              </span>
+
+              <span class="seed-details-section-subtitle">
+                Disponibilité photo et remarques générales
+              </span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <strong>Photo disponible :</strong>
+            {{ seed.has_photo ? 'Oui' : 'Non' }}
+          </div>
+
+          <div class="info-row">
+            <strong>Remarques :</strong>
+            {{ seed.remarks || 'Non renseigné' }}
+          </div>
+        </div>
+
+        <div
+          class="seed-details-info-card seed-details-media-block"
+          *ngIf="mediaFiles?.length > 0"
+        >
+          <div class="seed-details-section-header">
+            <div class="seed-details-section-icon">
+              <mat-icon>collections</mat-icon>
+            </div>
+
+            <div class="seed-details-section-text">
+              <span class="seed-details-section-title">
+                Photo(s)
+              </span>
+
+              <span class="seed-details-section-subtitle">
+                Galerie des médias associés à la semence
+              </span>
+            </div>
+          </div>
+
+          <div class="media-gallery">
+            <div *ngFor="let media of mediaFiles" class="media-item position-relative">
+              <img
+                *ngIf="media.type === 'file'"
+                [src]="cfg.getBackendUrl() + media.url"
+                alt="{{ media.title }}"
+                class="media-preview"
+                (click)="openLightbox(cfg.getBackendUrl() + media.url)"
+              />
+
+              <img
+                *ngIf="media.type === 'url'"
+                [src]="media.url"
+                (click)="openLightbox(media.url)"
+                alt="{{ media.title }}"
+                class="media-preview"
+              />
+
+              <a *ngIf="media.type === 'url'" [href]="media.url" target="_blank">
+                Ouvrir dans un nouvel onglet
+              </a>
+
+              <button
+                matTooltip="Supprimer la photo"
+                class="btn-delete-media"
+                (click)="deleteMedia(media.id_media)"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="lightbox-backdrop" *ngIf="lightboxVisible" (click)="closeLightbox()">
