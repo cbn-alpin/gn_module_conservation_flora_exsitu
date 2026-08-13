@@ -94,7 +94,7 @@
 
 .culture-material-banner {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
   gap: 10px;
@@ -139,28 +139,47 @@
   line-height: 18px;
 }
 
+
+/* Même hauteur et même centrage que le logo de Semi */
+.culture-material-banner-main-row {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 30px;
+}
+
+
+/* Même disposition que .semis-material-banner-text */
 .culture-material-banner-text {
   display: flex;
   align-items: baseline;
-  justify-content: center;
-
-  width: 100%;
 
   gap: 9px;
+
+  white-space: nowrap;
 }
 
+
+/* Même typographie que Semi, avec la couleur Culture */
 .culture-material-banner-label {
   color: #7b6a64;
 
   font-size: 12px;
   font-weight: 600;
+
+  white-space: nowrap;
 }
 
+
+/* Même typographie que Semi, avec la couleur Culture */
 .culture-material-banner-value {
   color: #4e342e;
 
   font-size: 15px;
   font-weight: 850;
+
+  white-space: nowrap;
 }
 
 .culture-form {
@@ -629,7 +648,7 @@ textarea {
   display: flex;
   flex-direction: column;
 
-  width: 100%;
+  width: 246px;
   gap: 5px;
 }
 
@@ -649,8 +668,8 @@ textarea {
 .culture-associated-source {
   display: grid;
   grid-template-columns:
-    235px
-    minmax(0, 1fr);
+    205px
+    120px;
 
   align-items: center;
 
@@ -665,6 +684,8 @@ textarea {
 
   font-size: 12px;
   font-weight: 600;
+
+  white-space: nowrap;
 }
 
 
@@ -679,8 +700,8 @@ textarea {
 
 /* Listes d'origine en création directe */
 .culture-associated-source-select {
-  width: 100%;
-  max-width: 240px;
+  width: 120px;
+  max-width: 120px;
   margin: 0;
 }
 
@@ -688,7 +709,7 @@ textarea {
 :host ::ng-deep
 .culture-associated-source-select
 .mat-mdc-text-field-wrapper {
-  height: 36px;
+  height: 30px;
 
   background-color: #ffffff;
 }
@@ -697,10 +718,12 @@ textarea {
 :host ::ng-deep
 .culture-associated-source-select
 .mat-mdc-form-field-infix {
-  min-height: 36px;
+  width: auto;
+  min-width: 0;
+  min-height: 30px;
 
-  padding-top: 7px;
-  padding-bottom: 7px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 
