@@ -170,10 +170,149 @@
   font-weight: 850;
 }
 
-
 .stock-fields-content {
   padding: 16px 20px 0;
 }
+
+
+/* =========================================================
+   SECTIONS DU FORMULAIRE
+   ========================================================= */
+
+.stock-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 10px;
+  margin-bottom: 6px;
+  padding: 7px 4px 8px;
+
+  background: transparent;
+
+  border-left: none;
+  border-bottom: 1px solid #c5d0d5;
+  border-radius: 0;
+}
+
+
+.stock-section-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #607d8b;
+  border-radius: 2px;
+}
+
+
+.stock-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+
+  background-color: #eef2f4;
+
+  border: 1px solid #c5d0d5;
+  border-radius: 7px;
+}
+
+
+.stock-section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #607d8b;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.stock-section-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0;
+  min-width: 0;
+}
+
+
+.stock-section-title {
+  color: #344955;
+
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.1px;
+}
+
+
+.stock-section-subtitle {
+  margin-top: 1px;
+
+  color: #657982;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   ESPACEMENT DES CHAMPS
+   ========================================================= */
+
+.stock-fields-content > .row.row-0 {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  margin: 10px 0 0 !important;
+}
+
+
+.stock-fields-content > .row.row-0 > .col {
+  flex: 1 1 100%;
+
+  max-width: 100%;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+.stock-fields-content > .row.row-0 > .col-6 {
+  flex: 0 0 calc(50% - 8px);
+
+  max-width: calc(50% - 8px);
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+.stock-fields-content > .row.row-0 > .col-4 {
+  flex: 0 0 calc((100% - 32px) / 3);
+
+  max-width: calc((100% - 32px) / 3);
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+.stock-fields-content > mat-card.mt-3 {
+  margin: 10px 0 0 !important;
+}
+
 
 .stock-form-actions {
   position: sticky;

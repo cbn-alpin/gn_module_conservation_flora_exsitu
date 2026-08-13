@@ -167,12 +167,135 @@
   font-weight: 600;
 }
 
-
 .seed-material-banner-value {
   color: #684b00;
 
   font-size: 15px;
   font-weight: 850;
+}
+
+
+/* =========================================================
+   SECTIONS DU FORMULAIRE
+   ========================================================= */
+
+.seed-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 10px;
+  margin-right: 14px;
+  margin-bottom: 6px;
+  margin-left: 14px;
+  padding: 7px 4px 8px;
+
+  background: transparent;
+
+  border-left: none;
+  border-bottom: 1px solid #e4d28f;
+  border-radius: 0;
+}
+
+
+.seed-section-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #c89500;
+  border-radius: 2px;
+}
+
+
+.seed-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+
+  background-color: #fff6d8;
+
+  border: 1px solid #e4d28f;
+  border-radius: 7px;
+}
+
+
+.seed-section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #c89500;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.seed-section-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0;
+  min-width: 0;
+}
+
+
+.seed-section-title {
+  color: #684b00;
+
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.1px;
+}
+
+
+.seed-section-subtitle {
+  margin-top: 1px;
+
+  color: #8a7750;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   ESPACEMENT DES CHAMPS
+   ========================================================= */
+
+.seed-form-content > .row.row-0 {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  margin: 10px 14px 0 !important;
+}
+
+
+.seed-form-content > .row.row-0 > .col,
+.seed-form-content > .row.row-0 > .col-6 {
+  flex: 1 1 0;
+
+  max-width: none;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+.seed-form-content > mat-card.mt-3 {
+  margin: 10px 14px 0 !important;
 }
 
 

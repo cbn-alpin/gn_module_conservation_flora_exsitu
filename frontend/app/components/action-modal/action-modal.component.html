@@ -56,6 +56,22 @@
 
     <div class="stock-fields-content">
 
+      <div class="stock-section-header">
+        <div class="stock-section-icon">
+          <mat-icon>archive</mat-icon>
+        </div>
+
+        <div class="stock-section-text">
+          <span class="stock-section-title">
+            Action et période de stockage
+          </span>
+
+          <span class="stock-section-subtitle">
+            Type d'action, responsable, séchage et période associée
+          </span>
+        </div>
+      </div>
+
       <div class="row row-0 mr-3 mt-2">
       <div class="col-6 padding-sm">
         <label> Type d'action *</label>
@@ -111,6 +127,22 @@
           [parentFormControl]="actionForm.controls.date_end"
         ></pnx-date>
       </div>
+    </div>
+  </div>
+
+  <div class="stock-section-header">
+    <div class="stock-section-icon">
+      <mat-icon>swap_horiz</mat-icon>
+    </div>
+
+    <div class="stock-section-text">
+      <span class="stock-section-title">
+        Déstockage et destination
+      </span>
+
+      <span class="stock-section-subtitle">
+        Type de déstockage, destination, quantité et précision
+      </span>
     </div>
   </div>
 
@@ -174,6 +206,22 @@
     </div>
   </div>
 
+  <div class="stock-section-header">
+    <div class="stock-section-icon">
+      <mat-icon>opacity</mat-icon>
+    </div>
+
+    <div class="stock-section-text">
+      <span class="stock-section-title">
+        Contrôle de l'humidité
+      </span>
+
+      <span class="stock-section-subtitle">
+        Évaluation, appareil utilisé et mesure précise
+      </span>
+    </div>
+  </div>
+
   <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
       <label>Evaluation de l'humidité</label>
@@ -205,6 +253,22 @@
           type="number"
           [formControl]="actionForm.controls.humidity_rate"
         />
+    </div>
+  </div>
+
+  <div class="stock-section-header">
+    <div class="stock-section-icon">
+      <mat-icon>description</mat-icon>
+    </div>
+
+    <div class="stock-section-text">
+      <span class="stock-section-title">
+        Informations complémentaires
+      </span>
+
+      <span class="stock-section-subtitle">
+        Remarques et données complémentaires
+      </span>
     </div>
   </div>
 

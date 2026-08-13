@@ -32,7 +32,23 @@
     class="wrapper material-form-content"
   >
 
-    <div class="row row-0 mr-3 mt-2">
+    <div class="material-section-header">
+      <div class="material-section-icon">
+        <mat-icon>assignment</mat-icon>
+      </div>
+
+      <div class="material-section-text">
+        <span class="material-section-title">
+          Identification du matériel récolté
+        </span>
+
+        <span class="material-section-subtitle">
+          Référence, taxon et caractéristiques du matériel
+        </span>
+      </div>
+    </div>
+
+    <div class="row row-0 material-form-row">
       <div class="col padding-sm">
         <label>Numéro de récolte *</label>
         <input
@@ -44,7 +60,7 @@
           Ce code de matériel existe déjà. Veuillez en choisir un autre.
         </div>
       </div>
-      <div class="col-6 padding-sm mt-2">
+      <div class="col-6 padding-sm">
         <div [formGroup]="materialForm">
           <pnx-taxonomy
             label="Taxon (nom cité)"
@@ -87,7 +103,7 @@
       </div>
   </div>
 
-  <div class="row row-0 mr-3 mt-2">
+  <div class="row row-0 material-form-row">
       <div class="col padding-sm">
           <label> Matériel végétal récolté *</label>
           <pnx-nomenclature
@@ -112,7 +128,7 @@
       </div>
   </div>
 
-  <div class="row row-0 mr-3 mt-2">
+  <div class="row row-0 material-form-row">
     <div class="col-6 padding-sm">
       <label>Numéro de récolte parent</label>
       <input type="text" 
@@ -135,7 +151,23 @@
     </div>
   </div>
 
-  <div class="row row-0 mr-3 mt-2">
+  <div class="material-section-header">
+    <div class="material-section-icon">
+      <mat-icon>local_florist</mat-icon>
+    </div>
+
+    <div class="material-section-text">
+      <span class="material-section-title">
+        Échantillonnage et phénologie
+      </span>
+
+      <span class="material-section-subtitle">
+        Méthode de prélèvement, individus échantillonnés et état phénologique
+      </span>
+    </div>
+  </div>
+
+  <div class="row row-0 material-form-row">
     <div class="col padding-sm">
       <label> Mode d’échantillonnage</label>
       <pnx-nomenclature
@@ -157,7 +189,7 @@
     </div>
   </div>
 
-  <div class="row row-0 mr-3 mt-2">
+  <div class="row row-0 material-form-row">
     <div class="col-6 padding-sm">
         <label> Phénologie 1 *</label>
         <pnx-nomenclature
@@ -182,7 +214,23 @@
     </div>
   </div>
 
-  <div class="row row-0 mt-3 mr-3">
+  <div class="material-section-header">
+    <div class="material-section-icon">
+      <mat-icon>description</mat-icon>
+    </div>
+
+    <div class="material-section-text">
+      <span class="material-section-title">
+        Informations complémentaires
+      </span>
+
+      <span class="material-section-subtitle">
+        Risques, prélèvements, remarques et données complémentaires
+      </span>
+    </div>
+  </div>
+
+  <div class="row row-0 material-form-row">
     <div class="col padding-sm">
       <textarea
           class="form-control form-control-sm"
@@ -193,7 +241,7 @@
   </div>
 
 
-  <div class="row row-0 mr-3 mt-2">
+  <div class="row row-0 material-form-row">
       <div class="col-6 padding-sm">
         <section class="check-section">
           <mat-checkbox
