@@ -291,9 +291,40 @@ export class MaterialModalComponent implements OnInit {
     }
     
     submetData(){
-        let finalForm = this.formatDataFormHarvest();            
-        this.materialFormService.submitOccurrence(finalForm);
-        this.close()
+        const currentCode =
+          this.materialForm.get('code_material')?.value ||
+          this.initialFormState?.code_material ||
+          '';
+
+        const isEdit =
+          !!this.materialFormService
+            .occurrence
+            .getValue();
+
+        this.dialogService
+          .confirmDialog({
+            message: '',
+            icon: 'spa',
+            variant: 'material-save',
+            entityLabel: isEdit
+              ? 'les modifications du matériel récolté'
+              : 'le matériel récolté',
+            entityCode: currentCode || undefined,
+            disableClose: false
+          })
+          .subscribe((yes) => {
+            if (!yes) {
+              return;
+            }
+
+            const finalForm =
+              this.formatDataFormHarvest();
+
+            this.materialFormService
+              .submitOccurrence(finalForm);
+
+            this.close()
+          });
     }
 
     private formatDataFormHarvest() {

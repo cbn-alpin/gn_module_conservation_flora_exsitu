@@ -192,35 +192,57 @@ export class SeddDescriptionComponent implements OnInit {
     }
 
     submetData(){
-        const formData = this.formatDataForm();  
-        if(!this.edit){
-            this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
-                (response)=>{
-                    this.uploadSeedMedia(response.id_seed);
-                    this._commonService.translateToaster('info', 'Semence ajoutée avec succès');
-                    this.close()
-                },
-                (error) => {
-                    this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de la semence');
-                }
-            )
-        }else{
-            this.dataService.updateSeed(this.data.seedData.id_seed, formData).subscribe(
-                ()=>{
-                  if (this.seedForm.value.has_photo) {
-                    this.uploadSeedMedia(this.data.seedData.id_seed);
-                    this._commonService.translateToaster('info', 'Semence modifiée avec succès');
-                  } else {
-                    this._commonService.translateToaster('info', 'Semence modifiée avec succès');
-                    this.close();
-                  }
-                },
-                (error) => {
-                    this._commonService.translateToaster('warning', 'Erreur lors de la modification de la semence');
-                }
-            )
-        }
-        
+        const currentCode =
+          this.codeMaterial || '';
+
+        this.dialogService
+          .confirmDialog({
+            message: '',
+            icon: 'description',
+            variant: 'seed-save',
+            entityLabel: this.edit
+              ? 'les modifications de la semence du matériel'
+              : 'la semence du matériel',
+            entityCode: currentCode || undefined,
+            disableClose: false
+          })
+          .subscribe((yes) => {
+            if (!yes) {
+              return;
+            }
+
+            const formData =
+              this.formatDataForm();
+
+            if(!this.edit){
+                this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
+                    (response)=>{
+                        this.uploadSeedMedia(response.id_seed);
+                        this._commonService.translateToaster('info', 'Semence ajoutée avec succès');
+                        this.close()
+                    },
+                    (error) => {
+                        this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de la semence');
+                    }
+                )
+            }else{
+                this.dataService.updateSeed(this.data.seedData.id_seed, formData).subscribe(
+                    ()=>{
+                      if (this.seedForm.value.has_photo) {
+                        this.uploadSeedMedia(this.data.seedData.id_seed);
+                        this._commonService.translateToaster('info', 'Semence modifiée avec succès');
+                        this.close();
+                      } else {
+                        this._commonService.translateToaster('info', 'Semence modifiée avec succès');
+                        this.close();
+                      }
+                    },
+                    (error) => {
+                        this._commonService.translateToaster('warning', 'Erreur lors de la modification de la semence');
+                    }
+                )
+            }
+          });
     }
 
     private formatDataForm() {

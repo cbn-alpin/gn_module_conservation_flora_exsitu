@@ -363,34 +363,82 @@ export class ViabilityComponent implements OnInit {
   onEdit(): void {
   }
   onSubmit(): void {
-    const finalForm = this.formatDataFormHarvest();
-  
     if (!this.idMaterial) {
       console.error("idMaterial est manquant !");
       return;
     }
-  
-    if (this.data?.edit && this.data?.test?.id_test) {
-      this.api.updateTest(this.idMaterial, this.data.test.id_test, finalForm).subscribe({
-        next: (res) => {
-          this._commonService.translateToaster('success', 'Test mis à jour avec succès');
-          this.dialogRef.close(res);
-        },
-        error: (err) => {
-          console.error("Erreur lors de la mise à jour du test :", err);
+
+    const currentCode =
+      this.germinationForm.get('code')?.value
+      || '';
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'check_circle',
+        variant: 'viability-save',
+        entityLabel: this.data?.edit
+          ? 'les modifications du test de viabilité'
+          : 'le test de viabilité',
+        entityCode: currentCode || undefined,
+        disableClose: false
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        const finalForm =
+          this.formatDataFormHarvest();
+
+        if (
+          this.data?.edit &&
+          this.data?.test?.id_test
+        ) {
+          this.api
+            .updateTest(
+              this.idMaterial,
+              this.data.test.id_test,
+              finalForm
+            )
+            .subscribe({
+              next: (res) => {
+                this._commonService.translateToaster(
+                  'success',
+                  'Test mis à jour avec succès'
+                );
+                this.dialogRef.close(res);
+              },
+              error: (err) => {
+                console.error(
+                  "Erreur lors de la mise à jour du test :",
+                  err
+                );
+              }
+            });
+        } else {
+          this.api
+            .createTest(
+              finalForm,
+              this.idMaterial
+            )
+            .subscribe({
+              next: (res) => {
+                this._commonService.translateToaster(
+                  'info',
+                  'Test créé avec succès'
+                );
+                this.dialogRef.close(res);
+              },
+              error: (err) => {
+                console.error(
+                  "Erreur lors de la création du test :",
+                  err
+                );
+              }
+            });
         }
       });
-    } else {
-      this.api.createTest(finalForm, this.idMaterial).subscribe({
-        next: (res) => {
-          this._commonService.translateToaster('info', 'Test créé avec succès');
-          this.dialogRef.close(res);
-        },
-        error: (err) => {
-          console.error("Erreur lors de la création du test :", err);
-        }
-      });
-    }
   }
   
 }

@@ -1000,9 +1000,14 @@ export class SemisComponent implements OnInit {
 
         this.dialogService
           .confirmDialog({
-            message: this.modalData?.edit
-              ? 'Étes vous certain de vouloir modifier ce semis ?'
-              : 'Étes vous certain de vouloir enregistrer ce semis ?'
+            message: '',
+            icon: 'grain',
+            variant: 'semis-save',
+            entityLabel: this.modalData?.edit
+              ? 'les modifications du semis'
+              : 'le semis',
+            entityCode: currentCode || undefined,
+            disableClose: false
           })
           .subscribe((yes) => {
             if (!yes) {

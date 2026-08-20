@@ -4,6 +4,7 @@
         dialogData?.variant === 'semis'
         || dialogData?.variant === 'semis-reset'
         || dialogData?.variant === 'semis-exit'
+        || dialogData?.variant === 'semis-save'
     "
     [class.semis-reset-dialog]="dialogData?.variant === 'semis-reset'"
     [class.semis-exit-dialog]="dialogData?.variant === 'semis-exit'"
@@ -12,54 +13,65 @@
         dialogData?.variant === 'culture'
         || dialogData?.variant === 'culture-reset'
         || dialogData?.variant === 'culture-exit'
+        || dialogData?.variant === 'culture-save'
     "
 
     [class.viability-confirm-dialog]="
         dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
+        || dialogData?.variant === 'viability-save'
     "
 
     [class.germination-confirm-dialog]="
         dialogData?.variant === 'germination'
         || dialogData?.variant === 'germination-reset'
         || dialogData?.variant === 'germination-exit'
+        || dialogData?.variant === 'germination-save'
     "
 
     [class.stock-confirm-dialog]="
         dialogData?.variant === 'stock'
         || dialogData?.variant === 'stock-reset'
         || dialogData?.variant === 'stock-exit'
+        || dialogData?.variant === 'stock-save'
     "
 
     [class.material-confirm-dialog]="
         dialogData?.variant === 'material'
         || dialogData?.variant === 'material-reset'
         || dialogData?.variant === 'material-exit'
+        || dialogData?.variant === 'material-save'
     "
 
     [class.seed-confirm-dialog]="
         dialogData?.variant === 'seed'
         || dialogData?.variant === 'seed-reset'
         || dialogData?.variant === 'seed-exit'
+        || dialogData?.variant === 'seed-save'
     "
 
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
+        || dialogData?.variant === 'viability-save'
         || dialogData?.variant === 'germination'
         || dialogData?.variant === 'germination-reset'
         || dialogData?.variant === 'germination-exit'
+        || dialogData?.variant === 'germination-save'
         || dialogData?.variant === 'stock'
         || dialogData?.variant === 'stock-reset'
         || dialogData?.variant === 'stock-exit'
+        || dialogData?.variant === 'stock-save'
         || dialogData?.variant === 'material'
         || dialogData?.variant === 'material-reset'
         || dialogData?.variant === 'material-exit'
+        || dialogData?.variant === 'material-save'
         || dialogData?.variant === 'seed'
         || dialogData?.variant === 'seed-reset'
         || dialogData?.variant === 'seed-exit'
+        || dialogData?.variant === 'seed-save'
     "
 
     [class.workflow-reset-dialog]="
@@ -78,6 +90,16 @@
         || dialogData?.variant === 'stock-exit'
         || dialogData?.variant === 'material-exit'
         || dialogData?.variant === 'seed-exit'
+    "
+
+    [class.workflow-save-dialog]="
+        dialogData?.variant === 'semis-save'
+        || dialogData?.variant === 'culture-save'
+        || dialogData?.variant === 'viability-save'
+        || dialogData?.variant === 'germination-save'
+        || dialogData?.variant === 'stock-save'
+        || dialogData?.variant === 'material-save'
+        || dialogData?.variant === 'seed-save'
     "
 >
     <div
@@ -170,6 +192,29 @@
             Êtes-vous certain de vouloir
             <span class="reset-word">réinitialiser</span>
             {{ dialogData?.entityLabel }}
+            ?
+        </p>
+
+        <p
+            *ngIf="
+                dialogData?.variant === 'semis-save'
+                || dialogData?.variant === 'culture-save'
+                || dialogData?.variant === 'viability-save'
+                || dialogData?.variant === 'germination-save'
+                || dialogData?.variant === 'stock-save'
+                || dialogData?.variant === 'material-save'
+                || dialogData?.variant === 'seed-save'
+            "
+        >
+            Êtes-vous certain de vouloir
+            <span class="save-word">enregistrer</span>
+            {{ dialogData?.entityLabel }}
+            <strong
+                *ngIf="dialogData?.entityCode"
+                class="entity-code"
+            >
+                {{ dialogData?.entityCode }}
+            </strong>
             ?
         </p>
 

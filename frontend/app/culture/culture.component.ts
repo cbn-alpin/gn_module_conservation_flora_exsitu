@@ -877,11 +877,20 @@ export class CultureComponent implements OnInit {
       return;
     }
 
+    const currentCode =
+      this.cultureForm.get('code_culture')?.value
+      || '';
+
     this.dialogService
       .confirmDialog({
-        message: this.modalData?.edit
-          ? 'Étes vous certain de vouloir modifier cette fiche de culture ?'
-          : 'Étes vous certain de vouloir enregistrer cette fiche de culture ?'
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-save',
+        entityLabel: this.modalData?.edit
+          ? 'les modifications de la culture'
+          : 'la culture',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {

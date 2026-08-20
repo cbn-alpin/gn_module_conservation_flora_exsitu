@@ -693,3 +693,29 @@
 
     background-color: #d21919 !important;
 }
+
+
+/* =========================================================
+   CONFIRMATIONS POUR ENREGISTRER - WORKFLOW
+   ========================================================= */
+
+.workflow-save-dialog .save-word {
+    color: #4caf50;
+    font-weight: 700;
+}
+
+
+.workflow-save-dialog .dialog-close-button {
+    color: #4caf50;
+
+    background-color: #f3fbf4;
+
+    border-color: #a5d6a7;
+}
+
+
+.workflow-save-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #4caf50 !important;
+}

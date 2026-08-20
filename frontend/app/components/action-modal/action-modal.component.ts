@@ -338,56 +338,77 @@ export class ActionModalComponent implements OnInit {
       
 
   submetData(){
-    let finalForm = this.formatDataForm();     
+    const currentCode =
+      this.codeMaterial || '';
 
-    if(this.edit){
-      this.api.upAction(
-        this.data.data.id_material,
-        this.data.data.id_storage,
-        finalForm
-      ).subscribe({
-        next: ()=>{
-          this._commonService.translateToaster(
-            'info',
-            'Action modifiée avec succès'
-          );
-
-          this.dialogRef.close(true);
-        },
-
-        error: (err)=>{
-          console.log(err);
-
-          this._commonService.translateToaster(
-            'warning',
-            'Erreur lors de la modification de l\'action'
-          );
-        }
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'store',
+        variant: 'stock-save',
+        entityLabel: this.edit
+          ? 'les modifications de l’action de stockage du matériel'
+          : 'l’action de stockage du matériel',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
-    }else{
-      this.api.addAction(
-        this.data.data.id_material,
-        finalForm
-      ).subscribe(
-        (response)=>{
-          this._commonService.translateToaster(
-            'info',
-            'Action ajoutée avec succès'
-          );
-
-          this.dialogRef.close(true);
-        },
-
-        (error) => {
-          console.log(error);
-
-          this._commonService.translateToaster(
-            'warning',
-            'Erreur lors de l\'ajout de l\'action'
-          );
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
         }
-      )  
-    }
+
+        let finalForm =
+          this.formatDataForm();
+
+        if(this.edit){
+          this.api.upAction(
+            this.data.data.id_material,
+            this.data.data.id_storage,
+            finalForm
+          ).subscribe({
+            next: ()=>{
+              this._commonService.translateToaster(
+                'info',
+                'Action modifiée avec succès'
+              );
+
+              this.dialogRef.close(true);
+            },
+
+            error: (err)=>{
+              console.log(err);
+
+              this._commonService.translateToaster(
+                'warning',
+                'Erreur lors de la modification de l\'action'
+              );
+            }
+          })
+        }else{
+          this.api.addAction(
+            this.data.data.id_material,
+            finalForm
+          ).subscribe(
+            (response)=>{
+              this._commonService.translateToaster(
+                'info',
+                'Action ajoutée avec succès'
+              );
+
+              this.dialogRef.close(true);
+            },
+
+            (error) => {
+              console.log(error);
+
+              this._commonService.translateToaster(
+                'warning',
+                'Erreur lors de l\'ajout de l\'action'
+              );
+            }
+          )  
+        }
+      });
   }
 
 

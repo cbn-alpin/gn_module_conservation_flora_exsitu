@@ -8,24 +8,31 @@ export interface ConfirmDialogData {
         | 'semis'
         | 'semis-reset'
         | 'semis-exit'
+        | 'semis-save'
         | 'culture'
         | 'culture-reset'
         | 'culture-exit'
+        | 'culture-save'
         | 'viability'
         | 'viability-reset'
         | 'viability-exit'
+        | 'viability-save'
         | 'germination'
         | 'germination-reset'
         | 'germination-exit'
+        | 'germination-save'
         | 'stock'
         | 'stock-reset'
         | 'stock-exit'
+        | 'stock-save'
         | 'material'
         | 'material-reset'
         | 'material-exit'
+        | 'material-save'
         | 'seed'
         | 'seed-reset'
-        | 'seed-exit';
+        | 'seed-exit'
+        | 'seed-save';
     disableClose?: boolean;
     entityCode?: string;
     entityLabel?: string;
