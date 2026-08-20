@@ -37,14 +37,8 @@
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef> Date </th>
           <td mat-cell *matCellDef="let element"> 
-            {{ element.date_start }}
+            {{ element.date_start | date:'dd/MM/yyyy' }}
           </td>
-        </ng-container>
-        <ng-container matColumnDef="actor">
-            <th mat-header-cell *matHeaderCellDef> Auteur de l'action</th>
-            <td mat-cell *matCellDef="let element"> 
-              {{ element.actor }}
-            </td>
         </ng-container>
         <ng-container matColumnDef="destination">
             <th mat-header-cell *matHeaderCellDef> Destination </th>

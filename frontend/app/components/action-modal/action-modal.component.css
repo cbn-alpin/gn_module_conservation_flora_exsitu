@@ -124,10 +124,10 @@
   align-items: center;
   justify-content: center;
 
-  flex-shrink: 0;
-
   width: 30px;
   height: 30px;
+
+  flex-shrink: 0;
 
   background-color: #ffffff;
 
@@ -147,35 +147,46 @@
 }
 
 
+/* Même géométrie que Culture */
 .stock-material-banner-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns:
+    max-content
+    190px;
+  grid-template-rows:
+    30px
+    minmax(30px, auto);
 
-  width: 380px;
-  gap: 6px;
+  width: 246px;
+
+  column-gap: 9px;
+  row-gap: 5px;
 }
 
 
+/* Même hauteur et même centrage vertical que Culture */
 .stock-material-banner-main-row {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: subgrid;
 
-  width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 1;
+
   height: 30px;
+
+  align-items: baseline;
+  align-content: center;
 }
 
 
 .stock-material-banner-text {
-  display: flex;
-  align-items: baseline;
-
-  gap: 9px;
-
-  white-space: nowrap;
+  display: contents;
 }
 
 
 .stock-material-banner-label {
+  grid-column: 1;
+
   color: #657982;
 
   font-size: 12px;
@@ -186,6 +197,8 @@
 
 
 .stock-material-banner-value {
+  grid-column: 2;
+
   color: #344955;
 
   font-size: 15px;
@@ -200,19 +213,16 @@
    ========================================================= */
 
 .stock-associated-place {
-  display: grid;
-  grid-template-columns:
-    180px
-    190px;
-
-  align-items: center;
-
-  min-height: 34px;
-  gap: 10px;
+  display: contents;
 }
 
 
 .stock-associated-place > span {
+  grid-column: 1;
+  grid-row: 2;
+
+  align-self: center;
+
   color: #657982;
 
   font-size: 12px;
@@ -223,6 +233,11 @@
 
 
 .stock-associated-place > strong {
+  grid-column: 2;
+  grid-row: 2;
+
+  align-self: center;
+
   color: #344955;
 
   font-size: 15px;
@@ -233,6 +248,11 @@
 
 
 .stock-associated-place-select {
+  grid-column: 2;
+  grid-row: 2;
+
+  align-self: center;
+
   width: 190px;
   max-width: 190px;
   margin: 0;
@@ -242,7 +262,7 @@
 :host ::ng-deep
 .stock-associated-place-select
 .mat-mdc-text-field-wrapper {
-  height: 34px;
+  height: 30px;
 
   background-color: #ffffff;
 }
@@ -253,10 +273,10 @@
 .mat-mdc-form-field-infix {
   width: auto;
   min-width: 0;
-  min-height: 34px;
+  min-height: 30px;
 
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 

@@ -165,6 +165,63 @@
           </div>
         </div>
 
+
+        <div class="seed-details-overview">
+
+          <div class="seed-details-overview-icon">
+            <mat-icon>grain</mat-icon>
+          </div>
+
+          <div class="seed-details-overview-title">
+            Vue d'ensemble de la semence
+          </div>
+
+          <div class="seed-details-overview-subtitle">
+            Résumé des principales informations du lot
+          </div>
+
+          <div class="seed-details-overview-values">
+
+            <div class="seed-details-overview-value">
+              <span>
+                Nombre de graines estimé
+              </span>
+
+              <strong>
+                {{ seed.total_count || '—' }}
+              </strong>
+            </div>
+
+            <div class="seed-details-overview-value">
+              <span>
+                Masse totale
+              </span>
+
+              <strong>
+                {{
+                  seed.total_mass !== null &&
+                  seed.total_mass !== undefined
+                    ? seed.total_mass + ' g'
+                    : '—'
+                }}
+              </strong>
+            </div>
+
+            <div class="seed-details-overview-value">
+              <span>
+                Photo disponible
+              </span>
+
+              <strong>
+                {{ seed.has_photo ? 'Oui' : 'Non' }}
+              </strong>
+            </div>
+
+          </div>
+
+        </div>
+
+
         <div
           class="seed-details-info-card seed-details-media-block"
           *ngIf="mediaFiles?.length > 0"

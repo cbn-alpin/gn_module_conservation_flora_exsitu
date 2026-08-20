@@ -43,7 +43,6 @@ export class ActionsStockComponent implements OnInit {
         'action_type',
         'quantity',
         'date',
-        'actor',
         'destination',
         'actions'
     ]; 
