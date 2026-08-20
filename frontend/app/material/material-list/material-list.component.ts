@@ -16,7 +16,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MaterialModalComponent } from '../../components/material-modal/material-modal.component';
 import { ConstantsService } from '../../services/constants.service';
-import { SeddDescriptionComponent } from '../../components/seed-description/seed-description.component';
 import { Router } from '@angular/router';
 import { ConfigService } from '../../services/config.service';
 
@@ -218,29 +217,6 @@ export class MaterialListComponent implements OnInit {
       });
     }
 
-
-    onAddOrEditSeed(materialId: number): void {
-      this.exsituFormService.setIdMaterial(materialId);
-      this.handleSeedByMaterial(
-        materialId,
-        seed => this.openDescriptionSeddModal(materialId, 'edit', seed),
-        () => this.openDescriptionSeddModal(materialId, 'create', null)
-      );
-    }
-     
-
-    openDescriptionSeddModal(id_material, mode, data): void {      
-      const dialogRef = this.dialog.open(SeddDescriptionComponent, {
-        width: '900px',
-        height: '90vh',
-        disableClose: true,
-        autoFocus: false,
-        data: { id: id_material, mode: mode, seedData: data }
-      });
-      dialogRef.afterClosed().subscribe(() => {
-        this.loadMaterials()
-      });
-    }
 
     goToStock(material: any) {
       const idMaterial = material.id_material

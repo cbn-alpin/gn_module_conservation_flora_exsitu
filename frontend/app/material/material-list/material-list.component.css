@@ -616,7 +616,7 @@
 }
 
 
-/* Menu Actions identique à Semis et Culture */
+/* Menu Actions identique à Semis */
 .actions-trigger-red {
   color: #f44336 !important;
 }
@@ -624,6 +624,30 @@
 
 .actions-trigger-red mat-icon {
   color: #f44336 !important;
+}
+
+
+.delete-action-red {
+  color: #f44336 !important;
+}
+
+
+.delete-action-red mat-icon {
+  color: #f44336 !important;
+}
+
+
+.seed-action,
+.seed-action mat-icon,
+.seed-action span {
+  color: #c89500 !important;
+}
+
+
+.stock-action,
+.stock-action mat-icon,
+.stock-action span {
+  color: #607d8b !important;
 }
 
 

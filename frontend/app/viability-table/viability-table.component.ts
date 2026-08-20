@@ -7,7 +7,6 @@ import { ViabilityComponent } from '../viability/viability.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
-import { ActionComponent } from '../action/action.component';
 
 import { ActivatedRoute } from '@angular/router';
 
@@ -227,29 +226,6 @@ import { ActivatedRoute } from '@angular/router';
        });
      }
    
-     onAddAction(element: any): void {
-      // console.log("test")
-       const idTest = element?.id_test ?? null;
-       const idMaterial = element?.id_material ?? null;
-   
-       const dialogRef = this.dialog.open(ActionComponent, {
-         width: '900px',
-         height: '90vh',
-         data: {
-           id_material: idMaterial,
-           id_test: idTest,
-          //  isGermination: false  ,
-          //  edit: true,
-          }
-       });
-   
-       dialogRef.afterClosed().subscribe(result => {
-         if (result) {
-           this.loadTests();
-         }
-       });
-     }
-   
      onEdit(element: any): void {
        const idTest = element.id_test;
        this.api.getTestWithLabelsById(idTest).subscribe({
@@ -287,6 +263,11 @@ import { ActivatedRoute } from '@angular/router';
        });
      }
    
+     onDetails(element: any): void {
+       this.onRowClick(element);
+     }
+
+
      onRowClick(row: any): void {
        const idTest = row.id_test;
        const idMaterial = this.exsituFormService.idMaterial;

@@ -6,7 +6,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { GerminationComponent } from '../germination/germination.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
-import { ActionComponent } from '../action/action.component';
 
 export interface Germination {
   numSemis: string;
@@ -236,26 +235,6 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onAddAction(element: any): void {
-    const idTest = element?.id_test ?? null;
-    const idMaterial = element?.id_material ?? null;
-
-    const dialogRef = this.dialog.open(ActionComponent, {
-      width: '900px',
-      height: '90vh',
-      data: {
-        id_material: idMaterial,
-        id_test: idTest
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loadTests();
-      }
-    });
-  }
-
   onEdit(element: any): void {
     const idTest = element.id_test;
     this.api.getTestWithLabelsById(idTest).subscribe({
@@ -350,6 +329,11 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
       idTest,
       'culture-table'
     ]);
+  }
+
+
+  onDetails(element: any): void {
+    this.onRowClick(element);
   }
 
 

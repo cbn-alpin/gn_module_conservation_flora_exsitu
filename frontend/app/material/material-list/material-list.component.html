@@ -106,38 +106,42 @@
               <mat-icon>edit</mat-icon>
               <span>Modifier</span>
             </button>
-            <button mat-menu-item 
+
+            <button mat-menu-item>
+              <mat-icon style="color: #FFA726;">visibility</mat-icon>
+              <span>Détails/Action</span>
+            </button>
+
+            <button
+              mat-menu-item
+              class="delete-action-red"
               [disabled]="element.has_seed_description || element.has_storage"
               (click)="deleteOccurrence(element)"
             >
-              <mat-icon color="warn">delete</mat-icon>
+              <mat-icon>delete</mat-icon>
               <span>Supprimer</span>
             </button>
-            <button mat-menu-item
-              *ngIf="constants.SEED_DESCRIPTION_CODES.includes(element.harvest_material_code) && element.taxons && element.taxons.length > 0"
-              (click)="onAddOrEditSeed(element.id_material)"
-            >
-              <mat-icon
-                [ngStyle]="{
-                  color: element.has_seed_description ? 'green' : '#FFA726'
-                }"
-              >description</mat-icon>
-              <span>Description</span>
-            </button>
-            <button mat-menu-item 
+
+            <button
+              mat-menu-item
+              class="seed-action"
               *ngIf="element.has_seed_description"
               (click)="goToSeedDetails(element)"
             >
-              <mat-icon>info</mat-icon>
+              <mat-icon>description</mat-icon>
               <span>Détails semence</span>
             </button>
-            <button mat-menu-item 
+
+            <button
+              mat-menu-item
+              class="stock-action"
               *ngIf="constants.STORABLE_MATERIAL_CODES.includes(element.harvest_material_code)"
               (click)="goToStock(element)"
             >
               <mat-icon>store</mat-icon>
               <span>Stocker</span>
             </button>
+
             <button
               mat-menu-item
               class="culture-action"

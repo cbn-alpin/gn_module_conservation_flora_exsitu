@@ -412,6 +412,16 @@
 }
 
 
+.delete-action-red {
+  color: #f44336 !important;
+}
+
+
+.delete-action-red mat-icon {
+  color: #f44336 !important;
+}
+
+
 .right-panel {
   padding-bottom: 20px;
 }
@@ -729,14 +739,6 @@ table tr.mat-row:hover {
   color: #f44336 !important;
 }
 
-
-::ng-deep .text-green {
-  color: green;
-}
-
-::ng-deep .text-red {
-  color: red;
-}
 
 .culture-action,
 .culture-action mat-icon,
