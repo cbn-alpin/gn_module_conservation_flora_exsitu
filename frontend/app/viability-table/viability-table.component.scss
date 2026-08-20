@@ -375,16 +375,33 @@
 
 :host ::ng-deep
 .viability-list-table .mat-column-actions {
+  position: relative;
   box-sizing: border-box;
 
   width: 64px;
   min-width: 64px;
   max-width: 64px;
 
-  padding-left: 8px !important;
-  padding-right: 8px !important;
+  padding: 0 !important;
 
-  text-align: center;
+  text-align: right;
+}
+
+
+:host ::ng-deep
+.viability-list-table .mat-column-actions .actions-trigger-red {
+  position: absolute;
+
+  top: 2px;
+  right: 2px;
+
+  width: 48px;
+  height: 48px;
+
+  margin: 0;
+  padding: 0;
+
+  --mdc-icon-button-state-layer-size: 48px;
 }
 
 
