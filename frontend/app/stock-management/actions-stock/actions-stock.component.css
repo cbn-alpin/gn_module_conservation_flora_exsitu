@@ -214,12 +214,14 @@
 
 :host ::ng-deep
 .stock-list-table .mat-column-actions {
-  width: 9%;
-  min-width: 9%;
-  max-width: 9%;
+  box-sizing: border-box;
 
-  padding-left: 0;
-  padding-right: 0;
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 
   text-align: center;
 }

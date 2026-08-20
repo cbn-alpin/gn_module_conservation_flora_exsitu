@@ -337,6 +337,13 @@ background-color: #ffffff;
   background: #e8f5e9;
 }
 
+
+:host ::ng-deep
+.semis-list-table .mat-mdc-row {
+  height: 52px;
+}
+
+
 :host ::ng-deep
 .semis-list-table .mat-mdc-header-cell {
   box-sizing: border-box;
@@ -449,7 +456,15 @@ background-color: #ffffff;
 /* Actions */
 :host ::ng-deep
 .semis-list-table .mat-column-actions {
-  width: 8%;
+  box-sizing: border-box;
+
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+
   text-align: center;
 }
 

@@ -637,12 +637,16 @@ table tr.mat-row {
 
 /* Alignement propre de la colonne Action dans Semi > Liste des actions */
 :host ::ng-deep .sowing-action-list-card .mat-column-actions {
-  width: 96px;
-  min-width: 96px;
-  max-width: 96px;
-  text-align: center !important;
+  box-sizing: border-box;
+
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+
   padding-left: 8px !important;
   padding-right: 8px !important;
+
+  text-align: center !important;
 }
 
 :host ::ng-deep .sowing-action-list-card th.mat-column-actions {
@@ -690,9 +694,9 @@ table tr.mat-row {
 }
 
 :host ::ng-deep .sowing-action-list-card .mat-column-actions {
-  width: 96px;
-  min-width: 96px;
-  max-width: 96px;
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
 }
 
 :host ::ng-deep .sowing-action-list-card .mat-sort-header-container {

@@ -375,7 +375,15 @@
 
 :host ::ng-deep
 .viability-list-table .mat-column-actions {
-  width: 10%;
+  box-sizing: border-box;
+
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+
   text-align: center;
 }
 
