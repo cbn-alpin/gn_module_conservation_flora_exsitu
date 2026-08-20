@@ -30,7 +30,6 @@
 
   </mat-card-header>
 
-
   <mat-card-content class="stock-form-content">
 
     <div class="stock-material-banner">
@@ -39,15 +38,64 @@
         <mat-icon>link</mat-icon>
       </div>
 
-      <div class="stock-material-banner-text">
+      <div class="stock-material-banner-content">
 
-        <span class="stock-material-banner-label">
-          N° du matériel récolté associé
-        </span>
+        <div class="stock-material-banner-main-row">
 
-        <strong class="stock-material-banner-value">
-          {{ codeMaterial || idMaterial || '-' }}
-        </strong>
+          <div class="stock-material-banner-text">
+
+            <span class="stock-material-banner-label">
+              N° du matériel récolté associé
+            </span>
+
+            <strong class="stock-material-banner-value">
+              {{ codeMaterial || idMaterial || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="stock-associated-place">
+
+          <span>
+            Lieu de stockage associé
+          </span>
+
+          <mat-form-field
+            *ngIf="!edit; else fixedStoragePlace"
+            appearance="outline"
+            class="stock-associated-place-select"
+          >
+
+            <mat-select
+              placeholder="Choisir"
+              aria-label="Lieu de stockage associé"
+              [formControl]="actionForm.controls.code_place"
+            >
+
+              <mat-option
+                *ngFor="let place of storagePlaces"
+                [value]="place.code"
+              >
+                {{ place.label }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <ng-template #fixedStoragePlace>
+
+            <strong>
+              {{ getStoragePlaceLabel(actionForm.controls.code_place.value) }}
+            </strong>
+
+          </ng-template>
+
+        </div>
 
       </div>
 
@@ -324,11 +372,9 @@
       <mat-icon>add</mat-icon>
       Ajouter et créer
     </button>
-
     <button
       mat-button
       class="save-button with-border"
-      [mat-dialog-close]="true"
       matTooltip="Enregistrer cette action"
       (click)="submetData()"
       [disabled]="

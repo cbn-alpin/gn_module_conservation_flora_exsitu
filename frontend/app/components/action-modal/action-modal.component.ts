@@ -43,6 +43,7 @@ export class ActionModalComponent implements OnInit {
     public currentModulePath: string
     idMaterial: number | null = null;
     public codeMaterial: string | null = null;
+    public storagePlaces: Array<{ code: string; label: string }> = [];
 
     public isInitialStorage = false;
 
@@ -81,6 +82,25 @@ export class ActionModalComponent implements OnInit {
         this.data?.data?.id_material ??
         this.exsituFormService.idMaterial;
 
+      this.storagePlaces = [
+        {
+          code: this.constants.PLACE_CODES.PRE_DRYING_ROOM,
+          label: 'Salle de pré-séchage'
+        },
+        {
+          code: this.constants.PLACE_CODES.DRYING_ROOM,
+          label: 'Salle de séchage'
+        },
+        {
+          code: this.constants.PLACE_CODES.COLD_ROOM,
+          label: 'Chambre froide'
+        },
+        {
+          code: this.constants.PLACE_CODES.FREEZER,
+          label: 'Congélateur'
+        }
+      ];
+
       this.loadAssociatedMaterialCode();
 
       this.initForm();
@@ -100,7 +120,23 @@ export class ActionModalComponent implements OnInit {
                 this.getDestockCode(id)
             }
         });
-        this.loadContext();
+
+        this.actionForm.controls['code_place'].valueChanges.subscribe(placeCode => {
+          if (placeCode) {
+            this.loadContext(placeCode);
+          } else {
+            this.context = null;
+            this.quantiteMaxDisponible = 0;
+            this.showInitialStockWarning = false;
+          }
+        });
+
+        const initialPlaceCode =
+          this.actionForm.controls['code_place'].value;
+
+        if (initialPlaceCode) {
+          this.loadContext(initialPlaceCode);
+        }
 
         setTimeout(() => {
           this.fillForm(this.data.data);
@@ -164,7 +200,7 @@ export class ActionModalComponent implements OnInit {
     initForm(){
         this.actionForm = this.fb.group({
             id_material: [this.data.data.id_material, Validators.required],
-            code_place: [this.data.data.placeCode, Validators.required],
+            code_place: [this.data.data.placeCode || null, Validators.required],
             date_start: [null, Validators.required],
             date_end: [null, Validators.required],
             id_actor: [[], Validators.required],
@@ -190,18 +226,55 @@ export class ActionModalComponent implements OnInit {
 
     }
 
-    loadContext() {      
-        this.api.getActionContextStorage(this.data.data.id_material, this.data.data.placeCode).subscribe((res) => {
+
+    loadContext(placeCode: string) {
+        this.api.getActionContextStorage(
+          this.data.data.id_material,
+          placeCode
+        ).subscribe((res) => {
           this.context = res;
-          const placeCode = this.data.data.placeCode;
-          const idPlace = this.getIdPlaceFromCode(placeCode);
-          this.quantiteMaxDisponible = res.quantities[idPlace] || 0; 
-          
-          if (this.edit && this.data.data.quantity) {
-            this.quantiteMaxDisponible += this.data.data.quantity;
+
+          const idPlace =
+            this.getIdPlaceFromCode(placeCode);
+
+          this.quantiteMaxDisponible =
+            idPlace
+              ? res.quantities[idPlace] || 0
+              : 0;
+
+          if (
+            this.edit &&
+            this.data.data.quantity
+          ) {
+            this.quantiteMaxDisponible +=
+              this.data.data.quantity;
+          }
+
+          const storageActionId =
+            this.actionForm.get(
+              'id_storage_action'
+            )?.value;
+
+          if (storageActionId) {
+            this.getCodesNomenclature(
+              storageActionId
+            );
           }
         });
     }
+
+
+    getStoragePlaceLabel(
+      code: string | null | undefined
+    ): string {
+      return (
+        this.storagePlaces.find(
+          (place) =>
+            place.code === code
+        )?.label || '-'
+      );
+    }
+
 
     getIdPlaceFromCode(code: string): number | null {
       const mapping: { [key: string]: number } = {
@@ -210,6 +283,7 @@ export class ActionModalComponent implements OnInit {
         [this.constants.PLACE_CODES.COLD_ROOM]: this.context?.place_mapping?.cf,
         [this.constants.PLACE_CODES.FREEZER]: this.context?.place_mapping?.cong,
       };
+
       return mapping[code] || null;
     }
     
@@ -267,29 +341,62 @@ export class ActionModalComponent implements OnInit {
     let finalForm = this.formatDataForm();     
 
     if(this.edit){
-      this.api.upAction(this.data.data.id_material, this.data.data.id_storage, finalForm).subscribe({
+      this.api.upAction(
+        this.data.data.id_material,
+        this.data.data.id_storage,
+        finalForm
+      ).subscribe({
         next: ()=>{
-          this._commonService.translateToaster('info', 'Action modifiée avec succès');
-        }, error: (err)=>{
-            console.log(err);
-            this._commonService.translateToaster('warning', 'Erreur lors de la modification de l\'action');
+          this._commonService.translateToaster(
+            'info',
+            'Action modifiée avec succès'
+          );
+
+          this.dialogRef.close(true);
+        },
+
+        error: (err)=>{
+          console.log(err);
+
+          this._commonService.translateToaster(
+            'warning',
+            'Erreur lors de la modification de l\'action'
+          );
         }
       })
     }else{
-      this.api.addAction(this.data.data.id_material, finalForm).subscribe(
+      this.api.addAction(
+        this.data.data.id_material,
+        finalForm
+      ).subscribe(
         (response)=>{
-            this._commonService.translateToaster('info', 'Action ajoutée avec succès');
+          this._commonService.translateToaster(
+            'info',
+            'Action ajoutée avec succès'
+          );
+
+          this.dialogRef.close(true);
         },
+
         (error) => {
-            console.log(error);
-            this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de l\'action');
+          console.log(error);
+
+          this._commonService.translateToaster(
+            'warning',
+            'Erreur lors de l\'ajout de l\'action'
+          );
         }
       )  
     }
   }
 
+
   private formatDataForm() {
     const finalForm = this.actionForm.value;        
+
+    if (this.edit) {
+      delete finalForm.code_place;
+    }
 
     const additionalFields = this.formsDefinition || [];
 

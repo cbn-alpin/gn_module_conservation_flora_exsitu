@@ -1,6 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionModalComponent } from '../components/action-modal/action-modal.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
@@ -8,6 +11,7 @@ import { DataService } from '../services/data.service';
 import { ConstantsService } from '../services/constants.service';
 import { StockManagementService } from './stock-management.service';
 import { Router } from '@angular/router';
+import { ActionsStockComponent } from './actions-stock/actions-stock.component';
 
 @Component({
   selector: 'cfe-stock-management',
@@ -18,6 +22,9 @@ export class StockManagementComponent implements OnInit {
     public idMaterial;
     totalInitialQuantity: number = 0;
     totalCurrentQuantity: number = 0;
+
+    @ViewChildren(ActionsStockComponent)
+    stockActionLists: QueryList<ActionsStockComponent>;
 
 
     constructor(
@@ -31,6 +38,7 @@ export class StockManagementComponent implements OnInit {
 
     ngOnInit(): void {
         this.idMaterial = this.exsituFormService.idMaterial;
+
         this.stockManagementService.totalInitialQuantity$.subscribe(qty => {
           this.totalInitialQuantity = qty;
         });
@@ -41,6 +49,31 @@ export class StockManagementComponent implements OnInit {
       
         this.getStockSummary();
     }
+
+
+    openActionModal(): void {
+        const dialogRef = this.dialog.open(ActionModalComponent, {
+          width: '900px',
+          height: '90vh',
+          disableClose: true,
+          autoFocus: false,
+          data: {
+            data: {
+              id_material: this.exsituFormService.idMaterial
+            },
+            edit: false
+          }
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+          this.stockActionLists?.forEach((list) => {
+            list.loadActions();
+          });
+
+          this.getStockSummary();
+        });
+    }
+
 
     onBackToMaterial(): void {
         const idHarvest = this.exsituFormService.idHarvest;
@@ -60,6 +93,7 @@ export class StockManagementComponent implements OnInit {
         ]);
     }
 
+
     getStockSummary() {
         this.api.getStockSummary(this.idMaterial).subscribe((res) => {
           const init = res['initial_storage'];
@@ -68,6 +102,5 @@ export class StockManagementComponent implements OnInit {
           this.stockManagementService.updateInitialQuantity(init);
           this.stockManagementService.updateCurrentQuantity(curr);
         });
-      }
-      
+    }
 }

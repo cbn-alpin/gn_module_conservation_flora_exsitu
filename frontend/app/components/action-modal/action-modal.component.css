@@ -99,7 +99,7 @@
 
 .stock-material-banner {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
   gap: 10px;
@@ -147,11 +147,31 @@
 }
 
 
+.stock-material-banner-content {
+  display: flex;
+  flex-direction: column;
+
+  width: 380px;
+  gap: 6px;
+}
+
+
+.stock-material-banner-main-row {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 30px;
+}
+
+
 .stock-material-banner-text {
   display: flex;
   align-items: baseline;
 
   gap: 9px;
+
+  white-space: nowrap;
 }
 
 
@@ -160,6 +180,8 @@
 
   font-size: 12px;
   font-weight: 600;
+
+  white-space: nowrap;
 }
 
 
@@ -168,7 +190,92 @@
 
   font-size: 15px;
   font-weight: 850;
+
+  white-space: nowrap;
 }
+
+
+/* =========================================================
+   LIEU DE STOCKAGE ASSOCIÉ
+   ========================================================= */
+
+.stock-associated-place {
+  display: grid;
+  grid-template-columns:
+    180px
+    190px;
+
+  align-items: center;
+
+  min-height: 34px;
+  gap: 10px;
+}
+
+
+.stock-associated-place > span {
+  color: #657982;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+.stock-associated-place > strong {
+  color: #344955;
+
+  font-size: 15px;
+  font-weight: 850;
+
+  white-space: nowrap;
+}
+
+
+.stock-associated-place-select {
+  width: 190px;
+  max-width: 190px;
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.stock-associated-place-select
+.mat-mdc-text-field-wrapper {
+  height: 34px;
+
+  background-color: #ffffff;
+}
+
+
+:host ::ng-deep
+.stock-associated-place-select
+.mat-mdc-form-field-infix {
+  width: auto;
+  min-width: 0;
+  min-height: 34px;
+
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+
+:host ::ng-deep
+.stock-associated-place-select
+.mat-mdc-select-value {
+  color: #344955;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+:host ::ng-deep
+.stock-associated-place-select
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
 
 .stock-fields-content {
   padding: 18px 20px 0;
