@@ -67,10 +67,17 @@
                 <mat-icon>edit</mat-icon>
                 <span>Modifier</span>
               </button>
-              <button mat-menu-item 
+
+              <button mat-menu-item>
+                <mat-icon style="color: #FFA726;">visibility</mat-icon>
+                <span>Détails/Action</span>
+              </button>
+
+              <button mat-menu-item
+                class="delete-action-red"
                 (click)="confirmDeleteAction(element)"
               >
-                <mat-icon color="warn">delete</mat-icon>
+                <mat-icon>delete</mat-icon>
                 <span>Supprimer</span>
               </button>
             </mat-menu>

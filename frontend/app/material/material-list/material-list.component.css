@@ -297,7 +297,7 @@
 
 :host ::ng-deep
 .material-list-table .mat-mdc-row {
-  height: 44px;
+  height: 52px;
 
   cursor: pointer;
 }

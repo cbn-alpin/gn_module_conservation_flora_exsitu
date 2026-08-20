@@ -131,7 +131,7 @@
 
 :host ::ng-deep
 .stock-list-table .mat-mdc-row {
-  height: 44px;
+  height: 52px;
 }
 
 
@@ -231,6 +231,16 @@
 
 
 .actions-trigger-red mat-icon {
+  color: #f44336 !important;
+}
+
+
+.delete-action-red {
+  color: #f44336 !important;
+}
+
+
+.delete-action-red mat-icon {
   color: #f44336 !important;
 }
 
