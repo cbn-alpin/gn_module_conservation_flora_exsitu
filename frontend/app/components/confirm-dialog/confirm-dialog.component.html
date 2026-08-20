@@ -1,19 +1,147 @@
-<div class="header">
-    <h2 mat-dialog-title>{{dialogData?.title}}</h2>
-    <button mat-icon-button [mat-dialog-close]="false">
+<div
+    class="confirm-dialog-shell"
+    [class.semis-confirm-dialog]="dialogData?.variant === 'semis'"
+    [class.culture-confirm-dialog]="dialogData?.variant === 'culture'"
+    [class.viability-confirm-dialog]="dialogData?.variant === 'viability'"
+    [class.germination-confirm-dialog]="dialogData?.variant === 'germination'"
+    [class.stock-confirm-dialog]="dialogData?.variant === 'stock'"
+    [class.material-confirm-dialog]="dialogData?.variant === 'material'"
+    [class.seed-confirm-dialog]="dialogData?.variant === 'seed'"
+    [class.workflow-confirm-dialog]="
+        dialogData?.variant === 'viability'
+        || dialogData?.variant === 'germination'
+        || dialogData?.variant === 'stock'
+        || dialogData?.variant === 'material'
+        || dialogData?.variant === 'seed'
+    "
+>
+    <div
+        *ngIf="dialogData?.icon"
+        class="confirm-dialog-hero-icon"
+    >
+        <mat-icon>{{ dialogData?.icon }}</mat-icon>
+    </div>
+
+    <button
+        mat-icon-button
+        class="dialog-close-button"
+        [mat-dialog-close]="false"
+        aria-label="Fermer"
+    >
         <mat-icon>close</mat-icon>
     </button>
-</div>
-  
-<div mat-dialog-content>
-    <p>{{dialogData?.message}}</p>
-</div>
-  
-<div mat-dialog-actions [align]="'end'">
-    <button mat-raised-button [mat-dialog-close]="false">
-        {{dialogData?.cancelCaption}}
-    </button>
-    <button mat-raised-button color="primary" [mat-dialog-close]="true">
-        {{dialogData?.confirmCaption}}
-    </button>
+
+    <div class="header">
+        <h2 mat-dialog-title>{{dialogData?.title}}</h2>
+    </div>
+
+    <div
+        mat-dialog-content
+        class="dialog-content"
+    >
+        <p *ngIf="dialogData?.variant === 'semis'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            le semis
+            <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'culture'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            la culture
+            <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'viability'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            le test de viabilité
+            <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'germination'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            le test de germination
+            <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <ng-container *ngIf="dialogData?.variant === 'stock'">
+            <p>
+                Êtes-vous certain de vouloir
+                <span class="danger-word">supprimer</span>
+                l’action de stockage
+                "<strong class="entity-code">{{ dialogData?.entityLabel }}</strong>"
+                du
+                <strong class="entity-code">
+                    {{ dialogData?.entityDate | date:'dd/MM/yyyy' }}
+                </strong>
+                ?
+            </p>
+
+            <p class="storage-location-line">
+                Lieu de stockage associé :
+                <strong class="entity-code">
+                    {{ dialogData?.storageLocation }}
+                </strong>
+            </p>
+        </ng-container>
+
+        <p *ngIf="dialogData?.variant === 'material'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            le matériel récolté
+            <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p
+            *ngIf="
+                dialogData?.variant === 'material'
+                && dialogData?.warningMessage
+            "
+            class="warning-message"
+        >
+            {{ dialogData?.warningMessage }}
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'seed'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            la semence du matériel
+            <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p *ngIf="!dialogData?.variant">
+            {{ dialogData?.message }}
+        </p>
+    </div>
+
+    <div
+        mat-dialog-actions
+        class="dialog-actions"
+    >
+        <button
+            mat-raised-button
+            class="cancel-button"
+            [mat-dialog-close]="false"
+        >
+            {{dialogData?.cancelCaption}}
+        </button>
+
+        <button
+            mat-raised-button
+            color="primary"
+            class="confirm-button"
+            [mat-dialog-close]="true"
+        >
+            {{dialogData?.confirmCaption}}
+        </button>
+    </div>
 </div>

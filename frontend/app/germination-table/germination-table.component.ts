@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { GerminationComponent } from '../germination/germination.component';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 export interface Germination {
   numSemis: string;
@@ -74,7 +75,8 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog,
     public exsituFormService: ExsituFormService,
     private api: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialogService: DialogService
   ) {}
 
   private syncPaginator(): void {
@@ -259,17 +261,36 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
   }
 
   onDelete(element: any): void {
-    const confirmed = confirm(`Voulez-vous vraiment supprimer le test "${element.code}" ?`);
-    if (!confirmed) return;
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'wb_sunny',
+        variant: 'germination',
+        entityCode: element.code,
+        disableClose: false
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
 
-    this.api.deleteTest(this.exsituFormService.idMaterial, element.id_test).subscribe({
-      next: () => {
-        this.loadTests();
-      },
-      error: (err) => {
-        console.error("Erreur lors de la suppression :", err);
-      }
-    });
+        this.api
+          .deleteTest(
+            this.exsituFormService.idMaterial,
+            element.id_test
+          )
+          .subscribe({
+            next: () => {
+              this.loadTests();
+            },
+            error: (err) => {
+              console.error(
+                'Erreur lors de la suppression :',
+                err
+              );
+            }
+          });
+      });
   }
 
   onCulture(element: any): void {

@@ -7,6 +7,7 @@ import { ViabilityComponent } from '../viability/viability.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 import { ActivatedRoute } from '@angular/router';
 
@@ -33,7 +34,8 @@ import { ActivatedRoute } from '@angular/router';
        private dialog: MatDialog,
        public exsituFormService: ExsituFormService,
        private api: DataService,
-       private route: ActivatedRoute,  
+       private route: ActivatedRoute,
+       private dialogService: DialogService
      ) {}
    
      dataSource = new MatTableDataSource<any>();
@@ -250,17 +252,36 @@ import { ActivatedRoute } from '@angular/router';
      }
    
      onDelete(element: any): void {
-       const confirmed = confirm(`Voulez-vous vraiment supprimer le test "${element.code}" ?`);
-       if (!confirmed) return;
-   
-       this.api.deleteTest(this.exsituFormService.idMaterial, element.id_test).subscribe({
-         next: () => {
-           this.loadTests();
-         },
-         error: (err) => {
-           console.error("Erreur lors de la suppression :", err);
-         }
-       });
+       this.dialogService
+         .confirmDialog({
+           message: '',
+           icon: 'check_circle',
+           variant: 'viability',
+           entityCode: element.code,
+           disableClose: false
+         })
+         .subscribe((yes) => {
+           if (!yes) {
+             return;
+           }
+
+           this.api
+             .deleteTest(
+               this.exsituFormService.idMaterial,
+               element.id_test
+             )
+             .subscribe({
+               next: () => {
+                 this.loadTests();
+               },
+               error: (err) => {
+                 console.error(
+                   'Erreur lors de la suppression :',
+                   err
+                 );
+               }
+             });
+         });
      }
    
      onDetails(element: any): void {

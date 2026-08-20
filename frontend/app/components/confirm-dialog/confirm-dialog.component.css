@@ -2,8 +2,591 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     margin-bottom: 16px;
 }
+
+
 .header > h2 {
     margin: 0;
+}
+
+
+.confirm-dialog-shell {
+    position: relative;
+}
+
+
+/* =========================================================
+   CONFIRMATION DE SUPPRESSION - SEMIS
+   ========================================================= */
+
+.semis-confirm-dialog {
+    padding-top: 20px;
+}
+
+
+.semis-confirm-dialog .confirm-dialog-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    margin: 0 auto 12px;
+
+    color: #2e7d32;
+
+    background-color: #ffffff;
+
+    border: 1px solid #c8e6c9;
+    border-radius: 50%;
+
+    box-shadow:
+        0 4px 12px rgba(46, 125, 50, 0.14);
+}
+
+
+.semis-confirm-dialog .confirm-dialog-hero-icon mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    color: #2e7d32;
+
+    font-size: 28px;
+    line-height: 28px;
+}
+
+
+.semis-confirm-dialog .header {
+    justify-content: center;
+
+    margin-bottom: 12px;
+}
+
+
+.semis-confirm-dialog .header > h2 {
+    width: 100%;
+
+    padding: 0 56px;
+
+    color: #1b5e20;
+
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+
+.semis-confirm-dialog .dialog-close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px !important;
+    height: 40px !important;
+
+    margin: 0;
+    padding: 8px !important;
+
+    color: #f44336;
+
+    background-color: #fff5f4;
+
+    border: 1px solid #ffcdd2;
+    border-radius: 50%;
+
+    --mdc-icon-button-state-layer-size: 40px;
+}
+
+
+.semis-confirm-dialog .dialog-close-button mat-icon {
+    width: 22px;
+    height: 22px;
+
+    margin: 0;
+
+    font-size: 22px;
+    line-height: 22px;
+}
+
+
+:host ::ng-deep
+.semis-confirm-dialog
+.dialog-close-button
+.mat-mdc-button-touch-target {
+    width: 40px;
+    height: 40px;
+}
+
+
+.semis-confirm-dialog .dialog-content {
+    padding: 6px 32px 22px !important;
+
+    color: #455a64;
+
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+
+.semis-confirm-dialog .dialog-content p {
+    margin: 0;
+}
+
+
+.semis-confirm-dialog .danger-word {
+    color: #f44336;
+    font-weight: 700;
+}
+
+
+.semis-confirm-dialog .entity-code {
+    color: #263238;
+    font-weight: 800;
+}
+
+
+.semis-confirm-dialog .dialog-actions {
+    display: flex;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 12px 24px 20px;
+}
+
+
+.semis-confirm-dialog .dialog-actions button {
+    min-width: 90px;
+
+    border-radius: 8px;
+}
+
+
+.semis-confirm-dialog .cancel-button {
+    color: #1976d2 !important;
+
+    background-color: #ffffff !important;
+
+    border: 1px solid #1976d2;
+}
+
+
+.semis-confirm-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #f44336 !important;
+}
+
+
+/* =========================================================
+   CONFIRMATION DE SUPPRESSION - CULTURE
+   ========================================================= */
+
+.culture-confirm-dialog {
+    padding-top: 20px;
+}
+
+
+.culture-confirm-dialog .confirm-dialog-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    margin: 0 auto 12px;
+
+    color: #4e342e;
+
+    background-color: #ffffff;
+
+    border: 1px solid #d7ccc8;
+    border-radius: 50%;
+
+    box-shadow:
+        0 4px 12px rgba(78, 52, 46, 0.14);
+}
+
+
+.culture-confirm-dialog .confirm-dialog-hero-icon mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    color: #4e342e;
+
+    font-size: 28px;
+    line-height: 28px;
+}
+
+
+.culture-confirm-dialog .header {
+    justify-content: center;
+
+    margin-bottom: 12px;
+}
+
+
+.culture-confirm-dialog .header > h2 {
+    width: 100%;
+
+    padding: 0 56px;
+
+    color: #4e342e;
+
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+
+.culture-confirm-dialog .dialog-close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px !important;
+    height: 40px !important;
+
+    margin: 0;
+    padding: 8px !important;
+
+    color: #f44336;
+
+    background-color: #fff5f4;
+
+    border: 1px solid #ffcdd2;
+    border-radius: 50%;
+
+    --mdc-icon-button-state-layer-size: 40px;
+}
+
+
+.culture-confirm-dialog .dialog-close-button mat-icon {
+    width: 22px;
+    height: 22px;
+
+    margin: 0;
+
+    font-size: 22px;
+    line-height: 22px;
+}
+
+
+:host ::ng-deep
+.culture-confirm-dialog
+.dialog-close-button
+.mat-mdc-button-touch-target {
+    width: 40px;
+    height: 40px;
+}
+
+
+.culture-confirm-dialog .dialog-content {
+    padding: 6px 32px 22px !important;
+
+    color: #455a64;
+
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+
+.culture-confirm-dialog .dialog-content p {
+    margin: 0;
+}
+
+
+.culture-confirm-dialog .danger-word {
+    color: #f44336;
+    font-weight: 700;
+}
+
+
+.culture-confirm-dialog .entity-code {
+    color: #263238;
+    font-weight: 800;
+}
+
+
+.culture-confirm-dialog .dialog-actions {
+    display: flex;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 12px 24px 20px;
+}
+
+
+.culture-confirm-dialog .dialog-actions button {
+    min-width: 90px;
+
+    border-radius: 8px;
+}
+
+
+.culture-confirm-dialog .cancel-button {
+    color: #1976d2 !important;
+
+    background-color: #ffffff !important;
+
+    border: 1px solid #1976d2;
+}
+
+
+.culture-confirm-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #f44336 !important;
+}
+
+/* =========================================================
+   CONFIRMATIONS WORKFLOW
+   VIABILITÉ / GERMINATION / STOCKAGE / MATÉRIEL / SEMENCE
+   ========================================================= */
+
+.viability-confirm-dialog {
+    --dialog-accent: #e07a1f;
+    --dialog-title: #7a3b00;
+    --dialog-border: #f2c79f;
+    --dialog-shadow: rgba(224, 122, 31, 0.14);
+}
+
+
+.germination-confirm-dialog {
+    --dialog-accent: #00897b;
+    --dialog-title: #00564e;
+    --dialog-border: #b2dfdb;
+    --dialog-shadow: rgba(0, 137, 123, 0.14);
+}
+
+
+.stock-confirm-dialog {
+    --dialog-accent: #607d8b;
+    --dialog-title: #344955;
+    --dialog-border: #c5d0d5;
+    --dialog-shadow: rgba(52, 73, 85, 0.14);
+}
+
+
+.material-confirm-dialog {
+    --dialog-accent: #667a32;
+    --dialog-title: #405021;
+    --dialog-border: #d5ddc1;
+    --dialog-shadow: rgba(64, 80, 33, 0.14);
+}
+
+
+.seed-confirm-dialog {
+    --dialog-accent: #c89500;
+    --dialog-title: #684b00;
+    --dialog-border: #e4d28f;
+    --dialog-shadow: rgba(200, 149, 0, 0.14);
+}
+
+
+.workflow-confirm-dialog {
+    padding-top: 20px;
+}
+
+
+.workflow-confirm-dialog .confirm-dialog-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    margin: 0 auto 12px;
+
+    color: var(--dialog-accent);
+
+    background-color: #ffffff;
+
+    border: 1px solid var(--dialog-border);
+    border-radius: 50%;
+
+    box-shadow:
+        0 4px 12px var(--dialog-shadow);
+}
+
+
+.workflow-confirm-dialog .confirm-dialog-hero-icon mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    color: var(--dialog-accent);
+
+    font-size: 28px;
+    line-height: 28px;
+}
+
+
+.workflow-confirm-dialog .header {
+    justify-content: center;
+
+    margin-bottom: 12px;
+}
+
+
+.workflow-confirm-dialog .header > h2 {
+    width: 100%;
+
+    padding: 0 56px;
+
+    color: var(--dialog-title);
+
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+
+.workflow-confirm-dialog .dialog-close-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px !important;
+    height: 40px !important;
+
+    margin: 0;
+    padding: 8px !important;
+
+    color: #f44336;
+
+    background-color: #fff5f4;
+
+    border: 1px solid #ffcdd2;
+    border-radius: 50%;
+
+    --mdc-icon-button-state-layer-size: 40px;
+}
+
+
+.workflow-confirm-dialog .dialog-close-button mat-icon {
+    width: 22px;
+    height: 22px;
+
+    margin: 0;
+
+    font-size: 22px;
+    line-height: 22px;
+}
+
+
+:host ::ng-deep
+.workflow-confirm-dialog
+.dialog-close-button
+.mat-mdc-button-touch-target {
+    width: 40px;
+    height: 40px;
+}
+
+
+.workflow-confirm-dialog .dialog-content {
+    padding: 6px 32px 22px !important;
+
+    color: #455a64;
+
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+
+.workflow-confirm-dialog .dialog-content p {
+    margin: 0;
+}
+
+
+.workflow-confirm-dialog .danger-word {
+    color: #f44336;
+    font-weight: 700;
+}
+
+
+.workflow-confirm-dialog .entity-code {
+    color: #263238;
+    font-weight: 800;
+}
+
+
+.workflow-confirm-dialog .storage-location-line {
+    margin-top: 12px !important;
+
+    color: #607d8b;
+}
+
+
+.workflow-confirm-dialog .warning-message {
+    margin-top: 12px !important;
+
+    color: #e07a1f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.workflow-confirm-dialog .dialog-actions {
+    display: flex;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 12px 24px 20px;
+}
+
+
+.workflow-confirm-dialog .dialog-actions button {
+    min-width: 90px;
+
+    border-radius: 8px;
+}
+
+
+.workflow-confirm-dialog .cancel-button {
+    color: #1976d2 !important;
+
+    background-color: #ffffff !important;
+
+    border: 1px solid #1976d2;
+}
+
+
+.workflow-confirm-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #f44336 !important;
 }

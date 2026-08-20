@@ -127,24 +127,27 @@ export class MaterialListComponent implements OnInit {
     }
 
     deleteOccurrence(occurrence) {
-      if (occurrence.taxons && occurrence.taxons.length > 0) {
-          this.dialogService
-          .confirmDialog({ message: 'Ce matériel est lié à un ou plusieurs taxons. Êtes-vous sûr de vouloir le supprimer ?' })
-          .subscribe((yes) => {
-            if (yes) {
-              this.materialFormService.deleteOccurrence(occurrence);
-            }
-          });
-        }else{
-          this.dialogService
-          .confirmDialog({ message: 'Étes vous certain de vouloir supprimer ce matériel ?' })
-          .subscribe((yes) => {
-            if (yes) {
-              this.materialFormService.deleteOccurrence(occurrence);
-            }
-          });
-        }
-        
+      const hasLinkedTaxons =
+        occurrence.taxons
+        && occurrence.taxons.length > 0;
+
+      this.dialogService
+        .confirmDialog({
+          message: '',
+          icon: 'spa',
+          variant: 'material',
+          entityCode: this.removeHtml(occurrence.code_material),
+          warningMessage: hasLinkedTaxons
+            ? 'Ce matériel est lié à un ou plusieurs taxons.'
+            : undefined,
+          disableClose: false
+        })
+        .subscribe((yes) => {
+          if (yes) {
+            this.materialFormService
+              .deleteOccurrence(occurrence);
+          }
+        });
     }
 
     onPaginateChange(){

@@ -1087,7 +1087,11 @@ export class CultureTableComponent implements OnInit, AfterViewInit {
 
     this.dialogService
       .confirmDialog({
-        message: 'Étes vous certain de vouloir supprimer cette culture ?'
+        message: 'Êtes-vous certain de vouloir supprimer cette culture ?',
+        icon: 'local_florist',
+        variant: 'culture',
+        entityCode: cultureCode,
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {

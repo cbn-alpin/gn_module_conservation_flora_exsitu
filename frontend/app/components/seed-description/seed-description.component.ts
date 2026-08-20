@@ -361,7 +361,13 @@ export class SeddDescriptionComponent implements OnInit {
 
     deleteDescription(){
         this.dialogService
-          .confirmDialog({ message: 'Voulez-vous vraiment supprimer cette description de semence ?' })
+          .confirmDialog({
+            message: '',
+            icon: 'description',
+            variant: 'seed',
+            entityCode: this.codeMaterial || '',
+            disableClose: false
+          })
           .subscribe((yes) => {
             if (yes) {
                 this.dataService.deleteSeed(this.data.seedData.id_seed).subscribe({

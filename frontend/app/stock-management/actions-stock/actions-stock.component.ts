@@ -108,10 +108,18 @@ export class ActionsStockComponent implements OnInit {
     }
 
     confirmDeleteAction(data) {
-      if (!data?.id_material || !data?.id_storage) return;      
-    
+      if (!data?.id_material || !data?.id_storage) return;
+
       this.dialogService
-          .confirmDialog({ message: 'Êtes-vous sûr de vouloir cette action ?' })
+          .confirmDialog({
+            message: '',
+            icon: 'store',
+            variant: 'stock',
+            entityLabel: data.action_type_label,
+            entityDate: data.date_start,
+            storageLocation: this.title,
+            disableClose: false
+          })
           .subscribe((yes) => {
             if (yes) {
               this.api.deleteAction(data.id_material, data.id_storage).subscribe({

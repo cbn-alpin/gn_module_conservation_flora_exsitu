@@ -14,7 +14,7 @@ export class DialogService {
         .open(ConfirmDialogComponent, {
           data,
           width: '400px',
-          disableClose: true,
+          disableClose: data.disableClose ?? true,
         });
     return dialogRef.afterClosed();
   }

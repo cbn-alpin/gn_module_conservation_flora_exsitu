@@ -793,7 +793,13 @@
           }
 
           this.dialogService
-            .confirmDialog({ message: 'Étes vous certain de vouloir supprimer ce semis ?' })
+            .confirmDialog({
+              message: 'Êtes-vous certain de vouloir supprimer ce semis ?',
+              icon: 'grain',
+              variant: 'semis',
+              entityCode: currentCode,
+              disableClose: false
+            })
             .subscribe((yes) => {
               if (!yes) {
                 return;
