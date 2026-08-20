@@ -191,6 +191,32 @@
 
 
 /* =========================================================
+   CONFIRMATION DE RÉINITIALISATION - SEMIS
+   ========================================================= */
+
+.semis-reset-dialog .reset-word {
+    color: #8e24aa;
+    font-weight: 700;
+}
+
+
+.semis-reset-dialog .dialog-close-button {
+    color: #8e24aa;
+
+    background-color: #faf3fc;
+
+    border-color: #ce93d8;
+}
+
+
+.semis-reset-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #8e24aa !important;
+}
+
+
+/* =========================================================
    CONFIRMATION DE SUPPRESSION - CULTURE
    ========================================================= */
 
@@ -589,4 +615,29 @@
     color: #ffffff !important;
 
     background-color: #f44336 !important;
+}
+
+/* =========================================================
+   CONFIRMATIONS DE RÉINITIALISATION - WORKFLOW
+   ========================================================= */
+
+.workflow-reset-dialog .reset-word {
+    color: #8e24aa;
+    font-weight: 700;
+}
+
+
+.workflow-reset-dialog .dialog-close-button {
+    color: #8e24aa;
+
+    background-color: #faf3fc;
+
+    border-color: #ce93d8;
+}
+
+
+.workflow-reset-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #8e24aa !important;
 }

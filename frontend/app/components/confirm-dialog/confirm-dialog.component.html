@@ -1,18 +1,61 @@
 <div
     class="confirm-dialog-shell"
-    [class.semis-confirm-dialog]="dialogData?.variant === 'semis'"
-    [class.culture-confirm-dialog]="dialogData?.variant === 'culture'"
-    [class.viability-confirm-dialog]="dialogData?.variant === 'viability'"
-    [class.germination-confirm-dialog]="dialogData?.variant === 'germination'"
-    [class.stock-confirm-dialog]="dialogData?.variant === 'stock'"
-    [class.material-confirm-dialog]="dialogData?.variant === 'material'"
-    [class.seed-confirm-dialog]="dialogData?.variant === 'seed'"
+    [class.semis-confirm-dialog]="
+        dialogData?.variant === 'semis'
+        || dialogData?.variant === 'semis-reset'
+    "
+    [class.semis-reset-dialog]="dialogData?.variant === 'semis-reset'"
+
+    [class.culture-confirm-dialog]="
+        dialogData?.variant === 'culture'
+        || dialogData?.variant === 'culture-reset'
+    "
+
+    [class.viability-confirm-dialog]="
+        dialogData?.variant === 'viability'
+        || dialogData?.variant === 'viability-reset'
+    "
+
+    [class.germination-confirm-dialog]="
+        dialogData?.variant === 'germination'
+        || dialogData?.variant === 'germination-reset'
+    "
+
+    [class.stock-confirm-dialog]="
+        dialogData?.variant === 'stock'
+        || dialogData?.variant === 'stock-reset'
+    "
+
+    [class.material-confirm-dialog]="
+        dialogData?.variant === 'material'
+        || dialogData?.variant === 'material-reset'
+    "
+
+    [class.seed-confirm-dialog]="
+        dialogData?.variant === 'seed'
+        || dialogData?.variant === 'seed-reset'
+    "
+
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'viability'
+        || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'germination'
+        || dialogData?.variant === 'germination-reset'
         || dialogData?.variant === 'stock'
+        || dialogData?.variant === 'stock-reset'
         || dialogData?.variant === 'material'
+        || dialogData?.variant === 'material-reset'
         || dialogData?.variant === 'seed'
+        || dialogData?.variant === 'seed-reset'
+    "
+
+    [class.workflow-reset-dialog]="
+        dialogData?.variant === 'culture-reset'
+        || dialogData?.variant === 'viability-reset'
+        || dialogData?.variant === 'germination-reset'
+        || dialogData?.variant === 'stock-reset'
+        || dialogData?.variant === 'material-reset'
+        || dialogData?.variant === 'seed-reset'
     "
 >
     <div
@@ -44,6 +87,29 @@
             <span class="danger-word">supprimer</span>
             le semis
             <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'semis-reset'">
+            Êtes-vous certain de vouloir
+            <span class="reset-word">réinitialiser</span>
+            {{ dialogData?.entityLabel }}
+            ?
+        </p>
+
+        <p
+            *ngIf="
+                dialogData?.variant === 'culture-reset'
+                || dialogData?.variant === 'viability-reset'
+                || dialogData?.variant === 'germination-reset'
+                || dialogData?.variant === 'stock-reset'
+                || dialogData?.variant === 'material-reset'
+                || dialogData?.variant === 'seed-reset'
+            "
+        >
+            Êtes-vous certain de vouloir
+            <span class="reset-word">réinitialiser</span>
+            {{ dialogData?.entityLabel }}
             ?
         </p>
 

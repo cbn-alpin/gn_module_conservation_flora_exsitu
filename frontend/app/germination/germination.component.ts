@@ -354,9 +354,13 @@ ngOnInit(): void {
 
     this.dialogService
       .confirmDialog({
-        message: this.data?.edit
-          ? 'Êtes-vous certain de vouloir réinitialiser les modifications de ce test de germination ?'
-          : 'Êtes-vous certain de vouloir réinitialiser cette fiche de germination ?'
+        message: '',
+        icon: 'wb_sunny',
+        variant: 'germination-reset',
+        entityLabel: this.data?.edit
+          ? 'les modifications de ce test de germination'
+          : 'cette fiche de germination',
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {

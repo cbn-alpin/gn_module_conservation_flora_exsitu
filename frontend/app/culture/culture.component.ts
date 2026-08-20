@@ -978,8 +978,13 @@ export class CultureComponent implements OnInit {
   onReset(): void {
     this.dialogService
       .confirmDialog({
-        message:
-          'Étes vous certain de vouloir réinitialiser cette fiche de culture ?'
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-reset',
+        entityLabel: this.modalData?.edit
+          ? 'les modifications de cette culture'
+          : 'cette fiche de culture',
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {

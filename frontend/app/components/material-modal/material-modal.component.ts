@@ -146,9 +146,13 @@ export class MaterialModalComponent implements OnInit {
 
       this.dialogService
         .confirmDialog({
-          message: isEdit
-            ? 'Êtes-vous certain de vouloir réinitialiser les modifications de ce matériel récolté ?'
-            : 'Êtes-vous certain de vouloir réinitialiser cette fiche de matériel récolté ?'
+          message: '',
+          icon: 'spa',
+          variant: 'material-reset',
+          entityLabel: isEdit
+            ? 'les modifications de ce matériel récolté'
+            : 'cette fiche de matériel récolté',
+          disableClose: false
         })
         .subscribe((yes) => {
           if (!yes) {

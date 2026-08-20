@@ -593,9 +593,13 @@ export class ActionModalComponent implements OnInit {
 
     this.dialogService
       .confirmDialog({
-        message: this.edit
-          ? 'Êtes-vous certain de vouloir réinitialiser les modifications de cette fiche de stockage ?'
-          : 'Êtes-vous certain de vouloir réinitialiser cette fiche de stockage ?'
+        message: '',
+        icon: 'store',
+        variant: 'stock-reset',
+        entityLabel: this.edit
+          ? 'les modifications de cette fiche de stockage'
+          : 'cette fiche de stockage',
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {

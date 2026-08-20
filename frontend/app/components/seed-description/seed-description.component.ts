@@ -267,9 +267,13 @@ export class SeddDescriptionComponent implements OnInit {
 
       this.dialogService
         .confirmDialog({
-          message: this.edit
-            ? 'Êtes-vous certain de vouloir réinitialiser les modifications de cette description de semence ?'
-            : 'Êtes-vous certain de vouloir réinitialiser cette description de semence ?'
+          message: '',
+          icon: 'description',
+          variant: 'seed-reset',
+          entityLabel: this.edit
+            ? 'les modifications de cette description de semence'
+            : 'cette description de semence',
+          disableClose: false
         })
         .subscribe((yes) => {
           if (!yes) {

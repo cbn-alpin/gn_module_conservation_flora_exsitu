@@ -264,9 +264,13 @@ export class ViabilityComponent implements OnInit {
 
     this.dialogService
       .confirmDialog({
-        message: this.data?.edit
-          ? 'Êtes-vous certain de vouloir réinitialiser les modifications de ce test de viabilité ?'
-          : 'Êtes-vous certain de vouloir réinitialiser cette fiche de viabilité ?'
+        message: '',
+        icon: 'check_circle',
+        variant: 'viability-reset',
+        entityLabel: this.data?.edit
+          ? 'les modifications de ce test de viabilité'
+          : 'cette fiche de viabilité',
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {

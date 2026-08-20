@@ -867,9 +867,13 @@ export class SemisComponent implements OnInit {
 
     this.dialogService
       .confirmDialog({
-        message: this.modalData?.edit
-          ? 'Étes vous certain de vouloir réinitialiser les modifications de ce semis ?'
-          : 'Étes vous certain de vouloir réinitialiser cette fiche de semis ?'
+        message: '',
+        icon: 'grain',
+        variant: 'semis-reset',
+        entityLabel: this.modalData?.edit
+          ? 'les modifications de ce semis'
+          : 'cette fiche de semis',
+        disableClose: false
       })
       .subscribe((yes) => {
         if (!yes) {
