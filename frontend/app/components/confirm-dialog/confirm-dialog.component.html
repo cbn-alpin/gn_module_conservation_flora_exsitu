@@ -3,50 +3,63 @@
     [class.semis-confirm-dialog]="
         dialogData?.variant === 'semis'
         || dialogData?.variant === 'semis-reset'
+        || dialogData?.variant === 'semis-exit'
     "
     [class.semis-reset-dialog]="dialogData?.variant === 'semis-reset'"
+    [class.semis-exit-dialog]="dialogData?.variant === 'semis-exit'"
 
     [class.culture-confirm-dialog]="
         dialogData?.variant === 'culture'
         || dialogData?.variant === 'culture-reset'
+        || dialogData?.variant === 'culture-exit'
     "
 
     [class.viability-confirm-dialog]="
         dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
+        || dialogData?.variant === 'viability-exit'
     "
 
     [class.germination-confirm-dialog]="
         dialogData?.variant === 'germination'
         || dialogData?.variant === 'germination-reset'
+        || dialogData?.variant === 'germination-exit'
     "
 
     [class.stock-confirm-dialog]="
         dialogData?.variant === 'stock'
         || dialogData?.variant === 'stock-reset'
+        || dialogData?.variant === 'stock-exit'
     "
 
     [class.material-confirm-dialog]="
         dialogData?.variant === 'material'
         || dialogData?.variant === 'material-reset'
+        || dialogData?.variant === 'material-exit'
     "
 
     [class.seed-confirm-dialog]="
         dialogData?.variant === 'seed'
         || dialogData?.variant === 'seed-reset'
+        || dialogData?.variant === 'seed-exit'
     "
 
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
+        || dialogData?.variant === 'viability-exit'
         || dialogData?.variant === 'germination'
         || dialogData?.variant === 'germination-reset'
+        || dialogData?.variant === 'germination-exit'
         || dialogData?.variant === 'stock'
         || dialogData?.variant === 'stock-reset'
+        || dialogData?.variant === 'stock-exit'
         || dialogData?.variant === 'material'
         || dialogData?.variant === 'material-reset'
+        || dialogData?.variant === 'material-exit'
         || dialogData?.variant === 'seed'
         || dialogData?.variant === 'seed-reset'
+        || dialogData?.variant === 'seed-exit'
     "
 
     [class.workflow-reset-dialog]="
@@ -56,6 +69,15 @@
         || dialogData?.variant === 'stock-reset'
         || dialogData?.variant === 'material-reset'
         || dialogData?.variant === 'seed-reset'
+    "
+
+    [class.workflow-exit-dialog]="
+        dialogData?.variant === 'culture-exit'
+        || dialogData?.variant === 'viability-exit'
+        || dialogData?.variant === 'germination-exit'
+        || dialogData?.variant === 'stock-exit'
+        || dialogData?.variant === 'material-exit'
+        || dialogData?.variant === 'seed-exit'
     "
 >
     <div
@@ -94,6 +116,44 @@
             Êtes-vous certain de vouloir
             <span class="reset-word">réinitialiser</span>
             {{ dialogData?.entityLabel }}
+            ?
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'semis-exit'">
+            Êtes-vous certain de vouloir
+            <span class="exit-word">quitter</span>
+
+            <ng-container *ngIf="dialogData?.entityCode; else semisExitWithoutCode">
+                le semis
+                <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            </ng-container>
+
+            <ng-template #semisExitWithoutCode>
+                cette fiche de semis
+            </ng-template>
+
+            ?
+        </p>
+
+        <p
+            *ngIf="
+                dialogData?.variant === 'culture-exit'
+                || dialogData?.variant === 'viability-exit'
+                || dialogData?.variant === 'germination-exit'
+                || dialogData?.variant === 'stock-exit'
+                || dialogData?.variant === 'material-exit'
+                || dialogData?.variant === 'seed-exit'
+            "
+        >
+            Êtes-vous certain de vouloir
+            <span class="exit-word">quitter</span>
+            {{ dialogData?.entityLabel }}
+            <strong
+                *ngIf="dialogData?.entityCode"
+                class="entity-code"
+            >
+                {{ dialogData?.entityCode }}
+            </strong>
             ?
         </p>
 

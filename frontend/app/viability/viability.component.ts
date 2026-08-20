@@ -313,19 +313,26 @@ export class ViabilityComponent implements OnInit {
 
     this.cancelDialogOpen = true;
 
+    const currentCode =
+      this.germinationForm.get('code')?.value ||
+      this.initialFormState?.code ||
+      '';
+
     this.dialogService
       .confirmDialog({
-        message: 'Étes vous certain de vouloir annuler ?'
+        message: '',
+        icon: 'check_circle',
+        variant: 'viability-exit',
+        entityLabel: currentCode
+          ? 'le test de viabilité'
+          : 'cette fiche de viabilité',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
       .subscribe((yes) => {
         this.cancelDialogOpen = false;
 
         if (yes) {
-          const currentCode =
-            this.germinationForm.get('code')?.value ||
-            this.initialFormState?.code ||
-            '';
-
           if (this.data?.edit) {
             this._commonService.translateToaster(
               'info',

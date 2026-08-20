@@ -329,9 +329,18 @@ export class SeddDescriptionComponent implements OnInit {
 
       this.cancelDialogOpen = true;
 
+      const currentCode = this.codeMaterial || '';
+
       this.dialogService
         .confirmDialog({
-          message: 'Étes vous certain de vouloir annuler ?'
+          message: '',
+          icon: 'description',
+          variant: 'seed-exit',
+          entityLabel: currentCode
+            ? 'la semence du matériel'
+            : 'cette fiche de semence',
+          entityCode: currentCode || undefined,
+          disableClose: false
         })
         .subscribe((yes) => {
           this.cancelDialogOpen = false;

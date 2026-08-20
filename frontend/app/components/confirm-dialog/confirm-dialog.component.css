@@ -217,6 +217,32 @@
 
 
 /* =========================================================
+   CONFIRMATION POUR QUITTER - SEMIS
+   ========================================================= */
+
+.semis-exit-dialog .exit-word {
+    color: #d21919;
+    font-weight: 700;
+}
+
+
+.semis-exit-dialog .dialog-close-button {
+    color: #d21919;
+
+    background-color: #fff5f5;
+
+    border-color: #ef9a9a;
+}
+
+
+.semis-exit-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #d21919 !important;
+}
+
+
+/* =========================================================
    CONFIRMATION DE SUPPRESSION - CULTURE
    ========================================================= */
 
@@ -640,4 +666,30 @@
     color: #ffffff !important;
 
     background-color: #8e24aa !important;
+}
+
+
+/* =========================================================
+   CONFIRMATIONS POUR QUITTER - WORKFLOW
+   ========================================================= */
+
+.workflow-exit-dialog .exit-word {
+    color: #d21919;
+    font-weight: 700;
+}
+
+
+.workflow-exit-dialog .dialog-close-button {
+    color: #d21919;
+
+    background-color: #fff5f5;
+
+    border-color: #ef9a9a;
+}
+
+
+.workflow-exit-dialog .confirm-button {
+    color: #ffffff !important;
+
+    background-color: #d21919 !important;
 }

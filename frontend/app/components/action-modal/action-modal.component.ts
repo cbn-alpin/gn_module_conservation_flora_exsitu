@@ -662,9 +662,18 @@ export class ActionModalComponent implements OnInit {
 
     this.cancelDialogOpen = true;
 
+    const currentCode = this.codeMaterial || '';
+
     this.dialogService
       .confirmDialog({
-        message: 'Étes vous certain de vouloir annuler ?'
+        message: '',
+        icon: 'store',
+        variant: 'stock-exit',
+        entityLabel: currentCode
+          ? 'la fiche de stockage du matériel'
+          : 'cette fiche de stockage',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
       .subscribe((yes) => {
         this.cancelDialogOpen = false;

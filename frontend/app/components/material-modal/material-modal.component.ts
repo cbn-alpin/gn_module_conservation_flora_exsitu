@@ -226,9 +226,21 @@ export class MaterialModalComponent implements OnInit {
 
       this.cancelDialogOpen = true;
 
+      const currentCode =
+        this.materialForm.get('code_material')?.value ||
+        this.initialFormState?.code_material ||
+        '';
+
       this.dialogService
         .confirmDialog({
-          message: 'Étes vous certain de vouloir annuler ?'
+          message: '',
+          icon: 'spa',
+          variant: 'material-exit',
+          entityLabel: currentCode
+            ? 'le matériel récolté'
+            : 'cette fiche de matériel récolté',
+          entityCode: currentCode || undefined,
+          disableClose: false
         })
         .subscribe((yes) => {
           this.cancelDialogOpen = false;
@@ -236,11 +248,6 @@ export class MaterialModalComponent implements OnInit {
           if (!yes) {
             return;
           }
-
-          const currentCode =
-            this.materialForm.get('code_material')?.value ||
-            this.initialFormState?.code_material ||
-            '';
 
           const isEdit =
             !!this.materialFormService

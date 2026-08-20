@@ -1049,16 +1049,23 @@ export class SemisComponent implements OnInit {
 
     this.cancelDialogOpen = true;
 
+    const currentCode =
+      this.semisForm.get('code')?.value
+      || this.initialFormState?.code
+      || '';
+
     this.dialogService
       .confirmDialog({
-        message: 'Étes vous certain de vouloir annuler ?'
+        message: '',
+        icon: 'grain',
+        variant: 'semis-exit',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
       .subscribe((yes) => {
         this.cancelDialogOpen = false;
 
         if (yes) {
-          const currentCode = this.semisForm.get('code')?.value || this.initialFormState?.code || '';
-
           if (this.modalData?.edit) {
             this.toast.translateToaster(
               'info',

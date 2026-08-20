@@ -403,19 +403,26 @@ ngOnInit(): void {
 
     this.cancelDialogOpen = true;
 
+    const currentCode =
+      this.germinationForm.get('code')?.value ||
+      this.initialFormState?.code ||
+      '';
+
     this.dialogService
       .confirmDialog({
-        message: 'Étes vous certain de vouloir annuler ?'
+        message: '',
+        icon: 'wb_sunny',
+        variant: 'germination-exit',
+        entityLabel: currentCode
+          ? 'le test de germination'
+          : 'cette fiche de germination',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
       .subscribe((yes) => {
         this.cancelDialogOpen = false;
 
         if (yes) {
-          const currentCode =
-            this.germinationForm.get('code')?.value ||
-            this.initialFormState?.code ||
-            '';
-
           if (this.data?.edit) {
             this._commonService.translateToaster(
               'info',

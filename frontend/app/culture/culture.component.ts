@@ -1029,10 +1029,21 @@ export class CultureComponent implements OnInit {
 
     this.cancelDialogOpen = true;
 
+    const currentCode =
+      this.cultureForm.get('code_culture')?.value ||
+      this.initialFormState?.code_culture ||
+      '';
+
     this.dialogService
       .confirmDialog({
-        message:
-          'Étes vous certain de vouloir annuler ?'
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-exit',
+        entityLabel: currentCode
+          ? 'la culture'
+          : 'cette fiche de culture',
+        entityCode: currentCode || undefined,
+        disableClose: false
       })
       .subscribe((yes) => {
         this.cancelDialogOpen = false;
@@ -1040,11 +1051,6 @@ export class CultureComponent implements OnInit {
         if (!yes) {
           return;
         }
-
-        const currentCode =
-          this.cultureForm.get('code_culture')?.value ||
-          this.initialFormState?.code_culture ||
-          '';
 
         if (this.modalData?.edit) {
           this.toast.translateToaster(
