@@ -1,16 +1,46 @@
+:host {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+}
+
+
 .stock-actions-header {
+  position: relative;
+
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
-  gap: 12px;
+  min-height: 46px;
+  padding: 0 4px 8px;
 
-  min-height: 42px;
-  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+
+.stock-actions-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+
+  width: 44px;
+  height: 2px;
+
+  background-color: #607d8b;
+
+  border-radius: 999px;
+
+  transform: translateX(-50%);
 }
 
 
 .stock-actions-header h3 {
+  width: 100%;
   margin: 0;
 
   color: #344955;
@@ -18,71 +48,40 @@
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.1px;
-}
-
-
-.stock-action-add-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 6px;
-
-  min-height: 36px;
-  padding: 0 13px;
-
-  color: #ffffff !important;
-
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-
-  background-color: #607d8b !important;
-
-  border: 1px solid #455a64 !important;
-  border-radius: 9px;
-
-  box-shadow:
-    0 2px 6px rgba(52, 73, 85, 0.20);
-}
-
-
-.stock-action-add-button:hover {
-  background-color: #455a64 !important;
-}
-
-
-.stock-action-add-button mat-icon {
-  flex-shrink: 0;
-
-  width: 20px;
-  height: 20px;
-  margin: 0;
-
-  color: #ffffff !important;
-
-  font-size: 20px;
-  line-height: 20px;
+  text-align: center;
 }
 
 
 .stock-actions-card {
+  flex: 1 1 auto;
+
+  min-height: 180px;
+
   overflow: hidden;
 
-  background-color: #f8fafb;
+  background:
+    linear-gradient(
+      180deg,
+      #fbfcfd 0%,
+      #f8fafb 100%
+    );
 
   border: 1px solid #c5d0d5;
   border-radius: 12px;
 
   box-shadow:
-    0 3px 10px rgba(52, 73, 85, 0.07);
+    0 3px 10px rgba(52, 73, 85, 0.08);
 }
 
 
 .table-container {
+  min-height: 158px;
+
   overflow-x: auto;
 
   padding: 10px;
+
+  box-sizing: border-box;
 }
 
 
@@ -421,30 +420,57 @@
 /* Message lorsqu’aucune action de stockage n’existe */
 .stock-empty-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  gap: 9px;
 
-  max-width: 600px;
-  margin: 20px auto;
+  min-height: 116px;
+  margin: 10px 0;
   padding: 16px;
 
+  box-sizing: border-box;
+
   color: #344955;
-  font-size: 16px;
+
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
   text-align: center;
 
-  background-color: #eef2f4;
+  background:
+    linear-gradient(
+      180deg,
+      #f2f6f7 0%,
+      #eef2f4 100%
+    );
 
   border: 1px solid #c5d0d5;
-  border-radius: 12px;
+  border-radius: 11px;
 
-  box-shadow: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 
 .stock-empty-card mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
   color: #f44336 !important;
+
+  font-size: 20px;
+  line-height: 20px;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e1e7ea;
+  border-radius: 50%;
 }
 
   
