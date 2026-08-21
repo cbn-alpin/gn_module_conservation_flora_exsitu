@@ -227,6 +227,39 @@ export class MaterialListComponent implements OnInit {
     }
 
 
+    goToMaterialDetails(material: any): void {
+      const idMaterial =
+        Number(material?.id_material);
+
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
+
+      if (
+        !idMaterial ||
+        !idHarvest
+      ) {
+        console.error(
+          'Impossible d’ouvrir les détails du matériel récolté : identifiant manquant.'
+        );
+
+        return;
+      }
+
+
+      this.exsituFormService
+        .setIdMaterial(idMaterial);
+
+      this.exsituFormService.currentTab =
+        'material-details';
+
+
+      this.router.navigate([
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/material-details`
+      ]);
+    }
+
+
     goToStock(material: any) {
       const idMaterial = material.id_material
       this.exsituFormService.setIdMaterial(idMaterial);

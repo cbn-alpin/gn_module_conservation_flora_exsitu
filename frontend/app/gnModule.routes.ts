@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { MaterialFormComponent } from './material/material-form/material-form.component';
+import { MaterialDetailsComponent } from './material/material-details/material-details.component';
 import { ExsituFormComponent } from './form/shared/exsitu-form.component';
 import { HarvestMapListComponent } from './harvest-map-list/harvest-map-list.component';
 import { HarvestFormComponent } from './harvest-form/harvest-form.component';
@@ -12,6 +13,7 @@ import { ViabilityComponent } from './viability/viability.component';
 import { ViabilityTableComponent } from './viability-table/viability-table.component';
 import { CultureTableComponent } from './culture-table/culture-table.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
+import { StockDetailsComponent } from './stock-management/stock-details/stock-details.component';
 import { SeedDetailsComponent } from './seed-details/seed-details.component';
 import { GerminationDetailsComponent } from './germination-details/germination-details.component';
 import { SemisDetailsComponent } from './semis-details/semis-details.component';
@@ -45,6 +47,10 @@ export const routes: Routes = [
                 component: MaterialFormComponent
             },
             {
+                path: 'harvest/:id_harvest/material/:idMaterial/material-details',
+                component: MaterialDetailsComponent
+            },
+            {
                 path: 'harvest/:idHarvest/material/:idMaterial/seed-details/:idSeed',
                 component: SeedDetailsComponent
             },
@@ -55,6 +61,10 @@ export const routes: Routes = [
             {
                 path: 'harvest/:idHarvest/material/:idMaterial/stock',
                 component: StockManagementComponent
+            },
+            {
+                path: 'harvest/:id_harvest/material/:idMaterial/stock-details/:idStorage',
+                component: StockDetailsComponent
             },
             {
                 path: 'harvest/:id_harvest/material/:idMaterial/germination',

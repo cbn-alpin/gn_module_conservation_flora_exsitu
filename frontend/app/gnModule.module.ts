@@ -12,6 +12,7 @@ import { MaterialFormService } from './material/material-form/material-form.serv
 import { ExsituFormComponent } from './form/shared/exsitu-form.component';
 import { ExsituFormService } from './form/shared/exsitu-form.service';
 import { MaterialListComponent } from './material/material-list/material-list.component';
+import { MaterialDetailsComponent } from './material/material-details/material-details.component';
 import { HarvestFormComponent } from './harvest-form/harvest-form.component';
 import { HarvestMapListComponent } from './harvest-map-list/harvest-map-list.component';
 import { MaterialListService } from './material/material-list/material-list.service';
@@ -35,6 +36,7 @@ import { DialogService } from './components/confirm-dialog/confirm-dialog.servic
 import { ConfigService } from './services/config.service';
 import { SeddDescriptionComponent } from './components/seed-description/seed-description.component';
 import { StockManagementComponent } from './stock-management/stock-management.component';
+import { StockDetailsComponent } from './stock-management/stock-details/stock-details.component';
 import { ActionsStockComponent } from './stock-management/actions-stock/actions-stock.component';
 import { ActionModalComponent } from './components/action-modal/action-modal.component';
 import { MaterialModalComponent } from './components/material-modal/material-modal.component';
@@ -116,6 +118,7 @@ registerLocaleData(localeFr);
   declarations: [
     MaterialFormComponent,
     MaterialListComponent,
+    MaterialDetailsComponent,
     ExsituFormComponent,
     HarvestFormComponent,
     HarvestMapListComponent,
@@ -130,6 +133,7 @@ registerLocaleData(localeFr);
     ViabilityComponent,
     ViabilityTableComponent,
     StockManagementComponent,
+    StockDetailsComponent,
     ActionsStockComponent,
     ActionModalComponent,
     SeddDescriptionComponent,

@@ -9,6 +9,8 @@ import { HttpParams } from '@angular/common/http';
 import { CommonService } from '@geonature_common/service/common.service';
 import { DialogService } from '../../components/confirm-dialog/confirm-dialog.service';
 import { StockManagementService } from '../stock-management.service';
+import { Router } from '@angular/router';
+import { ConfigService } from '../../services/config.service';
 
 
 @Component({
@@ -51,9 +53,11 @@ export class ActionsStockComponent implements OnInit {
       public dialog: MatDialog,
       private exsituFormService: ExsituFormService,
       private api: DataService,
-       private _commonService: CommonService,
-       private dialogService: DialogService,
-       private stockManagementService: StockManagementService
+      private _commonService: CommonService,
+      private dialogService: DialogService,
+      private stockManagementService: StockManagementService,
+      private router: Router,
+      private cfg: ConfigService
     ) {}
 
     ngOnInit(): void {
@@ -78,6 +82,46 @@ export class ActionsStockComponent implements OnInit {
         }
       })
     }
+
+    goToStockDetails(element: any): void {
+      const idStorage =
+        Number(element?.id_storage);
+
+      const idMaterial =
+        Number(
+          element?.id_material ||
+          this.exsituFormService.idMaterial
+        );
+
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
+
+      if (
+        !idStorage ||
+        !idMaterial ||
+        !idHarvest
+      ) {
+        console.error(
+          'Impossible d’ouvrir les détails du stockage : identifiant manquant.'
+        );
+
+        return;
+      }
+
+
+      this.exsituFormService
+        .setIdMaterial(idMaterial);
+
+      this.exsituFormService.currentTab =
+        'stock-details';
+
+
+      this.router.navigate([
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/stock-details/${idStorage}`
+      ]);
+    }
+
 
     openActionModal(action?: any): void {
       const isEdit = !!action;

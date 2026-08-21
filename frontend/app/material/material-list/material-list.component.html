@@ -121,9 +121,17 @@
               <span>Modifier</span>
             </button>
 
-            <button mat-menu-item>
-              <mat-icon style="color: #FFA726;">visibility</mat-icon>
-              <span>Détails/Action</span>
+            <button
+              mat-menu-item
+              (click)="goToMaterialDetails(element)"
+            >
+              <mat-icon style="color: #FFA726;">
+                visibility
+              </mat-icon>
+
+              <span>
+                Détails/Action
+              </span>
             </button>
 
             <button

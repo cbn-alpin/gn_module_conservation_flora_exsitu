@@ -1,0 +1,29 @@
+.return-button {
+  display: flex;
+  align-items: center;
+
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
+}
+
+.return-button button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+}
+
+.return-button button:hover {
+  background-color: #d21919 !important;
+}
+
+.return-button mat-icon {
+  color: #ffffff !important;
+}
