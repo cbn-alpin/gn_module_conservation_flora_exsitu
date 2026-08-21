@@ -225,7 +225,7 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Ligne 5 : Mode d'arrosage / Personne ayant effectué le semis -->
+      <!-- Ligne 5 : Mode d'arrosage / Effectué par -->
       <div class="form-group" [class.shake-group-field]="shakeWateringField">
         <mat-form-field appearance="outline" class="align-with-form-group">
           <mat-label>Mode d’arrosage</mat-label>
@@ -242,7 +242,7 @@
       </div>
 
       <div class="form-group" [class.shake-group-field]="shakeActorField">
-        <small>Personne ayant effectué le semis</small>
+        <small>Effectué par</small>
         <pnx-observers
           [bindAllItem]="true"
           [parentFormControl]="semisForm.controls.id_actor"
