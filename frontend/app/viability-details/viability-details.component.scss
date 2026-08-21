@@ -361,6 +361,17 @@ mat-card-content,
 }
 
 
+.viability-info-code-badge span,
+.viability-info-code-badge strong {
+  display: inline-flex;
+  align-items: center;
+
+  margin: 0;
+
+  line-height: 1;
+}
+
+
 .viability-info-code-badge span {
   color: #a36631;
 
@@ -484,6 +495,15 @@ mat-card-content,
 }
 
 
+.viability-detail-code
+.viability-detail-value {
+  color: #7a3b00;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+
 .viability-detail-label {
   color: #956743;
 
@@ -508,7 +528,7 @@ mat-card-content,
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
   .viability-detail-grid {
     grid-template-columns: 1fr;

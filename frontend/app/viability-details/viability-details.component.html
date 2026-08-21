@@ -36,18 +36,28 @@
 
     <div class="viability-info-content">
 
+      <!-- =====================================================
+           IDENTIFICATION DU TEST DE VIABILITÉ
+           ===================================================== -->
+
       <div class="viability-detail-section">
 
         <div class="viability-detail-section-title">
-          <mat-icon>assignment</mat-icon>
+
+          <mat-icon>
+            assignment
+          </mat-icon>
 
           <span>
-            Identification du test
+            Identification du test de viabilité
           </span>
+
         </div>
 
 
         <div class="viability-detail-grid">
+
+          <!-- Numéro du test de viabilité -->
 
           <div
             class="
@@ -56,6 +66,7 @@
               viability-detail-code
             "
           >
+
             <span class="viability-detail-label">
               Numéro du test de viabilité
             </span>
@@ -63,21 +74,29 @@
             <strong class="viability-detail-value">
               {{ germinationForm.get('code')?.value || '-' }}
             </strong>
+
           </div>
 
 
+          <!-- Matériel récolté associé -->
+
           <div class="viability-detail-item">
+
             <span class="viability-detail-label">
-              Matériel végétal
+              Matériel récolté associé
             </span>
 
             <strong class="viability-detail-value">
               {{ germinationForm.get('id_material')?.value || '-' }}
             </strong>
+
           </div>
 
 
+          <!-- Stock utilisé -->
+
           <div class="viability-detail-item">
+
             <span class="viability-detail-label">
               Stock utilisé
             </span>
@@ -85,38 +104,14 @@
             <strong class="viability-detail-value">
               {{ germinationForm.get('id_storage')?.value || '-' }}
             </strong>
+
           </div>
 
 
-          <div class="viability-detail-item">
-            <span class="viability-detail-label">
-              Effectué par
-            </span>
-
-            <strong class="viability-detail-value">
-              {{ germinationForm.get('id_actor')?.value || '-' }}
-            </strong>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="viability-detail-section">
-
-        <div class="viability-detail-section-title">
-          <mat-icon>science</mat-icon>
-
-          <span>
-            Paramètres du test
-          </span>
-        </div>
-
-
-        <div class="viability-detail-grid">
+          <!-- Nombre de graines testées -->
 
           <div class="viability-detail-item">
+
             <span class="viability-detail-label">
               Nombre de graines testées
             </span>
@@ -124,10 +119,14 @@
             <strong class="viability-detail-value">
               {{ germinationForm.get('seed_initial_count')?.value ?? '-' }}
             </strong>
+
           </div>
 
 
+          <!-- Nombre de réplicats -->
+
           <div class="viability-detail-item">
+
             <span class="viability-detail-label">
               Nombre de réplicats
             </span>
@@ -135,28 +134,22 @@
             <strong class="viability-detail-value">
               {{ germinationForm.get('replicate_count')?.value ?? '-' }}
             </strong>
+
           </div>
 
 
+          <!-- Effectué par -->
+
           <div class="viability-detail-item">
+
             <span class="viability-detail-label">
-              Substrat
+              Effectué par
             </span>
 
             <strong class="viability-detail-value">
-              {{ germinationForm.get('id_substrate')?.value || '-' }}
+              {{ germinationForm.get('id_actor')?.value || '-' }}
             </strong>
-          </div>
 
-
-          <div class="viability-detail-item">
-            <span class="viability-detail-label">
-              Support
-            </span>
-
-            <strong class="viability-detail-value">
-              {{ germinationForm.get('id_support')?.value || '-' }}
-            </strong>
           </div>
 
         </div>
@@ -164,20 +157,101 @@
       </div>
 
 
+      <!-- =====================================================
+           CONDITIONS DU TEST DE VIABILITÉ
+           ===================================================== -->
+
       <div class="viability-detail-section">
 
         <div class="viability-detail-section-title">
-          <mat-icon>description</mat-icon>
+
+          <mat-icon>
+            build
+          </mat-icon>
 
           <span>
-            Informations complémentaires
+            Conditions du test de viabilité
           </span>
+
         </div>
 
 
         <div class="viability-detail-grid">
 
+          <!-- Support -->
+
           <div class="viability-detail-item">
+
+            <span class="viability-detail-label">
+              Support
+            </span>
+
+            <strong class="viability-detail-value">
+              {{ germinationForm.get('id_support')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Substrat -->
+
+          <div class="viability-detail-item">
+
+            <span class="viability-detail-label">
+              Substrat
+            </span>
+
+            <strong class="viability-detail-value">
+              {{ germinationForm.get('id_substrate')?.value || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           INFORMATIONS COMPLÉMENTAIRES
+           ===================================================== -->
+
+      <div class="viability-detail-section">
+
+        <div class="viability-detail-section-title">
+
+          <mat-icon>
+            description
+          </mat-icon>
+
+          <span>
+            Informations complémentaires
+          </span>
+
+        </div>
+
+
+        <div class="viability-detail-grid">
+
+          <!-- Remarques -->
+
+          <div class="viability-detail-item">
+
+            <span class="viability-detail-label">
+              Remarques
+            </span>
+
+            <strong class="viability-detail-value">
+              {{ germinationForm.get('remarks')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Programme -->
+
+          <div class="viability-detail-item">
+
             <span class="viability-detail-label">
               Programme
             </span>
@@ -190,17 +264,7 @@
                   ?.program || '-'
               }}
             </strong>
-          </div>
 
-
-          <div class="viability-detail-item">
-            <span class="viability-detail-label">
-              Remarques
-            </span>
-
-            <strong class="viability-detail-value">
-              {{ germinationForm.get('remarks')?.value || '-' }}
-            </strong>
           </div>
 
         </div>
