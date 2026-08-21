@@ -141,7 +141,9 @@
 
         'progress-materials':
             exsituFormService.currentTab ===
-            'materials',
+                'materials' ||
+            exsituFormService.currentTab ===
+                'material-details',
 
         'progress-seed':
             exsituFormService.currentTab ===
@@ -149,7 +151,9 @@
 
         'progress-stock':
             exsituFormService.currentTab ===
-            'stock',
+                'stock' ||
+            exsituFormService.currentTab ===
+                'stock-details',
 
         'progress-germination':
             exsituFormService.currentTab ===
@@ -348,14 +352,18 @@
     *ngIf="exsituFormService.currentTab !== 'harvest'"
     [class.mb-5]="
         exsituFormService.currentTab !== 'materials' &&
+        exsituFormService.currentTab !== 'material-details' &&
         exsituFormService.currentTab !== 'seed' &&
         exsituFormService.currentTab !== 'culture-table' &&
         exsituFormService.currentTab !== 'culture-details' &&
         exsituFormService.currentTab !== 'semis-table' &&
         exsituFormService.currentTab !== 'semis-details' &&
         exsituFormService.currentTab !== 'germination-table' &&
+        exsituFormService.currentTab !== 'germination-details' &&
         exsituFormService.currentTab !== 'viability-table' &&
-        exsituFormService.currentTab !== 'stock'
+        exsituFormService.currentTab !== 'viability-details' &&
+        exsituFormService.currentTab !== 'stock' &&
+        exsituFormService.currentTab !== 'stock-details'
     "
     >
         <cs-header></cs-header>
@@ -395,6 +403,18 @@
 </div>
 
 
+<!-- Détails Matériel récolté -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'material-details'
+    "
+>
+    <app-material-details>
+    </app-material-details>
+</div>
+
+
 <!-- Onglet Semence -->
 <div
     *ngIf="
@@ -418,6 +438,18 @@
 >
     <cfe-stock-management>
     </cfe-stock-management>
+</div>
+
+
+<!-- Détails Stockage -->
+<div
+    *ngIf="
+        exsituFormService.currentTab ===
+        'stock-details'
+    "
+>
+    <app-stock-details>
+    </app-stock-details>
 </div>
 
 

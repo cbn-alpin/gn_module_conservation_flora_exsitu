@@ -155,6 +155,29 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+
+      if (urlSegments.includes('material-details')) {
+        this.exsituFormService.currentTab = 'material-details';
+
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest =
+            Number(urlSegments[harvestIndex]);
+        }
+
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial =
+            Number(urlSegments[materialIndex]);
+
+          this.exsituFormService.setIdMaterial(
+            this.idMaterial
+          );
+        }
+      }
+
+
       if (urlSegments.includes('seed-details')) {
         this.exsituFormService.currentTab = 'seed';
       
@@ -183,6 +206,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+
       if (urlSegments.includes('stock')) {
         this.exsituFormService.currentTab = 'stock';
       
@@ -196,6 +220,44 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         if (materialIndex < urlSegments.length) {
           this.idMaterial = Number(urlSegments[materialIndex]);
           this.exsituFormService.idMaterial = Number(urlSegments[materialIndex]);
+        }
+      }
+
+
+      if (urlSegments.includes('stock-details')) {
+        this.exsituFormService.currentTab = 'stock-details';
+
+        const harvestIndex = urlSegments.indexOf('harvest') + 1;
+        const materialIndex = urlSegments.indexOf('material') + 1;
+        const storageIndex = urlSegments.indexOf('stock-details') + 1;
+
+        if (harvestIndex < urlSegments.length) {
+          this.exsituFormService.idHarvest =
+            Number(urlSegments[harvestIndex]);
+        }
+
+        if (materialIndex < urlSegments.length) {
+          this.idMaterial =
+            Number(urlSegments[materialIndex]);
+
+          this.exsituFormService.setIdMaterial(
+            this.idMaterial
+          );
+        }
+
+        if (
+          storageIndex < urlSegments.length &&
+          !isNaN(Number(urlSegments[storageIndex]))
+        ) {
+          this.idStorage =
+            Number(urlSegments[storageIndex]);
+
+          this.exsituFormService.idStorage =
+            this.idStorage;
+
+          this.exsituFormService.id_storage.next(
+            this.idStorage
+          );
         }
       }
 
