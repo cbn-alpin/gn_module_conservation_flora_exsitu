@@ -20,7 +20,11 @@
             <a 
                 class="tablinks themed-tab materials-tab"
                 [class.disabled]="!exsituFormService.idHarvest"
-                [ngClass]="{ active: exsituFormService.currentTab === 'materials' }"
+                [ngClass]="{
+                    active:
+                        exsituFormService.currentTab === 'materials' ||
+                        exsituFormService.currentTab === 'material-details'
+                }"
                 (click)="goToTab('materials')"
             >
                 <mat-icon class="example-tab-icon">spa</mat-icon>
@@ -41,7 +45,11 @@
             <a 
                 class="tablinks themed-tab stock-tab"
                 [class.disabled]="!idMaterial"
-                [ngClass]="{ active: exsituFormService.currentTab === 'stock' }"
+                [ngClass]="{
+                    active:
+                        exsituFormService.currentTab === 'stock' ||
+                        exsituFormService.currentTab === 'stock-details'
+                }"
                 (click)="idMaterial ? goToTab('stock') : null">
                 <mat-icon class="example-tab-icon">store</mat-icon>
                 Stockage
@@ -51,8 +59,11 @@
             <a 
                 class="tablinks themed-tab germination-tab"
                 [class.disabled]="!idMaterial"
-
-                [ngClass]="{ active: exsituFormService.currentTab === 'germination-table' }"
+                [ngClass]="{
+                    active:
+                        exsituFormService.currentTab === 'germination-table' ||
+                        exsituFormService.currentTab === 'germination-details'
+                }"
                 (click)="idMaterial ? goToTab('germination-table') : null"
             >
                 <mat-icon class="example-tab-icon">wb_sunny</mat-icon>
@@ -82,7 +93,11 @@
             
             <a class="tablinks themed-tab viability-tab"
                 [class.disabled]="!idMaterial"
-                [ngClass]="{ active: exsituFormService.currentTab === 'viability-table' }"
+                [ngClass]="{
+                    active:
+                        exsituFormService.currentTab === 'viability-table' ||
+                        exsituFormService.currentTab === 'viability-details'
+                }"
                 (click)="idMaterial ? goToTab('viability-table') : null">
                 <mat-icon class="example-tab-icon">check_circle</mat-icon>
                 Test de Viabilité
