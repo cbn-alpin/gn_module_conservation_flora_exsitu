@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DataService } from '../services/data.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 
@@ -39,7 +39,6 @@ idMaterial!: number;
   constructor(
     private fb: FormBuilder,
     public router: Router,
-    private route: ActivatedRoute,
     private api: DataService,
     private exsituFormService: ExsituFormService
   ) {
@@ -62,31 +61,52 @@ idMaterial!: number;
   }
 
   ngOnInit(): void {
-    this.idTest = +(this.route.snapshot.paramMap.get('id_test') || 0);
-    this.idMaterial = +(this.route.snapshot.paramMap.get('idMaterial') || 0);
+    const urlSegments =
+      this.router.url
+        .split('?')[0]
+        .split('/');
 
-    if (!this.idTest && this.exsituFormService.idTest) {
-      this.idTest = this.exsituFormService.idTest;
-    }
-    if (!this.idMaterial && this.exsituFormService.idMaterial) {
-      this.idMaterial = this.exsituFormService.idMaterial;
-    }
-    if (!this.idStorage && this.exsituFormService.idStorage) {
-      this.exsituFormService.id_storage.subscribe((id) => {
-        this.idStorage = id;
-      });
-    }
+    const materialIndex =
+      urlSegments.indexOf('material') + 1;
 
-    console.log("🆔 id_test:", this.idTest);
-    console.log("🧪 id_material:", this.idMaterial);
+    const testIndex =
+      urlSegments.indexOf('viability-details') + 1;
 
-    if (!this.idTest || !this.idMaterial) {
-      console.error("❌ idTest ou idMaterial manquant !");
+
+    this.idMaterial =
+      materialIndex > 0 &&
+      materialIndex < urlSegments.length
+        ? Number(urlSegments[materialIndex])
+        : 0;
+
+
+    this.idTest =
+      testIndex > 0 &&
+      testIndex < urlSegments.length
+        ? Number(urlSegments[testIndex])
+        : 0;
+
+
+    if (
+      !this.idTest ||
+      !this.idMaterial
+    ) {
+      console.error(
+        'idTest ou idMaterial manquant dans l’URL.'
+      );
+
       return;
     }
 
-    this.loadTestDetails();
 
+    this.exsituFormService
+      .setIdMaterial(this.idMaterial);
+
+    this.exsituFormService
+      .setIdTest(this.idTest);
+
+
+    this.loadTestDetails();
   }
  
   loadTestDetails(): void {

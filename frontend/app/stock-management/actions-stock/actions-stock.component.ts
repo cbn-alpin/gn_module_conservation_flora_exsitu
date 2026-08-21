@@ -96,6 +96,9 @@ export class ActionsStockComponent implements OnInit {
       const idHarvest =
         this.exsituFormService.idHarvest;
 
+      const actionTypeLabel =
+        element?.action_type_label || '-';
+
 
       if (
         !idStorage ||
@@ -117,9 +120,16 @@ export class ActionsStockComponent implements OnInit {
         'stock-details';
 
 
-      this.router.navigate([
-        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/stock-details/${idStorage}`
-      ]);
+      this.router.navigate(
+        [
+          `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/stock-details/${idStorage}/${this.placeCode}`
+        ],
+        {
+          state: {
+            actionTypeLabel
+          }
+        }
+      );
     }
 
 

@@ -63,7 +63,7 @@ export const routes: Routes = [
                 component: StockManagementComponent
             },
             {
-                path: 'harvest/:id_harvest/material/:idMaterial/stock-details/:idStorage',
+                path: 'harvest/:id_harvest/material/:idMaterial/stock-details/:idStorage/:placeCode',
                 component: StockDetailsComponent
             },
             {
