@@ -12,10 +12,17 @@
 
     <ng-container
       *ngIf="
-        dataSource.data.length > 0;
+        allActions.length > 0;
         else noStockActions
       "
     >
+
+      <ng-container
+        *ngIf="
+          dataSource.data.length > 0;
+          else noFilteredStockActions
+        "
+      >
 
       <table
         mat-table
@@ -123,11 +130,33 @@
         class="stock-list-paginator"
         [pageSize]="rowPerPage"
         [pageSizeOptions]="[5, 10, 25, 100]"
-        [length]="totalActions"
-        (page)="onPaginateChange()"
         showFirstLastButtons
       >
       </mat-paginator>
+
+      </ng-container>
+
+
+      <ng-template #noFilteredStockActions>
+
+        <mat-card
+          class="
+            stock-empty-card
+            stock-filter-empty-card
+            mt-4
+          "
+        >
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+          Aucune action ne correspond aux filtres
+          pour « {{ title }} ».
+
+        </mat-card>
+
+      </ng-template>
 
     </ng-container>
 

@@ -1,4 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  ElementRef,
+  Input,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActionModalComponent } from '../../components/action-modal/action-modal.component';
@@ -18,13 +28,76 @@ import { ConfigService } from '../../services/config.service';
   templateUrl: './actions-stock.component.html',
   styleUrls: ['./actions-stock.component.css'],
 })
-export class ActionsStockComponent implements OnInit {
+export class ActionsStockComponent
+  implements OnInit, OnChanges {
+
     @Input() title: string = '';
     @Input() placeCode: string = '';
-    dataSource = new MatTableDataSource<any>(); 
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
+
+
+    /*
+     * Les 3 filtres sont fournis
+     * par le composant Stockage principal.
+     */
+    @Input()
+    stockActionTypeFilter:
+      string | null = null;
+
+    @Input()
+    stockDateFromFilter:
+      Date | null = null;
+
+    @Input()
+    stockDestinationFilter:
+      string | null = null;
+
+
+    /*
+     * Chaque tableau renvoie sa liste complète
+     * au parent pour construire les options
+     * communes aux 4 tableaux.
+     */
+    @Output()
+    actionsLoaded =
+      new EventEmitter<{
+        placeCode: string;
+        actions: any[];
+      }>();
+
+
+    public allActions: any[] = [];
+
+
+    dataSource =
+      new MatTableDataSource<any>();
+
+
+    private paginatorRef:
+      MatPaginator | null = null;
+
+
+    @ViewChild(MatPaginator)
+    set paginator(
+      paginator: MatPaginator
+    ) {
+
+      if (paginator) {
+
+        this.paginatorRef =
+          paginator;
+
+        this.syncPaginator();
+
+      }
+
+    }
+
+
+    @ViewChild('dataTableContainer')
+    dataTableContainer: ElementRef;
+
     rowPerPage = 5;
+
     public totalActions: number;
 
     public activeActionRowId: number | null = null;
@@ -64,23 +137,388 @@ export class ActionsStockComponent implements OnInit {
       this.loadActions();
     }
 
-    loadActions(){
-      const pageIndex = this.paginator ? this.paginator.pageIndex + 1 : 1;
-      const pageSize = this.paginator?.pageSize || this.rowPerPage;
-      
-      let params = new HttpParams()
-                  .set('page', pageIndex)
-                  .set('limit', pageSize)
-                  .set('placeCode', this.placeCode);   
-      this.api.getActions(this.exsituFormService.idMaterial, params).subscribe({
-        next: (data) => {                              
-          this.dataSource.data = data['items'];
-          this.totalActions = data['total'];            
-        },
-        error: (err) => {
-          console.error('Erreur lors de la récupération des actions', err);
+
+    ngOnChanges(
+      changes: SimpleChanges
+    ): void {
+
+      if (
+        changes['stockActionTypeFilter'] ||
+        changes['stockDateFromFilter'] ||
+        changes['stockDestinationFilter']
+      ) {
+        this.applyActionFilters();
+      }
+
+    }
+
+
+    private syncPaginator(): void {
+
+      if (!this.paginatorRef) {
+        return;
+      }
+
+
+      this.dataSource.paginator =
+        this.paginatorRef;
+    }
+
+
+    private getActionTypeFilterValue(
+      action: any
+    ): string {
+
+      const value =
+        String(
+          action?.action_type_label || ''
+        ).trim();
+
+
+      return value || '-';
+    }
+
+
+    private getDestinationFilterValue(
+      action: any
+    ): string {
+
+      const value =
+        String(
+          action?.destination || ''
+        ).trim();
+
+
+      /*
+       * Destination vide / null
+       * est représentée par "-".
+       */
+      return value || '-';
+    }
+
+
+    private getDateFilterKey(
+      value: any
+    ): string {
+
+      if (!value) {
+        return '';
+      }
+
+
+      if (typeof value === 'string') {
+
+        const datePart =
+          value.split('T')[0];
+
+
+        if (
+          /^\d{4}-\d{2}-\d{2}$/.test(
+            datePart
+          )
+        ) {
+          return datePart;
         }
-      })
+
+      }
+
+
+      const date =
+        value instanceof Date
+          ? value
+          : new Date(value);
+
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return '';
+      }
+
+
+      const year =
+        date.getFullYear();
+
+      const month =
+        String(
+          date.getMonth() + 1
+        ).padStart(2, '0');
+
+      const day =
+        String(
+          date.getDate()
+        ).padStart(2, '0');
+
+
+      return `${year}-${month}-${day}`;
+    }
+
+
+    public applyActionFilters(): void {
+
+      const selectedDateKey =
+        this.getDateFilterKey(
+          this.stockDateFromFilter
+        );
+
+
+      const filteredActions =
+        this.allActions.filter(
+          action => {
+
+            const actionType =
+              this.getActionTypeFilterValue(
+                action
+              );
+
+            const destination =
+              this.getDestinationFilterValue(
+                action
+              );
+
+            const actionDateKey =
+              this.getDateFilterKey(
+                action?.date_start
+              );
+
+
+            const matchesActionType =
+              !this.stockActionTypeFilter ||
+              actionType ===
+                this.stockActionTypeFilter;
+
+
+            const matchesDate =
+              !selectedDateKey ||
+              (
+                !!actionDateKey &&
+                actionDateKey >=
+                  selectedDateKey
+              );
+
+
+            const matchesDestination =
+              !this.stockDestinationFilter ||
+              destination ===
+                this.stockDestinationFilter;
+
+
+            return (
+              matchesActionType &&
+              matchesDate &&
+              matchesDestination
+            );
+
+          }
+        );
+
+
+      /*
+       * Chaque tableau reçoit uniquement
+       * son résultat filtré.
+       */
+      this.dataSource.data =
+        filteredActions;
+
+
+      /*
+       * Chaque tableau garde sa propre
+       * pagination et repart à la page 1.
+       */
+      setTimeout(() => {
+
+        this.syncPaginator();
+
+
+        if (this.paginatorRef) {
+          this.paginatorRef.firstPage();
+        }
+
+      });
+    }
+
+
+    loadActions(): void {
+
+      const idMaterial =
+        Number(
+          this.exsituFormService.idMaterial
+        );
+
+
+      if (
+        !idMaterial ||
+        !this.placeCode
+      ) {
+
+        this.totalActions = 0;
+
+        this.allActions = [];
+
+        this.dataSource.data = [];
+
+
+        this.actionsLoaded.emit({
+          placeCode: this.placeCode,
+          actions: []
+        });
+
+
+        return;
+      }
+
+
+      /*
+       * 1er appel :
+       * connaître le nombre total
+       * d'actions de ce lieu.
+       */
+      const countParams =
+        new HttpParams()
+          .set('page', 1)
+          .set('limit', 1)
+          .set(
+            'placeCode',
+            this.placeCode
+          );
+
+
+      this.api
+        .getActions(
+          idMaterial,
+          countParams
+        )
+        .subscribe({
+
+          next: (firstData) => {
+
+            const total =
+              Number(
+                firstData['total'] || 0
+              );
+
+
+            this.totalActions =
+              total;
+
+
+            if (total === 0) {
+
+              this.allActions = [];
+
+              this.dataSource.data = [];
+
+
+              this.actionsLoaded.emit({
+                placeCode: this.placeCode,
+                actions: []
+              });
+
+
+              return;
+            }
+
+
+            /*
+             * 2e appel :
+             * récupération de TOUTES
+             * les actions de ce lieu.
+             */
+            const allParams =
+              new HttpParams()
+                .set('page', 1)
+                .set('limit', total)
+                .set(
+                  'placeCode',
+                  this.placeCode
+                );
+
+
+            this.api
+              .getActions(
+                idMaterial,
+                allParams
+              )
+              .subscribe({
+
+                next: (data) => {
+
+                  this.allActions =
+                    data['items'] || [];
+
+
+                  this.totalActions =
+                    this.allActions.length;
+
+
+                  /*
+                   * Le parent reçoit cette liste
+                   * afin de construire les filtres
+                   * communs aux 4 tableaux.
+                   */
+                  this.actionsLoaded.emit({
+                    placeCode: this.placeCode,
+                    actions: this.allActions
+                  });
+
+
+                  /*
+                   * Puis on applique les filtres
+                   * actuellement sélectionnés.
+                   */
+                  this.applyActionFilters();
+
+                },
+
+
+                error: (err) => {
+
+                  console.error(
+                    'Erreur lors de la récupération des actions',
+                    err
+                  );
+
+
+                  this.allActions = [];
+
+                  this.dataSource.data = [];
+
+
+                  this.actionsLoaded.emit({
+                    placeCode: this.placeCode,
+                    actions: []
+                  });
+
+                }
+
+              });
+
+          },
+
+
+          error: (err) => {
+
+            console.error(
+              'Erreur lors de la récupération des actions',
+              err
+            );
+
+
+            this.allActions = [];
+
+            this.dataSource.data = [];
+
+
+            this.actionsLoaded.emit({
+              placeCode: this.placeCode,
+              actions: []
+            });
+
+          }
+
+        });
     }
 
     goToStockDetails(element: any): void {
@@ -154,11 +592,6 @@ export class ActionsStockComponent implements OnInit {
         this.loadActions();
         this.onGetStockSummary()
       });
-    }
-    
-
-    onPaginateChange(){
-      this.loadActions();
     }
 
     confirmDeleteAction(data) {

@@ -528,4 +528,11 @@
   border-radius: 50%;
 }
 
+
+/* Aucun résultat correspondant aux filtres */
+
+.stock-filter-empty-card mat-icon {
+  color: #607d8b !important;
+}
+
   

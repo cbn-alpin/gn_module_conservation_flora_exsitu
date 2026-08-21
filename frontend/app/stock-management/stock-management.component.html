@@ -108,46 +108,286 @@
 
       </div>
 
+      <!-- ===================================================
+           FILTRES COMMUNS AUX 4 TABLEAUX
+           =================================================== -->
+
+      <div class="stock-filters-card">
+
+        <div class="stock-filters-header">
+
+          <div class="stock-filters-title">
+
+            <div class="stock-filters-icon">
+              <mat-icon>
+                filter_alt
+              </mat-icon>
+            </div>
+
+
+            <div>
+
+              <span>
+                Filtres des actions de stockage
+              </span>
+
+              <small>
+                Affiner simultanément les 4 tableaux
+                par type d'action, date et destination
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <button
+            mat-button
+            type="button"
+            class="reset-stock-filter-button"
+            (click)="resetStockFilters()"
+          >
+            <mat-icon>
+              autorenew
+            </mat-icon>
+
+            Réinitialiser
+          </button>
+
+        </div>
+
+
+        <div class="stock-filter-fields">
+
+          <!-- TYPE D'ACTION -->
+
+          <mat-form-field
+            appearance="outline"
+            class="stock-filter-field"
+          >
+
+            <mat-label>
+              Type d'action
+            </mat-label>
+
+            <mat-select
+              [value]="stockActionTypeFilter"
+              (selectionChange)="
+                onStockActionTypeFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les types d'action
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let actionType of
+                  stockActionTypeFilterOptions
+                "
+                [value]="actionType"
+              >
+                {{ actionType }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- DATE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="stock-filter-field"
+          >
+
+            <mat-label>
+              À partir du
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                stockDateFromFilterPicker
+              "
+              [(ngModel)]="
+                stockDateFromFilter
+              "
+              (dateInput)="
+                onStockDateFromFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="
+                stockDateFromFilterPicker
+              "
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #stockDateFromFilterPicker
+            >
+            </mat-datepicker>
+
+          </mat-form-field>
+
+
+          <!-- DESTINATION -->
+
+          <mat-form-field
+            appearance="outline"
+            class="stock-filter-field"
+          >
+
+            <mat-label>
+              Destination
+            </mat-label>
+
+            <mat-select
+              [value]="stockDestinationFilter"
+              (selectionChange)="
+                onStockDestinationFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Toutes les destinations
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let destination of
+                  stockDestinationFilterOptions
+                "
+                [value]="destination"
+              >
+                {{ destination }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================
+           4 TABLEAUX
+           =================================================== -->
+
       <div class="stock-actions-grid">
 
         <div class="stock-actions-grid-item">
+
           <cfe-actions-stock
             [title]="'Salle de pré-séchage'"
             [placeCode]="
               constants.PLACE_CODES.PRE_DRYING_ROOM
             "
+            [stockActionTypeFilter]="
+              stockActionTypeFilter
+            "
+            [stockDateFromFilter]="
+              stockDateFromFilter
+            "
+            [stockDestinationFilter]="
+              stockDestinationFilter
+            "
+            (actionsLoaded)="
+              onStockActionsLoaded($event)
+            "
           >
           </cfe-actions-stock>
+
         </div>
 
+
         <div class="stock-actions-grid-item">
+
           <cfe-actions-stock
             [title]="'Salle de séchage'"
             [placeCode]="
               constants.PLACE_CODES.DRYING_ROOM
             "
+            [stockActionTypeFilter]="
+              stockActionTypeFilter
+            "
+            [stockDateFromFilter]="
+              stockDateFromFilter
+            "
+            [stockDestinationFilter]="
+              stockDestinationFilter
+            "
+            (actionsLoaded)="
+              onStockActionsLoaded($event)
+            "
           >
           </cfe-actions-stock>
+
         </div>
 
+
         <div class="stock-actions-grid-item">
+
           <cfe-actions-stock
             [title]="'Chambre froide'"
             [placeCode]="
               constants.PLACE_CODES.COLD_ROOM
             "
+            [stockActionTypeFilter]="
+              stockActionTypeFilter
+            "
+            [stockDateFromFilter]="
+              stockDateFromFilter
+            "
+            [stockDestinationFilter]="
+              stockDestinationFilter
+            "
+            (actionsLoaded)="
+              onStockActionsLoaded($event)
+            "
           >
           </cfe-actions-stock>
+
         </div>
 
+
         <div class="stock-actions-grid-item">
+
           <cfe-actions-stock
             [title]="'Congélateur'"
             [placeCode]="
               constants.PLACE_CODES.FREEZER
             "
+            [stockActionTypeFilter]="
+              stockActionTypeFilter
+            "
+            [stockDateFromFilter]="
+              stockDateFromFilter
+            "
+            [stockDestinationFilter]="
+              stockDestinationFilter
+            "
+            (actionsLoaded)="
+              onStockActionsLoaded($event)
+            "
           >
           </cfe-actions-stock>
+
         </div>
 
       </div>

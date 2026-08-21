@@ -256,6 +256,232 @@
 
 
 /* =========================================================
+   FILTRES COMMUNS AUX 4 TABLEAUX DE STOCKAGE
+   ========================================================= */
+
+.stock-filters-card {
+  width: 100%;
+
+  margin: 0 0 22px;
+  padding: 14px 16px 10px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbfcfd 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid #c5d0d5;
+  border-radius: 14px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(52, 73, 85, 0.06);
+}
+
+
+.stock-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 12px;
+}
+
+
+.stock-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #344955;
+}
+
+
+.stock-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  color: #607d8b;
+
+  background-color: #eef2f4;
+
+  border-radius: 50%;
+}
+
+
+.stock-filters-icon mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #607d8b;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.stock-filters-title span {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+.stock-filters-title small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #71838c;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+.stock-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 14px;
+
+  align-items: center;
+}
+
+
+.stock-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.stock-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.stock-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+:host ::ng-deep
+.stock-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.stock-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.stock-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #607d8b !important;
+}
+
+
+:host ::ng-deep
+.stock-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #344955 !important;
+}
+
+
+/* =========================================================
+   RÉINITIALISER
+   ========================================================= */
+
+.reset-stock-filter-button {
+  min-height: 34px;
+
+  padding: 5px 13px;
+
+  color: #ffffff !important;
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  background-color: #8e24aa;
+
+  border: 1px solid #7b1fa2;
+  border-radius: 999px;
+}
+
+
+.reset-stock-filter-button:hover {
+  background-color: #7b1fa2;
+}
+
+
+.reset-stock-filter-button mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+@media (max-width: 900px) {
+
+  .stock-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .stock-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .reset-stock-filter-button {
+    width: fit-content;
+  }
+
+}
+
+
+/* =========================================================
    GRILLE DES LIEUX DE STOCKAGE
    ========================================================= */
 
