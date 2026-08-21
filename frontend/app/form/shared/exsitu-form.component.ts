@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy, HostListener, AfterViewInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ModuleService } from '@geonature/services/module.service';
-import { Router } from '@angular/router';
+import {
+  Router,
+  NavigationEnd
+} from '@angular/router';
 import { HarvestStoreService } from '../../services/store.service';
 import { ExsituFormService } from './exsitu-form.service';
 import { MapService } from '@geonature_common/map/map.service';
@@ -43,14 +46,32 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.currentModulePath = module.module_path.toLowerCase();
         });
          console.log(this.currentModulePath)
-        this.urlSub = this.router.events.subscribe(() => {
+        this.urlSub = this.router.events.subscribe((event) => {
           this.updateTabAndIdsFromUrl(this.router.url);
-          this.forceTabFromOpenFlag(this.router.url); 
+          this.forceTabFromOpenFlag(this.router.url);
 
 
+          /*
+           * Lorsqu'une navigation vers une page détail
+           * est complètement terminée, on replace
+           * automatiquement la page tout en haut.
+           */
+          if (event instanceof NavigationEnd) {
+            this.scrollDetailPageToTop();
+          }
         });
+
+
         this.updateTabAndIdsFromUrl(this.router.url);
         this.forceTabFromOpenFlag(this.router.url);
+
+
+        /*
+         * Important également lors d'un F5 directement
+         * depuis une page détail.
+         */
+        this.scrollDetailPageToTop();
+
 
         this.exsituFormService.id_storage.subscribe(id => {
           this.idStorage = id;
@@ -731,6 +752,78 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
       } catch {
         // pas bloquant
       }
+    }
+
+
+    private scrollDetailPageToTop(): void {
+
+      const detailTabs = [
+        'semis-details',
+        'culture-details',
+        'germination-details',
+        'viability-details',
+        'stock-details',
+        'material-details'
+      ];
+
+
+      if (
+        !detailTabs.includes(
+          this.exsituFormService.currentTab
+        )
+      ) {
+        return;
+      }
+
+
+      /*
+       * On attend que le nouveau contenu du détail
+       * soit réellement présent dans le DOM.
+       */
+      setTimeout(() => {
+
+        /*
+         * Cas classique :
+         * scroll porté par la fenêtre / le document.
+         */
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'auto'
+        });
+
+
+        if (document.scrollingElement) {
+          document.scrollingElement.scrollTop = 0;
+        }
+
+
+        /*
+         * GeoNature utilise Angular Material.
+         * Selon la disposition générale de l'application,
+         * le scroll peut être porté par le contenu
+         * du sidenav plutôt que directement par window.
+         */
+        const materialScrollContainers =
+          document.querySelectorAll(
+            '.mat-drawer-content, .mat-sidenav-content'
+          );
+
+
+        materialScrollContainers.forEach(
+          (element: Element) => {
+
+            if (
+              element instanceof HTMLElement
+            ) {
+              element.scrollTop = 0;
+            }
+
+          }
+        );
+
+      }, 0);
+
     }
 
     
