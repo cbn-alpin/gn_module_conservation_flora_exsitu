@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, HostListener  } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, HostListener  } from '@angular/core';
 import { MaterialListService } from './material-list.service';
 import { combineLatest } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { MaterialFormService } from '../material-form/material-form.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,23 +25,93 @@ import { ConfigService } from '../../services/config.service';
     templateUrl: './material-list.component.html',
     styleUrls: ['./material-list.component.css'],
 })
-export class MaterialListComponent implements OnInit {
+export class MaterialListComponent implements OnInit, AfterViewInit {
     public totalMaterials: number;
     pagination = { offset: 0, limit: 10 };
     rowPerPage = 5;
-    @ViewChild('dataTable') dataTable: DatatableComponent;
-    dataSource = new MatTableDataSource<any>();  
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild(MatSort) sort: MatSort;
-    @ViewChild('dataTableContainer') dataTableContainer: ElementRef;
+
+    @ViewChild('dataTable')
+    dataTable: DatatableComponent;
+
+    dataSource =
+      new MatTableDataSource<any>();
+
+
+    private paginatorRef!: MatPaginator;
+
+    @ViewChild(MatPaginator)
+    set paginator(
+      paginator: MatPaginator
+    ) {
+
+      if (paginator) {
+
+        this.paginatorRef =
+          paginator;
+
+        this.syncPaginator();
+
+      }
+
+    }
+
+
+    @ViewChild(MatSort)
+    sort: MatSort;
+
+    @ViewChild('dataTableContainer')
+    dataTableContainer: ElementRef;
+
+
     displayedColumns: string[] = [
       'code_material',
-      'taxons',        
-      'harvest_material',    
-      'code_cultural_bank',  
+      'taxons',
+      'harvest_material',
+      'code_cultural_bank',
       'code_material_parent',
       'actions'
     ];
+
+
+    /*
+     * Liste complète des matériels
+     * de la récolte.
+     */
+    public allMaterials: any[] = [];
+
+
+    /*
+     * Filtres.
+     */
+    public materialCodeFilter = '';
+
+    public materialTaxonFilter:
+      string | null = null;
+
+    public materialTypeFilter:
+      string | null = null;
+
+    public materialCulturalBankFilter:
+      string | null = null;
+
+    public materialParentFilter:
+      string | null = null;
+
+
+    /*
+     * Options dynamiques.
+     */
+    public materialTaxonFilterOptions:
+      string[] = [];
+
+    public materialTypeFilterOptions:
+      string[] = [];
+
+    public materialCulturalBankFilterOptions:
+      string[] = [];
+
+    public materialParentFilterOptions:
+      string[] = [];
 
 
     constructor(
@@ -61,29 +131,634 @@ export class MaterialListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        combineLatest([this.exsituFormService.materials$, this.materialFormService.occurrence])
+
+      combineLatest([
+        this.exsituFormService.materials$,
+        this.materialFormService.occurrence
+      ])
         .pipe(
-            filter(([materials, occurrence]) => !!materials),
-            map(([materials, occurrence]) => {
-              return materials.filter((mat) => occurrence ? mat.id_material !== occurrence.id_material : true);
-            })
+          filter(
+            ([materials]) =>
+              !!materials
+          )
         )
-        .subscribe((filteredMaterials) => {
-            const transformedMaterials = filteredMaterials.map(material => {
-              const { taxonsDisplay, taxonsTooltip } = this.transformTaxons(material.taxons);
-              return {
-                ...material,
-                taxonsDisplay,
-                taxonsTooltip
-              };
-            });
-            this.materialListService.materials$.next(filteredMaterials);
-            this.loadMaterials();            
-            this.totalMaterials = filteredMaterials.length;
-            this.dataSource.data = transformedMaterials            
+        .subscribe(() => {
+
+          /*
+           * À chaque création,
+           * modification ou suppression,
+           * on recharge la liste complète.
+           */
+          this.loadMaterials();
+
         });
-        
+
     }
+
+
+    ngAfterViewInit(): void {
+      this.syncPaginator();
+    }
+
+
+    private syncPaginator(): void {
+
+      if (!this.paginatorRef) {
+        return;
+      }
+
+
+      this.dataSource.paginator =
+        this.paginatorRef;
+    }
+
+
+    /* =========================================================
+       FILTRES DES MATÉRIELS RÉCOLTÉS
+       ========================================================= */
+
+
+    private getMaterialSimpleFilterValue(
+      value: any
+    ): string {
+
+      const normalizedValue =
+        this.removeHtml(
+          value === null ||
+          value === undefined
+            ? ''
+            : String(value)
+        )
+          .trim();
+
+
+      return normalizedValue || '-';
+    }
+
+
+    private getMaterialTaxonFilterValues(
+      material: any
+    ): string[] {
+
+      const values =
+        (material?.taxons || [])
+          .map(
+            (taxon: any) =>
+              String(
+                taxon?.nom_valide || ''
+              ).trim()
+          )
+          .filter(
+            (value: string) =>
+              !!value
+          );
+
+
+      if (values.length === 0) {
+        return ['-'];
+      }
+
+
+      return Array.from(
+        new Set(values)
+      );
+    }
+
+
+    private getMaterialTypeFilterValue(
+      material: any
+    ): string {
+
+      return this.getMaterialSimpleFilterValue(
+        material?.harvest_material_label
+      );
+    }
+
+
+    private getMaterialCulturalBankFilterValue(
+      material: any
+    ): string {
+
+      return this.getMaterialSimpleFilterValue(
+        material?.code_cultural_bank
+      );
+    }
+
+
+    private getMaterialParentFilterValue(
+      material: any
+    ): string {
+
+      return this.getMaterialSimpleFilterValue(
+        material?.code_parent
+      );
+    }
+
+
+    private sortMaterialFilterOptions(
+      values: string[]
+    ): string[] {
+
+      return Array.from(
+        new Set(values)
+      )
+        .sort(
+          (a, b) => {
+
+            /*
+             * Les valeurs absentes sont
+             * toujours proposées en premier.
+             */
+            if (a === '-') {
+              return -1;
+            }
+
+            if (b === '-') {
+              return 1;
+            }
+
+
+            return a.localeCompare(
+              b,
+              'fr'
+            );
+
+          }
+        );
+    }
+
+
+    /*
+     * Le N° récolte est le filtre texte de base.
+     *
+     * Il réduit également toutes les options
+     * disponibles dans les quatre autres filtres.
+     */
+    private getMaterialMatchingCodeFilter():
+      any[] {
+
+      const normalizedCode =
+        String(
+          this.materialCodeFilter || ''
+        )
+          .trim()
+          .toLowerCase();
+
+
+      return this.allMaterials.filter(
+        material => {
+
+          const materialCode =
+            this.removeHtml(
+              String(
+                material?.code_material || ''
+              )
+            )
+              .trim()
+              .toLowerCase();
+
+
+          return (
+            !normalizedCode ||
+            materialCode.includes(
+              normalizedCode
+            )
+          );
+
+        }
+      );
+    }
+
+
+    /*
+     * Vérifie les quatre filtres dynamiques.
+     *
+     * ignoredFilter permet de calculer
+     * les options d'un filtre en tenant compte
+     * de tous les autres.
+     */
+    private materialMatchesDynamicFilters(
+      material: any,
+      ignoredFilter:
+        'taxon' |
+        'materialType' |
+        'culturalBank' |
+        'parent' |
+        null = null
+    ): boolean {
+
+      const taxons =
+        this.getMaterialTaxonFilterValues(
+          material
+        );
+
+      const materialType =
+        this.getMaterialTypeFilterValue(
+          material
+        );
+
+      const culturalBank =
+        this.getMaterialCulturalBankFilterValue(
+          material
+        );
+
+      const parent =
+        this.getMaterialParentFilterValue(
+          material
+        );
+
+
+      const matchesTaxon =
+        ignoredFilter === 'taxon' ||
+        !this.materialTaxonFilter ||
+        taxons.includes(
+          this.materialTaxonFilter
+        );
+
+
+      const matchesMaterialType =
+        ignoredFilter === 'materialType' ||
+        !this.materialTypeFilter ||
+        materialType ===
+          this.materialTypeFilter;
+
+
+      const matchesCulturalBank =
+        ignoredFilter === 'culturalBank' ||
+        !this.materialCulturalBankFilter ||
+        culturalBank ===
+          this.materialCulturalBankFilter;
+
+
+      const matchesParent =
+        ignoredFilter === 'parent' ||
+        !this.materialParentFilter ||
+        parent ===
+          this.materialParentFilter;
+
+
+      return (
+        matchesTaxon &&
+        matchesMaterialType &&
+        matchesCulturalBank &&
+        matchesParent
+      );
+    }
+
+
+    private getMaterialFilterOptions(
+      baseMaterials: any[],
+      filterName:
+        'taxon' |
+        'materialType' |
+        'culturalBank' |
+        'parent'
+    ): string[] {
+
+      const compatibleMaterials =
+        baseMaterials.filter(
+          material =>
+            this.materialMatchesDynamicFilters(
+              material,
+              filterName
+            )
+        );
+
+
+      const values: string[] = [];
+
+
+      compatibleMaterials.forEach(
+        material => {
+
+          if (filterName === 'taxon') {
+
+            this.getMaterialTaxonFilterValues(
+              material
+            )
+              .forEach(
+                value =>
+                  values.push(value)
+              );
+
+          }
+
+
+          if (
+            filterName ===
+            'materialType'
+          ) {
+
+            values.push(
+              this.getMaterialTypeFilterValue(
+                material
+              )
+            );
+
+          }
+
+
+          if (
+            filterName ===
+            'culturalBank'
+          ) {
+
+            values.push(
+              this.getMaterialCulturalBankFilterValue(
+                material
+              )
+            );
+
+          }
+
+
+          if (filterName === 'parent') {
+
+            values.push(
+              this.getMaterialParentFilterValue(
+                material
+              )
+            );
+
+          }
+
+        }
+      );
+
+
+      return this.sortMaterialFilterOptions(
+        values
+      );
+    }
+
+
+    /*
+     * Recalcule les quatre listes en fonction
+     * de tous les autres filtres.
+     */
+    private updateMaterialFilterOptions(
+      baseMaterials: any[]
+    ): void {
+
+      const taxonOptions =
+        this.getMaterialFilterOptions(
+          baseMaterials,
+          'taxon'
+        );
+
+
+      const materialTypeOptions =
+        this.getMaterialFilterOptions(
+          baseMaterials,
+          'materialType'
+        );
+
+
+      const culturalBankOptions =
+        this.getMaterialFilterOptions(
+          baseMaterials,
+          'culturalBank'
+        );
+
+
+      const parentOptions =
+        this.getMaterialFilterOptions(
+          baseMaterials,
+          'parent'
+        );
+
+
+      let selectionChanged =
+        false;
+
+
+      /*
+       * Une sélection devenue impossible
+       * est automatiquement retirée.
+       */
+      if (
+        this.materialTaxonFilter &&
+        !taxonOptions.includes(
+          this.materialTaxonFilter
+        )
+      ) {
+
+        this.materialTaxonFilter =
+          null;
+
+        selectionChanged =
+          true;
+
+      }
+
+
+      if (
+        this.materialTypeFilter &&
+        !materialTypeOptions.includes(
+          this.materialTypeFilter
+        )
+      ) {
+
+        this.materialTypeFilter =
+          null;
+
+        selectionChanged =
+          true;
+
+      }
+
+
+      if (
+        this.materialCulturalBankFilter &&
+        !culturalBankOptions.includes(
+          this.materialCulturalBankFilter
+        )
+      ) {
+
+        this.materialCulturalBankFilter =
+          null;
+
+        selectionChanged =
+          true;
+
+      }
+
+
+      if (
+        this.materialParentFilter &&
+        !parentOptions.includes(
+          this.materialParentFilter
+        )
+      ) {
+
+        this.materialParentFilter =
+          null;
+
+        selectionChanged =
+          true;
+
+      }
+
+
+      /*
+       * Si une sélection a été retirée,
+       * on recalcule une dernière fois
+       * avec le nouvel état.
+       */
+      if (selectionChanged) {
+
+        this.updateMaterialFilterOptions(
+          baseMaterials
+        );
+
+        return;
+
+      }
+
+
+      this.materialTaxonFilterOptions =
+        taxonOptions;
+
+      this.materialTypeFilterOptions =
+        materialTypeOptions;
+
+      this.materialCulturalBankFilterOptions =
+        culturalBankOptions;
+
+      this.materialParentFilterOptions =
+        parentOptions;
+    }
+
+
+    public applyMaterialFilters(): void {
+
+      /*
+       * 1. N° récolte.
+       */
+      const baseMaterials =
+        this.getMaterialMatchingCodeFilter();
+
+
+      /*
+       * 2. Mise à jour des options
+       *    dynamiques.
+       */
+      this.updateMaterialFilterOptions(
+        baseMaterials
+      );
+
+
+      /*
+       * 3. Résultat final.
+       */
+      const filteredMaterials =
+        baseMaterials.filter(
+          material =>
+            this.materialMatchesDynamicFilters(
+              material
+            )
+        );
+
+
+      this.dataSource.data =
+        filteredMaterials;
+
+
+      /*
+       * La pagination travaille sur
+       * le résultat filtré.
+       *
+       * Chaque changement de filtre
+       * revient en page 1.
+       */
+      setTimeout(() => {
+
+        this.syncPaginator();
+
+
+        if (this.paginatorRef) {
+          this.paginatorRef.firstPage();
+        }
+
+      });
+    }
+
+
+    public onMaterialCodeFilterChange(
+      value: string
+    ): void {
+
+      this.materialCodeFilter =
+        value || '';
+
+      this.applyMaterialFilters();
+    }
+
+
+    public onMaterialTaxonFilterChange(
+      value: string | null
+    ): void {
+
+      this.materialTaxonFilter =
+        value;
+
+      this.applyMaterialFilters();
+    }
+
+
+    public onMaterialTypeFilterChange(
+      value: string | null
+    ): void {
+
+      this.materialTypeFilter =
+        value;
+
+      this.applyMaterialFilters();
+    }
+
+
+    public onMaterialCulturalBankFilterChange(
+      value: string | null
+    ): void {
+
+      this.materialCulturalBankFilter =
+        value;
+
+      this.applyMaterialFilters();
+    }
+
+
+    public onMaterialParentFilterChange(
+      value: string | null
+    ): void {
+
+      this.materialParentFilter =
+        value;
+
+      this.applyMaterialFilters();
+    }
+
+
+    public resetMaterialFilters(): void {
+
+      this.materialCodeFilter = '';
+
+      this.materialTaxonFilter =
+        null;
+
+      this.materialTypeFilter =
+        null;
+
+      this.materialCulturalBankFilter =
+        null;
+
+      this.materialParentFilter =
+        null;
+
+
+      this.applyMaterialFilters();
+    }
+
 
     onBackToHarvest(): void {
       const idHarvest =
@@ -154,24 +829,165 @@ export class MaterialListComponent implements OnInit {
       this.loadMaterials();
     }
 
-    loadMaterials() {
-        const pageIndex = this.paginator ? this.paginator.pageIndex + 1 : 1;
-        const pageSize = this.paginator ? this.paginator.pageSize : this.rowPerPage;
-        let params = new HttpParams()
-                  .set('page', pageIndex)
-                  .set('limit', pageSize);        
-        this.api.getMaterialsByHarvest(this.exsituFormService.idHarvest, params).subscribe(response => {
-          this.totalMaterials = response['total'];  
-          this.dataSource.data = [];
-          const transformedMaterials = response['materials'].map(material => {
-            const { taxonsDisplay, taxonsTooltip } = this.transformTaxons(material.taxons);
-            return {
-              ...material,
-              taxonsDisplay,
-              taxonsTooltip
-            };
-          });
-          this.dataSource.data = transformedMaterials; 
+    loadMaterials(): void {
+
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
+
+      if (!idHarvest) {
+
+        this.totalMaterials = 0;
+
+        this.allMaterials = [];
+
+        this.dataSource.data = [];
+
+        return;
+
+      }
+
+
+      /*
+       * Premier appel :
+       * récupérer le nombre total de matériels.
+       */
+      const countParams =
+        new HttpParams()
+          .set('page', 1)
+          .set('limit', 1);
+
+
+      this.api
+        .getMaterialsByHarvest(
+          idHarvest,
+          countParams
+        )
+        .subscribe({
+
+          next: (
+            firstResponse: any
+          ) => {
+
+            const total =
+              Number(
+                firstResponse?.['total'] || 0
+              );
+
+
+            this.totalMaterials =
+              total;
+
+
+            if (total === 0) {
+
+              this.allMaterials = [];
+
+              this.dataSource.data = [];
+
+              return;
+
+            }
+
+
+            /*
+             * Deuxième appel :
+             * récupérer TOUS les matériels
+             * pour que les filtres travaillent
+             * sur toute la liste.
+             */
+            const allParams =
+              new HttpParams()
+                .set('page', 1)
+                .set('limit', total);
+
+
+            this.api
+              .getMaterialsByHarvest(
+                idHarvest,
+                allParams
+              )
+              .subscribe({
+
+                next: (
+                  response: any
+                ) => {
+
+                  const transformedMaterials =
+                    (
+                      response?.['materials'] || []
+                    )
+                      .map(
+                        material => {
+
+                          const {
+                            taxonsDisplay,
+                            taxonsTooltip
+                          } =
+                            this.transformTaxons(
+                              material.taxons
+                            );
+
+
+                          return {
+                            ...material,
+                            taxonsDisplay,
+                            taxonsTooltip
+                          };
+
+                        }
+                      );
+
+
+                  /*
+                   * Source complète pour les filtres.
+                   */
+                  this.allMaterials =
+                    transformedMaterials;
+
+
+                  /*
+                   * Le tableau reçoit ensuite
+                   * le résultat des filtres.
+                   */
+                  this.applyMaterialFilters();
+
+                },
+
+                error: (
+                  error
+                ) => {
+
+                  console.error(
+                    'Erreur lors du chargement des matériels récoltés :',
+                    error
+                  );
+
+                  this.allMaterials = [];
+
+                  this.dataSource.data = [];
+
+                }
+
+              });
+
+          },
+
+          error: (
+            error
+          ) => {
+
+            console.error(
+              'Erreur lors du chargement des matériels récoltés :',
+              error
+            );
+
+            this.allMaterials = [];
+
+            this.dataSource.data = [];
+
+          }
+
         });
     }
 

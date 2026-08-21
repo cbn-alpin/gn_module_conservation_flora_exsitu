@@ -47,10 +47,273 @@
 
     <ng-container
       *ngIf="
-        dataSource.data.length > 0;
+        allMaterials.length > 0;
         else noMaterialData
       "
     >
+
+      <!-- ===================================================
+           FILTRES MATÉRIELS RÉCOLTÉS
+           =================================================== -->
+
+      <div class="material-filters-card">
+
+        <div class="material-filters-header">
+
+          <div class="material-filters-title">
+
+            <div class="material-filters-icon">
+
+              <mat-icon>
+                filter_alt
+              </mat-icon>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Filtres des matériels récoltés
+              </span>
+
+              <small>
+                Affiner par N° récolte, taxon,
+                matériel végétal, banque culturale
+                et récolte parent
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <button
+            mat-button
+            type="button"
+            class="reset-material-filter-button"
+            (click)="resetMaterialFilters()"
+          >
+
+            <mat-icon>
+              autorenew
+            </mat-icon>
+
+            Réinitialiser
+
+          </button>
+
+        </div>
+
+
+        <div class="material-filter-fields">
+
+          <!-- N° RÉCOLTE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="material-filter-field"
+          >
+
+            <mat-label>
+              N° récolte
+            </mat-label>
+
+            <input
+              matInput
+              [(ngModel)]="materialCodeFilter"
+              (ngModelChange)="
+                onMaterialCodeFilterChange(
+                  $event
+                )
+              "
+              placeholder="Rechercher un N° récolte"
+            >
+
+            <mat-icon matSuffix>
+              search
+            </mat-icon>
+
+          </mat-form-field>
+
+
+          <!-- TAXONS -->
+
+          <mat-form-field
+            appearance="outline"
+            class="material-filter-field"
+          >
+
+            <mat-label>
+              Taxons
+            </mat-label>
+
+            <mat-select
+              [value]="materialTaxonFilter"
+              (selectionChange)="
+                onMaterialTaxonFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les taxons
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let taxon of
+                  materialTaxonFilterOptions
+                "
+                [value]="taxon"
+              >
+                {{ taxon }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- MATÉRIEL VÉGÉTAL -->
+
+          <mat-form-field
+            appearance="outline"
+            class="material-filter-field"
+          >
+
+            <mat-label>
+              Matériel végétal
+            </mat-label>
+
+            <mat-select
+              [value]="materialTypeFilter"
+              (selectionChange)="
+                onMaterialTypeFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les matériels
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let materialType of
+                  materialTypeFilterOptions
+                "
+                [value]="materialType"
+              >
+                {{ materialType }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- N° BANQUE CULTURALE -->
+
+          <mat-form-field
+            appearance="outline"
+            class="
+              material-filter-field
+              material-cultural-bank-filter-field
+            "
+          >
+
+            <mat-label>
+              N° banque culturale
+            </mat-label>
+
+            <mat-select
+              [value]="
+                materialCulturalBankFilter
+              "
+              (selectionChange)="
+                onMaterialCulturalBankFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Toutes les banques
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let culturalBank of
+                  materialCulturalBankFilterOptions
+                "
+                [value]="culturalBank"
+              >
+                {{ culturalBank }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- N° RÉCOLTE PARENT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="material-filter-field"
+          >
+
+            <mat-label>
+              N° récolte parent
+            </mat-label>
+
+            <mat-select
+              [value]="materialParentFilter"
+              (selectionChange)="
+                onMaterialParentFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Toutes les récoltes parentes
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let parent of
+                  materialParentFilterOptions
+                "
+                [value]="parent"
+              >
+                {{ parent }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+
+      <!-- LISTE FILTRÉE -->
+
+      <ng-container
+        *ngIf="
+          dataSource.data.length > 0;
+          else noFilteredMaterial
+        "
+      >
 
       <div
         id="matlist-container"
@@ -195,17 +458,46 @@
     </table>
 
     </div>
+
       <mat-paginator
         class="material-list-paginator"
-        [length]="totalMaterials"
         [pageSize]="rowPerPage"
         [pageSizeOptions]="[5, 10, 25, 100]"
-        (page)="onPaginateChange()"
         showFirstLastButtons
       >
       </mat-paginator>
 
     </div>
+
+      </ng-container>
+
+
+      <!-- Aucun résultat après filtrage -->
+
+      <ng-template #noFilteredMaterial>
+
+        <div class="no-filtered-material">
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+
+          <div>
+
+            <strong>
+              Aucun matériel récolté ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez les critères ou réinitialisez les filtres.
+            </span>
+
+          </div>
+
+        </div>
+
+      </ng-template>
 
   </ng-container>
 
