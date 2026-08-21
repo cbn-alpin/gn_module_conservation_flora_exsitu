@@ -252,13 +252,24 @@
 
 
 /* =========================================================
-   TABLEAU
+   TABLEAU VIABILITÉ
+   Largeur totale verrouillée : 1290px
    ========================================================= */
 
-.viability-list-table {
+.viability-list-table-scroll {
   width: 100%;
+
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+
+.viability-list-table {
+  width: 1290px;
+  min-width: 1290px;
+  max-width: 1290px;
+
   table-layout: fixed;
-  overflow: hidden;
 
   background-color: #ffffff;
 
@@ -279,16 +290,18 @@
 .viability-list-table .mat-mdc-header-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+
+  padding: 0 16px !important;
 
   color: #7a3b00;
 
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.2px;
-  text-overflow: ellipsis;
   text-transform: uppercase;
-  white-space: nowrap;
 
   border-bottom: 1px solid #f2c79f;
 }
@@ -304,13 +317,16 @@
 .viability-list-table .mat-mdc-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  padding: 0 16px !important;
 
   color: #263238;
 
   font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 
   border-bottom: 1px solid #f9e8d9;
 }
@@ -336,46 +352,129 @@
 
 
 /* =========================================================
-   LARGEURS FIXES DES COLONNES
+   LARGEURS VERROUILLÉES DES COLONNES VIABILITÉ
+
+   N° test Viabilité  : 250px
+   Date de début      : 220px
+   Nb de graines      : 216px
+   Liquide traitement : 350px
+   Prétraitement      : 190px
+   Actions            :  64px
+
+   TOTAL              : 1290px
    ========================================================= */
 
+
+/* N° test de Viabilité */
 :host ::ng-deep
 .viability-list-table .mat-column-code {
-  width: 20%;
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
 
   color: #7a3b00;
+
   font-weight: 800;
 }
 
 
+/* Date de début */
 :host ::ng-deep
 .viability-list-table .mat-column-meta_create_date {
-  width: 17%;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
 }
 
 
+/* Nb de graines */
 :host ::ng-deep
 .viability-list-table .mat-column-seed_initial_count {
-  width: 15%;
+  width: 216px;
+  min-width: 216px;
+  max-width: 216px;
 }
 
 
+/* Liquide traitement */
 :host ::ng-deep
 .viability-list-table .mat-column-traitement {
-  width: 22%;
+  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
 }
 
 
+/* Prétraitement */
 :host ::ng-deep
 .viability-list-table .mat-column-pre_treatment {
-  width: 16%;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+
   text-align: center;
 }
 
 
+.pre-treatment-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  min-width: 72px;
+  padding: 3px 8px 3px 5px;
+
+  box-sizing: border-box;
+
+  color: #6d6d6d;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e4d8ce;
+  border-radius: 999px;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.pre-treatment-control.pre-treatment-active {
+  color: #7a3b00;
+
+  background-color: #fff0e3;
+
+  border-color: #e07a1f;
+}
+
+
+.pre-treatment-label {
+  min-width: 24px;
+
+  font-size: 12px;
+  font-weight: 750;
+  text-align: left;
+}
+
+
+:host ::ng-deep
+.pre-treatment-checkbox {
+  --mdc-checkbox-selected-focus-icon-color: #e07a1f;
+  --mdc-checkbox-selected-hover-icon-color: #e07a1f;
+  --mdc-checkbox-selected-icon-color: #e07a1f;
+  --mdc-checkbox-selected-pressed-icon-color: #e07a1f;
+
+  --mdc-checkbox-selected-checkmark-color: #ffffff;
+}
+
+
+/* Actions */
 :host ::ng-deep
 .viability-list-table .mat-column-actions {
   position: relative;
+
   box-sizing: border-box;
 
   width: 64px;

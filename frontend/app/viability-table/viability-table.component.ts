@@ -172,7 +172,7 @@ import { ActivatedRoute } from '@angular/router';
           const mappedTests = filteredTests.map(t => ({
             ...t,
             thermoPhoto: '',
-            treatment: '-'
+            traitement: '-'
           }));
     
           // 4. Charger les traitements et régimes
@@ -180,10 +180,10 @@ import { ActivatedRoute } from '@angular/router';
             mappedTests.map(async test => {
               try {
                 const res = await this.api.getTreatmentByTest(test.id_test).toPromise();
-                test.treatment = res?.treatment_label ?? '-';
+                test.traitement = res?.treatment_label ?? '-';
               } catch (e) {
                 console.warn("⚠️ Erreur traitement pour test", test.id_test, e);
-                test.treatment = '-';
+                test.traitement = '-';
               }
     
               try {
