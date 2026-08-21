@@ -45,135 +45,576 @@
 
   <mat-card-content class="viability-list-content">
 
+    <!-- Il existe au moins un test de viabilité -->
+
     <ng-container
       *ngIf="
-        dataSource.data.length > 0;
+        allViabilityTests.length > 0;
         else noViabilityData
       "
     >
-      <div class="viability-list-table-scroll">
 
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        class="viability-list-table"
-      >
+      <!-- ===================================================
+           FILTRES VIABILITÉ
+           =================================================== -->
 
-        <!-- N° test -->
-        <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef>N° test de Viabilité</th>
-          <td mat-cell *matCellDef="let element">{{ element.code }}</td>
-        </ng-container>
+      <div class="viability-filters-card">
 
-        <!-- Date de début -->
-        <ng-container matColumnDef="meta_create_date">
-          <th mat-header-cell *matHeaderCellDef>Date de début</th>
-          <td mat-cell *matCellDef="let element">{{ element.meta_create_date | date:'dd/MM/yyyy' }}</td>
-        </ng-container>
+        <div class="viability-filters-header">
 
-        <!-- Nb graines -->
-        <ng-container matColumnDef="seed_initial_count">
-          <th mat-header-cell *matHeaderCellDef>Nb de graines</th>
-          <td mat-cell *matCellDef="let element">{{ element.seed_initial_count }}</td>
-        </ng-container>
+          <div class="viability-filters-title">
 
-        <!-- Traitement -->
-        <ng-container matColumnDef="traitement">
-          <th mat-header-cell *matHeaderCellDef>Liquide traitement</th>
-          <td mat-cell *matCellDef="let element">
-            <span *ngIf="element.traitement">{{ element.traitement }}</span>
-            <span *ngIf="!element.traitement">-</span>
-          </td>
-        </ng-container>
+            <div class="viability-filters-icon">
 
-        <!-- Prétraitement -->
-        <ng-container matColumnDef="pre_treatment">
-          <th mat-header-cell *matHeaderCellDef>Prétraitement</th>
-          <td mat-cell *matCellDef="let element">
-
-            <div
-              class="pre-treatment-control"
-              [class.pre-treatment-active]="element.pre_treatment === true"
-              (click)="$event.stopPropagation()"
-            >
-
-              <mat-checkbox
-                class="pre-treatment-checkbox"
-                [checked]="element.pre_treatment === true"
-                (change)="onChangePreTreatment(element, $event.checked)">
-              </mat-checkbox>
-
-              <span class="pre-treatment-label">
-                {{ element.pre_treatment === true ? 'Oui' : 'Non' }}
-              </span>
+              <mat-icon>
+                filter_alt
+              </mat-icon>
 
             </div>
 
-          </td>
-        </ng-container>
 
-        <!-- Actions -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
-          <td mat-cell *matCellDef="let element">
-            <button
-              mat-icon-button
-              class="actions-trigger-red"
-              [matMenuTriggerFor]="menu"
-              (menuOpened)="setActiveActionRow(element)"
-              (menuClosed)="clearActiveActionRow()"
-              (click)="$event.stopPropagation()"
-              aria-label="Actions"
+            <div>
+
+              <span>
+                Filtres des tests de viabilité
+              </span>
+
+              <small>
+                Affiner par N° de test, date de début,
+                liquide de traitement et prétraitement
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <button
+            mat-button
+            type="button"
+            class="reset-viability-filter-button"
+            (click)="resetViabilityFilters()"
+          >
+
+            <mat-icon>
+              autorenew
+            </mat-icon>
+
+            Réinitialiser
+
+          </button>
+
+        </div>
+
+
+        <div class="viability-filter-fields">
+
+          <!-- N° TEST -->
+
+          <mat-form-field
+            appearance="outline"
+            class="viability-filter-field"
+          >
+
+            <mat-label>
+              N° test de viabilité
+            </mat-label>
+
+            <input
+              matInput
+              [(ngModel)]="viabilityCodeFilter"
+              (ngModelChange)="
+                onViabilityCodeFilterChange($event)
+              "
+              placeholder="Rechercher un N° de test"
             >
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="onEdit(element)">
-                <mat-icon>edit</mat-icon>
-                <span>Modifier</span>
-              </button>
 
-              <button mat-menu-item (click)="onDetails(element)">
-                <mat-icon style="color: #FFA726;">visibility</mat-icon>
-                <span>Détails/Action</span>
-              </button>
+            <mat-icon matSuffix>
+              search
+            </mat-icon>
 
-              <button mat-menu-item class="delete-action-red" (click)="onDelete(element)">
-                <mat-icon>delete</mat-icon>
-                <span>Supprimer</span>
-              </button>
-            </mat-menu>
-          </td>
-        </ng-container>
+          </mat-form-field>
 
-        <!-- Lignes du tableau -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns;"
-          class="clickable-row"
-          [class.action-row-active]="isActionRowActive(row)"
-          (click)="onRowClick(row)"
-        >
-        </tr>
-      </table>
+
+          <!-- À PARTIR DU -->
+
+          <mat-form-field
+            appearance="outline"
+            class="viability-filter-field"
+          >
+
+            <mat-label>
+              À partir du
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                viabilityStartDateFromFilterPicker
+              "
+              [(ngModel)]="
+                viabilityStartDateFromFilter
+              "
+              (dateInput)="
+                onViabilityStartDateFromFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="
+                viabilityStartDateFromFilterPicker
+              "
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #viabilityStartDateFromFilterPicker
+            >
+            </mat-datepicker>
+
+          </mat-form-field>
+
+
+          <!-- LIQUIDE TRAITEMENT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="viability-filter-field"
+          >
+
+            <mat-label>
+              Liquide traitement
+            </mat-label>
+
+            <mat-select
+              [value]="viabilityTreatmentFilter"
+              (selectionChange)="
+                onViabilityTreatmentFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les liquides
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let treatment of
+                  viabilityTreatmentFilterOptions
+                "
+                [value]="treatment"
+              >
+
+                {{ treatment }}
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- PRÉTRAITEMENT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="viability-filter-field"
+          >
+
+            <mat-label>
+              Prétraitement
+            </mat-label>
+
+            <mat-select
+              [value]="viabilityPreTreatmentFilter"
+              (selectionChange)="
+                onViabilityPreTreatmentFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let preTreatment of
+                  viabilityPreTreatmentFilterOptions
+                "
+                [value]="preTreatment"
+              >
+
+                {{
+                  preTreatment
+                    ? 'Oui'
+                    : 'Non'
+                }}
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
 
       </div>
 
-      <mat-paginator
-        class="viability-list-paginator"
-        [pageSize]="rowPerPage"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        showFirstLastButtons>
-      </mat-paginator>
+
+      <!-- ===================================================
+           LISTE FILTRÉE
+           =================================================== -->
+
+      <ng-container
+        *ngIf="
+          dataSource.data.length > 0;
+          else noFilteredViability
+        "
+      >
+
+        <div class="viability-list-table-scroll">
+
+          <table
+            mat-table
+            [dataSource]="dataSource"
+            class="viability-list-table"
+          >
+
+            <!-- N° test -->
+
+            <ng-container matColumnDef="code">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                N° test de Viabilité
+              </th>
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+                {{ element.code }}
+              </td>
+
+            </ng-container>
+
+
+            <!-- Date de début -->
+
+            <ng-container matColumnDef="meta_create_date">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Date de début
+              </th>
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+                {{
+                  element.meta_create_date
+                    | date:'dd/MM/yyyy'
+                }}
+              </td>
+
+            </ng-container>
+
+
+            <!-- Nb graines -->
+
+            <ng-container matColumnDef="seed_initial_count">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Nb de graines
+              </th>
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+                {{ element.seed_initial_count }}
+              </td>
+
+            </ng-container>
+
+
+            <!-- Traitement -->
+
+            <ng-container matColumnDef="traitement">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Liquide traitement
+              </th>
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+
+                <span *ngIf="element.traitement">
+                  {{ element.traitement }}
+                </span>
+
+                <span *ngIf="!element.traitement">
+                  -
+                </span>
+
+              </td>
+
+            </ng-container>
+
+
+            <!-- Prétraitement -->
+
+            <ng-container matColumnDef="pre_treatment">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Prétraitement
+              </th>
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+
+                <div
+                  class="pre-treatment-control"
+                  [class.pre-treatment-active]="
+                    element.pre_treatment === true
+                  "
+                  (click)="$event.stopPropagation()"
+                >
+
+                  <mat-checkbox
+                    class="pre-treatment-checkbox"
+                    [checked]="
+                      element.pre_treatment === true
+                    "
+                    (change)="
+                      onChangePreTreatment(
+                        element,
+                        $event.checked
+                      )
+                    "
+                  >
+                  </mat-checkbox>
+
+
+                  <span class="pre-treatment-label">
+
+                    {{
+                      element.pre_treatment === true
+                        ? 'Oui'
+                        : 'Non'
+                    }}
+
+                  </span>
+
+                </div>
+
+              </td>
+
+            </ng-container>
+
+
+            <!-- Actions -->
+
+            <ng-container matColumnDef="actions">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                aria-label="Actions"
+              >
+              </th>
+
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+
+                <button
+                  mat-icon-button
+                  class="actions-trigger-red"
+                  [matMenuTriggerFor]="menu"
+                  (menuOpened)="
+                    setActiveActionRow(element)
+                  "
+                  (menuClosed)="
+                    clearActiveActionRow()
+                  "
+                  (click)="
+                    $event.stopPropagation()
+                  "
+                  aria-label="Actions"
+                >
+                  <mat-icon>
+                    more_vert
+                  </mat-icon>
+                </button>
+
+
+                <mat-menu #menu="matMenu">
+
+                  <button
+                    mat-menu-item
+                    (click)="onEdit(element)"
+                  >
+                    <mat-icon>
+                      edit
+                    </mat-icon>
+
+                    <span>
+                      Modifier
+                    </span>
+                  </button>
+
+
+                  <button
+                    mat-menu-item
+                    (click)="onDetails(element)"
+                  >
+                    <mat-icon style="color: #FFA726;">
+                      visibility
+                    </mat-icon>
+
+                    <span>
+                      Détails/Action
+                    </span>
+                  </button>
+
+
+                  <button
+                    mat-menu-item
+                    class="delete-action-red"
+                    (click)="onDelete(element)"
+                  >
+                    <mat-icon>
+                      delete
+                    </mat-icon>
+
+                    <span>
+                      Supprimer
+                    </span>
+                  </button>
+
+                </mat-menu>
+
+              </td>
+
+            </ng-container>
+
+
+            <!-- Lignes du tableau -->
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            >
+            </tr>
+
+            <tr
+              mat-row
+              *matRowDef="
+                let row;
+                columns: displayedColumns;
+              "
+              class="clickable-row"
+              [class.action-row-active]="
+                isActionRowActive(row)
+              "
+              (click)="onRowClick(row)"
+            >
+            </tr>
+
+          </table>
+
+        </div>
+
+
+        <!-- PAGINATION DE LA LISTE FILTRÉE -->
+
+        <mat-paginator
+          class="viability-list-paginator"
+          [pageSize]="rowPerPage"
+          [pageSizeOptions]="[5, 10, 25, 100]"
+          showFirstLastButtons
+        >
+        </mat-paginator>
+
+      </ng-container>
+
+
+      <!-- Aucun résultat pour les filtres -->
+
+      <ng-template #noFilteredViability>
+
+        <div class="no-filtered-viability">
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+
+          <div>
+
+            <strong>
+              Aucun test de viabilité ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez les critères ou réinitialisez
+              les filtres.
+            </span>
+
+          </div>
+
+        </div>
+
+      </ng-template>
 
     </ng-container>
 
+
+    <!-- Aucun test enregistré -->
+
     <ng-template #noViabilityData>
+
       <mat-card class="alert-card warning-card mt-4">
-        <mat-icon color="warn">info</mat-icon>
+
+        <mat-icon color="warn">
+          info
+        </mat-icon>
+
         Aucun test de viabilité enregistré pour ce matériel.
+
       </mat-card>
+
     </ng-template>
+
   </mat-card-content>
 </mat-card>

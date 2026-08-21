@@ -840,3 +840,299 @@ table tr.mat-row:hover {
 .alert-card mat-icon {
   color: #f44336 !important;
 }
+
+
+/* =========================================================
+   FILTRES DE LA LISTE VIABILITÉ
+   ========================================================= */
+
+.viability-filters-card {
+  margin-bottom: 14px;
+
+  padding: 14px 16px 10px;
+
+  border: 1px solid #f2d9c1;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdfb 0%,
+      #ffffff 100%
+    );
+
+  box-shadow:
+    0 3px 10px
+    rgba(224, 122, 31, 0.06);
+}
+
+
+/* =========================================================
+   EN-TÊTE DES FILTRES
+   ========================================================= */
+
+.viability-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 12px;
+}
+
+
+.viability-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #7a3b00;
+}
+
+
+.viability-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  color: #e07a1f;
+
+  background-color: #fff0e3;
+
+  border-radius: 50%;
+}
+
+
+.viability-filters-icon mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #e07a1f;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.viability-filters-title span {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+.viability-filters-title small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #956743;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   CHAMPS
+   ========================================================= */
+
+.viability-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(200px, 1.2fr)
+    minmax(170px, 1fr)
+    minmax(190px, 1fr)
+    minmax(190px, 1fr);
+
+  gap: 14px;
+
+  align-items: center;
+}
+
+
+.viability-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.viability-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.viability-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+/* Focus orange Viabilité */
+
+:host ::ng-deep
+.viability-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.viability-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.viability-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #e07a1f !important;
+}
+
+
+:host ::ng-deep
+.viability-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #7a3b00 !important;
+}
+
+
+/* =========================================================
+   RÉINITIALISER
+   ========================================================= */
+
+.reset-viability-filter-button {
+  min-height: 34px;
+
+  padding: 5px 13px;
+
+  color: #ffffff !important;
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  background-color: #8e24aa;
+
+  border: 1px solid #7b1fa2;
+  border-radius: 999px;
+}
+
+
+.reset-viability-filter-button:hover {
+  background-color: #7b1fa2;
+}
+
+
+.reset-viability-filter-button mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+/* =========================================================
+   AUCUN RÉSULTAT
+   ========================================================= */
+
+.no-filtered-viability {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 4px;
+  padding: 22px 16px;
+
+  color: #956743;
+
+  background-color: #fffdfb;
+
+  border: 1px dashed #f2c79f;
+  border-radius: 12px;
+}
+
+
+.no-filtered-viability mat-icon {
+  color: #e07a1f;
+}
+
+
+.no-filtered-viability strong,
+.no-filtered-viability span {
+  display: block;
+}
+
+
+.no-filtered-viability strong {
+  color: #7a3b00;
+
+  font-size: 13px;
+}
+
+
+.no-filtered-viability span {
+  margin-top: 3px;
+
+  color: #a17856;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+  .viability-filter-fields {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .viability-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .viability-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+
+  .reset-viability-filter-button {
+    width: fit-content;
+  }
+
+}

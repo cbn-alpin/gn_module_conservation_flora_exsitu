@@ -11,6 +11,14 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
 
 import { ActivatedRoute } from '@angular/router';
 
+import {
+  DateAdapter
+} from '@angular/material/core';
+
+import {
+  FrenchDateAdapter
+} from '../services/french-date-adapter';
+
   interface Viability {
     numSemis: string;
     numSemence: string;
@@ -22,7 +30,14 @@ import { ActivatedRoute } from '@angular/router';
   @Component({
     selector: 'app-viability-table',
     templateUrl: './viability-table.component.html',
-    styleUrls: ['./viability-table.component.scss']
+    styleUrls: ['./viability-table.component.scss'],
+
+    providers: [
+      {
+        provide: DateAdapter,
+        useClass: FrenchDateAdapter
+      }
+    ]
   })
   export class ViabilityTableComponent implements OnInit, AfterViewInit {
    idMaterial: number | null = null;
@@ -51,6 +66,41 @@ import { ActivatedRoute } from '@angular/router';
      }
 
      rowPerPage = 5;
+
+
+     /*
+      * Liste complète reçue de l'API.
+      *
+      * Elle ne doit jamais être remplacée
+      * par le résultat filtré.
+      */
+     public allViabilityTests: any[] = [];
+
+
+     /*
+      * Valeurs sélectionnées dans les filtres.
+      */
+     public viabilityCodeFilter = '';
+
+     public viabilityStartDateFromFilter:
+       Date | null = null;
+
+     public viabilityTreatmentFilter:
+       string | null = null;
+
+     public viabilityPreTreatmentFilter:
+       boolean | null = null;
+
+
+     /*
+      * Options dynamiques.
+      */
+     public viabilityTreatmentFilterOptions:
+       string[] = [];
+
+     public viabilityPreTreatmentFilterOptions:
+       boolean[] = [];
+
 
      public activeActionRowId: number | null = null;
 
@@ -92,6 +142,491 @@ import { ActivatedRoute } from '@angular/router';
      ngAfterViewInit(): void {
        this.syncPaginator();
      }
+
+
+     /* =========================================================
+        FILTRES DE LA LISTE VIABILITÉ
+        ========================================================= */
+
+
+     private getViabilityTreatmentFilterValue(
+       test: any
+     ): string {
+
+       const value =
+         test?.traitement ||
+         test?.treatment_label ||
+         '';
+
+
+       const normalizedValue =
+         String(value).trim();
+
+
+       /*
+        * Une valeur vide ou null correspond
+        * à l'absence de liquide de traitement.
+        *
+        * On utilise "-" comme dans le tableau
+        * afin de pouvoir également filtrer
+        * les tests sans liquide renseigné.
+        */
+       return normalizedValue
+         ? normalizedValue
+         : '-';
+     }
+
+
+     private getViabilityPreTreatmentFilterValue(
+       test: any
+     ): boolean {
+
+       return test?.pre_treatment === true;
+     }
+
+
+     private getViabilityDateFilterKey(
+       value: any
+     ): string {
+
+       if (!value) {
+         return '';
+       }
+
+
+       /*
+        * Date directement renvoyée par l'API.
+        */
+       if (typeof value === 'string') {
+
+         const datePart =
+           value.split('T')[0];
+
+
+         if (
+           /^\d{4}-\d{2}-\d{2}$/.test(
+             datePart
+           )
+         ) {
+           return datePart;
+         }
+
+       }
+
+
+       const date =
+         value instanceof Date
+           ? value
+           : new Date(value);
+
+
+       if (
+         Number.isNaN(
+           date.getTime()
+         )
+       ) {
+         return '';
+       }
+
+
+       const year =
+         date.getFullYear();
+
+       const month =
+         String(
+           date.getMonth() + 1
+         ).padStart(2, '0');
+
+       const day =
+         String(
+           date.getDate()
+         ).padStart(2, '0');
+
+
+       return `${year}-${month}-${day}`;
+     }
+
+
+     /*
+      * N° du test + Date constituent les filtres
+      * de base.
+      *
+      * Ils déterminent également quelles valeurs
+      * restent possibles dans les listes
+      * Liquide traitement / Prétraitement.
+      */
+     private getViabilityMatchingBaseFilters():
+       any[] {
+
+       const normalizedCode =
+         String(
+           this.viabilityCodeFilter || ''
+         )
+           .trim()
+           .toLowerCase();
+
+
+       const selectedDateKey =
+         this.getViabilityDateFilterKey(
+           this.viabilityStartDateFromFilter
+         );
+
+
+       return this.allViabilityTests.filter(
+         test => {
+
+           const testCode =
+             String(
+               test?.code || ''
+             )
+               .trim()
+               .toLowerCase();
+
+
+           const testDateKey =
+             this.getViabilityDateFilterKey(
+               test?.meta_create_date
+             );
+
+
+           const matchesCode =
+             !normalizedCode ||
+             testCode.includes(
+               normalizedCode
+             );
+
+
+           const matchesDate =
+             !selectedDateKey ||
+             (
+               !!testDateKey &&
+               testDateKey >=
+                 selectedDateKey
+             );
+
+
+           return (
+             matchesCode &&
+             matchesDate
+           );
+
+         }
+       );
+     }
+
+
+     /*
+      * Rend Liquide traitement et Prétraitement
+      * dynamiques entre eux.
+      *
+      * Exemple :
+      *
+      * Prétraitement = Oui
+      *   ->
+      * seuls les liquides réellement présents
+      * pour les tests ayant un prétraitement
+      * restent proposés.
+      *
+      * Liquide = X
+      *   ->
+      * seules les valeurs Oui / Non réellement
+      * compatibles avec ce liquide restent
+      * proposées.
+      */
+     private updateViabilityFilterOptions(
+       baseTests: any[]
+     ): void {
+
+       let selectedTreatment =
+         this.viabilityTreatmentFilter;
+
+       let selectedPreTreatment =
+         this.viabilityPreTreatmentFilter;
+
+
+       let treatmentOptions:
+         string[] = [];
+
+       let preTreatmentOptions:
+         boolean[] = [];
+
+
+       /*
+        * Deux passages permettent également
+        * d'annuler automatiquement une sélection
+        * devenue impossible après modification
+        * du N° de test ou de la Date.
+        */
+       for (
+         let pass = 0;
+         pass < 2;
+         pass++
+       ) {
+
+         /*
+          * Options de liquide disponibles en tenant
+          * compte du prétraitement sélectionné.
+          */
+         const testsForTreatments =
+           baseTests.filter(
+             test =>
+               selectedPreTreatment === null ||
+               this.getViabilityPreTreatmentFilterValue(
+                 test
+               ) === selectedPreTreatment
+           );
+
+
+         treatmentOptions =
+           Array.from(
+             new Set(
+               testsForTreatments
+                 .map(
+                   test =>
+                     this.getViabilityTreatmentFilterValue(
+                       test
+                     )
+                 )
+             )
+           )
+             .sort(
+               (a, b) => {
+
+                 /*
+                  * On place toujours "-"
+                  * en premier dans la liste.
+                  */
+                 if (a === '-') {
+                   return -1;
+                 }
+
+                 if (b === '-') {
+                   return 1;
+                 }
+
+                 return a.localeCompare(
+                   b,
+                   'fr'
+                 );
+               }
+             );
+
+
+         if (
+           selectedTreatment &&
+           !treatmentOptions.includes(
+             selectedTreatment
+           )
+         ) {
+           selectedTreatment = null;
+         }
+
+
+         /*
+          * Options Oui / Non disponibles en tenant
+          * compte du liquide sélectionné.
+          */
+         const testsForPreTreatment =
+           baseTests.filter(
+             test =>
+               !selectedTreatment ||
+               this.getViabilityTreatmentFilterValue(
+                 test
+               ) === selectedTreatment
+           );
+
+
+         preTreatmentOptions =
+           Array.from(
+             new Set(
+               testsForPreTreatment.map(
+                 test =>
+                   this.getViabilityPreTreatmentFilterValue(
+                     test
+                   )
+               )
+             )
+           )
+             .sort(
+               (a, b) =>
+                 Number(b) -
+                 Number(a)
+             );
+
+
+         if (
+           selectedPreTreatment !== null &&
+           !preTreatmentOptions.includes(
+             selectedPreTreatment
+           )
+         ) {
+           selectedPreTreatment = null;
+         }
+
+       }
+
+
+       this.viabilityTreatmentFilter =
+         selectedTreatment;
+
+       this.viabilityPreTreatmentFilter =
+         selectedPreTreatment;
+
+       this.viabilityTreatmentFilterOptions =
+         treatmentOptions;
+
+       this.viabilityPreTreatmentFilterOptions =
+         preTreatmentOptions;
+     }
+
+
+     public applyViabilityFilters(): void {
+
+       /*
+        * 1. N° test + Date.
+        */
+       const baseTests =
+         this.getViabilityMatchingBaseFilters();
+
+
+       /*
+        * 2. Recalcul dynamique des choix disponibles.
+        */
+       this.updateViabilityFilterOptions(
+         baseTests
+       );
+
+
+       /*
+        * 3. Application finale :
+        *    Liquide + Prétraitement.
+        */
+       const filteredTests =
+         baseTests.filter(
+           test => {
+
+             const treatment =
+               this.getViabilityTreatmentFilterValue(
+                 test
+               );
+
+             const preTreatment =
+               this.getViabilityPreTreatmentFilterValue(
+                 test
+               );
+
+
+             const matchesTreatment =
+               !this.viabilityTreatmentFilter ||
+               treatment ===
+                 this.viabilityTreatmentFilter;
+
+
+             const matchesPreTreatment =
+               this.viabilityPreTreatmentFilter ===
+                 null ||
+               preTreatment ===
+                 this.viabilityPreTreatmentFilter;
+
+
+             return (
+               matchesTreatment &&
+               matchesPreTreatment
+             );
+
+           }
+         );
+
+
+       /*
+        * Le tableau reçoit uniquement la liste
+        * filtrée.
+        *
+        * MatTableDataSource informe automatiquement
+        * le MatPaginator du nouveau nombre de lignes.
+        */
+       this.dataSource.data =
+         filteredTests;
+
+
+       /*
+        * Après n'importe quel changement de filtre,
+        * retour systématique à la page 1.
+        */
+       setTimeout(() => {
+
+         this.syncPaginator();
+
+
+         if (this.paginatorRef) {
+           this.paginatorRef.firstPage();
+         }
+
+       });
+     }
+
+
+     public onViabilityCodeFilterChange(
+       value: string
+     ): void {
+
+       this.viabilityCodeFilter =
+         value || '';
+
+       this.applyViabilityFilters();
+     }
+
+
+     public onViabilityStartDateFromFilterChange(
+       value: Date | null
+     ): void {
+
+       this.viabilityStartDateFromFilter =
+         value;
+
+       this.applyViabilityFilters();
+     }
+
+
+     public onViabilityTreatmentFilterChange(
+       value: string | null
+     ): void {
+
+       this.viabilityTreatmentFilter =
+         value;
+
+       this.applyViabilityFilters();
+     }
+
+
+     public onViabilityPreTreatmentFilterChange(
+       value: boolean | null
+     ): void {
+
+       this.viabilityPreTreatmentFilter =
+         value;
+
+       this.applyViabilityFilters();
+     }
+
+
+     public resetViabilityFilters(): void {
+
+       this.viabilityCodeFilter = '';
+
+       this.viabilityStartDateFromFilter =
+         null;
+
+       this.viabilityTreatmentFilter =
+         null;
+
+       this.viabilityPreTreatmentFilter =
+         null;
+
+
+       this.applyViabilityFilters();
+     }
+
 
      ngOnInit(): void {
       this.route.queryParams.subscribe(params => {
@@ -205,12 +740,38 @@ import { ActivatedRoute } from '@angular/router';
             })
           );
     
-          this.dataSource.data = mappedTests.sort((a, b) =>
-            new Date(b.meta_create_date).getTime() - new Date(a.meta_create_date).getTime()
-          );
+          this.allViabilityTests =
+            mappedTests.sort(
+              (a, b) =>
+                new Date(
+                  b.meta_create_date
+                ).getTime() -
+                new Date(
+                  a.meta_create_date
+                ).getTime()
+            );
+
+
+          /*
+           * La liste complète reste conservée dans
+           * allViabilityTests.
+           *
+           * dataSource reçoit uniquement le résultat
+           * correspondant aux filtres actifs.
+           */
+          this.applyViabilityFilters();
+
         },
         error: (err) => {
-          console.error("❌ Erreur lors du chargement des tests :", err);
+
+          console.error(
+            "❌ Erreur lors du chargement des tests :",
+            err
+          );
+
+
+          this.allViabilityTests = [];
+
           this.dataSource.data = [];
         }
       });
@@ -219,11 +780,30 @@ import { ActivatedRoute } from '@angular/router';
      onChangePreTreatment(element: any, value: boolean): void {
        this.api.updateTestPreTreatment(element.id_test, value).subscribe({
          next: () => {
-           element.pre_treatment = value;
-           console.log("✅ Prétraitement mis à jour :", value);
+
+           element.pre_treatment =
+             value;
+
+
+           /*
+            * Le prétraitement fait partie des filtres.
+            * On recalcule donc immédiatement la liste,
+            * les options dynamiques et la pagination.
+            */
+           this.applyViabilityFilters();
+
+
+           console.log(
+             "✅ Prétraitement mis à jour :",
+             value
+           );
          },
+
          error: (err) => {
-           console.error("❌ Erreur lors de la mise à jour du prétraitement :", err);
+           console.error(
+             "❌ Erreur lors de la mise à jour du prétraitement :",
+             err
+           );
          }
        });
      }
@@ -320,16 +900,14 @@ import { ActivatedRoute } from '@angular/router';
    
        dialogRef.afterClosed().subscribe(result => {
          if (result) {
-           const newEntry: Viability = {
-             numSemis: result.numeroSemis,
-             numSemence: result.numeroSemence,
-             dateDebut: result.dateDebut,
-             dateFin: result.dateFin,
-             replicate: 0,
-             levage: 0
-           };
+
+           /*
+            * On recharge depuis l'API afin que
+            * allViabilityTests reste toujours
+            * la source de référence.
+            */
            this.loadTests();
-           this.dataSource.data = [...this.dataSource.data, newEntry];
+
          }
        });
      }
