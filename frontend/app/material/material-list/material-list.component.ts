@@ -191,13 +191,19 @@ export class MaterialListComponent implements OnInit {
       // Extraire uniquement les `nom_valide`
       const uniqueTaxons = Array.from(new Set(taxons.map(t => t.nom_valide)));
     
-      // Construire l'affichage des taxons
-      const taxonsTooltip = uniqueTaxons.join(' ... ').replace(/, ([^,]+)$/, ' & $1') + '.';
-      let taxonsDisplay = uniqueTaxons.join('... ');
+      // Construire l'affichage des taxons sans points de suspension
+      const taxonsTooltip =
+        uniqueTaxons.join(', ') + '.';
+
+      let taxonsDisplay =
+        uniqueTaxons.join(', ');
     
       if (uniqueTaxons.length > MAX_NAMES) {
-        const firstTaxon = uniqueTaxons.slice(0, MAX_NAMES);
-        taxonsDisplay = `${firstTaxon} (+${uniqueTaxons.length - MAX_NAMES})`;
+        const firstTaxon =
+          uniqueTaxons.slice(0, MAX_NAMES);
+
+        taxonsDisplay =
+          `${firstTaxon} (+${uniqueTaxons.length - MAX_NAMES})`;
       }
     
       return {

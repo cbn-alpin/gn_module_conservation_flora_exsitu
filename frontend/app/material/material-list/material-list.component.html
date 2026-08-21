@@ -56,6 +56,9 @@
         id="matlist-container"
         #dataTableContainer
       >
+
+        <div class="material-list-table-scroll">
+
         <table
           mat-table
           [dataSource]="dataSource"
@@ -71,22 +74,33 @@
         <th mat-header-cell *matHeaderCellDef> Matériel végétal </th>
         <td mat-cell *matCellDef="let element"> {{ element.harvest_material_label }} </td>
       </ng-container>
+
       <!-- Taxons -->
       <ng-container matColumnDef="taxons">
         <th mat-header-cell *matHeaderCellDef> Taxons </th>
-        <td mat-cell *matCellDef="let element" matTooltip="{{ element.taxonsTooltip }}"> 
-          {{ element.taxonsDisplay }} 
+        <td
+          mat-cell
+          *matCellDef="let element"
+          matTooltip="{{ element.taxonsTooltip }}"
+        >
+          {{ element.taxonsDisplay || '-' }}
         </td>
       </ng-container>
+
       <!-- N° de Récolte parent -->
       <ng-container matColumnDef="code_material_parent">
-        <th mat-header-cell *matHeaderCellDef > N° récolte parent </th>
-        <td mat-cell *matCellDef="let element"> {{ element.code_parent }} </td>
+        <th mat-header-cell *matHeaderCellDef> N° récolte parent </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.code_parent || '-' }}
+        </td>
       </ng-container>
+
       <!-- N° de banque -->
       <ng-container matColumnDef="code_cultural_bank">
-        <th mat-header-cell *matHeaderCellDef > N° banque culturale</th>
-        <td mat-cell *matCellDef="let element"> {{ element.code_cultural_bank }} </td>
+        <th mat-header-cell *matHeaderCellDef> N° banque culturale </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.code_cultural_bank || '-' }}
+        </td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
@@ -169,6 +183,8 @@
         (click)="selectMaterial(row)"
       ></tr>
     </table>
+
+    </div>
       <mat-paginator
         class="material-list-paginator"
         [length]="totalMaterials"

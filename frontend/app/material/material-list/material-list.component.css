@@ -253,13 +253,24 @@
 
 
 /* =========================================================
-   TABLEAU
+   TABLEAU MATÉRIELS RÉCOLTÉS
+   Largeur totale verrouillée : 1290px
    ========================================================= */
 
-.material-list-table {
+.material-list-table-scroll {
   width: 100%;
+
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+
+.material-list-table {
+  width: 1290px;
+  min-width: 1290px;
+  max-width: 1290px;
+
   table-layout: fixed;
-  overflow: hidden;
 
   background-color: #ffffff;
 
@@ -280,16 +291,18 @@
 .material-list-table .mat-mdc-header-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+
+  padding: 0 16px !important;
 
   color: #405021;
 
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.2px;
-  text-overflow: ellipsis;
   text-transform: uppercase;
-  white-space: nowrap;
 
   border-bottom: 1px solid #d5ddc1;
 }
@@ -307,16 +320,20 @@
 .material-list-table .mat-mdc-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  padding: 0 16px !important;
 
   color: #263238;
 
   font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 
   border-bottom: 1px solid #eef1e5;
 }
+
 
 :host ::ng-deep
 .material-list-table .mat-mdc-row:hover .mat-mdc-cell {
@@ -330,46 +347,75 @@
     inset 4px 0 0 #667a32;
 }
 
+
 /* =========================================================
-   LARGEURS FIXES DES COLONNES
+   LARGEURS VERROUILLÉES DES COLONNES
+
+   N° récolte          : 220px
+   Taxons              : 340px
+   Matériel végétal    : 220px
+   N° banque culturale : 190px
+   N° récolte parent   : 256px
+   Actions             :  64px
+
+   TOTAL               : 1290px
    ========================================================= */
 
+
+/* N° récolte */
 :host ::ng-deep
 .material-list-table .mat-column-code_material {
-  width: 16%;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
 
   color: #405021;
+
   font-weight: 800;
 }
 
 
+/* Taxons */
 :host ::ng-deep
 .material-list-table .mat-column-taxons {
-  width: 24%;
+  width: 340px;
+  min-width: 340px;
+  max-width: 340px;
 }
 
 
+/* Matériel végétal */
 :host ::ng-deep
 .material-list-table .mat-column-harvest_material {
-  width: 19%;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
 }
 
 
+/* N° banque culturale */
 :host ::ng-deep
 .material-list-table .mat-column-code_cultural_bank {
-  width: 14%;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
 }
 
 
+/* N° récolte parent */
 :host ::ng-deep
 .material-list-table .mat-column-code_material_parent {
-  width: 17%;
+  width: 256px;
+  min-width: 256px;
+  max-width: 256px;
 }
 
 
+/* Actions */
 :host ::ng-deep
 .material-list-table .mat-column-actions {
   position: relative;
+
   box-sizing: border-box;
 
   width: 64px;
