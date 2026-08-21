@@ -8,6 +8,14 @@ import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { DataService } from '../services/data.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
+import {
+  DateAdapter
+} from '@angular/material/core';
+
+import {
+  FrenchDateAdapter
+} from '../services/french-date-adapter';
+
 export interface Germination {
   numSemis: string;
   numSemence: string;
@@ -20,7 +28,14 @@ export interface Germination {
 @Component({
   selector: 'app-germination-table',
   templateUrl: './germination-table.component.html',
-  styleUrls: ['./germination-table.component.scss']
+  styleUrls: ['./germination-table.component.scss'],
+
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: FrenchDateAdapter
+    }
+  ]
 })
 export class GerminationTableComponent implements OnInit, AfterViewInit {
   idMaterial: number | null = null;
@@ -40,6 +55,47 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
   }
 
   rowPerPage = 5;
+
+
+  /*
+   * Liste complète reçue de l'API.
+   *
+   * dataSource contiendra uniquement
+   * le résultat filtré.
+   */
+  public allGerminationTests: any[] = [];
+
+
+  /*
+   * Valeurs sélectionnées.
+   */
+  public germinationCodeFilter = '';
+
+  public germinationStartDateFromFilter:
+    Date | null = null;
+
+  public germinationRegimeFilter:
+    string | null = null;
+
+  public germinationTreatmentFilter:
+    string | null = null;
+
+  public germinationPreTreatmentFilter:
+    boolean | null = null;
+
+
+  /*
+   * Options dynamiques.
+   */
+  public germinationRegimeFilterOptions:
+    string[] = [];
+
+  public germinationTreatmentFilterOptions:
+    string[] = [];
+
+  public germinationPreTreatmentFilterOptions:
+    boolean[] = [];
+
 
   public activeActionRowId: number | null = null;
 
@@ -117,6 +173,630 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.syncPaginator();
   }
+
+
+  /* =========================================================
+     FILTRES DE LA LISTE GERMINATION
+     ========================================================= */
+
+
+  private getGerminationRegimeFilterValue(
+    test: any
+  ): string {
+
+    const value =
+      String(
+        test?.thermoPhoto || ''
+      ).trim();
+
+
+    /*
+     * Le tableau affiche déjà "-"
+     * lorsqu'aucun régime n'est renseigné.
+     */
+    return value || '-';
+  }
+
+
+  private getGerminationTreatmentFilterValue(
+    test: any
+  ): string {
+
+    const value =
+      test?.treatment ||
+      test?.treatment_label ||
+      '';
+
+
+    const normalizedValue =
+      String(value).trim();
+
+
+    return normalizedValue
+      ? normalizedValue
+      : '-';
+  }
+
+
+  private getGerminationPreTreatmentFilterValue(
+    test: any
+  ): boolean {
+
+    return test?.pre_treatment === true;
+  }
+
+
+  private getGerminationDateFilterKey(
+    value: any
+  ): string {
+
+    if (!value) {
+      return '';
+    }
+
+
+    if (typeof value === 'string') {
+
+      const datePart =
+        value.split('T')[0];
+
+
+      if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+          datePart
+        )
+      ) {
+        return datePart;
+      }
+
+    }
+
+
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return '';
+    }
+
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, '0');
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, '0');
+
+
+    return `${year}-${month}-${day}`;
+  }
+
+
+  /*
+   * N° test + Date sont les filtres de base.
+   *
+   * Ils réduisent aussi les options disponibles
+   * pour Régime / Liquide / Prétraitement.
+   */
+  private getGerminationMatchingBaseFilters():
+    any[] {
+
+    const normalizedCode =
+      String(
+        this.germinationCodeFilter || ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const selectedDateKey =
+      this.getGerminationDateFilterKey(
+        this.germinationStartDateFromFilter
+      );
+
+
+    return this.allGerminationTests.filter(
+      test => {
+
+        const testCode =
+          String(
+            test?.code || ''
+          )
+            .trim()
+            .toLowerCase();
+
+
+        const testDateKey =
+          this.getGerminationDateFilterKey(
+            test?.meta_create_date
+          );
+
+
+        const matchesCode =
+          !normalizedCode ||
+          testCode.includes(
+            normalizedCode
+          );
+
+
+        const matchesDate =
+          !selectedDateKey ||
+          (
+            !!testDateKey &&
+            testDateKey >=
+              selectedDateKey
+          );
+
+
+        return (
+          matchesCode &&
+          matchesDate
+        );
+
+      }
+    );
+  }
+
+
+  /*
+   * Régime thermo-photo,
+   * Liquide traitement
+   * et Prétraitement
+   *
+   * sont dynamiques entre eux.
+   */
+  private updateGerminationFilterOptions(
+    baseTests: any[]
+  ): void {
+
+    let selectedRegime =
+      this.germinationRegimeFilter;
+
+    let selectedTreatment =
+      this.germinationTreatmentFilter;
+
+    let selectedPreTreatment =
+      this.germinationPreTreatmentFilter;
+
+
+    let regimeOptions:
+      string[] = [];
+
+    let treatmentOptions:
+      string[] = [];
+
+    let preTreatmentOptions:
+      boolean[] = [];
+
+
+    /*
+     * Plusieurs passages permettent de supprimer
+     * automatiquement une sélection devenue
+     * incompatible avec les autres filtres.
+     */
+    for (
+      let pass = 0;
+      pass < 3;
+      pass++
+    ) {
+
+      /* -------------------------
+         RÉGIMES DISPONIBLES
+         ------------------------- */
+
+      const testsForRegimes =
+        baseTests.filter(
+          test => {
+
+            const treatment =
+              this.getGerminationTreatmentFilterValue(
+                test
+              );
+
+            const preTreatment =
+              this.getGerminationPreTreatmentFilterValue(
+                test
+              );
+
+
+            return (
+              (
+                !selectedTreatment ||
+                treatment ===
+                  selectedTreatment
+              ) &&
+              (
+                selectedPreTreatment === null ||
+                preTreatment ===
+                  selectedPreTreatment
+              )
+            );
+
+          }
+        );
+
+
+      regimeOptions =
+        Array.from(
+          new Set(
+            testsForRegimes.map(
+              test =>
+                this.getGerminationRegimeFilterValue(
+                  test
+                )
+            )
+          )
+        )
+          .sort(
+            (a, b) => {
+
+              if (a === '-') {
+                return -1;
+              }
+
+              if (b === '-') {
+                return 1;
+              }
+
+              return a.localeCompare(
+                b,
+                'fr'
+              );
+            }
+          );
+
+
+      if (
+        selectedRegime &&
+        !regimeOptions.includes(
+          selectedRegime
+        )
+      ) {
+        selectedRegime = null;
+      }
+
+
+      /* -------------------------
+         LIQUIDES DISPONIBLES
+         ------------------------- */
+
+      const testsForTreatments =
+        baseTests.filter(
+          test => {
+
+            const regime =
+              this.getGerminationRegimeFilterValue(
+                test
+              );
+
+            const preTreatment =
+              this.getGerminationPreTreatmentFilterValue(
+                test
+              );
+
+
+            return (
+              (
+                !selectedRegime ||
+                regime === selectedRegime
+              ) &&
+              (
+                selectedPreTreatment === null ||
+                preTreatment ===
+                  selectedPreTreatment
+              )
+            );
+
+          }
+        );
+
+
+      treatmentOptions =
+        Array.from(
+          new Set(
+            testsForTreatments.map(
+              test =>
+                this.getGerminationTreatmentFilterValue(
+                  test
+                )
+            )
+          )
+        )
+          .sort(
+            (a, b) => {
+
+              if (a === '-') {
+                return -1;
+              }
+
+              if (b === '-') {
+                return 1;
+              }
+
+              return a.localeCompare(
+                b,
+                'fr'
+              );
+            }
+          );
+
+
+      if (
+        selectedTreatment &&
+        !treatmentOptions.includes(
+          selectedTreatment
+        )
+      ) {
+        selectedTreatment = null;
+      }
+
+
+      /* -------------------------
+         PRÉTRAITEMENTS DISPONIBLES
+         ------------------------- */
+
+      const testsForPreTreatment =
+        baseTests.filter(
+          test => {
+
+            const regime =
+              this.getGerminationRegimeFilterValue(
+                test
+              );
+
+            const treatment =
+              this.getGerminationTreatmentFilterValue(
+                test
+              );
+
+
+            return (
+              (
+                !selectedRegime ||
+                regime === selectedRegime
+              ) &&
+              (
+                !selectedTreatment ||
+                treatment ===
+                  selectedTreatment
+              )
+            );
+
+          }
+        );
+
+
+      preTreatmentOptions =
+        Array.from(
+          new Set(
+            testsForPreTreatment.map(
+              test =>
+                this.getGerminationPreTreatmentFilterValue(
+                  test
+                )
+            )
+          )
+        )
+          .sort(
+            (a, b) =>
+              Number(b) -
+              Number(a)
+          );
+
+
+      if (
+        selectedPreTreatment !== null &&
+        !preTreatmentOptions.includes(
+          selectedPreTreatment
+        )
+      ) {
+        selectedPreTreatment = null;
+      }
+
+    }
+
+
+    this.germinationRegimeFilter =
+      selectedRegime;
+
+    this.germinationTreatmentFilter =
+      selectedTreatment;
+
+    this.germinationPreTreatmentFilter =
+      selectedPreTreatment;
+
+
+    this.germinationRegimeFilterOptions =
+      regimeOptions;
+
+    this.germinationTreatmentFilterOptions =
+      treatmentOptions;
+
+    this.germinationPreTreatmentFilterOptions =
+      preTreatmentOptions;
+  }
+
+
+  public applyGerminationFilters(): void {
+
+    /*
+     * 1. N° test + Date.
+     */
+    const baseTests =
+      this.getGerminationMatchingBaseFilters();
+
+
+    /*
+     * 2. Recalcul dynamique des options.
+     */
+    this.updateGerminationFilterOptions(
+      baseTests
+    );
+
+
+    /*
+     * 3. Application des trois filtres
+     *    dynamiques.
+     */
+    const filteredTests =
+      baseTests.filter(
+        test => {
+
+          const regime =
+            this.getGerminationRegimeFilterValue(
+              test
+            );
+
+          const treatment =
+            this.getGerminationTreatmentFilterValue(
+              test
+            );
+
+          const preTreatment =
+            this.getGerminationPreTreatmentFilterValue(
+              test
+            );
+
+
+          const matchesRegime =
+            !this.germinationRegimeFilter ||
+            regime ===
+              this.germinationRegimeFilter;
+
+
+          const matchesTreatment =
+            !this.germinationTreatmentFilter ||
+            treatment ===
+              this.germinationTreatmentFilter;
+
+
+          const matchesPreTreatment =
+            this.germinationPreTreatmentFilter ===
+              null ||
+            preTreatment ===
+              this.germinationPreTreatmentFilter;
+
+
+          return (
+            matchesRegime &&
+            matchesTreatment &&
+            matchesPreTreatment
+          );
+
+        }
+      );
+
+
+    this.dataSource.data =
+      filteredTests;
+
+
+    /*
+     * La pagination travaille maintenant
+     * sur la liste filtrée et revient
+     * systématiquement à la page 1.
+     */
+    setTimeout(() => {
+
+      this.syncPaginator();
+
+
+      if (this.paginatorRef) {
+        this.paginatorRef.firstPage();
+      }
+
+    });
+  }
+
+
+  public onGerminationCodeFilterChange(
+    value: string
+  ): void {
+
+    this.germinationCodeFilter =
+      value || '';
+
+    this.applyGerminationFilters();
+  }
+
+
+  public onGerminationStartDateFromFilterChange(
+    value: Date | null
+  ): void {
+
+    this.germinationStartDateFromFilter =
+      value;
+
+    this.applyGerminationFilters();
+  }
+
+
+  public onGerminationRegimeFilterChange(
+    value: string | null
+  ): void {
+
+    this.germinationRegimeFilter =
+      value;
+
+    this.applyGerminationFilters();
+  }
+
+
+  public onGerminationTreatmentFilterChange(
+    value: string | null
+  ): void {
+
+    this.germinationTreatmentFilter =
+      value;
+
+    this.applyGerminationFilters();
+  }
+
+
+  public onGerminationPreTreatmentFilterChange(
+    value: boolean | null
+  ): void {
+
+    this.germinationPreTreatmentFilter =
+      value;
+
+    this.applyGerminationFilters();
+  }
+
+
+  public resetGerminationFilters(): void {
+
+    this.germinationCodeFilter = '';
+
+    this.germinationStartDateFromFilter =
+      null;
+
+    this.germinationRegimeFilter =
+      null;
+
+    this.germinationTreatmentFilter =
+      null;
+
+    this.germinationPreTreatmentFilter =
+      null;
+
+
+    this.applyGerminationFilters();
+  }
+
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -221,12 +901,39 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
           return t;
         }));
 
-        this.dataSource.data = mappedTests.sort((a, b) =>
-          new Date(b.meta_create_date).getTime() - new Date(a.meta_create_date).getTime()
-        );
+        this.allGerminationTests =
+          mappedTests.sort(
+            (a, b) =>
+              new Date(
+                b.meta_create_date
+              ).getTime() -
+              new Date(
+                a.meta_create_date
+              ).getTime()
+          );
+
+
+        /*
+         * allGerminationTests reste
+         * la source complète.
+         *
+         * dataSource reçoit uniquement
+         * le résultat filtré.
+         */
+        this.applyGerminationFilters();
+
       },
+
       error: (err) => {
-        console.error("❌ Erreur lors du chargement des tests :", err);
+
+        console.error(
+          "❌ Erreur lors du chargement des tests :",
+          err
+        );
+
+
+        this.allGerminationTests = [];
+
         this.dataSource.data = [];
       }
     });
@@ -253,13 +960,33 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
 
   onChangePreTreatment(element: any, value: boolean): void {
     this.api.updateTestPreTreatment(element.id_test, value).subscribe({
+
       next: () => {
-        element.pre_treatment = value;
-        console.log("✅ Prétraitement mis à jour :", value);
+
+        element.pre_treatment =
+          value;
+
+
+        /*
+         * Le prétraitement influence directement
+         * les options Régime et Liquide.
+         */
+        this.applyGerminationFilters();
+
+
+        console.log(
+          "✅ Prétraitement mis à jour :",
+          value
+        );
       },
+
       error: (err) => {
-        console.error("❌ Erreur lors de la mise à jour du prétraitement :", err);
+        console.error(
+          "❌ Erreur lors de la mise à jour du prétraitement :",
+          err
+        );
       }
+
     });
   }
 
@@ -415,16 +1142,14 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newEntry: Germination = {
-          numSemis: result.numeroSemis,
-          numSemence: result.numeroSemence,
-          dateDebut: result.dateDebut,
-          dateFin: result.dateFin,
-          replicate: 0,
-          levage: 0
-        };
+
+        /*
+         * On recharge depuis l'API pour que
+         * allGerminationTests reste toujours
+         * la source complète et fiable.
+         */
         this.loadTests();
-        this.dataSource.data = [...this.dataSource.data, newEntry];
+
       }
     });
   }

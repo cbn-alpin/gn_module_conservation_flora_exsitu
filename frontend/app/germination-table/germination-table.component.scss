@@ -758,6 +758,283 @@ table tr.mat-row:hover {
 }
 
 
+/* =========================================================
+   FILTRES DE LA LISTE GERMINATION
+   ========================================================= */
+
+.germination-filters-card {
+  margin-bottom: 14px;
+
+  padding: 14px 16px 10px;
+
+  border: 1px solid #cde8e5;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbfefd 0%,
+      #ffffff 100%
+    );
+
+  box-shadow:
+    0 3px 10px
+    rgba(0, 137, 123, 0.06);
+}
+
+
+.germination-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 12px;
+}
+
+
+.germination-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #00564e;
+}
+
+
+.germination-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  color: #00897b;
+
+  background-color: #e5f6f3;
+
+  border-radius: 50%;
+}
+
+
+.germination-filters-icon mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #00897b;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.germination-filters-title span {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+.germination-filters-title small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #5c7d79;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+.germination-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(190px, 1.1fr)
+    minmax(160px, 0.9fr)
+    minmax(220px, 1.25fr)
+    minmax(190px, 1fr)
+    minmax(170px, 0.9fr);
+
+  gap: 12px;
+
+  align-items: center;
+}
+
+
+.germination-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.germination-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.germination-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+/* Focus turquoise Germination */
+
+:host ::ng-deep
+.germination-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.germination-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.germination-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #00897b !important;
+}
+
+
+:host ::ng-deep
+.germination-filter-field
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #00564e !important;
+}
+
+
+.reset-germination-filter-button {
+  min-height: 34px;
+
+  padding: 5px 13px;
+
+  color: #ffffff !important;
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  background-color: #8e24aa;
+
+  border: 1px solid #7b1fa2;
+  border-radius: 999px;
+}
+
+
+.reset-germination-filter-button:hover {
+  background-color: #7b1fa2;
+}
+
+
+.reset-germination-filter-button mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+.no-filtered-germination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 4px;
+  padding: 22px 16px;
+
+  color: #5c7d79;
+
+  background-color: #fbfefd;
+
+  border: 1px dashed #b2dfdb;
+  border-radius: 12px;
+}
+
+
+.no-filtered-germination mat-icon {
+  color: #00897b;
+}
+
+
+.no-filtered-germination strong,
+.no-filtered-germination span {
+  display: block;
+}
+
+
+.no-filtered-germination strong {
+  color: #00564e;
+
+  font-size: 13px;
+}
+
+
+.no-filtered-germination span {
+  margin-top: 3px;
+
+  color: #6f8f8b;
+
+  font-size: 12px;
+}
+
+
+@media (max-width: 1100px) {
+
+  .germination-filter-fields {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .germination-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .germination-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+
+  .reset-germination-filter-button {
+    width: fit-content;
+  }
+
+}
+
+
 :host ::ng-deep
 .germination-list-paginator
 .mat-mdc-paginator-range-label {

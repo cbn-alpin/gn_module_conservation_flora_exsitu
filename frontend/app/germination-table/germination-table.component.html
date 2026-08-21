@@ -47,158 +47,544 @@
 
     <ng-container
       *ngIf="
-        dataSource.data.length > 0;
+        allGerminationTests.length > 0;
         else noGerminationData
       "
     >
-      <div class="germination-list-table-scroll">
 
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        class="germination-list-table"
-      >
+      <!-- ===================================================
+           FILTRES GERMINATION
+           =================================================== -->
 
-        <!-- N° test de germination -->
-        <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef>N° test de germination</th>
-          <td mat-cell *matCellDef="let element">{{ element.code }}</td>
-        </ng-container>
+      <div class="germination-filters-card">
 
-        <!-- % germination -->
-        <ng-container matColumnDef="germination_rate">
-          <th mat-header-cell *matHeaderCellDef>% germination</th>
-          <td mat-cell *matCellDef="let element">
-            {{ getGerminationRateDisplay(element) }}
-          </td>
-        </ng-container>
+        <div class="germination-filters-header">
 
-        <!-- Date de début -->
-        <ng-container matColumnDef="meta_create_date">
-          <th mat-header-cell *matHeaderCellDef>Date de début</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.meta_create_date | date:'dd/MM/yyyy' }}
-          </td>
-        </ng-container>
+          <div class="germination-filters-title">
 
-        <!-- Nombre de graines -->
-        <ng-container matColumnDef="seed_initial_count">
-          <th mat-header-cell *matHeaderCellDef>Nb de graines</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.seed_initial_count }}
-          </td>
-        </ng-container>
+            <div class="germination-filters-icon">
+              <mat-icon>
+                filter_alt
+              </mat-icon>
+            </div>
 
-        <!-- Régime thermo-photo -->
-        <ng-container matColumnDef="photo_thermo_regime">
-          <th mat-header-cell *matHeaderCellDef>Régime thermo-photo</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.thermoPhoto || '-' }}
-          </td>
-        </ng-container>
 
-        <!-- Traitement -->
-        <ng-container matColumnDef="treatment">
-          <th mat-header-cell *matHeaderCellDef>Liquide traitement</th>
-          <td mat-cell *matCellDef="let element">
-            {{ element.treatment || '-' }}
-          </td>
-        </ng-container>
+            <div>
 
-        <!-- Prétraitement -->
-        <ng-container matColumnDef="pre_treatment">
-          <th mat-header-cell *matHeaderCellDef>Prétraitement</th>
-          <td mat-cell *matCellDef="let element">
-
-            <div
-              class="pre-treatment-control"
-              [class.pre-treatment-active]="element.pre_treatment === true"
-              (click)="$event.stopPropagation()"
-            >
-
-              <mat-checkbox
-                class="pre-treatment-checkbox"
-                [checked]="element.pre_treatment === true"
-                (change)="onChangePreTreatment(element, $event.checked)">
-              </mat-checkbox>
-
-              <span class="pre-treatment-label">
-                {{ element.pre_treatment === true ? 'Oui' : 'Non' }}
+              <span>
+                Filtres des tests de germination
               </span>
+
+              <small>
+                Affiner par N° de test, date de début,
+                régime thermo-photo, liquide de traitement
+                et prétraitement
+              </small>
 
             </div>
 
-          </td>
-        </ng-container>
+          </div>
 
-        <!-- Actions -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
-          <td mat-cell *matCellDef="let element">
-            <button
-              mat-icon-button
-              class="actions-trigger-red"
-              [matMenuTriggerFor]="menu"
-              (menuOpened)="setActiveActionRow(element)"
-              (menuClosed)="clearActiveActionRow()"
-              (click)="$event.stopPropagation()"
-              aria-label="Actions"
+
+          <button
+            mat-button
+            type="button"
+            class="reset-germination-filter-button"
+            (click)="resetGerminationFilters()"
+          >
+            <mat-icon>
+              autorenew
+            </mat-icon>
+
+            Réinitialiser
+          </button>
+
+        </div>
+
+
+        <div class="germination-filter-fields">
+
+          <!-- N° TEST -->
+
+          <mat-form-field
+            appearance="outline"
+            class="germination-filter-field"
+          >
+
+            <mat-label>
+              N° test de germination
+            </mat-label>
+
+            <input
+              matInput
+              [(ngModel)]="germinationCodeFilter"
+              (ngModelChange)="
+                onGerminationCodeFilterChange($event)
+              "
+              placeholder="Rechercher un N° de test"
             >
-              <mat-icon>more_vert</mat-icon>
-            </button>
 
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="onEdit(element)">
-                <mat-icon>edit</mat-icon>
-                <span>Modifier</span>
-              </button>
+            <mat-icon matSuffix>
+              search
+            </mat-icon>
 
-              <button mat-menu-item (click)="onDetails(element)">
-                <mat-icon style="color: #FFA726;">visibility</mat-icon>
-                <span>Détails/Action</span>
-              </button>
+          </mat-form-field>
 
-              <button mat-menu-item class="delete-action-red" (click)="onDelete(element)">
-                <mat-icon>delete</mat-icon>
-                <span>Supprimer</span>
-              </button>
 
-              <button mat-menu-item class="culture-action" (click)="onCulture(element)">
-                <mat-icon>local_florist</mat-icon>
-                <span>Culture</span>
-              </button>
-            </mat-menu>
-          </td>
-        </ng-container>
+          <!-- À PARTIR DU -->
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <mat-form-field
+            appearance="outline"
+            class="germination-filter-field"
+          >
 
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns;"
-          class="clickable-row"
-          [class.action-row-active]="isActionRowActive(row)"
-          (click)="onRowClick(row)"
-        >
-        </tr>
-      </table>
+            <mat-label>
+              À partir du
+            </mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="
+                germinationStartDateFromFilterPicker
+              "
+              [(ngModel)]="
+                germinationStartDateFromFilter
+              "
+              (dateInput)="
+                onGerminationStartDateFromFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="
+                germinationStartDateFromFilterPicker
+              "
+            >
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #germinationStartDateFromFilterPicker
+            >
+            </mat-datepicker>
+
+          </mat-form-field>
+
+
+          <!-- RÉGIME THERMO-PHOTO -->
+
+          <mat-form-field
+            appearance="outline"
+            class="germination-filter-field"
+          >
+
+            <mat-label>
+              Régime thermo-photo
+            </mat-label>
+
+            <mat-select
+              [value]="germinationRegimeFilter"
+              (selectionChange)="
+                onGerminationRegimeFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les régimes
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let regime of
+                  germinationRegimeFilterOptions
+                "
+                [value]="regime"
+              >
+                {{ regime }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- LIQUIDE TRAITEMENT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="germination-filter-field"
+          >
+
+            <mat-label>
+              Liquide traitement
+            </mat-label>
+
+            <mat-select
+              [value]="germinationTreatmentFilter"
+              (selectionChange)="
+                onGerminationTreatmentFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous les liquides
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let treatment of
+                  germinationTreatmentFilterOptions
+                "
+                [value]="treatment"
+              >
+                {{ treatment }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+
+          <!-- PRÉTRAITEMENT -->
+
+          <mat-form-field
+            appearance="outline"
+            class="germination-filter-field"
+          >
+
+            <mat-label>
+              Prétraitement
+            </mat-label>
+
+            <mat-select
+              [value]="germinationPreTreatmentFilter"
+              (selectionChange)="
+                onGerminationPreTreatmentFilterChange(
+                  $event.value
+                )
+              "
+            >
+
+              <mat-option [value]="null">
+                Tous
+              </mat-option>
+
+
+              <mat-option
+                *ngFor="
+                  let preTreatment of
+                  germinationPreTreatmentFilterOptions
+                "
+                [value]="preTreatment"
+              >
+                {{
+                  preTreatment
+                    ? 'Oui'
+                    : 'Non'
+                }}
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
 
       </div>
 
-      <mat-paginator
-        class="germination-list-paginator"
-        [pageSize]="rowPerPage"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        showFirstLastButtons>
-      </mat-paginator>
+
+      <!-- ===================================================
+           LISTE FILTRÉE
+           =================================================== -->
+
+      <ng-container
+        *ngIf="
+          dataSource.data.length > 0;
+          else noFilteredGermination
+        "
+      >
+
+        <div class="germination-list-table-scroll">
+
+          <table
+            mat-table
+            [dataSource]="dataSource"
+            class="germination-list-table"
+          >
+
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>
+                N° test de germination
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+                {{ element.code }}
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="germination_rate">
+              <th mat-header-cell *matHeaderCellDef>
+                % germination
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+                {{ getGerminationRateDisplay(element) }}
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="meta_create_date">
+              <th mat-header-cell *matHeaderCellDef>
+                Date de début
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+                {{
+                  element.meta_create_date
+                    | date:'dd/MM/yyyy'
+                }}
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="seed_initial_count">
+              <th mat-header-cell *matHeaderCellDef>
+                Nb de graines
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+                {{ element.seed_initial_count }}
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="photo_thermo_regime">
+              <th mat-header-cell *matHeaderCellDef>
+                Régime thermo-photo
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+                {{ element.thermoPhoto || '-' }}
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="treatment">
+              <th mat-header-cell *matHeaderCellDef>
+                Liquide traitement
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+                {{ element.treatment || '-' }}
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="pre_treatment">
+              <th mat-header-cell *matHeaderCellDef>
+                Prétraitement
+              </th>
+
+              <td mat-cell *matCellDef="let element">
+
+                <div
+                  class="pre-treatment-control"
+                  [class.pre-treatment-active]="
+                    element.pre_treatment === true
+                  "
+                  (click)="$event.stopPropagation()"
+                >
+
+                  <mat-checkbox
+                    class="pre-treatment-checkbox"
+                    [checked]="
+                      element.pre_treatment === true
+                    "
+                    (change)="
+                      onChangePreTreatment(
+                        element,
+                        $event.checked
+                      )
+                    "
+                  >
+                  </mat-checkbox>
+
+                  <span class="pre-treatment-label">
+                    {{
+                      element.pre_treatment === true
+                        ? 'Oui'
+                        : 'Non'
+                    }}
+                  </span>
+
+                </div>
+
+              </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="actions">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                aria-label="Actions"
+              >
+              </th>
+
+              <td
+                mat-cell
+                *matCellDef="let element"
+              >
+
+                <button
+                  mat-icon-button
+                  class="actions-trigger-red"
+                  [matMenuTriggerFor]="menu"
+                  (menuOpened)="setActiveActionRow(element)"
+                  (menuClosed)="clearActiveActionRow()"
+                  (click)="$event.stopPropagation()"
+                  aria-label="Actions"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+
+
+                <mat-menu #menu="matMenu">
+
+                  <button
+                    mat-menu-item
+                    (click)="onEdit(element)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                    <span>Modifier</span>
+                  </button>
+
+
+                  <button
+                    mat-menu-item
+                    (click)="onDetails(element)"
+                  >
+                    <mat-icon style="color: #FFA726;">
+                      visibility
+                    </mat-icon>
+
+                    <span>Détails/Action</span>
+                  </button>
+
+
+                  <button
+                    mat-menu-item
+                    class="delete-action-red"
+                    (click)="onDelete(element)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    <span>Supprimer</span>
+                  </button>
+
+
+                  <button
+                    mat-menu-item
+                    class="culture-action"
+                    (click)="onCulture(element)"
+                  >
+                    <mat-icon>local_florist</mat-icon>
+                    <span>Culture</span>
+                  </button>
+
+                </mat-menu>
+
+              </td>
+
+            </ng-container>
+
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            >
+            </tr>
+
+            <tr
+              mat-row
+              *matRowDef="
+                let row;
+                columns: displayedColumns;
+              "
+              class="clickable-row"
+              [class.action-row-active]="
+                isActionRowActive(row)
+              "
+              (click)="onRowClick(row)"
+            >
+            </tr>
+
+          </table>
+
+        </div>
+
+
+        <mat-paginator
+          class="germination-list-paginator"
+          [pageSize]="rowPerPage"
+          [pageSizeOptions]="[5, 10, 25, 100]"
+          showFirstLastButtons
+        >
+        </mat-paginator>
+
+      </ng-container>
+
+
+      <ng-template #noFilteredGermination>
+
+        <div class="no-filtered-germination">
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+
+          <div>
+
+            <strong>
+              Aucun test de germination ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez les critères ou réinitialisez les filtres.
+            </span>
+
+          </div>
+
+        </div>
+
+      </ng-template>
 
     </ng-container>
 
+
     <ng-template #noGerminationData>
+
       <mat-card class="alert-card warning-card mt-4">
-        <mat-icon color="warn">info</mat-icon>
+
+        <mat-icon color="warn">
+          info
+        </mat-icon>
+
         Aucun test de germination enregistré pour ce matériel.
+
       </mat-card>
+
     </ng-template>
+
   </mat-card-content>
 </mat-card>
