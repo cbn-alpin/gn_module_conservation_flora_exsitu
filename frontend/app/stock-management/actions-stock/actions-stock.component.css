@@ -141,6 +141,8 @@
 :host ::ng-deep
 .stock-list-table .mat-mdc-row {
   height: 52px;
+
+  cursor: pointer;
 }
 
 

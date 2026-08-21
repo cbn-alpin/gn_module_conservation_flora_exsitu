@@ -59,6 +59,7 @@
               mat-icon-button
               class="actions-trigger-red"
               [matMenuTriggerFor]="menu"
+              (click)="$event.stopPropagation()"
               (menuOpened)="setActiveActionRow(element)"
               (menuClosed)="clearActiveActionRow()"
               aria-label="Actions"
@@ -110,7 +111,9 @@
           let i = index;
           columns: displayedColumns;
         "
+        class="clickable-row"
         [class.action-row-active]="isActionRowActive(row)"
+        (click)="goToStockDetails(row)"
       >
       </tr>
 
