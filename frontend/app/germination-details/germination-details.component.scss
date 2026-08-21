@@ -184,22 +184,32 @@ mat-card-content,
 
 .return-button {
   display: flex;
-  justify-content: flex-start;
-  margin-top: 24px;
-  margin-bottom: 8px;
+  align-items: center;
 
-  position: relative;
-  top: 0;
+  height: 72px;
+  margin: 0 15px;
+
+  box-sizing: border-box;
 }
-
 
 .return-button button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
   font-weight: bold;
-  background-color: #d21919;
-  color: white;
+
+  background-color: #d21919 !important;
 }
+
 .return-button button:hover {
-  background-color: #d21919;
+  background-color: #d21919 !important;
+}
+
+.return-button mat-icon {
+  color: #ffffff !important;
 }
 
 
