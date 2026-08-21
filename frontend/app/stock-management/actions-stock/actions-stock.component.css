@@ -75,9 +75,11 @@
 
 
 .table-container {
+  width: 100%;
+  max-width: 100%;
   min-height: 158px;
 
-  overflow-x: auto;
+  overflow-x: hidden;
 
   padding: 10px;
 
@@ -86,13 +88,19 @@
 
 
 /* =========================================================
-   TABLEAU
+   TABLEAU STOCKAGE
+   Le tableau occupe toujours exactement la largeur disponible.
+   Aucune roulette horizontale.
    ========================================================= */
 
 .stock-list-table {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  margin: 0;
+
   table-layout: fixed;
-  overflow: hidden;
 
   background-color: #ffffff;
 
@@ -108,22 +116,23 @@
   background-color: #eef2f4;
 }
 
+
 :host ::ng-deep
 .stock-list-table .mat-mdc-header-cell {
   box-sizing: border-box;
 
   overflow: visible;
-  padding-left: 10px;
-  padding-right: 10px;
+  text-overflow: clip;
+  white-space: normal;
+
+  padding: 0 10px !important;
 
   color: #344955;
 
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.2px;
-  text-overflow: clip;
   text-transform: uppercase;
-  white-space: nowrap;
 
   border-bottom: 1px solid #c5d0d5;
 }
@@ -139,16 +148,20 @@
 .stock-list-table .mat-mdc-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  padding: 0 10px !important;
 
   color: #263238;
 
   font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 
   border-bottom: 1px solid #e8edef;
 }
+
 
 :host ::ng-deep
 .stock-list-table .mat-mdc-row:hover .mat-mdc-cell,
@@ -168,53 +181,52 @@
     inset 4px 0 0 #607d8b;
 }
 
+
 /* =========================================================
-   LARGEURS FIXES DES COLONNES
+   RÉPARTITION DES COLONNES STOCKAGE
+
+   Les colonnes s'adaptent à la largeur de chaque carte.
+   Aucun min-width fixe = aucune roulette horizontale.
    ========================================================= */
 
+
+/* Type d'action */
 :host ::ng-deep
 .stock-list-table .mat-column-action_type {
-  width: 34%;
-  min-width: 34%;
-  max-width: 34%;
-
-  overflow: visible;
+  width: 40%;
 
   color: #344955;
-  font-weight: 750;
 
-  text-overflow: clip;
-  white-space: normal;
+  font-weight: 750;
 }
 
 
+/* Quantité */
 :host ::ng-deep
 .stock-list-table .mat-column-quantity {
-  width: 15%;
-  min-width: 15%;
-  max-width: 15%;
+  width: 14%;
 }
 
 
+/* Date */
 :host ::ng-deep
 .stock-list-table .mat-column-date {
-  width: 17%;
-  min-width: 17%;
-  max-width: 17%;
+  width: 18%;
 }
 
 
+/* Destination */
 :host ::ng-deep
 .stock-list-table .mat-column-destination {
-  width: 25%;
-  min-width: 25%;
-  max-width: 25%;
+  width: 28%;
 }
 
 
+/* Actions */
 :host ::ng-deep
 .stock-list-table .mat-column-actions {
   position: relative;
+
   box-sizing: border-box;
 
   width: 64px;
