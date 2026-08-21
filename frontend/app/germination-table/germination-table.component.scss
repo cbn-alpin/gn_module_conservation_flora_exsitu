@@ -252,13 +252,24 @@
 
 
 /* =========================================================
-   TABLEAU
+   TABLEAU GERMINATION
+   Largeur totale verrouillée : 1290px
    ========================================================= */
 
-.germination-list-table {
+.germination-list-table-scroll {
   width: 100%;
+
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+
+.germination-list-table {
+  width: 1290px;
+  min-width: 1290px;
+  max-width: 1290px;
+
   table-layout: fixed;
-  overflow: hidden;
 
   background-color: #ffffff;
 
@@ -279,16 +290,18 @@
 .germination-list-table .mat-mdc-header-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+
+  padding: 0 16px !important;
 
   color: #00564e;
 
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.2px;
-  text-overflow: ellipsis;
   text-transform: uppercase;
-  white-space: nowrap;
 
   border-bottom: 1px solid #b2dfdb;
 }
@@ -304,16 +317,20 @@
 .germination-list-table .mat-mdc-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  padding: 0 16px !important;
 
   color: #263238;
 
   font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 
   border-bottom: 1px solid #e5f3f1;
 }
+
 
 :host ::ng-deep
 .germination-list-table .mat-mdc-row:hover .mat-mdc-cell,
@@ -333,62 +350,155 @@
     inset 4px 0 0 #00897b;
 }
 
+
 /* =========================================================
-   LARGEURS FIXES DES COLONNES
+   LARGEURS VERROUILLÉES DES COLONNES GERMINATION
+
+   N° test germination : 180px
+   % germination       : 140px
+   Date de début       : 140px
+   Nb de graines       : 140px
+   Régime thermo-photo : 180px
+   Liquide traitement  : 300px
+   Prétraitement       : 146px
+   Actions             :  64px
+
+   TOTAL               : 1290px
    ========================================================= */
 
+
+/* N° test de germination */
 :host ::ng-deep
 .germination-list-table .mat-column-code {
-  width: 16%;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
 
   color: #00564e;
+
   font-weight: 800;
 }
 
 
+/* % germination */
 :host ::ng-deep
 .germination-list-table .mat-column-germination_rate {
-  width: 13%;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
 
-  color: #00796b;
+  color: #00564e;
+
   font-weight: 750;
 }
 
 
+/* Date de début */
 :host ::ng-deep
 .germination-list-table .mat-column-meta_create_date {
-  width: 12%;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
 }
 
 
+/* Nb de graines */
 :host ::ng-deep
 .germination-list-table .mat-column-seed_initial_count {
-  width: 12%;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
 }
 
 
+/* Régime thermo-photo */
 :host ::ng-deep
 .germination-list-table .mat-column-photo_thermo_regime {
-  width: 17%;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
 }
 
 
+/* Liquide traitement */
 :host ::ng-deep
 .germination-list-table .mat-column-treatment {
-  width: 14%;
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
 }
 
 
+/* Prétraitement */
 :host ::ng-deep
 .germination-list-table .mat-column-pre_treatment {
-  width: 10%;
+  width: 146px;
+  min-width: 146px;
+  max-width: 146px;
+
   text-align: center;
 }
 
 
+.pre-treatment-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  min-width: 72px;
+  padding: 3px 8px 3px 5px;
+
+  box-sizing: border-box;
+
+  color: #6d6d6d;
+
+  background-color: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 999px;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.pre-treatment-control.pre-treatment-active {
+  color: #00564e;
+
+  background-color: #e5f6f3;
+
+  border-color: #00897b;
+}
+
+
+.pre-treatment-label {
+  min-width: 24px;
+
+  font-size: 12px;
+  font-weight: 750;
+  text-align: left;
+}
+
+
+:host ::ng-deep
+.pre-treatment-checkbox {
+  --mdc-checkbox-selected-focus-icon-color: #00897b;
+  --mdc-checkbox-selected-hover-icon-color: #00897b;
+  --mdc-checkbox-selected-icon-color: #00897b;
+  --mdc-checkbox-selected-pressed-icon-color: #00897b;
+
+  --mdc-checkbox-selected-checkmark-color: #ffffff;
+}
+
+
+/* Actions */
 :host ::ng-deep
 .germination-list-table .mat-column-actions {
   position: relative;
+
   box-sizing: border-box;
 
   width: 64px;

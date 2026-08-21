@@ -51,6 +51,8 @@
         else noGerminationData
       "
     >
+      <div class="germination-list-table-scroll">
+
       <table
         mat-table
         [dataSource]="dataSource"
@@ -67,27 +69,31 @@
         <ng-container matColumnDef="germination_rate">
           <th mat-header-cell *matHeaderCellDef>% germination</th>
           <td mat-cell *matCellDef="let element">
-            {{ element.germination_rate !== null ? (element.germination_rate | number:'1.0-2') + '%' : '-' }}
+            {{ getGerminationRateDisplay(element) }}
           </td>
         </ng-container>
 
         <!-- Date de début -->
         <ng-container matColumnDef="meta_create_date">
           <th mat-header-cell *matHeaderCellDef>Date de début</th>
-          <td mat-cell *matCellDef="let element">{{ element.meta_create_date | date:'shortDate' }}</td>
+          <td mat-cell *matCellDef="let element">
+            {{ element.meta_create_date | date:'dd/MM/yyyy' }}
+          </td>
         </ng-container>
 
         <!-- Nombre de graines -->
         <ng-container matColumnDef="seed_initial_count">
           <th mat-header-cell *matHeaderCellDef>Nb de graines</th>
-          <td mat-cell *matCellDef="let element">{{ element.seed_initial_count }}</td>
+          <td mat-cell *matCellDef="let element">
+            {{ element.seed_initial_count }}
+          </td>
         </ng-container>
 
         <!-- Régime thermo-photo -->
         <ng-container matColumnDef="photo_thermo_regime">
           <th mat-header-cell *matHeaderCellDef>Régime thermo-photo</th>
           <td mat-cell *matCellDef="let element">
-            <span *ngIf="element.thermoPhoto">{{ element.thermoPhoto }}</span>
+            {{ element.thermoPhoto || '-' }}
           </td>
         </ng-container>
 
@@ -103,11 +109,25 @@
         <ng-container matColumnDef="pre_treatment">
           <th mat-header-cell *matHeaderCellDef>Prétraitement</th>
           <td mat-cell *matCellDef="let element">
-            <mat-checkbox
+
+            <div
+              class="pre-treatment-control"
+              [class.pre-treatment-active]="element.pre_treatment === true"
               (click)="$event.stopPropagation()"
-              [checked]="element.pre_treatment === true"
-              (change)="onChangePreTreatment(element, $event.checked)">
-            </mat-checkbox>
+            >
+
+              <mat-checkbox
+                class="pre-treatment-checkbox"
+                [checked]="element.pre_treatment === true"
+                (change)="onChangePreTreatment(element, $event.checked)">
+              </mat-checkbox>
+
+              <span class="pre-treatment-label">
+                {{ element.pre_treatment === true ? 'Oui' : 'Non' }}
+              </span>
+
+            </div>
+
           </td>
         </ng-container>
 
@@ -162,6 +182,8 @@
         >
         </tr>
       </table>
+
+      </div>
 
       <mat-paginator
         class="germination-list-paginator"

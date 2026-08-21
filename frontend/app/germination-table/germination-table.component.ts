@@ -55,6 +55,32 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
     return this.activeActionRowId === row.id_test;
   }
 
+
+  public getGerminationRateDisplay(element: any): string {
+    const value = element?.germination_rate;
+
+    if (
+      value === null ||
+      value === undefined ||
+      value === ''
+    ) {
+      return '-';
+    }
+
+    const rate = Number(value);
+
+    if (Number.isNaN(rate)) {
+      return '-';
+    }
+
+    const formattedRate = Number.isInteger(rate)
+      ? String(rate)
+      : rate.toFixed(1).replace('.', ',');
+
+    return `${formattedRate} %`;
+  }
+
+
   @Output() view = new EventEmitter<Germination>();
   @Output() edit = new EventEmitter<Germination>();
   @Output() delete = new EventEmitter<Germination>();
