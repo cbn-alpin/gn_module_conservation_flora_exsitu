@@ -253,28 +253,55 @@
   background-color: #fdfbf9;
 }
 
-/* Tableau */
-.culture-list-table {
+/* =========================================================
+   TABLEAU CULTURE
+   Largeur totale verrouillée : 1290px
+   ========================================================= */
+
+.culture-list-table-scroll {
   width: 100%;
+
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+
+.culture-list-table {
+  width: 1290px;
+  min-width: 1290px;
+  max-width: 1290px;
+
   table-layout: fixed;
-  overflow: hidden;
 
   background-color: #ffffff;
+
   border: 1px solid #ded5d1;
   border-radius: 12px;
 }
+
 
 /* Ligne d’en-tête */
 :host ::ng-deep
 .culture-list-table .mat-mdc-header-row {
   height: 42px;
+
   background-color: #efebe9;
 }
+
 
 /* Cellules d’en-tête */
 :host ::ng-deep
 .culture-list-table .mat-mdc-header-cell {
+  box-sizing: border-box;
+
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+
+  padding: 0 16px !important;
+
   color: #4e342e;
+
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.2px;
@@ -283,20 +310,33 @@
   border-bottom: 1px solid #d7ccc8;
 }
 
+
 /* Lignes du tableau */
 :host ::ng-deep
 .culture-list-table .mat-mdc-row {
   height: 52px;
 }
 
+
 /* Cellules du tableau */
 :host ::ng-deep
 .culture-list-table .mat-mdc-cell {
+  box-sizing: border-box;
+
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  padding: 0 16px !important;
+
   color: #263238;
+
   font-size: 13px;
 
   border-bottom: 1px solid #f1ebe8;
 }
+
 
 /* Survol d’une ligne */
 :host ::ng-deep
@@ -304,15 +344,29 @@
   background-color: #faf5f2;
 }
 
+
 /* =========================================================
-   LARGEURS FIXES DES COLONNES
-   Empêche les titres de bouger selon le contenu des lignes
+   LARGEURS VERROUILLÉES DES COLONNES CULTURE
+
+   N° culture       : 170px
+   Type d’origine   : 230px
+   Origine          : 270px
+   Date de début    : 170px
+   Date de fin      : 170px
+   Statut           : 216px
+   Actions          :  64px
+
+   TOTAL            : 1290px
    ========================================================= */
+
 
 /* N° culture */
 :host ::ng-deep
 .culture-list-table .mat-column-code_culture {
-  width: 17%;
+  width: 170px;
+  min-width: 170px;
+  max-width: 170px;
+
   font-weight: 800;
 }
 
@@ -320,14 +374,19 @@
 /* Type d’origine */
 :host ::ng-deep
 .culture-list-table .mat-column-source_type {
-  width: 18%;
+  width: 230px;
+  min-width: 230px;
+  max-width: 230px;
 }
 
 
 /* Origine */
 :host ::ng-deep
 .culture-list-table .mat-column-source {
-  width: 15%;
+  width: 270px;
+  min-width: 270px;
+  max-width: 270px;
+
   font-weight: 700;
 }
 
@@ -335,21 +394,27 @@
 /* Date de début */
 :host ::ng-deep
 .culture-list-table .mat-column-date_start {
-  width: 13%;
+  width: 170px;
+  min-width: 170px;
+  max-width: 170px;
 }
 
 
 /* Date de fin */
 :host ::ng-deep
 .culture-list-table .mat-column-date_end {
-  width: 13%;
+  width: 170px;
+  min-width: 170px;
+  max-width: 170px;
 }
 
 
 /* Statut */
 :host ::ng-deep
 .culture-list-table .mat-column-status {
-  width: 14%;
+  width: 216px;
+  min-width: 216px;
+  max-width: 216px;
 }
 
 
@@ -357,6 +422,7 @@
 :host ::ng-deep
 .culture-list-table .mat-column-actions {
   position: relative;
+
   box-sizing: border-box;
 
   width: 64px;
