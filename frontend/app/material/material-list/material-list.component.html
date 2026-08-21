@@ -109,6 +109,7 @@
             mat-icon-button
             class="actions-trigger-red"
             [matMenuTriggerFor]="menu"
+            (click)="$event.stopPropagation()"
             aria-label="Actions"
           >
             <mat-icon>more_vert</mat-icon>
@@ -183,12 +184,13 @@
           let i = index;
           columns: displayedColumns;
         "
+        class="clickable-row"
         [ngClass]="{
           highlighted:
             row.id_material ===
             exsituFormService.idMaterial
         }"
-        (click)="selectMaterial(row)"
+        (click)="goToMaterialDetails(row)"
       ></tr>
     </table>
 
