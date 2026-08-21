@@ -317,18 +317,24 @@ background-color: #ffffff;
   background: #fbfffb;
 }
 
-.semis-list-table {
+.semis-list-table-scroll {
   width: 100%;
 
-  /*
-   * Empêche le navigateur de recalculer
-   * les colonnes selon les lignes filtrées.
-   */
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+
+.semis-list-table {
+  width: 1290px;
+  min-width: 1290px;
+  max-width: 1290px;
+
   table-layout: fixed;
 
-  overflow: hidden;
   border: 1px solid #d8ead8;
   border-radius: 12px;
+
   background: #ffffff;
 }
 
@@ -348,9 +354,11 @@ background-color: #ffffff;
 .semis-list-table .mat-mdc-header-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+
+  padding: 0 16px !important;
 
   color: #1b5e20;
   font-size: 12px;
@@ -366,9 +374,12 @@ background-color: #ffffff;
 .semis-list-table .mat-mdc-cell {
   box-sizing: border-box;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  padding: 0 16px !important;
 
   color: #263238;
   font-size: 13px;
@@ -397,13 +408,17 @@ background-color: #ffffff;
 
 
 /* =========================================================
-   LARGEURS FIXES DES COLONNES SEMIS
+   LARGEURS VERROUILLÉES DES COLONNES SEMIS
+   Total : 1290px
    ========================================================= */
 
-/* Code */
+/* N° de semis */
 :host ::ng-deep
 .semis-list-table .mat-column-code {
-  width: 14%;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+
   font-weight: 800;
 }
 
@@ -411,7 +426,9 @@ background-color: #ffffff;
 /* % de levée */
 :host ::ng-deep
 .semis-list-table .mat-column-emergence_rate {
-  width: 16%;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
 
   color: #1b5e20;
   font-weight: 750;
@@ -421,35 +438,45 @@ background-color: #ffffff;
 /* Date début */
 :host ::ng-deep
 .semis-list-table .mat-column-start_date {
-  width: 12%;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
 }
 
 
 /* Date fin */
 :host ::ng-deep
 .semis-list-table .mat-column-end_date {
-  width: 12%;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
 }
 
 
 /* Durée */
 :host ::ng-deep
 .semis-list-table .mat-column-duration {
-  width: 10%;
+  width: 175px;
+  min-width: 175px;
+  max-width: 175px;
 }
 
 
 /* Méthode */
 :host ::ng-deep
 .semis-list-table .mat-column-id_sowing_method {
-  width: 14%;
+  width: 165px;
+  min-width: 165px;
+  max-width: 165px;
 }
 
 
 /* Substrat */
 :host ::ng-deep
 .semis-list-table .mat-column-substrate {
-  width: 14%;
+  width: 246px;
+  min-width: 246px;
+  max-width: 246px;
 }
 
 

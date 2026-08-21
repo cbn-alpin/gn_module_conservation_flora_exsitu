@@ -69,7 +69,7 @@
               </span>
 
               <small>
-                Affiner par code, date de début,
+                Affiner par N° de semis, date de début,
                 méthode et substrat
               </small>
 
@@ -106,7 +106,7 @@
           >
 
             <mat-label>
-              Code
+              N° de semis
             </mat-label>
 
             <input
@@ -115,7 +115,7 @@
               (ngModelChange)="
                 onSemisCodeFilterChange($event)
               "
-              placeholder="Rechercher un code"
+              placeholder="Rechercher un N° de semis"
             >
 
             <mat-icon matSuffix>
@@ -262,15 +262,17 @@
         "
       >
 
+        <div class="semis-list-table-scroll">
+
         <table
           mat-table
           [dataSource]="dataSource"
           class="semis-list-table"
         >
 
-        <!-- Code -->
+        <!-- N° de semis -->
         <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <th mat-header-cell *matHeaderCellDef>N° de semis</th>
           <td mat-cell *matCellDef="let element">
             <ng-container *ngIf="isStandardSowingCode(element.code); else plainCode">
               <span class="sowing-code-prefix">{{ element.code.slice(0, 1) }}</span>
@@ -389,6 +391,9 @@
         >
         </tr>
       </table>
+
+      </div>
+
       <mat-paginator
         class="semis-list-paginator"
         [pageSize]="rowPerPage"
