@@ -214,3 +214,310 @@ mat-card-content,
 }
 
 
+/* =========================================================
+   INFORMATIONS TEST DE VIABILITÉ
+   ========================================================= */
+
+.viability-info-panel {
+  margin: 0 15px 26px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #f2c79f;
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 18px
+    rgba(224, 122, 31, 0.11);
+}
+
+
+.viability-info-hero {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 24px 18px 20px;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(242, 199, 159, 0.70) 0%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(
+      180deg,
+      #fff8f1 0%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #f5dcc5;
+}
+
+
+.viability-info-hero::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  transform: translateX(-50%);
+
+  background-color: #e07a1f;
+
+  border-radius: 0 0 999px 999px;
+}
+
+
+.viability-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  color: #e07a1f;
+
+  background: #ffffff;
+
+  border: 1px solid #f2c79f;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px
+    rgba(224, 122, 31, 0.14);
+}
+
+
+.viability-info-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #e07a1f;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+.viability-info-heading h2 {
+  margin: 0;
+
+  color: #7a3b00;
+
+  font-size: 22px;
+  font-weight: 850;
+
+  letter-spacing: 0.2px;
+}
+
+
+.viability-info-heading p {
+  margin: 4px 0 0;
+
+  color: #8d6748;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+.viability-info-code-badge {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 4px;
+  padding: 7px 16px;
+
+  background: #ffffff;
+
+  border: 1px solid #e4ad79;
+  border-radius: 999px;
+
+  box-shadow:
+    0 3px 9px
+    rgba(224, 122, 31, 0.10);
+}
+
+
+.viability-info-code-badge span {
+  color: #a36631;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.viability-info-code-badge strong {
+  color: #7a3b00;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+
+.viability-info-content {
+  padding: 18px 20px 22px;
+
+  background-color: #fffdfb;
+}
+
+
+.viability-detail-section {
+  margin-bottom: 18px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #f2d9c1;
+  border-radius: 12px;
+}
+
+
+.viability-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+
+.viability-detail-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 14px;
+
+  color: #7a3b00;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff0e3 0%,
+      #fff8f2 75%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #f2c79f;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.viability-detail-section-title mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #e07a1f;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.viability-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 1px;
+
+  background-color: #f5e1ce;
+}
+
+
+.viability-detail-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-height: 64px;
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+}
+
+
+.viability-detail-item-full {
+  grid-column: 1 / -1;
+}
+
+
+.viability-detail-code {
+  background:
+    linear-gradient(
+      90deg,
+      #fff7ef 0%,
+      #ffffff 100%
+    );
+}
+
+
+.viability-detail-label {
+  color: #956743;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.25px;
+}
+
+
+.viability-detail-value {
+  color: #4d3320;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+
+@media (max-width: 768px) {
+
+  .viability-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .viability-detail-item-full {
+    grid-column: auto;
+  }
+
+}
+
+

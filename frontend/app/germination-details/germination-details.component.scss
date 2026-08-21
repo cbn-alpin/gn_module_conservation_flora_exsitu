@@ -213,3 +213,328 @@ mat-card-content,
 }
 
 
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.germination-details-page {
+  padding-bottom: 24px;
+}
+
+
+/* =========================================================
+   INFORMATIONS TEST DE GERMINATION
+   ========================================================= */
+
+.germination-info-panel {
+  margin: 0 15px 26px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 18px
+    rgba(0, 137, 123, 0.11);
+}
+
+
+.germination-info-hero {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 24px 18px 20px;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(178, 223, 219, 0.70) 0%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(
+      180deg,
+      #f5fcfb 0%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #d5eeeb;
+}
+
+
+.germination-info-hero::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 50%;
+
+  width: 140px;
+  height: 4px;
+
+  transform: translateX(-50%);
+
+  background-color: #00897b;
+
+  border-radius: 0 0 999px 999px;
+}
+
+
+.germination-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  background: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px
+    rgba(0, 137, 123, 0.14);
+}
+
+
+.germination-info-icon mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #00897b;
+
+  font-size: 28px;
+  line-height: 28px;
+}
+
+
+.germination-info-heading h2 {
+  margin: 0;
+
+  color: #00564e;
+
+  font-size: 22px;
+  font-weight: 850;
+
+  letter-spacing: 0.2px;
+}
+
+
+.germination-info-heading p {
+  margin: 4px 0 0;
+
+  color: #5c7d79;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+.germination-info-code-badge {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 4px;
+  padding: 7px 16px;
+
+  background: #ffffff;
+
+  border: 1px solid #80cbc4;
+  border-radius: 999px;
+
+  box-shadow:
+    0 3px 9px
+    rgba(0, 137, 123, 0.10);
+}
+
+
+.germination-info-code-badge span,
+.germination-info-code-badge strong {
+  display: inline-flex;
+  align-items: center;
+
+  margin: 0;
+
+  line-height: 1;
+}
+
+
+.germination-info-code-badge span {
+  color: #438078;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.germination-info-code-badge strong {
+  color: #00564e;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+
+.germination-info-content {
+  padding: 18px 20px 22px;
+
+  background-color: #fbfefd;
+}
+
+
+.germination-detail-section {
+  margin-bottom: 18px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #cde8e5;
+  border-radius: 12px;
+}
+
+
+.germination-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+
+.germination-detail-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 14px;
+
+  color: #00564e;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e5f6f3 0%,
+      #f5fbfa 75%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #b2dfdb;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.germination-detail-section-title mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #00897b;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.germination-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 1px;
+
+  background-color: #dcefed;
+}
+
+
+.germination-detail-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-height: 64px;
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+}
+
+
+.germination-detail-item-full {
+  grid-column: 1 / -1;
+}
+
+
+.germination-detail-code {
+  background:
+    linear-gradient(
+      90deg,
+      #f0faf8 0%,
+      #ffffff 100%
+    );
+}
+
+
+.germination-detail-label {
+  color: #5c7d79;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.25px;
+}
+
+
+.germination-detail-value {
+  color: #263b38;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+
+@media (max-width: 768px) {
+
+  .germination-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .germination-detail-item-full {
+    grid-column: auto;
+  }
+
+}
+
+

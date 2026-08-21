@@ -1,4 +1,4 @@
-<div>
+<div class="stock-details-page">
 
   <div class="return-button">
 
@@ -15,5 +15,48 @@
     </button>
 
   </div>
+
+
+  <section class="stock-info-panel">
+
+    <div class="stock-info-hero">
+
+      <div class="stock-info-icon">
+
+        <mat-icon>
+          store
+        </mat-icon>
+
+      </div>
+
+
+      <div class="stock-info-heading">
+
+        <h2>
+          Les Informations de l'action de stockage
+        </h2>
+
+        <p>
+          Vue détaillée des données principales de l'action de stockage
+        </p>
+
+      </div>
+
+
+      <div class="stock-info-code-badge">
+
+        <span>
+          Type d'action
+        </span>
+
+        <strong>
+          {{ actionTypeLabel || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
 
 </div>

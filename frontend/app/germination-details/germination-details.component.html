@@ -1,81 +1,292 @@
-<div>
+<div class="germination-details-page">
+
   <div class="return-button">
     <button mat-raised-button color="primary" (click)="onBack()">
       <mat-icon>arrow_back</mat-icon>
       Retour
     </button>
-  </div>  
-    <mat-card-header>
-      <mat-card-title>Les Informations du test de germination </mat-card-title>
-    </mat-card-header>
-    <div>
-      <mat-card-content>
-        <form [formGroup]="germinationForm" class="semis-form">      
-      
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Matériel végétal :</strong> {{ germinationForm.get('id_material')?.value }}
-        </div>
-        <div class="half-width">
-          <strong>Effectué par :</strong> {{ germinationForm.get('id_actor')?.value }}
-        </div>
+  </div>
+
+
+  <section class="germination-info-panel">
+
+    <div class="germination-info-hero">
+
+      <div class="germination-info-icon">
+        <mat-icon>wb_sunny</mat-icon>
       </div>
 
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Numéro de TG :</strong> {{ germinationForm.get('code')?.value }}
-        </div>
-        <div class="half-width">
-          <strong>Stock utilisé :</strong> {{ germinationForm.get('id_storage')?.value }}
-          
-        </div>
+
+      <div class="germination-info-heading">
+
+        <h2>
+          Les Informations du test de germination
+        </h2>
+
+        <p>
+          Vue détaillée des données principales du test de germination
+        </p>
 
       </div>
 
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Nombre de graines testées :</strong> {{ germinationForm.get('seed_initial_count')?.value }}
-        </div>
-        <div class="half-width">
-          <strong>Nombre de réplicats :</strong> {{ germinationForm.get('replicate_count')?.value }}
-        </div>
+
+      <div class="germination-info-code-badge">
+
+        <span>
+          N° test
+        </span>
+
+        <strong>
+          {{ germinationForm.get('code')?.value || '-' }}
+        </strong>
+
       </div>
 
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Substrat :</strong> {{ germinationForm.get('id_substrate')?.value }}
-        </div>
-        <div class="half-width">
-          <strong>Support :</strong> {{ germinationForm.get('id_support')?.value }}
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="half-width">
-          <strong>Programme :</strong> {{ germinationForm.get('additional_data')?.value?.program || '-' }}
-        </div>
-        <div class="half-width">
-          <strong>Remarques :</strong> {{ germinationForm.get('remarks')?.value }}
-        </div>
-      </div>
-        </form>
-        
-      </mat-card-content>
     </div>
-    <div class="action-detail split-view">
-      <div class="germination-list">
-        <app-action-table
-          [dataSource]="dataSource"
-          [idTest]="idTest" 
-          (rowClicked)="onActionSelected($event)">
-        </app-action-table>
-      </div>
-    
-      <div class="germination-detail" *ngIf="selectedAction">
-        <app-action-details [actionId]="selectedAction.id_action"></app-action-details>
+
+
+    <div class="germination-info-content">
+
+      <!-- IDENTIFICATION -->
+
+      <div class="germination-detail-section">
+
+        <div class="germination-detail-section-title">
+
+          <mat-icon>
+            assignment
+          </mat-icon>
+
+          <span>
+            Identification du test
+          </span>
+
+        </div>
+
+
+        <div class="germination-detail-grid">
+
+          <div
+            class="
+              germination-detail-item
+              germination-detail-item-full
+              germination-detail-code
+            "
+          >
+
+            <span class="germination-detail-label">
+              Numéro du test de germination
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('code')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Matériel végétal
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('id_material')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Stock utilisé
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('id_storage')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Effectué par
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('id_actor')?.value || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
 
       </div>
+
+
+      <!-- PARAMÈTRES -->
+
+      <div class="germination-detail-section">
+
+        <div class="germination-detail-section-title">
+
+          <mat-icon>
+            science
+          </mat-icon>
+
+          <span>
+            Paramètres du test
+          </span>
+
+        </div>
+
+
+        <div class="germination-detail-grid">
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Nombre de graines testées
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('seed_initial_count')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Nombre de réplicats
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('replicate_count')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Substrat
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('id_substrate')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Support
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('id_support')?.value || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- INFORMATIONS COMPLÉMENTAIRES -->
+
+      <div class="germination-detail-section">
+
+        <div class="germination-detail-section-title">
+
+          <mat-icon>
+            description
+          </mat-icon>
+
+          <span>
+            Informations complémentaires
+          </span>
+
+        </div>
+
+
+        <div class="germination-detail-grid">
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Programme
+            </span>
+
+            <strong class="germination-detail-value">
+              {{
+                germinationForm
+                  .get('additional_data')
+                  ?.value
+                  ?.program || '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Remarques
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('remarks')?.value || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
-    
+
+  </section>
+
+
+  <div class="action-detail split-view">
+
+    <div class="germination-list">
+
+      <app-action-table
+        [dataSource]="dataSource"
+        [idTest]="idTest"
+        (rowClicked)="onActionSelected($event)">
+      </app-action-table>
+
+    </div>
+
+
+    <div
+      class="germination-detail"
+      *ngIf="selectedAction"
+    >
+
+      <app-action-details
+        [actionId]="selectedAction.id_action">
+      </app-action-details>
+
+    </div>
+
+  </div>
+
 </div>
 
 

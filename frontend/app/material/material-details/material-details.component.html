@@ -1,4 +1,4 @@
-<div>
+<div class="material-details-page">
 
   <div class="return-button">
 
@@ -15,5 +15,48 @@
     </button>
 
   </div>
+
+
+  <section class="material-info-panel">
+
+    <div class="material-info-hero">
+
+      <div class="material-info-icon">
+
+        <mat-icon>
+          spa
+        </mat-icon>
+
+      </div>
+
+
+      <div class="material-info-heading">
+
+        <h2>
+          Les Informations du matériel récolté
+        </h2>
+
+        <p>
+          Vue détaillée des données principales du matériel récolté
+        </p>
+
+      </div>
+
+
+      <div class="material-info-code-badge">
+
+        <span>
+          N° récolte
+        </span>
+
+        <strong>
+          {{ codeMaterial || '-' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
 
 </div>
