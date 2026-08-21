@@ -52,12 +52,13 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
           /*
-           * Lorsqu'une navigation vers une page détail
-           * est complètement terminée, on replace
-           * automatiquement la page tout en haut.
+           * À chaque nouvelle page du workflow,
+           * on repart systématiquement tout en haut,
+           * indépendamment de la position de scroll
+           * de la page précédente.
            */
           if (event instanceof NavigationEnd) {
-            this.scrollDetailPageToTop();
+            this.scrollPageToTop();
           }
         });
 
@@ -67,10 +68,9 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
         /*
-         * Important également lors d'un F5 directement
-         * depuis une page détail.
+         * Même comportement lors d'un rechargement F5.
          */
-        this.scrollDetailPageToTop();
+        this.scrollPageToTop();
 
 
         this.exsituFormService.id_storage.subscribe(id => {
@@ -755,36 +755,16 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
-    private scrollDetailPageToTop(): void {
-
-      const detailTabs = [
-        'semis-details',
-        'culture-details',
-        'germination-details',
-        'viability-details',
-        'stock-details',
-        'material-details'
-      ];
-
-
-      if (
-        !detailTabs.includes(
-          this.exsituFormService.currentTab
-        )
-      ) {
-        return;
-      }
-
+    private scrollPageToTop(): void {
 
       /*
-       * On attend que le nouveau contenu du détail
-       * soit réellement présent dans le DOM.
+       * On attend que le contenu de la nouvelle page
+       * soit réellement affiché dans le DOM.
        */
       setTimeout(() => {
 
         /*
-         * Cas classique :
-         * scroll porté par la fenêtre / le document.
+         * Scroll principal du navigateur.
          */
         window.scrollTo({
           top: 0,
@@ -793,16 +773,18 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
 
+        /*
+         * Scroll porté directement par le document.
+         */
         if (document.scrollingElement) {
           document.scrollingElement.scrollTop = 0;
+          document.scrollingElement.scrollLeft = 0;
         }
 
 
         /*
-         * GeoNature utilise Angular Material.
-         * Selon la disposition générale de l'application,
-         * le scroll peut être porté par le contenu
-         * du sidenav plutôt que directement par window.
+         * Dans GeoNature, le scroll principal peut
+         * aussi être porté par Angular Material.
          */
         const materialScrollContainers =
           document.querySelectorAll(
@@ -817,6 +799,7 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
               element instanceof HTMLElement
             ) {
               element.scrollTop = 0;
+              element.scrollLeft = 0;
             }
 
           }
