@@ -3,7 +3,9 @@
    ========================================================= */
 
 .culture-details-page {
-  padding-bottom: 24px;
+  padding-bottom: 26px;
+
+  background-color: #ffffff;
 }
 
 
@@ -337,7 +339,6 @@
     background-color 0.15s ease;
 }
 
-
 .culture-detail-item:hover {
   background-color: #fcf9f7;
 }
@@ -394,7 +395,6 @@
       #ffffff 100%
     );
 }
-
 
 .culture-detail-code
 .detail-value {
@@ -459,10 +459,13 @@
     1px solid #bcaaa4;
 }
 
-/* Conteneur extérieur des actions Culture,
-   équivalent à .germination-list dans Semis */
+
+/* =========================================================
+   CONTENEUR EXTÉRIEUR ACTIONS
+   ========================================================= */
+
 .culture-actions-wrapper {
-  margin: 10px 15px 26px;
+  margin: 0 15px;
   padding: 15px;
 
   box-sizing: border-box;
@@ -476,6 +479,7 @@
     0 2px 8px
     rgba(0, 0, 0, 0.10);
 }
+
 
 /* =========================================================
    LISTE DES ACTIONS CULTURE
@@ -507,8 +511,9 @@
   align-items: center;
   justify-content: center;
 
+  height: auto;
   min-height: 74px;
-  padding: 10px 16px 14px;
+  padding: 10px 16px 14px 16px;
 
   background:
     linear-gradient(
@@ -523,16 +528,14 @@
 
 
 /* Titre */
+
 .culture-actions-title {
   display: flex;
   align-items: center;
   justify-content: center;
 
   gap: 10px;
-
-  text-align: center;
 }
-
 
 .culture-actions-title-icon {
   display: flex;
@@ -546,13 +549,26 @@
   background-color: #efebe9;
 
   border-radius: 50%;
+
+  transform: translateX(9px);
 }
 
+.culture-actions-title-icon mat-icon {
+  width: 24px;
+  height: 24px;
+
+  font-size: 24px;
+  line-height: 24px;
+}
 
 .culture-actions-title-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   text-align: center;
 }
-
 
 .culture-actions-title-text h3 {
   margin: 0;
@@ -562,18 +578,20 @@
   font-size: 21px;
   font-weight: 850;
   line-height: 1.2;
-}
 
+  transform: translateY(-3px);
+}
 
 .culture-actions-title-text small {
   display: block;
 
-  margin-top: 2px;
+  margin: 2px 0 0;
 
   color: #7b6a64;
 
   font-size: 12px;
   font-weight: 500;
+  line-height: 1.2;
 }
 
 
@@ -599,24 +617,41 @@
     rgba(109, 76, 65, 0.20);
 }
 
-
 .culture-add-action-button:hover {
   background-color: #6d4c41 !important;
 }
-
 
 .culture-add-action-button mat-icon {
   color: #ffffff !important;
 }
 
+
+/* Bouton détails */
+
 .culture-action-details-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 34px;
+  height: 34px;
+
+  margin: 0 auto;
+  padding: 0 !important;
+
   color: #6d4c41;
+
+  border-radius: 50%;
 }
 
+.culture-action-details-button mat-icon {
+  margin: 0 !important;
+}
 
 .culture-action-details-button:hover {
   background-color: #efebe9;
 }
+
 
 /* =========================================================
    FILTRES DES ACTIONS CULTURE
@@ -642,7 +677,6 @@
     rgba(78, 52, 46, 0.06);
 }
 
-
 .culture-action-filters-header {
   display: flex;
   align-items: center;
@@ -653,7 +687,6 @@
   margin-bottom: 14px;
 }
 
-
 .culture-action-filters-title {
   display: flex;
   align-items: center;
@@ -662,7 +695,6 @@
 
   color: #5d4037;
 }
-
 
 .culture-action-filters-icon {
   display: flex;
@@ -679,6 +711,9 @@
   border-radius: 50%;
 }
 
+
+/* IMPORTANT : violet comme Semis */
+
 .culture-action-filters-title mat-icon {
   width: 19px;
   height: 19px;
@@ -688,7 +723,6 @@
   font-size: 19px;
 }
 
-
 .culture-action-filters-title span {
   display: block;
 
@@ -697,7 +731,6 @@
   font-size: 15px;
   font-weight: 800;
 }
-
 
 .culture-action-filters-title small {
   display: block;
@@ -710,6 +743,8 @@
   font-weight: 500;
 }
 
+
+/* Champs */
 
 .culture-action-filter-fields {
   display: grid;
@@ -724,11 +759,13 @@
   align-items: end;
 }
 
-
 .culture-action-filter-field {
   width: 100%;
-}
 
+  --mdc-outlined-text-field-focus-outline-color: #6d4c41;
+  --mdc-outlined-text-field-focus-label-text-color: #6d4c41;
+  --mdc-outlined-text-field-caret-color: #6d4c41;
+}
 
 :host ::ng-deep
 .culture-action-filter-field
@@ -738,13 +775,14 @@
   border-radius: 10px;
 }
 
-
 :host ::ng-deep
 .culture-action-filter-field
 .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 
+
+/* Réinitialiser */
 
 .culture-action-reset-filter-button {
   min-height: 34px;
@@ -765,12 +803,10 @@
   white-space: nowrap;
 }
 
-
 .culture-action-reset-filter-button:hover {
   background-color:
     #7b1fa2 !important;
 }
-
 
 .culture-action-reset-filter-button mat-icon {
   width: 17px;
@@ -783,7 +819,10 @@
   font-size: 17px;
 }
 
-/* Contenu liste */
+
+/* =========================================================
+   CONTENU LISTE
+   ========================================================= */
 
 .culture-actions-content {
   padding: 0 16px 16px;
@@ -792,7 +831,9 @@
 }
 
 
-/* Tableau */
+/* =========================================================
+   TABLEAU
+   ========================================================= */
 
 .culture-actions-table {
   width: 100%;
@@ -809,6 +850,13 @@
 }
 
 :host ::ng-deep
+.culture-actions-table {
+  width: 100%;
+
+  table-layout: fixed;
+}
+
+:host ::ng-deep
 .culture-actions-table
 .mat-mdc-header-row {
   height: 52px;
@@ -821,9 +869,13 @@
 .mat-mdc-header-cell {
   color: #4e342e;
 
-  font-size: 12px;
-  font-weight: 800;
+  padding-top: 0 !important;
+  padding-bottom: 2px !important;
 
+  font-size: 12px;
+  font-weight: 850;
+
+  letter-spacing: 0.2px;
   text-transform: uppercase;
 
   border-bottom:
@@ -839,7 +891,6 @@
     background-color 0.15s ease;
 }
 
-
 :host ::ng-deep
 .culture-actions-table
 .mat-mdc-row
@@ -852,7 +903,6 @@
     1px solid #f0e8e4;
 }
 
-
 :host ::ng-deep
 .culture-actions-table
 .culture-action-row:hover
@@ -861,6 +911,8 @@
     #fdf5f1 !important;
 }
 
+
+/* Date */
 
 .culture-action-date-pill {
   display: inline-flex;
@@ -879,11 +931,14 @@
 }
 
 
+/* Type */
+
 .culture-action-type-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
+  max-width: 100%;
   padding: 6px 12px;
 
   color: #4e342e;
@@ -892,8 +947,14 @@
   border-radius: 999px;
 
   font-weight: 800;
+
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
 }
 
+
+/* Agent */
 
 .culture-action-agent-cell {
   display: inline-flex;
@@ -902,8 +963,10 @@
   gap: 7px;
 
   color: #4f4541;
-}
 
+  font-weight: 500;
+  line-height: 1.2;
+}
 
 .culture-action-agent-cell mat-icon {
   width: 18px;
@@ -915,15 +978,9 @@
 }
 
 
-/* Même disposition des colonnes que dans Semis */
-
-:host ::ng-deep
-.culture-actions-table {
-  width: 100%;
-
-  table-layout: fixed;
-}
-
+/* =========================================================
+   LARGEURS COLONNES = SEMIS
+   ========================================================= */
 
 /* Début */
 
@@ -963,16 +1020,17 @@
 :host ::ng-deep
 .culture-actions-table
 .mat-column-actions {
-  width: 96px;
-  min-width: 96px;
-  max-width: 96px;
+  box-sizing: border-box;
+
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
 
   padding-right: 8px !important;
   padding-left: 8px !important;
 
   text-align: center !important;
 }
-
 
 :host ::ng-deep
 .culture-actions-table
@@ -984,7 +1042,18 @@ td.mat-column-actions {
 }
 
 
-/* Même position des flèches de tri que dans Semis */
+/* Cache visuellement le titre "Action" sans toucher au HTML */
+
+:host ::ng-deep
+.culture-actions-table
+th.mat-column-actions {
+  font-size: 0;
+}
+
+
+/* =========================================================
+   TRI
+   ========================================================= */
 
 :host ::ng-deep
 .culture-actions-table
@@ -995,13 +1064,11 @@ td.mat-column-actions {
   width: 100%;
 }
 
-
 :host ::ng-deep
 .culture-actions-table
 .mat-sort-header-content {
   flex: 0 1 auto;
 }
-
 
 :host ::ng-deep
 .culture-actions-table
@@ -1019,6 +1086,10 @@ td.mat-column-actions {
 }
 
 
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
 :host ::ng-deep
 .culture-actions-content
 .mat-mdc-paginator {
@@ -1030,12 +1101,14 @@ td.mat-column-actions {
     1px solid #f0e8e4;
 }
 
-
 .culture-action-hidden-paginator {
   display: none;
 }
 
-/* Message aucune action */
+
+/* =========================================================
+   AUCUNE ACTION
+   ========================================================= */
 
 .culture-actions-empty {
   margin-top: 12px;
@@ -1055,7 +1128,16 @@ td.mat-column-actions {
 }
 
 .culture-actions-empty mat-icon {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  margin: 0 auto 7px;
+
   color: #8d6e63;
+
+  font-size: 24px;
 }
 
 .culture-actions-empty strong,
@@ -1075,10 +1157,13 @@ td.mat-column-actions {
   color: #8a7872;
 
   font-size: 12px;
+  font-weight: 500;
 }
 
 
-/* Responsive */
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (
   max-width: 900px
@@ -1096,13 +1181,14 @@ td.mat-column-actions {
 
 
 @media (
-  max-width: 768px
+  max-width: 900px
 ) {
 
   .culture-actions-header {
+    align-items: flex-start;
     flex-direction: column;
 
-    gap: 8px;
+    gap: 12px;
 
     padding:
       12px 14px;
@@ -1112,7 +1198,12 @@ td.mat-column-actions {
     position: static;
   }
 
+  .culture-actions-title {
+    width: 100%;
+  }
+
 }
+
 
 @media (
   max-width: 900px
@@ -1122,9 +1213,8 @@ td.mat-column-actions {
     align-items: flex-start;
     flex-direction: column;
 
-    gap: 10px;
+    gap: 16px;
   }
-
 
   .culture-action-filter-fields {
     grid-template-columns: 1fr;
