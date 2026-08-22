@@ -522,29 +522,82 @@ export class ActionsStockComponent
     }
 
     goToStockDetails(element: any): void {
+
       const idStorage =
-        Number(element?.id_storage);
+        Number(
+          element?.id_storage
+        );
+
+
+      /*
+       * On récupère également les IDs depuis
+       * l'URL actuelle en secours.
+       *
+       * Cela rend l'ouverture robuste même après F5.
+       */
+      const urlSegments =
+        this.router.url
+          .split('?')[0]
+          .split('/');
+
+
+      const harvestIndex =
+        urlSegments.indexOf(
+          'harvest'
+        ) + 1;
+
+      const materialIndex =
+        urlSegments.indexOf(
+          'material'
+        ) + 1;
+
+
+      const idHarvest =
+        Number(
+          this.exsituFormService.idHarvest ||
+          (
+            harvestIndex > 0 &&
+            harvestIndex < urlSegments.length
+              ? urlSegments[harvestIndex]
+              : 0
+          )
+        );
+
 
       const idMaterial =
         Number(
           element?.id_material ||
-          this.exsituFormService.idMaterial
+          this.exsituFormService.idMaterial ||
+          (
+            materialIndex > 0 &&
+            materialIndex < urlSegments.length
+              ? urlSegments[materialIndex]
+              : 0
+          )
         );
 
-      const idHarvest =
-        this.exsituFormService.idHarvest;
 
       const actionTypeLabel =
-        element?.action_type_label || '-';
+        element?.action_type_label ||
+        '-';
 
 
       if (
         !idStorage ||
         !idMaterial ||
-        !idHarvest
+        !idHarvest ||
+        !this.placeCode
       ) {
+
         console.error(
-          'Impossible d’ouvrir les détails du stockage : identifiant manquant.'
+          'Impossible d’ouvrir les détails du stockage : identifiant manquant.',
+          {
+            idStorage,
+            idMaterial,
+            idHarvest,
+            placeCode:
+              this.placeCode
+          }
         );
 
         return;
@@ -552,22 +605,34 @@ export class ActionsStockComponent
 
 
       this.exsituFormService
-        .setIdMaterial(idMaterial);
+        .setIdMaterial(
+          idMaterial
+        );
 
-      this.exsituFormService.currentTab =
-        'stock-details';
 
-
+      /*
+       * Même navigation que les pages
+       * Germination / Viabilité / Semis.
+       */
       this.router.navigate(
         [
-          `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/stock-details/${idStorage}/${this.placeCode}`
+          '/conservation_flora_exsitu/form/harvest',
+          idHarvest,
+          'material',
+          idMaterial,
+          'stock-details',
+          idStorage,
+          this.placeCode
         ],
         {
           state: {
-            actionTypeLabel
+            actionTypeLabel,
+            storageAction:
+              element
           }
         }
       );
+
     }
 
 

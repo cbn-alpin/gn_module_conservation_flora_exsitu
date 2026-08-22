@@ -15,6 +15,10 @@ import {
   DataService
 } from '../../services/data.service';
 
+import {
+  ConstantsService
+} from '../../services/constants.service';
+
 
 @Component({
   selector: 'app-stock-details',
@@ -29,28 +33,79 @@ export class StockDetailsComponent implements OnInit {
 
   placeCode: string = '';
 
+
+  /*
+   * Action complète sélectionnée.
+   */
+  storageAction: any = null;
+
+
+  /*
+   * Informations d'identification.
+   */
+  materialCode: string = '-';
+
+  placeLabel: string = '-';
+
   actionTypeLabel: string = '-';
+
+
+  /*
+   * Libellés des nomenclatures
+   * utilisées dans la fiche Stockage.
+   */
+  dryTypeLabel: string = '-';
+
+  destockTypeLabel: string = '-';
+
+  humidityLevelLabel: string = '-';
+
+  humidityDeviceLabel: string = '-';
 
 
   constructor(
     private router: Router,
-    private api: DataService
+    private api: DataService,
+    private constants: ConstantsService
   ) {}
 
 
   ngOnInit(): void {
 
     /*
-     * On conserve le libellé transmis lors du clic
-     * pour l'afficher immédiatement.
+     * Lors d'une navigation normale,
+     * on récupère immédiatement l'action
+     * sélectionnée dans la liste.
      */
+    this.storageAction =
+      window.history.state?.storageAction ||
+      null;
+
+
     this.actionTypeLabel =
-      window.history.state?.actionTypeLabel || '-';
+      this.storageAction?.action_type_label ||
+      window.history.state?.actionTypeLabel ||
+      '-';
 
 
     /*
-     * Puis on récupère toutes les informations
-     * nécessaires directement depuis l'URL.
+     * Les données disponibles sont donc
+     * affichées immédiatement sans attendre
+     * une nouvelle requête API.
+     */
+    if (this.storageAction) {
+
+      this.loadStorageNomenclatureLabels(
+        this.storageAction
+      );
+
+    }
+
+
+    /*
+     * Les identifiants sont reconstruits depuis
+     * l'URL afin que la page fonctionne également
+     * après un rechargement F5.
      */
     const urlSegments =
       this.router.url
@@ -71,21 +126,31 @@ export class StockDetailsComponent implements OnInit {
     this.idMaterial =
       materialIndex > 0 &&
       materialIndex < urlSegments.length
-        ? Number(urlSegments[materialIndex])
+        ? Number(
+            urlSegments[
+              materialIndex
+            ]
+          )
         : 0;
 
 
     this.idStorage =
       storageIndex > 0 &&
       storageIndex < urlSegments.length
-        ? Number(urlSegments[storageIndex])
+        ? Number(
+            urlSegments[
+              storageIndex
+            ]
+          )
         : 0;
 
 
     this.placeCode =
       placeCodeIndex > 0 &&
       placeCodeIndex < urlSegments.length
-        ? urlSegments[placeCodeIndex]
+        ? urlSegments[
+            placeCodeIndex
+          ]
         : '';
 
 
@@ -94,6 +159,7 @@ export class StockDetailsComponent implements OnInit {
       !this.idStorage ||
       !this.placeCode
     ) {
+
       console.error(
         'Informations de stockage manquantes dans l’URL.'
       );
@@ -102,16 +168,167 @@ export class StockDetailsComponent implements OnInit {
     }
 
 
+    this.placeLabel =
+      this.getStoragePlaceLabel(
+        this.placeCode
+      );
+
+
+    this.loadMaterialCode();
+
     this.loadStorageAction();
   }
 
+
+  /* =========================================================
+     MATÉRIEL RÉCOLTÉ ASSOCIÉ
+     ========================================================= */
+
+  private loadMaterialCode(): void {
+
+    this.api
+      .getMaterialInfos(
+        this.idMaterial
+      )
+      .subscribe({
+
+        next: (material: any) => {
+
+          this.materialCode =
+            material?.code_material || '-';
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Erreur lors du chargement du matériel récolté',
+            error
+          );
+
+
+          this.materialCode = '-';
+
+        }
+
+      });
+  }
+
+
+  /* =========================================================
+     LIEU DE STOCKAGE
+     ========================================================= */
+
+  private getStoragePlaceLabel(
+    code: string
+  ): string {
+
+    if (
+      code ===
+      this.constants
+        .PLACE_CODES
+        .PRE_DRYING_ROOM
+    ) {
+      return 'Salle de pré-séchage';
+    }
+
+
+    if (
+      code ===
+      this.constants
+        .PLACE_CODES
+        .DRYING_ROOM
+    ) {
+      return 'Salle de séchage';
+    }
+
+
+    if (
+      code ===
+      this.constants
+        .PLACE_CODES
+        .COLD_ROOM
+    ) {
+      return 'Chambre froide';
+    }
+
+
+    if (
+      code ===
+      this.constants
+        .PLACE_CODES
+        .FREEZER
+    ) {
+      return 'Congélateur';
+    }
+
+
+    return '-';
+  }
+
+
+  /* =========================================================
+     LIBELLÉS DES NOMENCLATURES DU STOCKAGE
+     ========================================================= */
+
+  private loadStorageNomenclatureLabels(
+    action: any
+  ): void {
+
+    this.loadNomenclatureLabel(
+      action?.id_dry_type,
+      (label: string) => {
+        this.dryTypeLabel =
+          label;
+      }
+    );
+
+
+    this.loadNomenclatureLabel(
+      action?.id_destock,
+      (label: string) => {
+        this.destockTypeLabel =
+          label;
+      }
+    );
+
+
+    this.loadNomenclatureLabel(
+      action?.id_humidity_level,
+      (label: string) => {
+        this.humidityLevelLabel =
+          label;
+      }
+    );
+
+
+    this.loadNomenclatureLabel(
+      action?.id_humidity_device,
+      (label: string) => {
+        this.humidityDeviceLabel =
+          label;
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     ACTION DE STOCKAGE
+     ========================================================= */
 
   private loadStorageAction(): void {
 
     const params =
       new HttpParams()
-        .set('page', '1')
-        .set('limit', '1000')
+        .set(
+          'page',
+          '1'
+        )
+        .set(
+          'limit',
+          '1000'
+        )
         .set(
           'placeCode',
           this.placeCode
@@ -134,13 +351,57 @@ export class StockDetailsComponent implements OnInit {
           const action =
             actions.find(
               (item: any) =>
-                Number(item?.id_storage) ===
+                Number(
+                  item?.id_storage
+                ) ===
                 this.idStorage
             );
 
 
+          if (!action) {
+
+            console.error(
+              'Action de stockage introuvable.'
+            );
+
+            this.storageAction =
+              null;
+
+            this.actionTypeLabel =
+              '-';
+
+            return;
+          }
+
+
+          /*
+           * On conserve l'action complète.
+           */
+          this.storageAction =
+            action;
+
+
           this.actionTypeLabel =
-            action?.action_type_label || '-';
+            action?.action_type_label ||
+            '-';
+
+
+          /*
+           * L'API de liste fournit déjà :
+           *
+           * - Type d'action
+           * - Destination
+           * - Effectué par
+           *
+           * Les autres champs de nomenclature
+           * sont encore des IDs.
+           *
+           * On récupère donc leur libellé.
+           */
+          this.loadStorageNomenclatureLabels(
+            action
+          );
+
         },
 
         error: (error) => {
@@ -150,10 +411,148 @@ export class StockDetailsComponent implements OnInit {
             error
           );
 
-          this.actionTypeLabel = '-';
+
+          this.storageAction =
+            null;
+
+          this.actionTypeLabel =
+            '-';
+
         }
 
       });
+  }
+
+
+  /* =========================================================
+     LIBELLÉ D'UNE NOMENCLATURE
+     ========================================================= */
+
+  private loadNomenclatureLabel(
+    idNomenclature: any,
+    assignLabel: (
+      label: string
+    ) => void
+  ): void {
+
+    const id =
+      Number(
+        idNomenclature
+      );
+
+
+    if (!id) {
+
+      assignLabel('-');
+
+      return;
+    }
+
+
+    this.api
+      .getNomenclatureDetails(
+        id
+      )
+      .subscribe({
+
+        next: (
+          nomenclature: any
+        ) => {
+
+          assignLabel(
+            nomenclature
+              ?.label_default ||
+            '-'
+          );
+
+        },
+
+        error: () => {
+
+          assignLabel('-');
+
+        }
+
+      });
+  }
+
+
+  /* =========================================================
+     DONNÉES SUPPLÉMENTAIRES
+     ========================================================= */
+
+  getAdditionalDataDisplay(): string {
+
+    const additionalData =
+      this.storageAction
+        ?.additional_data;
+
+
+    if (!additionalData) {
+      return '-';
+    }
+
+
+    if (
+      typeof additionalData !==
+      'object'
+    ) {
+      return String(
+        additionalData
+      );
+    }
+
+
+    const keys =
+      Object.keys(
+        additionalData
+      );
+
+
+    if (keys.length === 0) {
+      return '-';
+    }
+
+
+    return keys
+      .map(
+        key => {
+
+          const value =
+            additionalData[
+              key
+            ];
+
+
+          if (
+            value === null ||
+            value === undefined ||
+            value === ''
+          ) {
+            return `${key} : -`;
+          }
+
+
+          if (
+            typeof value ===
+            'object'
+          ) {
+            return (
+              `${key} : ` +
+              JSON.stringify(
+                value
+              )
+            );
+          }
+
+
+          return (
+            `${key} : ${value}`
+          );
+
+        }
+      )
+      .join('\n');
   }
 
 

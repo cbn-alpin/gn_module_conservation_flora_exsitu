@@ -47,19 +47,31 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
          console.log(this.currentModulePath)
         this.urlSub = this.router.events.subscribe((event) => {
-          this.updateTabAndIdsFromUrl(this.router.url);
-          this.forceTabFromOpenFlag(this.router.url);
-
 
           /*
-           * À chaque nouvelle page du workflow,
-           * on repart systématiquement tout en haut,
-           * indépendamment de la position de scroll
-           * de la page précédente.
+           * On ne met à jour l'onglet qu'une fois
+           * la navigation réellement terminée.
+           *
+           * Avant, NavigationStart relisait encore
+           * l'ancienne URL "stock" et remettait
+           * currentTab à "stock" alors que l'on
+           * venait d'ouvrir "stock-details".
            */
           if (event instanceof NavigationEnd) {
+
+            this.updateTabAndIdsFromUrl(
+              event.urlAfterRedirects
+            );
+
+            this.forceTabFromOpenFlag(
+              event.urlAfterRedirects
+            );
+
+
             this.scrollPageToTop();
+
           }
+
         });
 
 

@@ -19,6 +19,10 @@
 
   <section class="stock-info-panel">
 
+    <!-- =====================================================
+         BANDEAU PRINCIPAL
+         ===================================================== -->
+
     <div class="stock-info-hero">
 
       <div class="stock-info-icon">
@@ -52,6 +56,425 @@
         <strong>
           {{ actionTypeLabel || '-' }}
         </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABLEAU D'INFORMATIONS
+         ===================================================== -->
+
+    <div class="stock-info-content">
+
+      <!-- =====================================================
+           IDENTIFICATION DU STOCKAGE
+           ===================================================== -->
+
+      <div class="stock-detail-section">
+
+        <div class="stock-detail-section-title">
+
+          <mat-icon>
+            link
+          </mat-icon>
+
+          <span>
+            Identification du stockage
+          </span>
+
+        </div>
+
+
+        <div class="stock-detail-grid">
+
+          <!-- N° du matériel récolté associé -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              N° du matériel récolté associé
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ materialCode || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Lieu de stockage associé -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Lieu de stockage associé
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ placeLabel || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           ACTION ET PÉRIODE DE STOCKAGE
+           ===================================================== -->
+
+      <div class="stock-detail-section">
+
+        <div class="stock-detail-section-title">
+
+          <mat-icon>
+            archive
+          </mat-icon>
+
+          <span>
+            Action et période de stockage
+          </span>
+
+        </div>
+
+
+        <div class="stock-detail-grid">
+
+          <!-- Type d'action -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Type d'action
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ actionTypeLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Effectué par -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Effectué par
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ storageAction?.actor || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Type de séchage -->
+
+          <div
+            class="
+              stock-detail-item
+              stock-detail-item-full
+            "
+          >
+
+            <span class="stock-detail-label">
+              Type de séchage
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ dryTypeLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Date début -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Date début
+            </span>
+
+            <strong class="stock-detail-value">
+
+              {{
+                storageAction?.date_start
+                  ? (
+                      storageAction.date_start
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- Date fin -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Date fin
+            </span>
+
+            <strong class="stock-detail-value">
+
+              {{
+                storageAction?.date_end
+                  ? (
+                      storageAction.date_end
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           DÉSTOCKAGE ET DESTINATION
+           ===================================================== -->
+
+      <div class="stock-detail-section">
+
+        <div class="stock-detail-section-title">
+
+          <mat-icon>
+            swap_horiz
+          </mat-icon>
+
+          <span>
+            Déstockage et destination
+          </span>
+
+        </div>
+
+
+        <div class="stock-detail-grid">
+
+          <!-- Type de déstockage -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Type de déstockage
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ destockTypeLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Destination -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Destination
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ storageAction?.destination || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Quantité -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Quantité
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ storageAction?.quantity ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Précision destination -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Précision destination
+            </span>
+
+            <strong class="stock-detail-value">
+              {{
+                storageAction
+                  ?.destination_precision ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           CONTRÔLE DE L'HUMIDITÉ
+           ===================================================== -->
+
+      <div class="stock-detail-section">
+
+        <div class="stock-detail-section-title">
+
+          <mat-icon>
+            opacity
+          </mat-icon>
+
+          <span>
+            Contrôle de l'humidité
+          </span>
+
+        </div>
+
+
+        <div class="stock-detail-grid">
+
+          <!-- Evaluation de l'humidité -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Evaluation de l'humidité
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ humidityLevelLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Appareil -->
+
+          <div class="stock-detail-item">
+
+            <span class="stock-detail-label">
+              Appareil
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ humidityDeviceLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Mesure de l'humidité précise -->
+
+          <div
+            class="
+              stock-detail-item
+              stock-detail-item-full
+            "
+          >
+
+            <span class="stock-detail-label">
+              Mesure de l'humidité précise
+            </span>
+
+            <strong class="stock-detail-value">
+              {{ storageAction?.humidity_rate ?? '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           INFORMATIONS COMPLÉMENTAIRES
+           ===================================================== -->
+
+      <div class="stock-detail-section">
+
+        <div class="stock-detail-section-title">
+
+          <mat-icon>
+            description
+          </mat-icon>
+
+          <span>
+            Informations complémentaires
+          </span>
+
+        </div>
+
+
+        <div class="stock-detail-grid">
+
+          <!-- Remarques -->
+
+          <div
+            class="
+              stock-detail-item
+              stock-detail-item-full
+            "
+          >
+
+            <span class="stock-detail-label">
+              Remarques
+            </span>
+
+            <div class="stock-detail-long-value">
+
+              {{ storageAction?.remarks || '-' }}
+
+            </div>
+
+          </div>
+
+
+          <!-- Données supplémentaires -->
+
+          <div
+            class="
+              stock-detail-item
+              stock-detail-item-full
+            "
+          >
+
+            <span class="stock-detail-label">
+              Données supplémentaires
+            </span>
+
+            <div class="stock-detail-long-value">
+
+              {{ getAdditionalDataDisplay() }}
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 

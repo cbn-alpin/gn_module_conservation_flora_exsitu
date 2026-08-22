@@ -206,3 +206,198 @@
   font-size: 14px;
   font-weight: 850;
 }
+
+
+/* =========================================================
+   CONTENU DES INFORMATIONS
+   ========================================================= */
+
+.stock-info-content {
+  padding: 18px 20px 22px;
+
+  background-color: #fbfcfd;
+}
+
+
+/* =========================================================
+   CATÉGORIES
+   ========================================================= */
+
+.stock-detail-section {
+  margin-bottom: 18px;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #dce3e6;
+  border-radius: 12px;
+}
+
+
+.stock-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+
+/* =========================================================
+   TITRE DE CATÉGORIE
+   ========================================================= */
+
+.stock-detail-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 14px;
+
+  color: #344955;
+
+  background:
+    linear-gradient(
+      90deg,
+      #eef2f4 0%,
+      #f8fafb 75%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #c5d0d5;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.stock-detail-section-title mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #607d8b;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+/* =========================================================
+   GRILLE
+   ========================================================= */
+
+.stock-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 1px;
+
+  background-color: #dfe6e9;
+}
+
+
+/* =========================================================
+   UNE INFORMATION
+   ========================================================= */
+
+.stock-detail-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-height: 64px;
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  transition:
+    background-color 0.15s ease;
+}
+
+
+.stock-detail-item:hover {
+  background-color: #f8fafb;
+}
+
+
+/* =========================================================
+   PLEINE LARGEUR
+   ========================================================= */
+
+.stock-detail-item-full {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.stock-detail-label {
+  color: #718087;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.25px;
+}
+
+
+/* =========================================================
+   VALEUR
+   ========================================================= */
+
+.stock-detail-value {
+  color: #2f4048;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   TEXTES LONGS
+   ========================================================= */
+
+.stock-detail-long-value {
+  min-height: 28px;
+
+  color: #37474f;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .stock-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .stock-detail-item-full {
+    grid-column: auto;
+  }
+
+}
