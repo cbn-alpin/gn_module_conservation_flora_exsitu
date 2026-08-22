@@ -66,7 +66,9 @@
 
     <div class="culture-info-content">
 
-      <!-- IDENTIFICATION -->
+      <!-- =====================================================
+           IDENTIFICATION DE LA CULTURE
+           ===================================================== -->
 
       <div class="culture-detail-section">
 
@@ -85,7 +87,15 @@
 
         <div class="culture-detail-grid">
 
-          <div class="culture-detail-item">
+          <!-- Numéro de culture -->
+
+          <div
+            class="
+              culture-detail-item
+              culture-detail-item-full
+              culture-detail-code
+            "
+          >
 
             <span class="detail-label">
               Numéro de culture
@@ -98,10 +108,12 @@
           </div>
 
 
+          <!-- Matériel récolté associé -->
+
           <div class="culture-detail-item">
 
             <span class="detail-label">
-              Numéro du matériel
+              Matériel récolté associé
             </span>
 
             <strong class="detail-value">
@@ -110,6 +122,23 @@
 
           </div>
 
+
+          <!-- Stock utilisé -->
+
+          <div class="culture-detail-item">
+
+            <span class="detail-label">
+              Stock utilisé
+            </span>
+
+            <strong class="detail-value">
+              {{ stockUsedLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Type d’origine -->
 
           <div class="culture-detail-item">
 
@@ -124,6 +153,8 @@
           </div>
 
 
+          <!-- Origine -->
+
           <div class="culture-detail-item">
 
             <span class="detail-label">
@@ -136,29 +167,8 @@
 
           </div>
 
-        </div>
 
-      </div>
-
-
-      <!-- SUIVI -->
-
-      <div class="culture-detail-section">
-
-        <div class="culture-detail-section-title">
-
-          <mat-icon>
-            event
-          </mat-icon>
-
-          <span>
-            Suivi de la culture
-          </span>
-
-        </div>
-
-
-        <div class="culture-detail-grid">
+          <!-- Date de la première transplantation -->
 
           <div class="culture-detail-item">
 
@@ -182,6 +192,8 @@
           </div>
 
 
+          <!-- Date de fin -->
+
           <div class="culture-detail-item">
 
             <span class="detail-label">
@@ -203,11 +215,38 @@
 
           </div>
 
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           SUIVI DE LA CULTURE
+           ===================================================== -->
+
+      <div class="culture-detail-section">
+
+        <div class="culture-detail-section-title">
+
+          <mat-icon>
+            person
+          </mat-icon>
+
+          <span>
+            Suivi de la culture
+          </span>
+
+        </div>
+
+
+        <div class="culture-detail-grid">
+
+          <!-- Effectué par -->
 
           <div class="culture-detail-item">
 
             <span class="detail-label">
-              Personne ayant effectué la culture
+              Effectué par
             </span>
 
             <strong class="detail-value">
@@ -216,6 +255,8 @@
 
           </div>
 
+
+          <!-- Statut -->
 
           <div class="culture-detail-item">
 
@@ -246,7 +287,9 @@
       </div>
 
 
-      <!-- INFORMATIONS COMPLEMENTAIRES -->
+      <!-- =====================================================
+           INFORMATIONS COMPLÉMENTAIRES
+           ===================================================== -->
 
       <div class="culture-detail-section">
 
@@ -270,6 +313,8 @@
           "
         >
 
+          <!-- Commentaire / Remarques -->
+
           <div
             class="
               culture-detail-item
@@ -289,6 +334,8 @@
 
           </div>
 
+
+          <!-- Programme / Contrat -->
 
           <div
             class="

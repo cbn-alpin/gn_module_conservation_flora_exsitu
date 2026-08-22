@@ -316,7 +316,9 @@
 }
 
 
-/* Information */
+/* =========================================================
+   UNE INFORMATION
+   ========================================================= */
 
 .culture-detail-item {
   display: flex;
@@ -328,7 +330,22 @@
   padding: 12px 14px;
 
   background-color: #ffffff;
+
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.15s ease;
 }
+
+
+.culture-detail-item:hover {
+  background-color: #fcf9f7;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
 
 .detail-label {
   color: #7b6a64;
@@ -337,22 +354,60 @@
   font-weight: 700;
 
   text-transform: uppercase;
+
   letter-spacing: 0.25px;
 }
+
+
+/* =========================================================
+   VALEUR
+   ========================================================= */
 
 .detail-value {
   color: #342824;
 
   font-size: 14px;
   font-weight: 650;
+
+  line-height: 1.45;
+
+  word-break: break-word;
 }
 
 
-/* Pleine largeur */
+/* =========================================================
+   ÉLÉMENT PLEINE LARGEUR
+   ========================================================= */
 
 .culture-detail-item-full {
   grid-column: 1 / -1;
 }
+
+
+/* Numéro de Culture légèrement mis en valeur */
+
+.culture-detail-code {
+  background:
+    linear-gradient(
+      90deg,
+      #f7f2ef 0%,
+      #ffffff 100%
+    );
+}
+
+
+.culture-detail-code
+.detail-value {
+  color: #4e342e;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+
+/* =========================================================
+   TEXTES LONGS
+   ========================================================= */
 
 .detail-long-value {
   min-height: 28px;
@@ -363,6 +418,8 @@
   line-height: 1.5;
 
   white-space: pre-wrap;
+
+  word-break: break-word;
 }
 
 
@@ -1024,7 +1081,7 @@ td.mat-column-actions {
 /* Responsive */
 
 @media (
-  max-width: 768px
+  max-width: 900px
 ) {
 
   .culture-detail-grid {
@@ -1034,6 +1091,13 @@ td.mat-column-actions {
   .culture-detail-item-full {
     grid-column: auto;
   }
+
+}
+
+
+@media (
+  max-width: 768px
+) {
 
   .culture-actions-header {
     flex-direction: column;

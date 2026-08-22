@@ -55,6 +55,15 @@ export class CultureDetailsComponent
   culture: any = null;
 
   /*
+   * Stock utilisé par l'origine de la Culture.
+   *
+   * - Semis : stock du Semis
+   * - Test de germination : stock du Test
+   * - Culture directe : aucun stock d'origine
+   */
+  stockUsedLabel: number | string = '-';
+
+  /*
    * La partie Action de Culture sera développée plus tard.
    *
    * On conserve dès maintenant une source de données distincte
@@ -161,6 +170,18 @@ export class CultureDetailsComponent
 
 
           /*
+           * Le Stock utilisé n'est pas porté
+           * directement par la Culture.
+           *
+           * On le récupère depuis son Semis
+           * ou son Test de germination d'origine.
+           */
+          this.loadCultureSourceStock(
+            culture
+          );
+
+
+          /*
           * Culture provenant d'un Semis.
           *
           * On restaure aussi le code du Semis
@@ -239,6 +260,121 @@ export class CultureDetailsComponent
 
       });
   }
+
+
+  private loadCultureSourceStock(
+    culture: any
+  ): void {
+
+    /*
+     * Valeur par défaut :
+     * Culture créée directement depuis
+     * le Matériel récolté.
+     */
+    this.stockUsedLabel = '-';
+
+
+    /*
+     * =====================================================
+     * CULTURE ISSUE D'UN SEMIS
+     * =====================================================
+     */
+    if (culture?.id_sowing) {
+
+      this.cultureService
+        .getSowingsByMaterial(
+          this.idMaterial
+        )
+        .subscribe({
+
+          next: (sowings) => {
+
+            const sowing =
+              (sowings || []).find(
+                (item: any) =>
+                  Number(
+                    item.id_sowing
+                  ) ===
+                  Number(
+                    culture.id_sowing
+                  )
+              );
+
+
+            this.stockUsedLabel =
+              sowing?.id_storage ?? '-';
+
+          },
+
+          error: (err) => {
+
+            console.error(
+              'Erreur lors du chargement du stock du Semis :',
+              err
+            );
+
+
+            this.stockUsedLabel = '-';
+
+          }
+
+        });
+
+
+      return;
+    }
+
+
+    /*
+     * =====================================================
+     * CULTURE ISSUE D'UN TEST DE GERMINATION
+     * =====================================================
+     */
+    if (culture?.id_test) {
+
+      this.cultureService
+        .getTestsByMaterial(
+          this.idMaterial
+        )
+        .subscribe({
+
+          next: (tests) => {
+
+            const test =
+              (tests || []).find(
+                (item: any) =>
+                  Number(
+                    item.id_test
+                  ) ===
+                  Number(
+                    culture.id_test
+                  )
+              );
+
+
+            this.stockUsedLabel =
+              test?.id_storage ?? '-';
+
+          },
+
+          error: (err) => {
+
+            console.error(
+              'Erreur lors du chargement du stock du Test de germination :',
+              err
+            );
+
+
+            this.stockUsedLabel = '-';
+
+          }
+
+        });
+
+    }
+
+  }
+
 
   loadCultureActions(): void {
 
