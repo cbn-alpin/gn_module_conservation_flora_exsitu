@@ -47,7 +47,9 @@
 
     <div class="germination-info-content">
 
-      <!-- IDENTIFICATION -->
+      <!-- =====================================================
+           IDENTIFICATION DU TEST DE GERMINATION
+           ===================================================== -->
 
       <div class="germination-detail-section">
 
@@ -58,13 +60,15 @@
           </mat-icon>
 
           <span>
-            Identification du test
+            Identification du test de germination
           </span>
 
         </div>
 
 
         <div class="germination-detail-grid">
+
+          <!-- Numéro du test de germination -->
 
           <div
             class="
@@ -85,10 +89,12 @@
           </div>
 
 
+          <!-- Matériel récolté associé -->
+
           <div class="germination-detail-item">
 
             <span class="germination-detail-label">
-              Matériel végétal
+              Matériel récolté associé
             </span>
 
             <strong class="germination-detail-value">
@@ -97,6 +103,8 @@
 
           </div>
 
+
+          <!-- Stock utilisé -->
 
           <div class="germination-detail-item">
 
@@ -110,6 +118,38 @@
 
           </div>
 
+
+          <!-- Nombre de graines testées -->
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Nombre de graines testées
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('seed_initial_count')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Nombre de réplicats -->
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Nombre de réplicats
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('replicate_count')?.value ?? '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Effectué par -->
 
           <div class="germination-detail-item">
 
@@ -128,18 +168,20 @@
       </div>
 
 
-      <!-- PARAMÈTRES -->
+      <!-- =====================================================
+           CONDITIONS DU TEST DE GERMINATION
+           ===================================================== -->
 
       <div class="germination-detail-section">
 
         <div class="germination-detail-section-title">
 
           <mat-icon>
-            science
+            build
           </mat-icon>
 
           <span>
-            Paramètres du test
+            Conditions du test de germination
           </span>
 
         </div>
@@ -147,44 +189,7 @@
 
         <div class="germination-detail-grid">
 
-          <div class="germination-detail-item">
-
-            <span class="germination-detail-label">
-              Nombre de graines testées
-            </span>
-
-            <strong class="germination-detail-value">
-              {{ germinationForm.get('seed_initial_count')?.value ?? '-' }}
-            </strong>
-
-          </div>
-
-
-          <div class="germination-detail-item">
-
-            <span class="germination-detail-label">
-              Nombre de réplicats
-            </span>
-
-            <strong class="germination-detail-value">
-              {{ germinationForm.get('replicate_count')?.value ?? '-' }}
-            </strong>
-
-          </div>
-
-
-          <div class="germination-detail-item">
-
-            <span class="germination-detail-label">
-              Substrat
-            </span>
-
-            <strong class="germination-detail-value">
-              {{ germinationForm.get('id_substrate')?.value || '-' }}
-            </strong>
-
-          </div>
-
+          <!-- Support -->
 
           <div class="germination-detail-item">
 
@@ -198,12 +203,29 @@
 
           </div>
 
+
+          <!-- Substrat -->
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Substrat
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('id_substrate')?.value || '-' }}
+            </strong>
+
+          </div>
+
         </div>
 
       </div>
 
 
-      <!-- INFORMATIONS COMPLÉMENTAIRES -->
+      <!-- =====================================================
+           INFORMATIONS COMPLÉMENTAIRES
+           ===================================================== -->
 
       <div class="germination-detail-section">
 
@@ -222,6 +244,23 @@
 
         <div class="germination-detail-grid">
 
+          <!-- Remarques -->
+
+          <div class="germination-detail-item">
+
+            <span class="germination-detail-label">
+              Remarques
+            </span>
+
+            <strong class="germination-detail-value">
+              {{ germinationForm.get('remarks')?.value || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Programme -->
+
           <div class="germination-detail-item">
 
             <span class="germination-detail-label">
@@ -235,19 +274,6 @@
                   ?.value
                   ?.program || '-'
               }}
-            </strong>
-
-          </div>
-
-
-          <div class="germination-detail-item">
-
-            <span class="germination-detail-label">
-              Remarques
-            </span>
-
-            <strong class="germination-detail-value">
-              {{ germinationForm.get('remarks')?.value || '-' }}
             </strong>
 
           </div>

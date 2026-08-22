@@ -501,6 +501,15 @@ mat-card-content,
 }
 
 
+.germination-detail-code
+.germination-detail-value {
+  color: #00564e;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+
 .germination-detail-label {
   color: #5c7d79;
 
@@ -525,7 +534,7 @@ mat-card-content,
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
   .germination-detail-grid {
     grid-template-columns: 1fr;
