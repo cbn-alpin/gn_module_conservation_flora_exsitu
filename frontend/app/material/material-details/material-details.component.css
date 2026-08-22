@@ -206,3 +206,218 @@
   font-size: 14px;
   font-weight: 850;
 }
+
+
+/* =========================================================
+   CONTENU DES INFORMATIONS
+   ========================================================= */
+
+.material-info-content {
+  padding: 18px 20px 22px;
+
+  background-color: #fbfcf7;
+}
+
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.material-detail-section {
+  margin-bottom: 18px;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d5ddc1;
+  border-radius: 12px;
+}
+
+
+.material-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+
+/* =========================================================
+   TITRES DE SECTION
+   ========================================================= */
+
+.material-detail-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 14px;
+
+  color: #405021;
+
+  background:
+    linear-gradient(
+      90deg,
+      #eef3e3 0%,
+      #f8faf3 75%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #d5ddc1;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.material-detail-section-title mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #667a32;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+/* =========================================================
+   GRILLE
+   ========================================================= */
+
+.material-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 1px;
+
+  background-color: #e1e8cf;
+}
+
+
+/* =========================================================
+   UNE INFORMATION
+   ========================================================= */
+
+.material-detail-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-height: 64px;
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+}
+
+
+.material-detail-item:hover {
+  background-color: #fbfcf7;
+}
+
+
+/* =========================================================
+   PLEINE LARGEUR
+   ========================================================= */
+
+.material-detail-item-full {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   NUMÉRO DE RÉCOLTE
+   ========================================================= */
+
+.material-detail-code {
+  background:
+    linear-gradient(
+      90deg,
+      #f3f7e9 0%,
+      #ffffff 100%
+    );
+}
+
+
+.material-detail-code
+.material-detail-value {
+  color: #405021;
+
+  font-size: 15px;
+  font-weight: 850;
+}
+
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+.material-detail-label {
+  color: #747d62;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.25px;
+}
+
+
+/* =========================================================
+   VALEURS
+   ========================================================= */
+
+.material-detail-value {
+  color: #34431e;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   TEXTES LONGS
+   ========================================================= */
+
+.material-detail-long-value {
+  min-height: 28px;
+
+  color: #44502d;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .material-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .material-detail-item-full {
+    grid-column: auto;
+  }
+
+}

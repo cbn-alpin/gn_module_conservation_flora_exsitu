@@ -19,6 +19,10 @@
 
   <section class="material-info-panel">
 
+    <!-- =====================================================
+         BANDEAU PRINCIPAL
+         ===================================================== -->
+
     <div class="material-info-hero">
 
       <div class="material-info-icon">
@@ -52,6 +56,336 @@
         <strong>
           {{ codeMaterial || '-' }}
         </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABLEAU D'INFORMATIONS
+         ===================================================== -->
+
+    <div class="material-info-content">
+
+      <!-- =====================================================
+           IDENTIFICATION DU MATÉRIEL RÉCOLTÉ
+           ===================================================== -->
+
+      <div class="material-detail-section">
+
+        <div class="material-detail-section-title">
+
+          <mat-icon>
+            assignment
+          </mat-icon>
+
+          <span>
+            Identification du matériel récolté
+          </span>
+
+        </div>
+
+
+        <div class="material-detail-grid">
+
+          <!-- Numéro de récolte -->
+
+          <div
+            class="
+              material-detail-item
+              material-detail-code
+            "
+          >
+
+            <span class="material-detail-label">
+              Numéro de récolte
+            </span>
+
+            <strong class="material-detail-value">
+              {{ material?.code_material || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Taxon (nom cité) -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Taxon (nom cité)
+            </span>
+
+            <strong class="material-detail-value">
+              {{ taxonsLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Matériel végétal récolté -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Matériel végétal récolté
+            </span>
+
+            <strong class="material-detail-value">
+              {{ materialTypeLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Classes d’individus -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Classes d’individus
+            </span>
+
+            <strong class="material-detail-value">
+              {{ footCountingClassLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Numéro de récolte parent -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Numéro de récolte parent
+            </span>
+
+            <strong class="material-detail-value">
+              {{ material?.code_parent || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- N° Banque culturale -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              N° Banque culturale
+            </span>
+
+            <strong class="material-detail-value">
+              {{
+                material
+                  ?.code_cultural_bank ??
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           ÉCHANTILLONNAGE ET PHÉNOLOGIE
+           ===================================================== -->
+
+      <div class="material-detail-section">
+
+        <div class="material-detail-section-title">
+
+          <mat-icon>
+            science
+          </mat-icon>
+
+          <span>
+            Échantillonnage et phénologie
+          </span>
+
+        </div>
+
+
+        <div class="material-detail-grid">
+
+          <!-- Mode d’échantillonnage -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Mode d’échantillonnage
+            </span>
+
+            <strong class="material-detail-value">
+              {{ methodSampleLabel || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Nombre de pieds échantillonnés -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Nombre de pieds échantillonnés
+            </span>
+
+            <strong class="material-detail-value">
+              {{
+                material
+                  ?.sample_foot_count ??
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <!-- Phénologie 1 -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Phénologie 1
+            </span>
+
+            <strong class="material-detail-value">
+              {{ phenology1Label || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Phénologie 2 -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Phénologie 2
+            </span>
+
+            <strong class="material-detail-value">
+              {{ phenology2Label || '-' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           INFORMATIONS COMPLÉMENTAIRES
+           ===================================================== -->
+
+      <div class="material-detail-section">
+
+        <div class="material-detail-section-title">
+
+          <mat-icon>
+            description
+          </mat-icon>
+
+          <span>
+            Informations complémentaires
+          </span>
+
+        </div>
+
+
+        <div class="material-detail-grid">
+
+          <!-- Commentaire + Protocoles et astuces -->
+
+          <div
+            class="
+              material-detail-item
+              material-detail-item-full
+            "
+          >
+
+            <span class="material-detail-label">
+              Commentaire + Protocoles et astuces
+            </span>
+
+            <strong class="material-detail-value">
+              {{ material?.remarks || '-' }}
+            </strong>
+
+          </div>
+
+
+          <!-- Risque d'hybridation -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Risque d'hybridation
+            </span>
+
+            <strong class="material-detail-value">
+
+              {{
+                getBooleanLabel(
+                  material?.has_hybridation_risk
+                )
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- Prélèvement de terre -->
+
+          <div class="material-detail-item">
+
+            <span class="material-detail-label">
+              Prélèvement de terre
+            </span>
+
+            <strong class="material-detail-value">
+
+              {{
+                getBooleanLabel(
+                  material?.is_soil_sampling
+                )
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <!-- Données supplémentaires -->
+
+          <div
+            class="
+              material-detail-item
+              material-detail-item-full
+            "
+          >
+
+            <span class="material-detail-label">
+              Données supplémentaires
+            </span>
+
+            <div class="material-detail-long-value">
+
+              {{ getAdditionalDataDisplay() }}
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 
