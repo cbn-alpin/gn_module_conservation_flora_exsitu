@@ -115,7 +115,6 @@ export class GerminationDetailsComponent implements OnInit {
       next: (test) => {
         console.log(" Test chargé :", test);
         this.patchFormFromTest(test);
-        this.dataSource.data = test.actions || [];
       },
       error: (err) => {
         console.error(" Erreur lors du chargement du test :", err);

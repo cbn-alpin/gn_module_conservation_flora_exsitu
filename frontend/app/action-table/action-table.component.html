@@ -2,75 +2,148 @@
   class="action-list-card"
   [class.sowing-action-list-card]="idSowing"
   [class.sowing-action-list-with-details]="idSowing && selectedActionId">
-  <div class="sowing-action-filters-card" *ngIf="idSowing">
-  <div class="sowing-action-filters-header">
-    <div class="sowing-action-filters-title">
-      <div class="sowing-action-filters-icon">
-        <mat-icon>filter_alt</mat-icon>
+  <div
+    class="sowing-action-filters-card"
+    *ngIf="
+      idSowing ||
+      isGerminationContext ||
+      isViabilityContext
+    "
+  >
+
+    <div class="sowing-action-filters-header">
+
+      <div class="sowing-action-filters-title">
+
+        <div class="sowing-action-filters-icon">
+          <mat-icon>
+            filter_alt
+          </mat-icon>
+        </div>
+
+        <div>
+          <span>
+            Filtres des actions
+          </span>
+
+          <small>
+            Affiner par type, période et ordre des dates
+          </small>
+        </div>
+
       </div>
 
-      <div>
-        <span>Filtres des actions</span>
-        <small>Affiner par type, période et ordre des dates</small>
-      </div>
+
+      <button
+        mat-button
+        type="button"
+        class="reset-filter-button with-border"
+        (click)="resetSowingActionFilters()"
+      >
+        <mat-icon>
+          autorenew
+        </mat-icon>
+
+        Réinitialiser
+      </button>
+
     </div>
 
-    <button
-      mat-button
-      type="button"
-      class="reset-filter-button with-border"
-      (click)="resetSowingActionFilters()">
-      <mat-icon>autorenew</mat-icon>
-      Réinitialiser
-    </button>
+
+    <div class="sowing-action-filter-fields">
+
+      <mat-form-field
+        appearance="outline"
+        class="sowing-action-filter-field"
+      >
+
+        <mat-label>
+          Type d'action
+        </mat-label>
+
+        <mat-select
+          [value]="sowingActionTypeFilter"
+          (selectionChange)="onSowingActionTypeFilterChange($event.value)"
+        >
+
+          <mat-option [value]="null">
+            Tous les types
+          </mat-option>
+
+          <mat-option
+            *ngFor="let actionType of sowingActionTypeFilterOptions"
+            [value]="actionType"
+          >
+            {{ actionType }}
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+
+      <mat-form-field
+        appearance="outline"
+        class="sowing-action-filter-field"
+      >
+
+        <mat-label>
+          À partir du
+        </mat-label>
+
+        <input
+          matInput
+          [matDatepicker]="sowingActionStartDateFromFilterPicker"
+          [(ngModel)]="sowingActionStartDateFromFilter"
+          (dateChange)="onSowingActionStartDateFromFilterChange($event.value)"
+        >
+
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="sowingActionStartDateFromFilterPicker"
+        >
+        </mat-datepicker-toggle>
+
+        <mat-datepicker
+          #sowingActionStartDateFromFilterPicker
+        >
+        </mat-datepicker>
+
+      </mat-form-field>
+
+
+      <mat-form-field
+        appearance="outline"
+        class="sowing-action-filter-field"
+      >
+
+        <mat-label>
+          Jusqu’au
+        </mat-label>
+
+        <input
+          matInput
+          [matDatepicker]="sowingActionStartDateToFilterPicker"
+          [(ngModel)]="sowingActionStartDateToFilter"
+          (dateChange)="onSowingActionStartDateToFilterChange($event.value)"
+        >
+
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="sowingActionStartDateToFilterPicker"
+        >
+        </mat-datepicker-toggle>
+
+        <mat-datepicker
+          #sowingActionStartDateToFilterPicker
+        >
+        </mat-datepicker>
+
+      </mat-form-field>
+
+    </div>
+
   </div>
-
-  <div class="sowing-action-filter-fields">
-
-  <mat-form-field appearance="outline" class="sowing-action-filter-field">
-    <mat-label>Type d'action</mat-label>
-
-    <mat-select
-      [value]="sowingActionTypeFilter"
-      (selectionChange)="onSowingActionTypeFilterChange($event.value)">
-
-      <mat-option [value]="null">Tous les types</mat-option>
-
-      <mat-option
-        *ngFor="let actionType of sowingActionTypeFilterOptions"
-        [value]="actionType">
-        {{ actionType }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="sowing-action-filter-field">
-    <mat-label>À partir du</mat-label>
-
-    <input
-      matInput
-      [matDatepicker]="sowingActionStartDateFromFilterPicker"
-      [(ngModel)]="sowingActionStartDateFromFilter"
-      (dateChange)="onSowingActionStartDateFromFilterChange($event.value)">
-
-    <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateFromFilterPicker"></mat-datepicker-toggle>
-    <mat-datepicker #sowingActionStartDateFromFilterPicker></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="sowing-action-filter-field">
-    <mat-label>Jusqu’au</mat-label>
-
-    <input
-      matInput
-      [matDatepicker]="sowingActionStartDateToFilterPicker"
-      [(ngModel)]="sowingActionStartDateToFilter"
-      (dateChange)="onSowingActionStartDateToFilterChange($event.value)">
-
-    <mat-datepicker-toggle matSuffix [for]="sowingActionStartDateToFilterPicker"></mat-datepicker-toggle>
-    <mat-datepicker #sowingActionStartDateToFilterPicker></mat-datepicker>
-  </mat-form-field>
-</div>
-</div>
 
 
   <mat-card-header class="header-with-button action-list-header">
@@ -80,14 +153,41 @@
     </button>
 
     <div class="title-wrapper action-list-title-wrapper">
-      <div class="action-list-title-icon" *ngIf="idSowing">
-        <mat-icon>format_list_bulleted</mat-icon>
+
+      <div
+        class="action-list-title-icon"
+        *ngIf="
+          idSowing ||
+          isGerminationContext ||
+          isViabilityContext
+        "
+      >
+        <mat-icon>
+          format_list_bulleted
+        </mat-icon>
       </div>
 
+
       <div class="action-list-title-text">
-        <mat-card-title>Liste des actions</mat-card-title>
-        <small *ngIf="idSowing">Actions enregistrées pour ce semis</small>
+
+        <mat-card-title>
+          Liste des actions
+        </mat-card-title>
+
+        <small *ngIf="idSowing">
+          Actions enregistrées pour ce semis
+        </small>
+
+        <small *ngIf="isGerminationContext">
+          Actions du test de germination
+        </small>
+
+        <small *ngIf="isViabilityContext">
+          Actions du test de viabilité
+        </small>
+
       </div>
+
     </div>
   </mat-card-header>
 
@@ -182,7 +282,9 @@
       showFirstLastButtons>
     </mat-paginator>
 
+
     <!-- Aucune donnée -->
+
     <div
       class="no-data"
       *ngIf="
@@ -191,7 +293,11 @@
     >
 
       <mat-icon
-        *ngIf="idSowing"
+        *ngIf="
+          idSowing ||
+          isGerminationContext ||
+          isViabilityContext
+        "
         class="sowing-no-data-icon"
       >
         info
@@ -200,7 +306,9 @@
 
       <ng-container
         *ngIf="
-          idSowing;
+          idSowing ||
+          isGerminationContext ||
+          isViabilityContext;
           else emptyTestActions
         "
       >
@@ -209,14 +317,20 @@
           {{
             hasSowingActions
               ? 'Aucune action ne correspond aux filtres.'
-              : 'Aucune action de semis enregistrée.'
+              : idSowing
+                ? 'Aucune action de semis enregistrée.'
+                : isGerminationContext
+                  ? 'Aucune action de germination enregistrée.'
+                  : 'Aucune action de viabilité enregistrée.'
           }}
         </strong>
+
 
         <span *ngIf="hasSowingActions">
           Modifiez ou réinitialisez les filtres
           pour afficher les actions.
         </span>
+
 
         <span *ngIf="!hasSowingActions">
           Utilisez le bouton Ajouter une action

@@ -35,6 +35,8 @@ export interface Action {
 export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() idTest: number | null = null;
   @Input() idSowing: number | null = null;
+  @Input() isGerminationContext = false;
+  @Input() isViabilityContext = false;
   @Input() sowingCode: string = '';
   @Input() dataSource = new MatTableDataSource<any>();
   @Input() enablePagination = false;
@@ -137,20 +139,27 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
           this.applySowingActionFilters();
         },
         error: (err) => {
-          console.error('Erreur lors du chargement des actions du semis :', err);
+          console.error(
+            'Erreur lors du chargement des actions du semis :',
+            err
+          );
+
           this.dataSource.data = [];
         }
       });
+
       return;
     }
 
-    if (!this.idTest) return;
+    if (!this.idTest) {
+      return;
+    }
 
     this.api.getActionsByTest(this.idTest).subscribe({
       next: (actions) => {
         console.log('📦 Actions du test reçues :', actions);
 
-        this.dataSource.data = actions.map(action => ({
+        const testActions = actions.map(action => ({
           id_action: action.id_action,
           date_start: action.date_start,
           label_action_type: action.label_action_type,
@@ -162,13 +171,36 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
           return dateB - dateA;
         });
 
-        if (this.enablePagination && this.paginator) {
-          this.dataSource.paginator = this.paginator;
+        if (
+          this.isGerminationContext ||
+          this.isViabilityContext
+        ) {
+          this.allSowingActions = testActions;
+
+          this.updateSowingActionTypeFilterOptions();
+          this.applySowingActionFilters();
+
+          return;
+        }
+
+        this.dataSource.data = testActions;
+
+        if (
+          this.enablePagination &&
+          this.paginator
+        ) {
+          this.dataSource.paginator =
+            this.paginator;
+
           this.paginator.firstPage();
         }
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des actions :', err);
+        console.error(
+          'Erreur lors du chargement des actions :',
+          err
+        );
+
         this.dataSource.data = [];
       }
     });
@@ -482,7 +514,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public applySowingActionFilters(): void {
-    if (!this.idSowing) {
+    if (
+      !this.idSowing &&
+      !this.isGerminationContext &&
+      !this.isViabilityContext
+    ) {
       return;
     }
 

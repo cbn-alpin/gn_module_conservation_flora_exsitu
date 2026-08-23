@@ -278,7 +278,10 @@
       <div class="germination-list">
         <app-action-table
           [dataSource]="dataSource"
-          [idTest]="idTest" 
+          [idTest]="idTest"
+          [isViabilityContext]="true"
+          [enablePagination]="true"
+          [selectedActionId]="selectedAction?.id_action || null"
           (rowClicked)="onActionSelected($event)">
         </app-action-table>
       </div>

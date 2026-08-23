@@ -294,6 +294,9 @@
       <app-action-table
         [dataSource]="dataSource"
         [idTest]="idTest"
+        [isGerminationContext]="true"
+        [enablePagination]="true"
+        [selectedActionId]="selectedAction?.id_action || null"
         (rowClicked)="onActionSelected($event)">
       </app-action-table>
 
