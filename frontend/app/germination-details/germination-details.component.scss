@@ -662,6 +662,211 @@ app-action-table
 
 
 /* =========================================================
+   FILTRES DES ACTIONS
+   Même géométrie que Semis
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-card {
+  margin: 16px 16px 18px;
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f5fcfb 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid #b2dfdb;
+  border-radius: 14px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(0, 137, 123, 0.06);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  color: #6a1b9a;
+  background-color: #e5f6f3;
+
+  border-radius: 50%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-icon
+mat-icon {
+  width: 19px;
+  height: 19px;
+
+  color: #6a1b9a;
+
+  font-size: 19px;
+  line-height: 19px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-title
+span {
+  display: block;
+
+  color: #00564e;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-title
+small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #5c7d79;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1.2fr)
+    minmax(160px, 1fr)
+    minmax(160px, 1fr);
+
+  gap: 14px;
+
+  align-items: end;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.reset-filter-button {
+  min-height: 34px;
+  padding: 5px 13px;
+
+  color: #ffffff !important;
+  background-color: #8e24aa !important;
+
+  border: 1px solid #7b1fa2 !important;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.reset-filter-button:hover {
+  background-color: #7b1fa2 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.reset-filter-button
+mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+}
+
+
+/* =========================================================
    HEADER LISTE
    ========================================================= */
 
@@ -697,25 +902,18 @@ app-action-table
   justify-content: center;
 
   gap: 10px;
+
+  margin-top: -2px;
 }
 
 
-/*
- * Germination n'a actuellement pas le mat-icon
- * présent uniquement dans Semis.
- * On le recrée VISUELLEMENT ici, sans toucher au HTML.
- */
 :host ::ng-deep
 .germination-list
 app-action-table
-.action-list-title-wrapper::before {
-  content: 'format_list_bulleted';
-
+.action-list-title-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  flex: 0 0 36px;
 
   width: 36px;
   height: 36px;
@@ -725,21 +923,20 @@ app-action-table
 
   border-radius: 50%;
 
-  font-family: 'Material Icons';
+  transform: translate(-6px, 1px);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-icon
+mat-icon {
+  width: 24px;
+  height: 24px;
+
   font-size: 24px;
-  font-weight: normal;
-  line-height: 36px;
-
-  letter-spacing: normal;
-  text-transform: none;
-  white-space: nowrap;
-
-  word-wrap: normal;
-
-  direction: ltr;
-
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
+  line-height: 24px;
 }
 
 
@@ -747,11 +944,6 @@ app-action-table
 .germination-list
 app-action-table
 .action-list-title-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
   text-align: center;
 }
 
@@ -761,8 +953,6 @@ app-action-table
 app-action-table
 .action-list-title-text
 mat-card-title {
-  margin: 0;
-
   color: #00564e;
 
   font-size: 21px;
@@ -771,16 +961,11 @@ mat-card-title {
 }
 
 
-/*
- * Sous-titre visuel uniquement.
- * Aucun changement HTML / TypeScript.
- */
 :host ::ng-deep
 .germination-list
 app-action-table
-.action-list-title-text::after {
-  content: 'Actions enregistrées pour ce test de germination';
-
+.action-list-title-text
+small {
   display: block;
 
   margin-top: 2px;
@@ -789,7 +974,6 @@ app-action-table
 
   font-size: 12px;
   font-weight: 500;
-  line-height: 1.2;
 }
 
 
@@ -1228,8 +1412,6 @@ app-action-table
 .germination-list
 app-action-table
 .no-data {
-  position: relative;
-
   margin-top: 12px;
   padding: 18px;
 
@@ -1246,17 +1428,10 @@ app-action-table
 }
 
 
-/*
- * L'icône info n'est actuellement rendue
- * que pour Semis dans le HTML.
- * On l'ajoute visuellement ici.
- */
 :host ::ng-deep
 .germination-list
 app-action-table
-.no-data::before {
-  content: 'info';
-
+.sowing-no-data-icon {
   display: block;
 
   width: 24px;
@@ -1266,16 +1441,22 @@ app-action-table
 
   color: #26a69a;
 
-  font-family: 'Material Icons';
   font-size: 24px;
-  font-weight: normal;
   line-height: 24px;
+}
 
-  letter-spacing: normal;
-  text-transform: none;
 
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+strong,
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+span {
+  display: block;
 }
 
 
@@ -1284,12 +1465,24 @@ app-action-table
 app-action-table
 .no-data
 strong {
-  display: block;
-
   color: #00564e;
 
   font-size: 13px;
   font-weight: 700;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+span {
+  margin-top: 3px;
+
+  color: #5c7d79;
+
+  font-size: 12px;
+  font-weight: 500;
 }
 
 
@@ -1329,7 +1522,8 @@ mat-card-title {
 .action-detail:has(.germination-detail)
 .germination-list
 app-action-table
-.action-list-title-text::after {
+.action-list-title-text
+small {
   font-size: 11px;
 }
 
