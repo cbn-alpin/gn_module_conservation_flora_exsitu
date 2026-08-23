@@ -1,186 +1,282 @@
 .semis-form {
   padding: 20px;
 }
+
+
 .section-title {
-  color: #000;
   margin: 25px 0 15px;
+  padding-bottom: 5px;
+
+  color: #000;
+
+  border-bottom: 2px solid #e0e0e0;
+
   font-size: 1.4em;
   font-weight: 600;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 5px;
 }
+
+
 .form-row {
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
   flex-wrap: wrap;
+
+  gap: 16px;
+
+  margin-bottom: 20px;
 }
+
+
 .half-width {
   flex: 1 1 calc(50% - 10px);
+
   min-width: 260px;
 }
+
+
 .full-width {
   flex: 1 1 100%;
 }
+
+
 mat-form-field {
   width: 100%;
 }
+
+
 .section-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   margin: 30px 0;
 }
+
+
 .section-header h2 {
   margin: 0;
 }
+
+
 .section-header button {
   display: flex;
   align-items: center;
+
   gap: 5px;
 }
+
+
 .form-actions {
-  margin-top: 40px;
   display: flex;
   justify-content: flex-end;
+
+  margin-top: 40px;
 }
+
+
 .form-actions button {
   min-width: 150px;
 }
+
+
 .split-screen {
   display: flex;
+
   height: 100%;
+
   gap: 16px;
 }
+
+
 .left-panel,
 .right-panel {
   flex: 1 1 50%;
+
   max-width: 50%;
-  overflow-y: auto;
- // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 2px;
   height: 100%;
+  padding: 2px;
+
+  overflow-y: auto;
+
+  border-radius: 8px;
 }
+
+
 .right-panel {
   padding-bottom: 20px;
 }
+
+
 .right-panel table {
   width: 100%;
+
   margin-top: 10px;
 }
+
+
 .no-data {
   padding: 20px;
-  text-align: center;
+
   color: #999;
+
+  text-align: center;
   font-style: italic;
 }
-@media (max-width: 768px) {
-  .left-panel,
-  .right-panel {
-    max-width: 100%;
-    flex: 1 1 100%;
-  }
-}
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px; /* Optional: adds space between fields */
-}
+
 
 .fifth-width {
-  flex: 1 1 calc(20% - 16px); /* Adjusts width to 20% minus the gap */
-  min-width: 150px; /* Optional: sets a minimum width for responsiveness */
+  flex: 1 1 calc(20% - 16px);
+
+  min-width: 150px;
 }
+
+
 .gray-button {
-  background-color: #e0e0e0;
   color: #000;
+
+  background-color: #e0e0e0;
+
   box-shadow: none;
 }
+
 
 .with-border {
   border: 1px solid #bdbdbd;
   border-radius: 4px;
 }
+
+
 .gray-button:hover {
   background-color: #d5d5d5;
 }
+
+
 .pnx-form-control {
-  width: 100%;
-  min-height: 56px; 
   display: flex;
   align-items: center;
+
+  width: 100%;
+  min-height: 56px;
 }
+
+
 .add-button {
   position: fixed;
+
   top: 20px;
   right: 30px;
+
   z-index: 1000;
-  background-color: #1976d2; 
+
   color: white;
+
+  background-color: #1976d2;
 }
+
+
 .dual-buttons {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   margin-top: 40px;
 }
 
+
+/* =========================================================
+   LISTE + DÉTAIL ACTION
+   Même géométrie que Semis
+   ========================================================= */
+
 .action-detail.split-view {
   display: flex;
+  align-items: stretch;
+
   gap: 1rem;
-  align-items: stretch; // garantit la même hauteur
 }
+
 
 .germination-list,
 .germination-detail {
-  flex: 1; // largeur identique
+  flex: 1;
+
   overflow-y: auto;
-  padding: 0; // optionnel, à ajuster selon besoin
+
   box-sizing: border-box;
 }
 
+
 mat-card-content {
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  margin: 20px 15px;
   padding: 20px;
+
   background-color: #fafafa;
-  margin-bottom: 20px;
-  margin: 20px 15px; 
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.10);
 }
 
-/* Partie gauche avec la table */
+
+/* =========================================================
+   WRAPPER LISTE GERMINATION
+   Dimensions Semis
+   ========================================================= */
+
 .germination-list {
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  margin: 0 15px 26px;
   padding: 15px;
-  background-color: #f5f5f5;
-  margin-right: 10px;
-  margin: 10px 15px;
+
+  box-sizing: border-box;
+
+  background-color: #f5fbfa;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 137, 123, 0.10);
 }
 
-/* Partie droite avec les détails */
+
+/* =========================================================
+   DÉTAIL ACTION
+   On le réglera précisément ensuite
+   ========================================================= */
+
 .germination-detail {
+  margin: 10px 15px;
+  padding: 15px;
+
+  box-sizing: border-box;
+
+  background-color: #f5f5f5;
+
   border: 1px solid #ccc;
   border-radius: 6px;
-  padding: 15px;
-  background-color: #f5f5f5;
-  margin-left: 10px;
-  margin: 10px 15px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.10);
 }
 
-/* Si besoin d’un alignement horizontal entre les deux blocs */
+
 .split-view {
   display: flex;
   flex-wrap: wrap;
+
   gap: 20px;
-  margin: 0 10px;
+
+  margin: 0;
 }
-mat-card-content,
-.germination-list,
-.germination-detail {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+
+
+/* =========================================================
+   RETOUR
+   ========================================================= */
 
 .return-button {
   display: flex;
@@ -192,6 +288,7 @@ mat-card-content,
   box-sizing: border-box;
 }
 
+
 .return-button button {
   display: inline-flex;
   align-items: center;
@@ -199,14 +296,17 @@ mat-card-content,
   gap: 6px;
 
   color: #ffffff !important;
-  font-weight: bold;
 
   background-color: #d21919 !important;
+
+  font-weight: bold;
 }
+
 
 .return-button button:hover {
   background-color: #d21919 !important;
 }
+
 
 .return-button mat-icon {
   color: #ffffff !important;
@@ -215,10 +315,11 @@ mat-card-content,
 
 /* =========================================================
    PAGE
+   Même fin de page que Semis
    ========================================================= */
 
 .germination-details-page {
-  padding-bottom: 24px;
+  padding-bottom: 0;
 }
 
 
@@ -403,6 +504,10 @@ mat-card-content,
 }
 
 
+/* =========================================================
+   SECTIONS INFORMATIONS
+   ========================================================= */
+
 .germination-detail-section {
   margin-bottom: 18px;
 
@@ -534,16 +639,837 @@ mat-card-content,
 }
 
 
+/* =========================================================
+   LISTE DES ACTIONS GERMINATION
+   Semis = référence visuelle
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-card {
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 18px
+    rgba(0, 137, 123, 0.10);
+}
+
+
+/* =========================================================
+   HEADER LISTE
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-header {
+  height: auto;
+  min-height: 74px;
+  padding: 10px 16px 14px 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f5fcfb 100%
+    );
+
+  border-top: 1px solid #d5eeeb;
+}
+
+
+/* =========================================================
+   TITRE LISTE
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+}
+
+
+/*
+ * Germination n'a actuellement pas le mat-icon
+ * présent uniquement dans Semis.
+ * On le recrée VISUELLEMENT ici, sans toucher au HTML.
+ */
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-wrapper::before {
+  content: 'format_list_bulleted';
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 36px;
+
+  width: 36px;
+  height: 36px;
+
+  color: #00897b;
+  background-color: #e5f6f3;
+
+  border-radius: 50%;
+
+  font-family: 'Material Icons';
+  font-size: 24px;
+  font-weight: normal;
+  line-height: 36px;
+
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+
+  word-wrap: normal;
+
+  direction: ltr;
+
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-text
+mat-card-title {
+  margin: 0;
+
+  color: #00564e;
+
+  font-size: 21px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+
+/*
+ * Sous-titre visuel uniquement.
+ * Aucun changement HTML / TypeScript.
+ */
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-text::after {
+  content: 'Actions enregistrées pour ce test de germination';
+
+  display: block;
+
+  margin-top: 2px;
+
+  color: #5c7d79;
+
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+
+/* =========================================================
+   BOUTON AJOUTER
+   Même géométrie que Semis
+   Couleur Germination
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.add-action-button {
+  min-height: 36px;
+  padding: 6px 12px;
+
+  color: #ffffff !important;
+
+  background-color: #26a69a !important;
+
+  border: 1px solid #00897b !important;
+  border-radius: 999px;
+
+  font-weight: 500;
+
+  box-shadow:
+    0 3px 8px
+    rgba(0, 137, 123, 0.20);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.add-action-button:hover {
+  background-color: #00897b !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.add-action-button
+mat-icon {
+  color: #ffffff !important;
+}
+
+
+/* =========================================================
+   CONTENU TABLEAU
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+mat-card-content {
+  margin: 0;
+  padding: 0 16px 16px 16px;
+
+  background-color: #ffffff;
+
+  border: 0;
+  border-radius: 0;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   TABLEAU
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+table {
+  width: 100%;
+
+  overflow: hidden;
+
+  table-layout: fixed;
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 12px
+    rgba(0, 137, 123, 0.08);
+}
+
+
+/* Header tableau */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-header-row {
+  height: 52px;
+
+  background-color: #f5fcfb;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-header-cell {
+  color: #00564e;
+
+  font-size: 12px;
+  font-weight: 850;
+
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+
+  border-bottom: 1px solid #b2dfdb;
+}
+
+
+/* Tri */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-sort-header-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-sort-header-content {
+  flex: 0 1 auto;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-sort-header-arrow {
+  width: 12px;
+  min-width: 12px;
+  height: 12px;
+
+  margin-left: 4px;
+
+  color: #00564e;
+
+  transform: scale(0.75);
+  transform-origin: center;
+}
+
+
+/* Lignes */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row {
+  height: 58px;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row
+.mat-mdc-cell {
+  color: #263b38;
+
+  font-size: 14px;
+
+  border-bottom: 1px solid #e3f1ef;
+}
+
+
+/* Hover */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row.clickable-row:hover
+.mat-mdc-cell {
+  background-color: #e8f7f5 !important;
+}
+
+
+/* Ligne sélectionnée */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row.clickable-row.selected-row
+.mat-mdc-cell {
+  background-color: #e8f7f5 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row.clickable-row.selected-row
+.mat-mdc-cell:first-child {
+  border-left: 5px solid #00897b;
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-date-pill {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  color: #00897b;
+  background-color: #f5fcfb;
+
+  border: 1px solid #b2dfdb;
+  border-radius: 999px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   TYPE D'ACTION
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-type-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  max-width: 100%;
+  padding: 6px 12px;
+
+  color: #00564e;
+  background-color: #e5f6f3;
+
+  border-radius: 999px;
+
+  font-weight: 800;
+
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+
+/* =========================================================
+   AGENT
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-agent-cell {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #37474f;
+
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-agent-cell
+mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #26a69a;
+
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   MENU ...
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.actions-trigger-red {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 34px;
+  height: 34px;
+
+  margin: 0 auto;
+  padding: 0 !important;
+
+  border-radius: 50%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.actions-trigger-red
+mat-icon {
+  margin: 0 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.actions-trigger-red:hover {
+  background-color: #fff3f3;
+}
+
+
+/* =========================================================
+   LARGEURS COLONNES = SEMIS
+   ========================================================= */
+
+/* Début */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-date_start {
+  width: 130px;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+
+/* Type d'action */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-label_action_type {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+}
+
+
+/* Agent */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-label_actor {
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+}
+
+
+/* Actions */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-actions {
+  box-sizing: border-box;
+
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+
+  padding-right: 8px !important;
+  padding-left: 8px !important;
+
+  text-align: center !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+th.mat-column-actions,
+:host ::ng-deep
+.germination-list
+app-action-table
+td.mat-column-actions {
+  text-align: center !important;
+}
+
+
+/* =========================================================
+   PAGINATION
+   Style prêt lorsque la pagination Germination sera activée
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-paginator {
+  margin-top: 10px;
+
+  background-color: #f5fcfb;
+
+  border-top: 1px solid #e3f1ef;
+}
+
+
+/* =========================================================
+   AUCUNE ACTION
+   Même dimensions que Semis
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data {
+  position: relative;
+
+  margin-top: 12px;
+  padding: 18px;
+
+  color: #5c7d79;
+  background-color: #f5fcfb;
+
+  border: 1px dashed #b2dfdb;
+  border-radius: 12px;
+
+  text-align: center;
+
+  font-style: normal;
+  font-weight: 600;
+}
+
+
+/*
+ * L'icône info n'est actuellement rendue
+ * que pour Semis dans le HTML.
+ * On l'ajoute visuellement ici.
+ */
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data::before {
+  content: 'info';
+
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  margin: 0 auto 7px;
+
+  color: #26a69a;
+
+  font-family: 'Material Icons';
+  font-size: 24px;
+  font-weight: normal;
+  line-height: 24px;
+
+  letter-spacing: normal;
+  text-transform: none;
+
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+strong {
+  display: block;
+
+  color: #00564e;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   VERSION COMPACTE
+   Quand le détail action est ouvert
+   ========================================================= */
+
+:host
+.action-detail:has(.germination-detail)
+.germination-list {
+  min-width: 0;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-list-header {
+  min-height: 66px;
+  padding: 10px 12px 12px 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-list-title-text
+mat-card-title {
+  font-size: 18px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-list-title-text::after {
+  font-size: 11px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+mat-card-content {
+  padding: 0 12px 12px 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-mdc-header-cell,
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-mdc-cell {
+  padding-right: 10px !important;
+  padding-left: 10px !important;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-mdc-row {
+  height: 56px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-date-pill {
+  padding: 4px 9px;
+
+  font-size: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-type-pill {
+  padding: 5px 10px;
+
+  font-size: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-agent-cell {
+  font-size: 13px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.add-action-button {
+  min-height: 34px;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 900px) {
 
   .germination-detail-grid {
     grid-template-columns: 1fr;
   }
 
+
   .germination-detail-item-full {
     grid-column: auto;
+  }
+
+
+  .action-detail.split-view {
+    flex-direction: column;
+  }
+
+
+  .germination-list,
+  .germination-detail {
+    flex: 1 1 100%;
+
+    max-width: none;
+  }
+
+
+  :host ::ng-deep
+  .germination-list
+  app-action-table
+  .action-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+
+  :host ::ng-deep
+  .germination-list
+  app-action-table
+  .title-wrapper {
+    position: static;
+
+    width: 100%;
+
+    transform: none;
   }
 
 }
 
 
+@media (max-width: 768px) {
+
+  .left-panel,
+  .right-panel {
+    flex: 1 1 100%;
+
+    max-width: 100%;
+  }
+
+}
