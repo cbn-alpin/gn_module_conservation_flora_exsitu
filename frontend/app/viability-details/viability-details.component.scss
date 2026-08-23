@@ -540,4 +540,1118 @@ mat-card-content,
 
 }
 
+/* =========================================================
+   LISTE DES ACTIONS VIABILITÉ
+   SEMIS = RÉFÉRENCE VISUELLE
+   ========================================================= */
 
+
+/* =========================================================
+   CONTENEUR EXTÉRIEUR
+   Même marges / dimensions que Semis
+   ========================================================= */
+
+.action-detail.split-view {
+  display: flex;
+  align-items: stretch;
+
+  gap: 1rem;
+
+  margin: 0;
+}
+
+
+.germination-list {
+  flex: 1;
+
+  margin: 0 15px 26px;
+  padding: 15px;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  background-color: #fff8f1;
+
+  border: 1px solid #f2c79f;
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(224, 122, 31, 0.10);
+}
+
+
+.germination-detail {
+  flex: 1;
+
+  margin: 10px 15px;
+  padding: 15px;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  background-color: #f5f5f5;
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   CARTE PRINCIPALE
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-card {
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #f2c79f;
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 18px
+    rgba(224, 122, 31, 0.10);
+}
+
+
+/* =========================================================
+   FILTRES
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-card {
+  margin: 16px 16px 18px;
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf5 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid #f2c79f;
+  border-radius: 14px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(224, 122, 31, 0.06);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #7a3b00;
+}
+
+
+/* Cercle filtre */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  background-color: #fff0e3;
+
+  border-radius: 50%;
+}
+
+
+/* L'icône reste violette comme dans Semis */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-icon
+mat-icon {
+  width: 19px;
+  height: 19px;
+
+  color: #6a1b9a;
+
+  font-size: 19px;
+  line-height: 19px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-title
+span {
+  display: block;
+
+  color: #7a3b00;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filters-title
+small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #956743;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   CHAMPS FILTRES
+   Même grille que Semis
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1.2fr)
+    minmax(160px, 1fr)
+    minmax(160px, 1fr);
+
+  gap: 14px;
+
+  align-items: end;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-field
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 10px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-action-filter-field
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+/* =========================================================
+   RÉINITIALISER
+   Violet identique à Semis
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.reset-filter-button {
+  min-height: 34px;
+  padding: 5px 13px;
+
+  color: #ffffff !important;
+
+  background-color: #8e24aa !important;
+
+  border: 1px solid #7b1fa2 !important;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.reset-filter-button:hover {
+  background-color: #7b1fa2 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.reset-filter-button
+mat-icon {
+  width: 17px;
+  height: 17px;
+
+  margin-right: 5px;
+
+  color: #ffffff !important;
+
+  font-size: 17px;
+}
+
+
+/* =========================================================
+   HEADER LISTE DES ACTIONS
+   Même hauteur / marge que Semis
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-header {
+  height: auto;
+  min-height: 74px;
+
+  padding: 10px 16px 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fffaf5 100%
+    );
+
+  border-top: 1px solid #f5dcc5;
+}
+
+
+/* =========================================================
+   LOGO + TITRE LISTE
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  color: #e07a1f;
+
+  background-color: #fff0e3;
+
+  border-radius: 50%;
+
+  transform: translateX(-6px);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-icon
+mat-icon {
+  width: 24px;
+  height: 24px;
+
+  color: #e07a1f;
+
+  font-size: 24px;
+  line-height: 24px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-text {
+  text-align: center;
+
+  transform: translateY(-1px);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-text
+mat-card-title {
+  color: #7a3b00;
+
+  font-size: 21px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-list-title-text
+small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #956743;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   AJOUTER UNE ACTION
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.add-action-button {
+  min-height: 36px;
+  padding: 6px 12px;
+
+  color: #ffffff !important;
+
+  background-color: #e07a1f !important;
+
+  border: 1px solid #c96813 !important;
+  border-radius: 999px;
+
+  font-weight: 500;
+
+  box-shadow:
+    0 3px 8px
+    rgba(224, 122, 31, 0.20);
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.add-action-button:hover {
+  background-color: #c96813 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.add-action-button
+mat-icon {
+  color: #ffffff !important;
+}
+
+
+/* =========================================================
+   CONTENU TABLEAU
+   Supprime l'ancien cadre gris interne
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+mat-card-content {
+  margin: 0;
+
+  padding: 0 16px 16px;
+
+  background-color: #ffffff;
+
+  border: 0;
+  border-radius: 0;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   TABLEAU
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+table {
+  width: 100%;
+
+  overflow: hidden;
+
+  table-layout: fixed;
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 12px
+    rgba(224, 122, 31, 0.08);
+}
+
+
+/* Header */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-header-row {
+  height: 52px;
+
+  background-color: #fff8f1;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-header-cell {
+  color: #7a3b00;
+
+  font-size: 12px;
+  font-weight: 850;
+
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+
+  border-bottom: 1px solid #f2c79f;
+}
+
+
+/* Tri */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-sort-header-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-sort-header-content {
+  flex: 0 1 auto;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-sort-header-arrow {
+  width: 12px;
+  min-width: 12px;
+  height: 12px;
+
+  margin-left: 4px;
+
+  color: #7a3b00;
+
+  transform: scale(0.75);
+  transform-origin: center;
+}
+
+
+/* Lignes */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row {
+  height: 58px;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row
+.mat-mdc-cell {
+  color: #4d3320;
+
+  font-size: 14px;
+
+  border-bottom: 1px solid #f8e8d9;
+}
+
+
+/* Hover / sélection = orange, pas vert */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row.clickable-row:hover
+.mat-mdc-cell,
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row.clickable-row.selected-row
+.mat-mdc-cell {
+  background-color: #fff0e3 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-row.clickable-row.selected-row
+.mat-mdc-cell:first-child {
+  border-left: 5px solid #e07a1f;
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-date-pill {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  color: #e07a1f;
+
+  background-color: #fffdfb;
+
+  border: 1px solid #f2c79f;
+  border-radius: 999px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   TYPE D'ACTION
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-type-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  max-width: 100%;
+  padding: 6px 12px;
+
+  color: #7a3b00;
+
+  background-color: #fff0e3;
+
+  border-radius: 999px;
+
+  font-weight: 800;
+
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+
+/* =========================================================
+   AGENT
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-agent-cell {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #4d3320;
+
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.action-agent-cell
+mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #e79a56;
+
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   COLONNES
+   Exactement comme Semis
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-date_start {
+  width: 130px;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-label_action_type {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-label_actor {
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-column-actions {
+  box-sizing: border-box;
+
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+
+  padding-right: 8px !important;
+  padding-left: 8px !important;
+
+  text-align: center !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+th.mat-column-actions,
+:host ::ng-deep
+.germination-list
+app-action-table
+td.mat-column-actions {
+  text-align: center !important;
+}
+
+
+/* =========================================================
+   MENU ...
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.actions-trigger-red {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 34px;
+  height: 34px;
+
+  margin: 0 auto;
+  padding: 0 !important;
+
+  border-radius: 50%;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.actions-trigger-red
+mat-icon {
+  margin: 0 !important;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.actions-trigger-red:hover {
+  background-color: #fff3f3;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.mat-mdc-paginator {
+  margin-top: 10px;
+
+  background-color: #fffdfb;
+
+  border-top: 1px solid #f8e8d9;
+}
+
+
+/* =========================================================
+   AUCUNE ACTION
+   ========================================================= */
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data {
+  margin-top: 12px;
+  padding: 18px;
+
+  color: #956743;
+
+  background-color: #fffdfb;
+
+  border: 1px dashed #f2c79f;
+  border-radius: 12px;
+
+  text-align: center;
+
+  font-style: normal;
+  font-weight: 600;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.sowing-no-data-icon {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  margin: 0 auto 7px;
+
+  color: #e07a1f;
+
+  font-size: 24px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+strong,
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+span {
+  display: block;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+strong {
+  color: #7a3b00;
+
+  font-size: 13px;
+}
+
+
+:host ::ng-deep
+.germination-list
+app-action-table
+.no-data
+span {
+  margin-top: 3px;
+
+  color: #956743;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   VERSION COMPACTE
+   Quand une action est ouverte à droite
+   ========================================================= */
+
+:host
+.action-detail:has(.germination-detail)
+.germination-list {
+  min-width: 0;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.sowing-action-filters-card {
+  margin: 12px 12px 14px;
+  padding: 13px 14px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.sowing-action-filters-header {
+  margin-bottom: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-list-header {
+  min-height: 66px;
+
+  padding: 10px 12px 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-list-title-text
+mat-card-title {
+  font-size: 18px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-list-title-text
+small {
+  font-size: 11px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+mat-card-content {
+  padding: 0 12px 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-mdc-header-cell,
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-mdc-cell {
+  padding-right: 10px !important;
+  padding-left: 10px !important;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-mdc-row {
+  height: 56px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-date-pill {
+  padding: 4px 9px;
+
+  font-size: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-type-pill {
+  padding: 5px 10px;
+
+  font-size: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.action-agent-cell {
+  font-size: 13px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.add-action-button {
+  min-height: 34px;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .action-detail.split-view {
+    flex-direction: column;
+  }
+
+
+  .germination-list,
+  .germination-detail {
+    flex: 1 1 100%;
+
+    max-width: none;
+  }
+
+
+  :host ::ng-deep
+  .germination-list
+  app-action-table
+  .sowing-action-filters-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+
+  :host ::ng-deep
+  .germination-list
+  app-action-table
+  .sowing-action-filter-fields {
+    grid-template-columns: 1fr;
+
+    width: 100%;
+  }
+
+
+  :host ::ng-deep
+  .germination-list
+  app-action-table
+  .action-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+
+  :host ::ng-deep
+  .germination-list
+  app-action-table
+  .title-wrapper {
+    position: static;
+
+    width: 100%;
+
+    transform: none;
+  }
+
+}
