@@ -1,23 +1,24 @@
 <mat-card class="culture-action-form-card">
   <mat-card-header class="culture-action-dialog-header">
 
-    <mat-card-title>
-      Ajouter une action de culture
-    </mat-card-title>
-
-
     <button
-      mat-icon-button
+      mat-raised-button
       type="button"
-      class="culture-action-close-button"
-      aria-label="Annuler et fermer"
+      class="culture-action-form-back-button"
       [disabled]="isSubmitting"
       (click)="onCancel()"
     >
       <mat-icon>
-        close
+        arrow_back
       </mat-icon>
+
+      Retour
     </button>
+
+
+    <mat-card-title>
+      Ajouter une action de culture
+    </mat-card-title>
 
   </mat-card-header>
 
@@ -39,7 +40,7 @@
         <div class="section-icon"><mat-icon>assignment</mat-icon></div>
         <div>
           <strong>Identification de l'action</strong>
-          <span>Type d'action et période de réalisation</span>
+          <span>Type d'action et date de réalisation</span>
         </div>
       </div>
 
@@ -51,11 +52,10 @@
             full-width
             culture-action-type-required
           "
+          [hideRequiredMarker]="false"
         >
 
-          <mat-label>
-            Type d'action
-          </mat-label>
+          <mat-label>Type d'action</mat-label>
 
           <mat-select
             formControlName="id_action_type"
@@ -408,7 +408,14 @@
 
     </form>
   </mat-card-content>
-<div class="culture-action-form-actions">
+<div
+  class="culture-action-form-actions"
+  *ngIf="
+    cultureActionForm
+      .get('id_action_type')
+      ?.value
+  "
+>
         <button
           mat-raised-button
           type="button"
