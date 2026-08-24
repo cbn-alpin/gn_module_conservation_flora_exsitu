@@ -575,23 +575,38 @@ mat-card-title {
    CONTENU DU FORMULAIRE
    ========================================================= */
 
+/* =========================================================
+   CONTENU DU FORMULAIRE
+   ========================================================= */
+
 .sowing-action-form-card
 mat-card-content {
   flex: 1 1 auto;
 
   min-height: 0;
 
-  overflow-y: auto;
+  overflow-y: visible;
+
+  padding-bottom: 0 !important;
 
   background-color: #f8fbf8;
 
   scrollbar-gutter:
-    stable;
+    auto;
 }
 
 
 .sowing-action-form-card
-.semis-form,
+.semis-form {
+  padding: 18px 20px 0;
+}
+
+
+.sowing-action-form-card
+.semis-form {
+  padding: 18px 20px 0;
+}
+
 
 .germination-action-form-card
 .semis-form,
@@ -1088,41 +1103,111 @@ textarea {
   min-height: 55px;
 }
 
-/* Espacement des boutons de la fiche Action Semis */
+/* =========================================================
+   BOUTONS ACTION SEMIS
+   Géométrie reprise de Fiche de Stockage
+   ========================================================= */
 
-.sowing-action-form-card
-.form-actions.dual-buttons.sticky-actions {
-  display: grid;
+.sowing-action-form-actions {
+  position: sticky;
 
-  grid-template-columns:
-    minmax(135px, 1fr)
-    minmax(150px, 1fr)
-    minmax(145px, 1fr)
-    minmax(200px, 1.35fr);
+  bottom: 10px;
 
-  gap: 14px;
+  z-index: 10;
 
-  align-items: center;
-  justify-content: stretch;
+  box-sizing: border-box;
+
+  margin-top: 16px;
+  margin-right: 36px;
+  margin-bottom: 10px;
+  margin-left: 36px;
+
+  padding: 20px 28px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      #f4faf4 100%
+    );
+
+  border: 1px solid #d7e7d8;
+  border-top: 1px solid #c8e6c9;
+  border-radius: 14px;
+
+  box-shadow:
+    0 -6px 18px rgba(46, 125, 50, 0.08),
+    0 8px 20px rgba(27, 94, 32, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+
+  backdrop-filter: blur(4px);
 }
 
 
-.sowing-action-form-card
-.form-actions.dual-buttons.sticky-actions
-button {
+.sowing-action-flex-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
   width: 100%;
-  min-width: 0;
-  height: 42px;
+}
 
-  padding: 0 12px;
 
+.sowing-action-flex-actions
+button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   gap: 8px;
 
-  white-space: nowrap;
+  min-width: 165px;
+  height: 42px;
+
+  padding: 0 18px;
+}
+
+
+.sowing-action-flex-actions
+.reset-button {
+  color: #ffffff;
+
+  background-color: #8e24aa;
+}
+
+
+.sowing-action-flex-actions
+.save-button {
+  color: #ffffff;
+
+  background-color: #4caf50;
+}
+
+
+.sowing-action-flex-actions
+.add-another-action-button {
+  color: #ffffff !important;
+
+  background-color: #5f88b3 !important;
+}
+
+
+.sowing-action-flex-actions
+.add-another-action-button:hover {
+  background-color: #537ca6 !important;
+}
+
+
+.sowing-action-flex-actions
+.reset-button
+mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
 }
 
 /* =========================================================
