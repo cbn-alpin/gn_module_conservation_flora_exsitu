@@ -39,4 +39,8 @@ export interface ConfirmDialogData {
     entityDate?: string;
     storageLocation?: string;
     warningMessage?: string;
+    actionDeletion?: boolean;
+    actionCancellation?: boolean;
+    actionCancellationMode?: 'create' | 'edit';
+    actionContextLabel?: string;
 }

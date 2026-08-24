@@ -126,7 +126,12 @@
         mat-dialog-content
         class="dialog-content"
     >
-        <p *ngIf="dialogData?.variant === 'semis'">
+        <p
+            *ngIf="
+                dialogData?.variant === 'semis'
+                && !dialogData?.actionDeletion
+            "
+        >
             Êtes-vous certain de vouloir
             <span class="danger-word">supprimer</span>
             le semis
@@ -141,7 +146,12 @@
             ?
         </p>
 
-        <p *ngIf="dialogData?.variant === 'semis-exit'">
+        <p
+            *ngIf="
+                dialogData?.variant === 'semis-exit'
+                && !dialogData?.actionCancellation
+            "
+        >
             Êtes-vous certain de vouloir
             <span class="exit-word">quitter</span>
 
@@ -159,12 +169,15 @@
 
         <p
             *ngIf="
-                dialogData?.variant === 'culture-exit'
-                || dialogData?.variant === 'viability-exit'
-                || dialogData?.variant === 'germination-exit'
-                || dialogData?.variant === 'stock-exit'
-                || dialogData?.variant === 'material-exit'
-                || dialogData?.variant === 'seed-exit'
+                (
+                    dialogData?.variant === 'culture-exit'
+                    || dialogData?.variant === 'viability-exit'
+                    || dialogData?.variant === 'germination-exit'
+                    || dialogData?.variant === 'stock-exit'
+                    || dialogData?.variant === 'material-exit'
+                    || dialogData?.variant === 'seed-exit'
+                )
+                && !dialogData?.actionCancellation
             "
         >
             Êtes-vous certain de vouloir
@@ -176,6 +189,42 @@
             >
                 {{ dialogData?.entityCode }}
             </strong>
+            ?
+        </p>
+
+
+        <p *ngIf="dialogData?.actionCancellation">
+            Êtes-vous certain de vouloir
+            <span class="exit-word">annuler</span>
+
+            <ng-container
+                *ngIf="
+                    dialogData?.actionCancellationMode === 'edit';
+                    else actionCreationCancellation
+                "
+            >
+                les modifications de l’action
+                {{ dialogData?.actionContextLabel }}
+            </ng-container>
+
+            <ng-template #actionCreationCancellation>
+                la création de l’action
+                {{ dialogData?.actionContextLabel }}
+            </ng-template>
+
+            <ng-container *ngIf="dialogData?.entityLabel">
+                "<strong class="entity-code">
+                    {{ dialogData?.entityLabel }}
+                </strong>"
+            </ng-container>
+
+            <ng-container *ngIf="dialogData?.entityDate">
+                du
+                <strong class="entity-code">
+                    {{ dialogData?.entityDate | date:'dd/MM/yyyy' }}
+                </strong>
+            </ng-container>
+
             ?
         </p>
 
@@ -218,7 +267,12 @@
             ?
         </p>
 
-        <p *ngIf="dialogData?.variant === 'culture'">
+        <p
+            *ngIf="
+                dialogData?.variant === 'culture'
+                && !dialogData?.actionDeletion
+            "
+        >
             Êtes-vous certain de vouloir
             <span class="danger-word">supprimer</span>
             la culture
@@ -226,7 +280,12 @@
             ?
         </p>
 
-        <p *ngIf="dialogData?.variant === 'viability'">
+        <p
+            *ngIf="
+                dialogData?.variant === 'viability'
+                && !dialogData?.actionDeletion
+            "
+        >
             Êtes-vous certain de vouloir
             <span class="danger-word">supprimer</span>
             le test de viabilité
@@ -234,11 +293,29 @@
             ?
         </p>
 
-        <p *ngIf="dialogData?.variant === 'germination'">
+        <p
+            *ngIf="
+                dialogData?.variant === 'germination'
+                && !dialogData?.actionDeletion
+            "
+        >
             Êtes-vous certain de vouloir
             <span class="danger-word">supprimer</span>
             le test de germination
             <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+
+        <p *ngIf="dialogData?.actionDeletion">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            l’action {{ dialogData?.actionContextLabel }}
+            "<strong class="entity-code">{{ dialogData?.entityLabel }}</strong>"
+            du
+            <strong class="entity-code">
+                {{ dialogData?.entityDate | date:'dd/MM/yyyy' }}
+            </strong>
             ?
         </p>
 
