@@ -919,6 +919,7 @@ export class CultureDetailsComponent
             'culture-action-dialog-panel',
           disableClose: true,
           autoFocus: false,
+          restoreFocus: false,
 
           data: {
             idCulture: this.idCulture,

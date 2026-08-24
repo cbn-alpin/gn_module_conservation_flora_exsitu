@@ -222,6 +222,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
 
       disableClose: true,
       autoFocus: false,
+      restoreFocus: false,
 
       data: this.idSowing
         ? {
@@ -266,6 +267,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
                     : undefined,
               disableClose: true,
               autoFocus: false,
+              restoreFocus: false,
               data: {
                 ...(this.idSowing
                   ? {
