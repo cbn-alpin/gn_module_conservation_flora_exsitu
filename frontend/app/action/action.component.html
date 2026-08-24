@@ -1,24 +1,75 @@
 <mat-card
   [class.sowing-action-form-card]="!!idSowing"
+  [class.germination-action-form-card]="
+    !idSowing &&
+    dialogData?.actionContext === 'germination'
+  "
+  [class.viability-action-form-card]="
+    !idSowing &&
+    dialogData?.actionContext === 'viability'
+  "
 >
-  <mat-card-header class="action-dialog-header">
+  <mat-card-header
+    class="action-dialog-header action-centered-header"
+  >
 
-    <mat-card-title>
+    <button
+      *ngIf="
+        idSowing ||
+        dialogData?.actionContext === 'germination' ||
+        dialogData?.actionContext === 'viability'
+      "
+      mat-raised-button
+      type="button"
+      class="action-form-back-button"
+      (click)="onCancel()"
+    >
+      <mat-icon>
+        arrow_back
+      </mat-icon>
 
-      {{
-        idSowing
-          ? (
-              dialogData?.edit
-                ? 'Modifier une action de semis'
-                : 'Ajouter une action de semis'
-            )
-          : 'Détails Action'
-      }}
+      Retour
+    </button>
 
-    </mat-card-title>
+
+    <div
+      class="action-title-wrapper action-centered-title"
+    >
+
+      <mat-card-title>
+
+        {{
+          idSowing
+            ? (
+                dialogData?.edit
+                  ? 'Modifier une action de semis'
+                  : 'Ajouter une action de semis'
+              )
+            : dialogData?.actionContext === 'viability'
+              ? (
+                  dialogData?.edit
+                    ? 'Modifier une action de viabilité'
+                    : 'Ajouter une action de viabilité'
+                )
+              : dialogData?.actionContext === 'germination'
+                ? (
+                    dialogData?.edit
+                      ? 'Modifier une action de germination'
+                      : 'Ajouter une action de germination'
+                  )
+                : 'Détails Action'
+        }}
+
+      </mat-card-title>
+
+    </div>
 
 
     <button
+      *ngIf="
+        !idSowing &&
+        !dialogData?.actionContext
+      "
       mat-icon-button
       type="button"
       class="action-form-close-button"
@@ -33,10 +84,13 @@
   </mat-card-header>
 
   <mat-card-content>
-    <!-- Semis associé à l'action -->
     <div
       class="sowing-associated-banner"
-      *ngIf="idSowing"
+      *ngIf="
+        idSowing ||
+        dialogData?.actionContext === 'germination' ||
+        dialogData?.actionContext === 'viability'
+      "
     >
 
       <div class="sowing-associated-banner-icon">
@@ -46,11 +100,21 @@
       <div class="sowing-associated-banner-content">
 
         <span class="sowing-associated-banner-label">
-          Semis associé
+          {{
+            idSowing
+              ? 'Semis associé'
+              : dialogData?.actionContext === 'germination'
+                ? 'Test de germination associé'
+                : 'Test de viabilité associé'
+          }}
         </span>
 
         <strong class="sowing-associated-banner-value">
-          {{ dialogData?.sowingCode || '-' }}
+          {{
+            idSowing
+              ? (dialogData?.sowingCode || '-')
+              : (dialogData?.testCode || dialogData?.id_test || '-')
+          }}
         </strong>
 
       </div>
@@ -61,7 +125,11 @@
     <form [formGroup]="germinationForm" class="semis-form">
       <div
         class="action-section-header full-width"
-        *ngIf="idSowing"
+        *ngIf="
+          idSowing ||
+          dialogData?.actionContext === 'germination' ||
+          dialogData?.actionContext === 'viability'
+        "
       >
 
         <div class="action-section-icon">
@@ -84,7 +152,10 @@
 
       <h2
         class="section-title"
-        *ngIf="!idSowing"
+        *ngIf="
+          !idSowing &&
+          !dialogData?.actionContext
+        "
       >
         Synthèse du suivi
       </h2>
@@ -94,8 +165,16 @@
         <mat-form-field
           appearance="outline"
           class="full-width shake-wrapper"
-          [class.action-type-required]="!!idSowing"
-          [hideRequiredMarker]="!idSowing"
+          [class.action-type-required]="
+            !!idSowing ||
+            dialogData?.actionContext === 'germination' ||
+            dialogData?.actionContext === 'viability'
+          "
+          [hideRequiredMarker]="!(
+            !!idSowing ||
+            dialogData?.actionContext === 'germination' ||
+            dialogData?.actionContext === 'viability'
+          )"
           [class.shake-field]="shakeActionTypeField"
           [class.shake-error]="shakeActionTypeField">
 
@@ -103,7 +182,11 @@
 
           <mat-select
             formControlName="id_action_type"
-            [required]="!!idSowing">
+            [required]="
+              !!idSowing ||
+              dialogData?.actionContext === 'germination' ||
+              dialogData?.actionContext === 'viability'
+            ">
 
             <mat-option
               *ngFor="let actionType of getOrderedActionTypes()"
@@ -114,7 +197,27 @@
           </mat-select>
 
           <mat-error *ngIf="hasSowingActionTypeRequiredError()">
-            Le type d’action est obligatoire pour enregistrer une action de semis.
+
+            <ng-container *ngIf="idSowing">
+              Le type d’action est obligatoire pour enregistrer une action de semis.
+            </ng-container>
+
+            <ng-container
+              *ngIf="
+                dialogData?.actionContext === 'germination'
+              "
+            >
+              Le type d’action est obligatoire pour enregistrer une action de germination.
+            </ng-container>
+
+            <ng-container
+              *ngIf="
+                dialogData?.actionContext === 'viability'
+              "
+            >
+              Le type d’action est obligatoire pour enregistrer une action de viabilité.
+            </ng-container>
+
           </mat-error>
         </mat-form-field>
       </div>

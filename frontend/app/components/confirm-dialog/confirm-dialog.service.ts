@@ -15,7 +15,14 @@ export class DialogService {
           data,
           width: '400px',
           disableClose: data.disableClose ?? true,
+
+          autoFocus:
+            !data.actionCancellation,
+
+          restoreFocus:
+            !data.actionCancellation,
         });
+
     return dialogRef.afterClosed();
   }
 }

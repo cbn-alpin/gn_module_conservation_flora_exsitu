@@ -38,6 +38,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() isGerminationContext = false;
   @Input() isViabilityContext = false;
   @Input() sowingCode: string = '';
+  @Input() testCode: string = '';
   @Input() dataSource = new MatTableDataSource<any>();
   @Input() enablePagination = false;
   @Input() sowingReplicateCount: number | null = null;
@@ -210,17 +211,33 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     const dialogRef = this.dialog.open(ActionComponent, {
       width: '900px',
       height: '90vh',
+
       panelClass: this.idSowing
         ? 'sowing-action-dialog-panel'
-        : undefined,
+        : this.isViabilityContext
+          ? 'viability-action-dialog-panel'
+          : this.isGerminationContext
+            ? 'germination-action-dialog-panel'
+            : undefined,
+
       disableClose: true,
+      autoFocus: false,
+
       data: this.idSowing
         ? {
             id_sowing: this.idSowing,
             sowingCode: this.sowingCode,
             sowingReplicateCount: this.sowingReplicateCount
           }
-        : { id_test: this.idTest }
+        : {
+            id_test: this.idTest,
+            testCode: this.testCode,
+
+            actionContext:
+              this.isViabilityContext
+                ? 'viability'
+                : 'germination'
+          }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -242,8 +259,13 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
               height: '90vh',
               panelClass: this.idSowing
                 ? 'sowing-action-dialog-panel'
-                : undefined,
+                : this.isViabilityContext
+                  ? 'viability-action-dialog-panel'
+                  : this.isGerminationContext
+                    ? 'germination-action-dialog-panel'
+                    : undefined,
               disableClose: true,
+              autoFocus: false,
               data: {
                 ...(this.idSowing
                   ? {
@@ -251,8 +273,14 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
                       sowingCode: this.sowingCode,
                       sowingReplicateCount: this.sowingReplicateCount
                     }
-                  : { id_test: this.idTest }),
-  
+                  : {
+                      id_test: this.idTest,
+                      testCode: this.testCode,
+                      actionContext: this.isViabilityContext
+                        ? 'viability'
+                        : 'germination'
+                    }),
+
                 action: actionFull,
                 edit: true,
                 code,

@@ -185,6 +185,66 @@ mat-form-field {
 }
 
 
+/* Retour des formulaires d'action :
+   même position que dans les fiches */
+
+.sowing-action-form-card
+.action-form-back-button,
+
+.germination-action-form-card
+.action-form-back-button,
+
+.viability-action-form-card
+.action-form-back-button {
+  position: absolute;
+
+  left: 20px;
+  top: calc(50% + 4px);
+
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+
+  z-index: 1;
+}
+
+
+.sowing-action-form-card
+.action-form-back-button:hover,
+
+.germination-action-form-card
+.action-form-back-button:hover,
+
+.viability-action-form-card
+.action-form-back-button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.sowing-action-form-card
+.action-form-back-button
+mat-icon,
+
+.germination-action-form-card
+.action-form-back-button
+mat-icon,
+
+.viability-action-form-card
+.action-form-back-button
+mat-icon {
+  color: #ffffff !important;
+}
+
+
 .form-section {
   margin-bottom: 32px;
 }
@@ -303,6 +363,27 @@ mat-form-field {
    ACTION DE SEMIS - CONTENEUR PRINCIPAL
    ========================================================= */
 
+.sowing-action-form-card {
+  box-sizing: border-box;
+
+  border: 1px solid #c5ddc7;
+}
+
+
+.germination-action-form-card {
+  box-sizing: border-box;
+
+  border: 1px solid #b2dfdb;
+}
+
+
+.viability-action-form-card {
+  box-sizing: border-box;
+
+  border: 1px solid #f2c79f;
+}
+
+
 .sowing-action-form-card
 mat-card-content {
   flex: 1 1 auto;
@@ -314,23 +395,73 @@ mat-card-content {
   background-color: #f8fbf8;
 
   scrollbar-gutter:
-    stable both-edges;
+    stable;
+}
+
+
+.germination-action-form-card
+mat-card-content {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  background-color: #f5fcfb;
+
+  scrollbar-gutter:
+    stable;
+}
+
+
+.viability-action-form-card
+mat-card-content {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  overflow-y: auto;
+
+  background-color: #fff8f2;
+
+  scrollbar-gutter:
+    stable;
 }
 
 
 /* =========================================================
-   EN-TÊTE
+   EN-TÊTES DES ACTIONS
+   Même géométrie que les fiches
    ========================================================= */
 
 .sowing-action-form-card
+.action-dialog-header,
+
+.germination-action-form-card
+.action-dialog-header,
+
+.viability-action-form-card
 .action-dialog-header {
+  position: relative;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
   min-height: 58px;
-  padding: 0 20px;
 
+  padding:
+    0 20px;
+
+  padding-top:
+    8px;
+}
+
+
+/* Semis */
+
+.sowing-action-form-card
+.action-dialog-header {
   background:
     linear-gradient(
       90deg,
@@ -344,13 +475,71 @@ mat-card-content {
 }
 
 
+/* Germination */
+
+.germination-action-form-card
+.action-dialog-header {
+  background:
+    linear-gradient(
+      90deg,
+      #e5f6f3 0%,
+      #f5fcfb 55%,
+      #ffffff 100%
+    );
+
+  border-bottom:
+    1px solid #b2dfdb;
+}
+
+
+/* Viabilité */
+
+.viability-action-form-card
+.action-dialog-header {
+  background:
+    linear-gradient(
+      90deg,
+      #fff0e3 0%,
+      #fff8f2 55%,
+      #ffffff 100%
+    );
+
+  border-bottom:
+    1px solid #f2c79f;
+}
+
+
+/* Position identique des titres */
+
 .sowing-action-form-card
-.action-dialog-header
+.action-centered-title,
+
+.germination-action-form-card
+.action-centered-title,
+
+.viability-action-form-card
+.action-centered-title {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+.sowing-action-form-card
+.action-centered-title
+mat-card-title,
+
+.germination-action-form-card
+.action-centered-title
+mat-card-title,
+
+.viability-action-form-card
+.action-centered-title
 mat-card-title {
+  display: block;
+
   width: 100%;
   margin: 0;
-
-  color: #1b5e20;
 
   font-size: 20px;
   font-weight: 800;
@@ -358,6 +547,27 @@ mat-card-title {
   text-align: center;
 
   letter-spacing: 0.2px;
+}
+
+
+.sowing-action-form-card
+.action-centered-title
+mat-card-title {
+  color: #1b5e20;
+}
+
+
+.germination-action-form-card
+.action-centered-title
+mat-card-title {
+  color: #00564e;
+}
+
+
+.viability-action-form-card
+.action-centered-title
+mat-card-title {
+  color: #7a3b00;
 }
 
 
@@ -376,11 +586,17 @@ mat-card-content {
   background-color: #f8fbf8;
 
   scrollbar-gutter:
-    stable both-edges;
+    stable;
 }
 
 
 .sowing-action-form-card
+.semis-form,
+
+.germination-action-form-card
+.semis-form,
+
+.viability-action-form-card
 .semis-form {
   padding: 16px 20px 18px;
 }
@@ -401,6 +617,12 @@ mat-card-content {
    ========================================================= */
 
 .sowing-action-form-card
+.action-section-header,
+
+.germination-action-form-card
+.action-section-header,
+
+.viability-action-form-card
 .action-section-header {
   position: relative;
 
@@ -418,16 +640,38 @@ mat-card-content {
 
   background: transparent;
 
-  border-bottom:
-    1px solid #c8e6c9;
-
   box-sizing: border-box;
 }
 
 
-/* Petit trait vert */
+.sowing-action-form-card
+.action-section-header {
+  border-bottom:
+    1px solid #c8e6c9;
+}
+
+
+.germination-action-form-card
+.action-section-header {
+  border-bottom:
+    1px solid #b2dfdb;
+}
+
+
+.viability-action-form-card
+.action-section-header {
+  border-bottom:
+    1px solid #f2c79f;
+}
+
 
 .sowing-action-form-card
+.action-section-header::after,
+
+.germination-action-form-card
+.action-section-header::after,
+
+.viability-action-form-card
 .action-section-header::after {
   content: '';
 
@@ -439,15 +683,35 @@ mat-card-content {
   width: 52px;
   height: 2px;
 
-  background-color: #43a047;
-
   border-radius: 2px;
 }
 
 
-/* Icône */
+.sowing-action-form-card
+.action-section-header::after {
+  background-color: #43a047;
+}
+
+
+.germination-action-form-card
+.action-section-header::after {
+  background-color: #26a69a;
+}
+
+
+.viability-action-form-card
+.action-section-header::after {
+  background-color: #e67e22;
+}
+
 
 .sowing-action-form-card
+.action-section-icon,
+
+.germination-action-form-card
+.action-section-icon,
+
+.viability-action-form-card
 .action-section-icon {
   display: flex;
   align-items: center;
@@ -458,31 +722,81 @@ mat-card-content {
 
   flex-shrink: 0;
 
-  color: #2e7d32;
-
-  background-color: #e8f5e9;
-
-  border: 1px solid #c8e6c9;
   border-radius: 7px;
 }
 
 
 .sowing-action-form-card
+.action-section-icon {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+}
+
+
+.germination-action-form-card
+.action-section-icon {
+  color: #00897b;
+  background-color: #e0f2f1;
+  border: 1px solid #b2dfdb;
+}
+
+
+.viability-action-form-card
+.action-section-icon {
+  color: #bf6d1a;
+  background-color: #fff3e0;
+  border: 1px solid #f2c79f;
+}
+
+
+.sowing-action-form-card
+.action-section-icon
+mat-icon,
+
+.germination-action-form-card
+.action-section-icon
+mat-icon,
+
+.viability-action-form-card
 .action-section-icon
 mat-icon {
   width: 18px;
   height: 18px;
-
-  color: #2e7d32;
 
   font-size: 18px;
   line-height: 18px;
 }
 
 
-/* Texte */
+.sowing-action-form-card
+.action-section-icon
+mat-icon {
+  color: #2e7d32;
+}
+
+
+.germination-action-form-card
+.action-section-icon
+mat-icon {
+  color: #00897b;
+}
+
+
+.viability-action-form-card
+.action-section-icon
+mat-icon {
+  color: #bf6d1a;
+}
+
 
 .sowing-action-form-card
+.action-section-text,
+
+.germination-action-form-card
+.action-section-text,
+
+.viability-action-form-card
 .action-section-text {
   display: flex;
   flex-direction: column;
@@ -494,9 +808,13 @@ mat-icon {
 
 
 .sowing-action-form-card
-.action-section-title {
-  color: #1b5e20;
+.action-section-title,
 
+.germination-action-form-card
+.action-section-title,
+
+.viability-action-form-card
+.action-section-title {
   font-size: 14px;
   font-weight: 800;
 
@@ -505,13 +823,53 @@ mat-icon {
 
 
 .sowing-action-form-card
+.action-section-title {
+  color: #1b5e20;
+}
+
+
+.germination-action-form-card
+.action-section-title {
+  color: #00695c;
+}
+
+
+.viability-action-form-card
+.action-section-title {
+  color: #8a4b08;
+}
+
+
+.sowing-action-form-card
+.action-section-subtitle,
+
+.germination-action-form-card
+.action-section-subtitle,
+
+.viability-action-form-card
 .action-section-subtitle {
   margin-top: 1px;
 
-  color: #607d63;
-
   font-size: 11px;
   font-weight: 400;
+}
+
+
+.sowing-action-form-card
+.action-section-subtitle {
+  color: #607d63;
+}
+
+
+.germination-action-form-card
+.action-section-subtitle {
+  color: #5c7d79;
+}
+
+
+.viability-action-form-card
+.action-section-subtitle {
+  color: #9a6f4c;
 }
 
 
@@ -571,6 +929,14 @@ mat-icon {
 
 :host ::ng-deep
 .sowing-action-form-card
+.mat-mdc-text-field-wrapper,
+
+:host ::ng-deep
+.germination-action-form-card
+.mat-mdc-text-field-wrapper,
+
+:host ::ng-deep
+.viability-action-form-card
 .mat-mdc-text-field-wrapper {
   background-color: #ffffff;
 
@@ -598,7 +964,13 @@ mat-icon {
 }
 
 
-/* Focus */
+/* =========================================================
+   FOCUS DES CHAMPS
+   Même comportement que Semis
+   ========================================================= */
+
+
+/* Semis */
 
 :host ::ng-deep
 .sowing-action-form-card
@@ -628,6 +1000,72 @@ mat-icon {
 .mdc-floating-label {
   color:
     #2e7d32 !important;
+}
+
+
+/* Germination */
+
+:host ::ng-deep
+.germination-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.germination-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.germination-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #26a69a !important;
+
+  border-width:
+    1.5px !important;
+}
+
+
+:host ::ng-deep
+.germination-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #00897b !important;
+}
+
+
+/* Viabilité */
+
+:host ::ng-deep
+.viability-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.viability-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.viability-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color:
+    #e67e22 !important;
+
+  border-width:
+    1.5px !important;
+}
+
+
+:host ::ng-deep
+.viability-action-form-card
+.mat-mdc-form-field.mat-focused
+.mdc-floating-label {
+  color:
+    #bf6d1a !important;
 }
 
 .sowing-action-form-card
@@ -692,16 +1130,32 @@ button {
    ========================================================= */
 
 .sowing-action-form-card
+.sowing-associated-banner,
+
+.germination-action-form-card
+.sowing-associated-banner,
+
+.viability-action-form-card
 .sowing-associated-banner {
-  display: flex;
+  display: grid;
+
+  grid-template-columns:
+    30px 176px;
+
   align-items: center;
   justify-content: center;
 
-  gap: 10px;
+  column-gap: 10px;
 
   margin: 14px 20px 0;
   padding: 9px 14px;
 
+  border-radius: 9px;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner {
   background:
     linear-gradient(
       90deg,
@@ -710,13 +1164,42 @@ button {
     );
 
   border: 1px solid #c8e6c9;
-  border-radius: 9px;
 }
 
 
-/* Icône */
+.germination-action-form-card
+.sowing-associated-banner {
+  background:
+    linear-gradient(
+      90deg,
+      #e0f7f5 0%,
+      #fbfffe 100%
+    );
+
+  border: 1px solid #b2dfdb;
+}
+
+
+.viability-action-form-card
+.sowing-associated-banner {
+  background:
+    linear-gradient(
+      90deg,
+      #fff3e0 0%,
+      #fffdfa 100%
+    );
+
+  border: 1px solid #f2c79f;
+}
+
 
 .sowing-action-form-card
+.sowing-associated-banner-icon,
+
+.germination-action-form-card
+.sowing-associated-banner-icon,
+
+.viability-action-form-card
 .sowing-associated-banner-icon {
   display: flex;
   align-items: center;
@@ -729,49 +1212,140 @@ button {
 
   background-color: #ffffff;
 
-  border: 1px solid #a5d6a7;
   border-radius: 7px;
 }
 
 
 .sowing-action-form-card
+.sowing-associated-banner-icon {
+  border: 1px solid #a5d6a7;
+}
+
+
+.germination-action-form-card
+.sowing-associated-banner-icon {
+  border: 1px solid #80cbc4;
+}
+
+
+.viability-action-form-card
+.sowing-associated-banner-icon {
+  border: 1px solid #efb77d;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner-icon mat-icon,
+
+.germination-action-form-card
+.sowing-associated-banner-icon mat-icon,
+
+.viability-action-form-card
 .sowing-associated-banner-icon mat-icon {
   width: 18px;
   height: 18px;
-
-  color: #2e7d32;
 
   font-size: 18px;
   line-height: 18px;
 }
 
 
-/* Texte */
+.sowing-action-form-card
+.sowing-associated-banner-icon mat-icon {
+  color: #2e7d32;
+}
+
+
+.germination-action-form-card
+.sowing-associated-banner-icon mat-icon {
+  color: #00897b;
+}
+
+
+.viability-action-form-card
+.sowing-associated-banner-icon mat-icon {
+  color: #bf6d1a;
+}
+
 
 .sowing-action-form-card
+.sowing-associated-banner-content,
+
+.germination-action-form-card
+.sowing-associated-banner-content,
+
+.viability-action-form-card
 .sowing-associated-banner-content {
   display: flex;
   align-items: baseline;
 
   gap: 9px;
+
+  min-width: 0;
+
+  white-space: nowrap;
 }
 
 
 .sowing-action-form-card
-.sowing-associated-banner-label {
-  color: #607d63;
+.sowing-associated-banner-label,
 
+.germination-action-form-card
+.sowing-associated-banner-label,
+
+.viability-action-form-card
+.sowing-associated-banner-label {
   font-size: 12px;
   font-weight: 600;
 }
 
 
 .sowing-action-form-card
-.sowing-associated-banner-value {
-  color: #1b5e20;
+.sowing-associated-banner-label {
+  color: #607d63;
+}
 
+
+.germination-action-form-card
+.sowing-associated-banner-label {
+  color: #5c7d79;
+}
+
+
+.viability-action-form-card
+.sowing-associated-banner-label {
+  color: #9a6f4c;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner-value,
+
+.germination-action-form-card
+.sowing-associated-banner-value,
+
+.viability-action-form-card
+.sowing-associated-banner-value {
   font-size: 15px;
   font-weight: 850;
+}
+
+
+.sowing-action-form-card
+.sowing-associated-banner-value {
+  color: #1b5e20;
+}
+
+
+.germination-action-form-card
+.sowing-associated-banner-value {
+  color: #00695c;
+}
+
+
+.viability-action-form-card
+.sowing-associated-banner-value {
+  color: #8a4b08;
 }
 
 /* =========================================================
@@ -789,10 +1363,18 @@ button {
  */
 ::ng-deep
 .sowing-action-dialog-panel
+.mat-mdc-dialog-surface,
+
+::ng-deep
+.germination-action-dialog-panel
+.mat-mdc-dialog-surface,
+
+::ng-deep
+.viability-action-dialog-panel
 .mat-mdc-dialog-surface {
   overflow-y: auto;
 
-  scrollbar-gutter: stable both-edges;
+  scrollbar-gutter: stable;
 }
 
 @media (max-width: 720px) {

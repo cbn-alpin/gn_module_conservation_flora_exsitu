@@ -279,6 +279,7 @@
         <app-action-table
           [dataSource]="dataSource"
           [idTest]="idTest"
+          [testCode]="germinationForm.get('code')?.value || ''"
           [isViabilityContext]="true"
           [enablePagination]="true"
           [selectedActionId]="selectedAction?.id_action || null"

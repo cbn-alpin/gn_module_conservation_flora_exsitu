@@ -1092,11 +1092,23 @@ export class ActionComponent implements OnInit {
   }
 
   public hasSowingActionTypeRequiredError(): boolean {
+    const actionTypeControl =
+      this.germinationForm
+        .get('id_action_type');
+
+
     return !!(
-      this.idSowing &&
+      (
+        this.idSowing ||
+        this.dialogData?.actionContext === 'germination' ||
+        this.dialogData?.actionContext === 'viability'
+      ) &&
       !this.hideTypeField &&
-      this.actionFormSubmitted &&
-      this.germinationForm.get('id_action_type')?.hasError('required')
+      actionTypeControl?.hasError('required') &&
+      (
+        actionTypeControl.touched ||
+        this.actionFormSubmitted
+      )
     );
   }
 
@@ -1252,32 +1264,83 @@ export class ActionComponent implements OnInit {
   }
 
   private validateSowingActionRequiredFields(): boolean {
-    if (!this.idSowing) {
+    const isActionFormContext =
+      !!this.idSowing ||
+      this.dialogData?.actionContext === 'germination' ||
+      this.dialogData?.actionContext === 'viability';
+
+
+    if (!isActionFormContext) {
       return true;
     }
 
+
     this.actionFormSubmitted = true;
 
-    const actionTypeControl = this.germinationForm.get('id_action_type');
-    const dateStartControl = this.germinationForm.get('date_start');
+
+    const actionTypeControl =
+      this.germinationForm.get(
+        'id_action_type'
+      );
+
 
     let isValid = true;
 
-    if (!this.hideTypeField && actionTypeControl?.hasError('required')) {
-      actionTypeControl.markAsTouched();
+
+    if (
+      !this.hideTypeField &&
+      actionTypeControl?.hasError(
+        'required'
+      )
+    ) {
+
+      actionTypeControl
+        .markAsTouched();
+
       this.triggerActionTypeFieldShake();
+
       isValid = false;
+
     }
 
-    if (dateStartControl?.hasError('required')) {
-      dateStartControl.markAsTouched();
+
+    /*
+     * Les règles supplémentaires ci-dessous
+     * restent propres au Semis.
+     */
+    if (!this.idSowing) {
+      return isValid;
+    }
+
+
+    const dateStartControl =
+      this.germinationForm.get(
+        'date_start'
+      );
+
+
+    if (
+      dateStartControl?.hasError(
+        'required'
+      )
+    ) {
+
+      dateStartControl
+        .markAsTouched();
+
       this.triggerActionStartDateFieldShake();
+
+      isValid = false;
+
+    }
+
+
+    if (
+      !this.validateSowingTreatmentBusinessRules()
+    ) {
       isValid = false;
     }
 
-    if (!this.validateSowingTreatmentBusinessRules()) {
-      isValid = false;
-    }
 
     return isValid;
   }
