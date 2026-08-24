@@ -332,6 +332,97 @@ export class CultureActionComponent implements OnInit {
       });
   }
 
+
+  addNewAction(): void {
+    this.formSubmitted = true;
+
+
+    if (
+      !this.dialogData?.idCulture ||
+      this.cultureActionForm.invalid ||
+      this.isSubmitting
+    ) {
+
+      this.cultureActionForm
+        .markAllAsTouched();
+
+      return;
+    }
+
+
+    this.isSubmitting = true;
+
+
+    this.cultureService
+      .createCultureTransplantation(
+        this.dialogData.idCulture,
+        this.buildPayload()
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.toast
+            .translateToaster(
+              'success',
+              'Action de transplantation créée avec succès.'
+            );
+
+
+          this.substrates.clear();
+
+
+          this.cultureActionForm.reset({
+            id_action_type: null,
+            date_start: null,
+            date_end: null,
+            id_actor: [],
+            id_type: null,
+            intervention_quantity: null,
+            in_progress_quantity: null,
+            packaging: '',
+            id_physiological_development_stage: null,
+            id_main_location: null,
+            precise_location: '',
+            remarks: ''
+          });
+
+
+          this.formSubmitted = false;
+          this.isSubmitting = false;
+
+
+          this.cultureActionForm
+            .markAsPristine();
+
+          this.cultureActionForm
+            .markAsUntouched();
+
+        },
+
+        error: error => {
+
+          this.isSubmitting = false;
+
+
+          console.error(
+            'Erreur lors de la création de la transplantation :',
+            error
+          );
+
+
+          this.toast
+            .translateToaster(
+              'error',
+              'Impossible de créer l’action de transplantation.'
+            );
+
+        }
+
+      });
+  }
+
+
   onCancel(): void {
     if (
       this.cancelDialogOpen ||

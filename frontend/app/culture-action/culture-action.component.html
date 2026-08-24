@@ -416,27 +416,51 @@
       ?.value
   "
 >
-        <button
-          mat-raised-button
-          type="button"
-          class="reset-button"
-          [disabled]="isSubmitting"
-          (click)="onReset()"
-        >
-          <mat-icon>autorenew</mat-icon>
-          Réinitialiser
-        </button>
+  <div class="culture-action-flex-actions">
 
-        <div class="right-actions">
-          <button
-            mat-raised-button
-            type="submit"
-            class="save-button"
-            [disabled]="isSubmitting"
-          >
-            <mat-icon>{{ isSubmitting ? 'hourglass_top' : 'save' }}</mat-icon>
-            {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer' }}
-          </button>
-        </div>
-      </div>
+    <button
+      mat-button
+      type="button"
+      class="reset-button with-border"
+      [disabled]="isSubmitting"
+      (click)="onReset()"
+    >
+      <mat-icon>autorenew</mat-icon>
+      Réinitialiser
+    </button>
+
+
+    <button
+      mat-button
+      type="button"
+      class="save-button with-border"
+      [disabled]="isSubmitting"
+      (click)="onSubmit()"
+    >
+      <mat-icon>
+        {{ isSubmitting ? 'hourglass_top' : 'save' }}
+      </mat-icon>
+
+      {{
+        isSubmitting
+          ? 'Enregistrement...'
+          : 'Enregistrer'
+      }}
+    </button>
+
+
+    <button
+      mat-button
+      type="button"
+      class="add-another-action-button with-border"
+      [disabled]="isSubmitting"
+      (click)="addNewAction()"
+    >
+      <mat-icon>add</mat-icon>
+      Ajouter une autre action
+    </button>
+
+  </div>
+</div>
+
 </mat-card>
