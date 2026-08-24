@@ -1214,6 +1214,143 @@ mat-icon {
    SEMIS ASSOCIÉ À L'ACTION
    ========================================================= */
 
+/* =========================================================
+   BOUTONS ACTION GERMINATION / VIABILITÉ
+   Même géométrie que Action de Semis
+   ========================================================= */
+
+.test-action-form-actions {
+  position: sticky;
+
+  bottom: 10px;
+
+  z-index: 10;
+
+  box-sizing: border-box;
+
+  margin-top: 16px;
+  margin-right: 36px;
+  margin-bottom: 10px;
+  margin-left: 36px;
+
+  padding: 20px 28px;
+
+  border-radius: 14px;
+
+  backdrop-filter: blur(4px);
+}
+
+
+/* Germination */
+
+.germination-action-form-actions {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      #f1faf9 100%
+    );
+
+  border: 1px solid #cce9e5;
+  border-top: 1px solid #b2dfdb;
+
+  box-shadow:
+    0 -6px 18px rgba(0, 137, 123, 0.08),
+    0 8px 20px rgba(0, 105, 92, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+}
+
+
+/* Viabilité */
+
+.viability-action-form-actions {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      #fff8f2 100%
+    );
+
+  border: 1px solid #f2dbc4;
+  border-top: 1px solid #f2c79f;
+
+  box-shadow:
+    0 -6px 18px rgba(230, 126, 34, 0.08),
+    0 8px 20px rgba(191, 109, 26, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+}
+
+
+.test-action-flex-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  width: 100%;
+}
+
+
+.test-action-flex-actions
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-width: 165px;
+  height: 42px;
+
+  padding: 0 18px;
+}
+
+
+/* Exactement les mêmes boutons que Action de Semis */
+
+.test-action-flex-actions
+.reset-button {
+  color: #ffffff;
+
+  background-color: #8e24aa;
+}
+
+
+.test-action-flex-actions
+.save-button {
+  color: #ffffff;
+
+  background-color: #4caf50;
+}
+
+
+.test-action-flex-actions
+.add-another-action-button {
+  color: #ffffff !important;
+
+  background-color: #5f88b3 !important;
+}
+
+
+.test-action-flex-actions
+.add-another-action-button:hover {
+  background-color: #537ca6 !important;
+}
+
+
+/* Même traitement de l'icône Réinitialiser que Semis */
+
+.test-action-flex-actions
+.reset-button
+mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
 .sowing-action-form-card
 .sowing-associated-banner,
 

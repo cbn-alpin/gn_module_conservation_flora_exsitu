@@ -983,46 +983,57 @@
         </div>
 
 
-      <!-- Boutons Germination / Viabilité -->
-      <div
-        class="form-actions dual-buttons sticky-actions full-width"
-        *ngIf="code && !idSowing"
-      >
-        <button
-          mat-button
-          class="reset-button with-border"
-          type="button"
-          (click)="onReset()"
-        >
-          <mat-icon>autorenew</mat-icon>
-          Réinitialiser
-        </button>
-
-        <button
-          mat-button
-          class="save-button with-border"
-          type="submit"
-          (click)="onSubmit()"
-          [disabled]="germinationForm.invalid"
-        >
-          <mat-icon>save</mat-icon>
-          Enregistrer
-        </button>
-
-        <button
-          mat-button
-          class="add-another-action-button with-border"
-          type="button"
-          [disabled]="!germinationForm.valid"
-          (click)="addNewAction()"
-        >
-          <mat-icon>add</mat-icon>
-          Ajouter une autre action
-        </button>
-      </div>
-
     </form>
   </mat-card-content>
+
+
+  <!-- Boutons Germination / Viabilité -->
+  <div
+    class="test-action-form-actions"
+    [class.germination-action-form-actions]="
+      dialogData?.actionContext === 'germination'
+    "
+    [class.viability-action-form-actions]="
+      dialogData?.actionContext === 'viability'
+    "
+    *ngIf="code && !idSowing"
+  >
+    <div class="test-action-flex-actions">
+
+      <button
+        mat-button
+        type="button"
+        class="reset-button with-border"
+        (click)="onReset()"
+      >
+        <mat-icon>autorenew</mat-icon>
+        Réinitialiser
+      </button>
+
+      <button
+        mat-button
+        type="button"
+        class="save-button with-border"
+        [disabled]="germinationForm.invalid"
+        (click)="onSubmit()"
+      >
+        <mat-icon>save</mat-icon>
+        Enregistrer
+      </button>
+
+      <button
+        mat-button
+        type="button"
+        class="add-another-action-button with-border"
+        [disabled]="!germinationForm.valid"
+        (click)="addNewAction()"
+      >
+        <mat-icon>add</mat-icon>
+        Ajouter une autre action
+      </button>
+
+    </div>
+  </div>
 
 
   <!-- Boutons Action de Semis -->
