@@ -598,32 +598,122 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   onDelete(action: Action): void {
-    this.dialogService
-      .confirmDialog({ message: 'Étes vous certain de vouloir supprimer cette action ?' })
+
+    const actionType =
+      this.getActionTypeDisplayValue(action) ||
+      action?.label_action_type ||
+      '-';
+
+
+    const dialogContext =
+      this.idSowing
+        ? {
+            icon: 'grain',
+            variant: 'semis' as const,
+            actionContextLabel: 'de semis'
+          }
+        : this.isViabilityContext
+          ? {
+              icon: 'check_circle',
+              variant: 'viability' as const,
+              actionContextLabel: 'du test de viabilité'
+            }
+          : this.isGerminationContext
+            ? {
+                icon: 'wb_sunny',
+                variant: 'germination' as const,
+                actionContextLabel: 'du test de germination'
+              }
+            : null;
+
+
+    const confirmation$ =
+      dialogContext
+        ? this.dialogService
+            .confirmDialog({
+              message: '',
+              icon: dialogContext.icon,
+              variant: dialogContext.variant,
+              actionDeletion: true,
+              actionContextLabel:
+                dialogContext.actionContextLabel,
+              entityLabel: actionType,
+              entityDate: action?.date_start,
+              disableClose: false
+            })
+        : this.dialogService
+            .confirmDialog({
+              message:
+                'Êtes-vous certain de vouloir supprimer cette action ?',
+              disableClose: false
+            });
+
+
+    confirmation$
       .subscribe((yes) => {
+
         if (!yes) {
           return;
         }
 
-        this.api.deleteaction(action.id_action).subscribe({
-          next: () => {
-            const currentSowingCode = this.sowingCode || '';
-            const currentActionType = action?.label_action_type || '';
-            const actionLabel = `${currentSowingCode} - ${currentActionType}`.trim();
 
-            const dateStart = this.formatDateForToaster(action?.date_start);
+        this.api
+          .deleteaction(
+            action.id_action
+          )
+          .subscribe({
 
-            this.toast.translateToaster(
-              'error',
-              `Action ${this.toBoldText(actionLabel)} supprimée avec succès. Date de début : ${this.toBoldText(dateStart)}`
-            );
+            next: () => {
 
-            this.loadActions();
-          },
-          error: (err) => {
-            console.error('Erreur lors de la suppression de l’action :', err);
-          }
-        });
+              const currentSowingCode =
+                this.sowingCode || '';
+
+              const currentActionType =
+                action?.label_action_type || '';
+
+              const actionLabel =
+                `${
+                  currentSowingCode
+                } - ${
+                  currentActionType
+                }`
+                  .trim();
+
+
+              const dateStart =
+                this.formatDateForToaster(
+                  action?.date_start
+                );
+
+
+              this.toast.translateToaster(
+                'error',
+                `Action ${
+                  this.toBoldText(
+                    actionLabel
+                  )
+                } supprimée avec succès. Date de début : ${
+                  this.toBoldText(
+                    dateStart
+                  )
+                }`
+              );
+
+
+              this.loadActions();
+            },
+
+            error: (err) => {
+
+              console.error(
+                'Erreur lors de la suppression de l’action :',
+                err
+              );
+
+            }
+
+          });
+
       });
   }
 

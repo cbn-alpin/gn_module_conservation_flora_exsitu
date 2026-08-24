@@ -1310,41 +1310,138 @@ export class ActionComponent implements OnInit {
     if (!this.idSowing && !this.germinationForm.valid) {
       return;
     }
-    
+
+
+    const currentUrl =
+      this.router.url;
+
+
+    const saveContext =
+      this.idSowing
+        ? {
+            icon: 'grain',
+            variant: 'semis-save' as const,
+            entityLabel:
+              this.dialogData?.edit
+                ? 'les modifications de l’action de semis'
+                : 'l’action de semis'
+          }
+        : currentUrl.includes('viability')
+          ? {
+              icon: 'check_circle',
+              variant: 'viability-save' as const,
+              entityLabel:
+                this.dialogData?.edit
+                  ? 'les modifications de l’action du test de viabilité'
+                  : 'l’action du test de viabilité'
+            }
+          : {
+              icon: 'wb_sunny',
+              variant: 'germination-save' as const,
+              entityLabel:
+                this.dialogData?.edit
+                  ? 'les modifications de l’action du test de germination'
+                  : 'l’action du test de germination'
+            };
+
+
+    const actionTypeLabel =
+      this.getSelectedActionTypeLabel();
+
+
     this.dialogService
       .confirmDialog({
-        message: this.dialogData?.edit
-          ? 'Étes vous certain de vouloir modifier cette action ?'
-          : 'Étes vous certain de vouloir enregistrer cette action ?'
+        message: '',
+        icon: saveContext.icon,
+        variant: saveContext.variant,
+
+        entityLabel:
+          saveContext.entityLabel,
+
+        entityCode:
+          actionTypeLabel ||
+          undefined,
+
+        disableClose: false
       })
       .subscribe((yes) => {
+
         if (!yes) {
           return;
         }
 
-        const finalForm = this.formatDataFormAction();
 
-        if (this.dialogData?.edit && this.dialogData?.id_action) {
-          this.api.updateActionData(this.dialogData.id_action, finalForm).subscribe({
-            next: (res) => {
-              this.showActionSuccessToaster(true);
-              this.dialogRef.close(res);
-            },
-            error: (err) => console.error("Erreur modification action :", err)
-          });
+        const finalForm =
+          this.formatDataFormAction();
+
+
+        if (
+          this.dialogData?.edit &&
+          this.dialogData?.id_action
+        ) {
+
+          this.api
+            .updateActionData(
+              this.dialogData.id_action,
+              finalForm
+            )
+            .subscribe({
+
+              next: (res) => {
+                this.showActionSuccessToaster(
+                  true
+                );
+
+                this.dialogRef.close(
+                  res
+                );
+              },
+
+              error: (err) =>
+                console.error(
+                  "Erreur modification action :",
+                  err
+                )
+
+            });
+
         } else {
-          const request$ = this.idSowing
-            ? this.api.addActionBySowing(this.idSowing, finalForm)
-            : this.api.addActionByTest(this.idTest!, finalForm);
 
-          request$.subscribe({
-            next: (res) => {
-              this.showActionSuccessToaster(false);
-              this.dialogRef.close(res);
-            },
-            error: (err) => console.error("Erreur création action :", err)
-          });
+          const request$ =
+            this.idSowing
+              ? this.api.addActionBySowing(
+                  this.idSowing,
+                  finalForm
+                )
+              : this.api.addActionByTest(
+                  this.idTest!,
+                  finalForm
+                );
+
+
+          request$
+            .subscribe({
+
+              next: (res) => {
+                this.showActionSuccessToaster(
+                  false
+                );
+
+                this.dialogRef.close(
+                  res
+                );
+              },
+
+              error: (err) =>
+                console.error(
+                  "Erreur création action :",
+                  err
+                )
+
+            });
+
         }
+
       });
   }
 
@@ -1523,39 +1620,119 @@ export class ActionComponent implements OnInit {
       return;
     }
 
+
+    const currentUrl =
+      this.router.url;
+
+
+    const resetContext =
+      this.idSowing
+        ? {
+            icon: 'grain',
+            variant: 'semis-reset' as const,
+            entityLabel:
+              this.dialogData?.edit
+                ? 'les modifications de cette action de semis'
+                : 'cette action de semis'
+          }
+        : currentUrl.includes('viability')
+          ? {
+              icon: 'check_circle',
+              variant: 'viability-reset' as const,
+              entityLabel:
+                this.dialogData?.edit
+                  ? 'les modifications de cette action du test de viabilité'
+                  : 'cette action du test de viabilité'
+            }
+          : {
+              icon: 'wb_sunny',
+              variant: 'germination-reset' as const,
+              entityLabel:
+                this.dialogData?.edit
+                  ? 'les modifications de cette action du test de germination'
+                  : 'cette action du test de germination'
+            };
+
+
     this.dialogService
       .confirmDialog({
-        message: this.dialogData?.edit
-          ? 'Étes vous certain de vouloir réinitialiser les modifications de cette action ?'
-          : 'Étes vous certain de vouloir réinitialiser cette action ?'
+        message: '',
+        icon: resetContext.icon,
+        variant: resetContext.variant,
+
+        entityLabel:
+          resetContext.entityLabel,
+
+        disableClose: false
       })
       .subscribe((yes) => {
+
         if (!yes) {
           return;
         }
 
-        this.code = this.initialCode;
-        this.codeId = this.initialCodeId;
-        this.scarTypeCode = this.initialScarTypeCode;
-        this.hideTypeField = this.initialHideTypeField;
 
-        this.germinationForm.reset(this.initialActionFormState);
-        this.replicatesForm.reset(this.initialReplicatesFormState);
+        this.code =
+          this.initialCode;
 
-        if (this.initialHideTypeField) {
-          this.germinationForm.get('id_action_type')?.disable();
+        this.codeId =
+          this.initialCodeId;
+
+        this.scarTypeCode =
+          this.initialScarTypeCode;
+
+        this.hideTypeField =
+          this.initialHideTypeField;
+
+
+        this.germinationForm.reset(
+          this.initialActionFormState
+        );
+
+        this.replicatesForm.reset(
+          this.initialReplicatesFormState
+        );
+
+
+        if (
+          this.initialHideTypeField
+        ) {
+
+          this.germinationForm
+            .get('id_action_type')
+            ?.disable();
+
         } else {
-          this.germinationForm.get('id_action_type')?.enable();
+
+          this.germinationForm
+            .get('id_action_type')
+            ?.enable();
+
         }
 
-        this.germinationForm.markAsPristine();
-        this.germinationForm.markAsUntouched();
-        this.germinationForm.updateValueAndValidity();
+
+        this.germinationForm
+          .markAsPristine();
+
+        this.germinationForm
+          .markAsUntouched();
+
+        this.germinationForm
+          .updateValueAndValidity();
+
+
         this.resetSowingActionValidationState();
 
-        this.replicatesForm.markAsPristine();
-        this.replicatesForm.markAsUntouched();
-        this.replicatesForm.updateValueAndValidity();
+
+        this.replicatesForm
+          .markAsPristine();
+
+        this.replicatesForm
+          .markAsUntouched();
+
+        this.replicatesForm
+          .updateValueAndValidity();
+
       });
   }
 
@@ -1631,17 +1808,80 @@ export class ActionComponent implements OnInit {
 
     this.cancelDialogOpen = true;
 
+
+    const currentUrl =
+      this.router.url;
+
+
+    const cancelContext =
+      this.idSowing
+        ? {
+            icon: 'grain',
+            variant: 'semis-exit' as const,
+            actionContextLabel: 'de semis'
+          }
+        : currentUrl.includes('viability')
+          ? {
+              icon: 'check_circle',
+              variant: 'viability-exit' as const,
+              actionContextLabel: 'du test de viabilité'
+            }
+          : {
+              icon: 'wb_sunny',
+              variant: 'germination-exit' as const,
+              actionContextLabel: 'du test de germination'
+            };
+
+
+    const actionTypeLabel =
+      this.getSelectedActionTypeLabel();
+
+
+    const dateStart =
+      this.germinationForm
+        .get('date_start')
+        ?.value;
+
+
     this.dialogService
       .confirmDialog({
-        message: 'Étes vous certain de vouloir annuler ?'
+        message: '',
+        icon: cancelContext.icon,
+        variant: cancelContext.variant,
+
+        actionCancellation: true,
+
+        actionCancellationMode:
+          this.dialogData?.edit
+            ? 'edit'
+            : 'create',
+
+        actionContextLabel:
+          cancelContext.actionContextLabel,
+
+        entityLabel:
+          actionTypeLabel ||
+          undefined,
+
+        entityDate:
+          dateStart ||
+          undefined,
+
+        disableClose: false
       })
       .subscribe((yes) => {
+
         this.cancelDialogOpen = false;
 
-        if (yes) {
-          this.showActionCancelToaster();
-          this.dialogRef.close();
+        if (!yes) {
+          return;
         }
-      }); 
+
+
+        this.showActionCancelToaster();
+
+        this.dialogRef.close();
+
+      });
   }
 }
