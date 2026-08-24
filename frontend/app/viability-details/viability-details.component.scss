@@ -1162,9 +1162,14 @@ app-action-table
 :host ::ng-deep
 .germination-list
 app-action-table
+.mat-mdc-row.clickable-row:hover
+.mat-mdc-cell:first-child,
+:host ::ng-deep
+.germination-list
+app-action-table
 .mat-mdc-row.clickable-row.selected-row
 .mat-mdc-cell:first-child {
-  border-left: 5px solid #e07a1f;
+  box-shadow: inset 4px 0 0 #e07a1f;
 }
 
 
@@ -1294,16 +1299,16 @@ app-action-table
 .germination-list
 app-action-table
 .mat-column-actions {
+  position: relative;
   box-sizing: border-box;
 
   width: 64px;
   min-width: 64px;
   max-width: 64px;
 
-  padding-right: 8px !important;
-  padding-left: 8px !important;
+  padding: 0 !important;
 
-  text-align: center !important;
+  text-align: right !important;
 }
 
 
@@ -1315,7 +1320,11 @@ th.mat-column-actions,
 .germination-list
 app-action-table
 td.mat-column-actions {
-  text-align: center !important;
+  position: relative;
+
+  padding: 0 !important;
+
+  text-align: right !important;
 }
 
 
@@ -1327,17 +1336,24 @@ td.mat-column-actions {
 .germination-list
 app-action-table
 .actions-trigger-red {
+  position: absolute;
+
+  top: 2px;
+  right: 2px;
+
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
 
-  width: 34px;
-  height: 34px;
+  width: 48px;
+  height: 48px;
 
-  margin: 0 auto;
+  margin: 0;
   padding: 0 !important;
 
   border-radius: 50%;
+
+  --mdc-icon-button-state-layer-size: 48px;
 }
 
 
