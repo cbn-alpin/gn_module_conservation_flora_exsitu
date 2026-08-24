@@ -34,6 +34,14 @@ import {
 } from '../culture-action-details/culture-action-details.component';
 
 import {
+  DataService
+} from '../services/data.service';
+
+import {
+  DialogService
+} from '../components/confirm-dialog/confirm-dialog.service';
+
+import {
   MatPaginator
 } from '@angular/material/paginator';
 
@@ -114,7 +122,9 @@ export class CultureDetailsComponent
     public router: Router,
     private cultureService: CultureService,
     private exsituFormService: ExsituFormService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private api: DataService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -960,6 +970,63 @@ export class CultureDetailsComponent
       }
     );
   }
+
+
+  onDeleteCultureAction(
+    action: any
+  ): void {
+
+    if (!action?.id_action) {
+      return;
+    }
+
+
+    const actionType =
+      action.action_type_label ||
+      action.label_action_type ||
+      '-';
+
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture',
+        actionDeletion: true,
+        actionContextLabel: 'de culture',
+        entityLabel: actionType,
+        entityDate: action.date_start,
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        if (!yes) {
+          return;
+        }
+
+
+        this.api
+          .deleteaction(
+            action.id_action
+          )
+          .subscribe({
+
+            next: () => {
+              this.loadCultureActions();
+            },
+
+            error: (err) => {
+              console.error(
+                'Erreur lors de la suppression de l’action de Culture :',
+                err
+              );
+            }
+
+          });
+
+      });
+  }
+
 
   getSourceLabel(): string {
 

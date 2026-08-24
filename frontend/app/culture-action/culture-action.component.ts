@@ -168,11 +168,24 @@ export class CultureActionComponent implements OnInit {
 
   onReset(): void {
     this.dialogService
-      .confirmDialog({ message: 'Êtes-vous certain de vouloir réinitialiser cette action ?' })
+      .confirmDialog({
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-reset',
+        entityLabel:
+          'cette action de culture',
+        disableClose: false
+      })
       .subscribe(yes => {
-        if (!yes) return;
+
+        if (!yes) {
+          return;
+        }
+
 
         this.substrates.clear();
+
+
         this.cultureActionForm.reset({
           id_action_type: null,
           date_start: null,
@@ -187,71 +200,221 @@ export class CultureActionComponent implements OnInit {
           precise_location: '',
           remarks: ''
         });
-        this.formSubmitted = false;
-        this.cultureActionForm.markAsPristine();
-        this.cultureActionForm.markAsUntouched();
+
+
+        this.formSubmitted =
+          false;
+
+
+        this.cultureActionForm
+          .markAsPristine();
+
+        this.cultureActionForm
+          .markAsUntouched();
+
       });
   }
 
   onSubmit(): void {
     this.formSubmitted = true;
 
-    if (!this.dialogData?.idCulture || this.cultureActionForm.invalid || this.isSubmitting) {
-      this.cultureActionForm.markAllAsTouched();
+
+    if (
+      !this.dialogData?.idCulture ||
+      this.cultureActionForm.invalid ||
+      this.isSubmitting
+    ) {
+
+      this.cultureActionForm
+        .markAllAsTouched();
+
       return;
     }
 
+
+    const selectedActionTypeId =
+      Number(
+        this.cultureActionForm
+          .get('id_action_type')
+          ?.value
+      );
+
+
+    const selectedActionType =
+      this.cultureActionTypeOptions
+        .find(
+          option =>
+            Number(
+              option?.id_nomenclature
+            ) ===
+            selectedActionTypeId
+        );
+
+
+    const actionTypeLabel =
+      selectedActionType
+        ? this.getOptionLabel(
+            selectedActionType
+          )
+        : '';
+
+
     this.dialogService
       .confirmDialog({
-        message: 'Êtes-vous certain de vouloir enregistrer cette action de transplantation ?'
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-save',
+
+        entityLabel:
+          'l’action de culture',
+
+        entityCode:
+          actionTypeLabel ||
+          undefined,
+
+        disableClose: false
       })
       .subscribe(yes => {
-        if (!yes) return;
 
-        this.isSubmitting = true;
+        if (!yes) {
+          return;
+        }
+
+
+        this.isSubmitting =
+          true;
+
+
         this.cultureService
-          .createCultureTransplantation(this.dialogData.idCulture, this.buildPayload())
+          .createCultureTransplantation(
+            this.dialogData.idCulture,
+            this.buildPayload()
+          )
           .subscribe({
+
             next: result => {
-              this.toast.translateToaster(
-                'success',
-                'Action de transplantation créée avec succès.'
+
+              this.toast
+                .translateToaster(
+                  'success',
+                  'Action de transplantation créée avec succès.'
+                );
+
+
+              this.dialogRef.close(
+                result
               );
-              this.dialogRef.close(result);
+
             },
+
             error: error => {
-              this.isSubmitting = false;
-              console.error('Erreur lors de la création de la transplantation :', error);
-              this.toast.translateToaster(
-                'error',
-                'Impossible de créer l’action de transplantation.'
+
+              this.isSubmitting =
+                false;
+
+
+              console.error(
+                'Erreur lors de la création de la transplantation :',
+                error
               );
+
+
+              this.toast
+                .translateToaster(
+                  'error',
+                  'Impossible de créer l’action de transplantation.'
+                );
+
             }
+
           });
+
       });
   }
 
   onCancel(): void {
-    if (this.cancelDialogOpen || this.isSubmitting) return;
-
-    if (!this.cultureActionForm.dirty) {
-      this.dialogRef.close();
+    if (
+      this.cancelDialogOpen ||
+      this.isSubmitting
+    ) {
       return;
     }
 
+
     this.cancelDialogOpen = true;
+
+
+    const selectedActionTypeId =
+      Number(
+        this.cultureActionForm
+          .get('id_action_type')
+          ?.value
+      );
+
+
+    const selectedActionType =
+      this.cultureActionTypeOptions
+        .find(
+          option =>
+            Number(
+              option?.id_nomenclature
+            ) ===
+            selectedActionTypeId
+        );
+
+
+    const actionTypeLabel =
+      selectedActionType
+        ? this.getOptionLabel(
+            selectedActionType
+          )
+        : '';
+
+
+    const dateStart =
+      this.cultureActionForm
+        .get('date_start')
+        ?.value;
+
+
     this.dialogService
       .confirmDialog({
-        message: 'Les informations saisies seront perdues. Voulez-vous fermer la fiche ?'
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-exit',
+
+        actionCancellation: true,
+        actionCancellationMode: 'create',
+
+        actionContextLabel:
+          'de culture',
+
+        entityLabel:
+          actionTypeLabel ||
+          undefined,
+
+        entityDate:
+          dateStart ||
+          undefined,
+
+        disableClose: false
       })
       .subscribe({
+
         next: yes => {
+
           this.cancelDialogOpen = false;
-          if (yes) this.dialogRef.close();
+
+          if (yes) {
+            this.dialogRef.close();
+          }
+
         },
+
         error: () => {
           this.cancelDialogOpen = false;
         }
+
       });
   }
 

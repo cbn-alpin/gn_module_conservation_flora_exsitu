@@ -721,8 +721,8 @@
           <th
             mat-header-cell
             *matHeaderCellDef
+            aria-label="Actions"
           >
-            Action
           </th>
 
           <td
@@ -733,35 +733,66 @@
             <button
               mat-icon-button
               type="button"
-              class="culture-action-details-button"
-              matTooltip="Voir les détails"
-              aria-label="Voir les détails de l’action"
-              *ngIf="
-                element.code_action_type ===
-                'transp'
-              "
-              (click)="
-                onOpenCultureActionDetails(
-                  element
-                )
-              "
+              class="culture-actions-trigger-red"
+              [matMenuTriggerFor]="cultureActionMenu"
             >
 
               <mat-icon>
-                visibility
+                more_vert
               </mat-icon>
 
             </button>
 
 
-            <span
-              *ngIf="
-                element.code_action_type !==
-                'transp'
-              "
+            <mat-menu
+              #cultureActionMenu="matMenu"
             >
-              -
-            </span>
+
+              <button
+                mat-menu-item
+                *ngIf="
+                  element.code_action_type ===
+                  'transp'
+                "
+                (click)="
+                  onOpenCultureActionDetails(
+                    element
+                  )
+                "
+              >
+
+                <mat-icon>
+                  visibility
+                </mat-icon>
+
+                <span>
+                  Détails
+                </span>
+
+              </button>
+
+
+              <button
+                mat-menu-item
+                class="delete-action-red"
+                (click)="
+                  onDeleteCultureAction(
+                    element
+                  )
+                "
+              >
+
+                <mat-icon>
+                  delete
+                </mat-icon>
+
+                <span>
+                  Supprimer
+                </span>
+
+              </button>
+
+            </mat-menu>
 
           </td>
 

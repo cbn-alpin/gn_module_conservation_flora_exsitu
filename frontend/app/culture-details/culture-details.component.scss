@@ -653,6 +653,39 @@
 
 
 /* =========================================================
+   MENU ACTION CULTURE
+   ========================================================= */
+
+.culture-actions-trigger-red {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 34px;
+  height: 34px;
+
+  margin: 0 auto;
+  padding: 0 !important;
+
+  color: #f44336 !important;
+
+  border-radius: 50%;
+}
+
+.culture-actions-trigger-red mat-icon {
+  margin: 0 !important;
+
+  color: #f44336 !important;
+}
+
+.delete-action-red,
+.delete-action-red mat-icon,
+.delete-action-red span {
+  color: #f44336 !important;
+}
+
+
+/* =========================================================
    FILTRES DES ACTIONS CULTURE
    ========================================================= */
 
