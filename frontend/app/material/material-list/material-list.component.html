@@ -410,7 +410,6 @@
             <button
               mat-menu-item
               class="seed-action"
-              *ngIf="element.has_seed_description"
               (click)="goToSeedDetails(element)"
             >
               <mat-icon>description</mat-icon>
@@ -420,7 +419,6 @@
             <button
               mat-menu-item
               class="stock-action"
-              *ngIf="constants.STORABLE_MATERIAL_CODES.includes(element.harvest_material_code)"
               (click)="goToStock(element)"
             >
               <mat-icon>store</mat-icon>

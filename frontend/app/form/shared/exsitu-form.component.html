@@ -34,9 +34,9 @@
             <!-- Semence (Activé après avoir choisi un matériel) -->
             <a 
                 class="tablinks themed-tab seed-tab"
-                [class.disabled]="!idMaterial"
+                [class.disabled]="!exsituFormService.idMaterial"
                 [ngClass]="{ active: exsituFormService.currentTab === 'seed' }"
-                (click)="idMaterial ? goToTab('seed') : null">
+                (click)="exsituFormService.idMaterial ? goToTab('seed') : null">
                 <mat-icon class="example-tab-icon">description</mat-icon>
                 Semence
             </a>
@@ -44,13 +44,13 @@
             <!-- Stockage (Activé après avoir choisi un matériel) -->
             <a 
                 class="tablinks themed-tab stock-tab"
-                [class.disabled]="!idMaterial"
+                [class.disabled]="!exsituFormService.idMaterial"
                 [ngClass]="{
                     active:
                         exsituFormService.currentTab === 'stock' ||
                         exsituFormService.currentTab === 'stock-details'
                 }"
-                (click)="idMaterial ? goToTab('stock') : null">
+                (click)="exsituFormService.idMaterial ? goToTab('stock') : null">
                 <mat-icon class="example-tab-icon">store</mat-icon>
                 Stockage
             </a>
@@ -58,13 +58,13 @@
             <!-- Test de germination -->
             <a 
                 class="tablinks themed-tab germination-tab"
-                [class.disabled]="!idMaterial"
+                [class.disabled]="!exsituFormService.idMaterial"
                 [ngClass]="{
                     active:
                         exsituFormService.currentTab === 'germination-table' ||
                         exsituFormService.currentTab === 'germination-details'
                 }"
-                (click)="idMaterial ? goToTab('germination-table') : null"
+                (click)="exsituFormService.idMaterial ? goToTab('germination-table') : null"
             >
                 <mat-icon class="example-tab-icon">wb_sunny</mat-icon>
                 Test de germination
@@ -74,13 +74,13 @@
             <!-- Semis -->
             <a
             class="tablinks"
-            [class.disabled]="!idMaterial"
+            [class.disabled]="!exsituFormService.idMaterial"
             [ngClass]="{
                 active:
                 exsituFormService.currentTab === 'semis-table' ||
                 exsituFormService.currentTab === 'semis-details'
             }"
-            (click)="idMaterial ? goToTab('semis-table') : null"
+            (click)="exsituFormService.idMaterial ? goToTab('semis-table') : null"
             >
             <mat-icon class="example-tab-icon">
                 grain
@@ -92,13 +92,13 @@
 
             
             <a class="tablinks themed-tab viability-tab"
-                [class.disabled]="!idMaterial"
+                [class.disabled]="!exsituFormService.idMaterial"
                 [ngClass]="{
                     active:
                         exsituFormService.currentTab === 'viability-table' ||
                         exsituFormService.currentTab === 'viability-details'
                 }"
-                (click)="idMaterial ? goToTab('viability-table') : null">
+                (click)="exsituFormService.idMaterial ? goToTab('viability-table') : null">
                 <mat-icon class="example-tab-icon">check_circle</mat-icon>
                 Test de Viabilité
             </a>

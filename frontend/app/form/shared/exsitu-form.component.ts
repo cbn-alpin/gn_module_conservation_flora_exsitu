@@ -100,27 +100,32 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('currentTab après affectation :', this.exsituFormService.currentTab);
     
       console.log(tab)
+
+        const selectedMaterialId =
+          this.exsituFormService.idMaterial;
+
+
         if (tab === 'materials' && this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
         } else if (tab === 'harvest' && this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}`]);
-        }else if (tab === 'seed' && this.exsituFormService.idHarvest && this.idMaterial) {
+        }else if (tab === 'seed' && this.exsituFormService.idHarvest && selectedMaterialId) {
           this.router.navigate([
-            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/seed-details`
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/seed-details`
           ]);
-        }else if (tab === 'stock' && this.exsituFormService.idHarvest && this.idMaterial) {
+        }else if (tab === 'stock' && this.exsituFormService.idHarvest && selectedMaterialId) {
           this.router.navigate([
-            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/stock`
+            `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/stock`
           ]);
         }
-        else if (tab === 'semis-table' && this.exsituFormService.idHarvest && this.idMaterial) {
-          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/semis-table`]);
+        else if (tab === 'semis-table' && this.exsituFormService.idHarvest && selectedMaterialId) {
+          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/semis-table`]);
         }
-        else if (tab === 'germination-table' && this.exsituFormService.idHarvest && this.idMaterial) {
-          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/germination-table`]);
+        else if (tab === 'germination-table' && this.exsituFormService.idHarvest && selectedMaterialId) {
+          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/germination-table`]);
         }
-        else if (tab === 'viability-table' && this.exsituFormService.idHarvest && this.idMaterial) {
-          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${this.idMaterial}/viability-table`]);
+        else if (tab === 'viability-table' && this.exsituFormService.idHarvest && selectedMaterialId) {
+          this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/viability-table`]);
         }
         else if (
           tab === 'culture-table' &&
@@ -178,9 +183,41 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
   
+      const isHarvestOnly =
+        urlSegments.includes('harvest') &&
+        !urlSegments.includes('material-form') &&
+        !urlSegments.includes('material');
+
+
+      if (isHarvestOnly) {
+
+        this.idMaterial = null;
+
+
+        this.exsituFormService
+          .setIdMaterial(null);
+
+      }
+
+
       // Vérifie si l'URL contient "material-form"
       if (urlSegments.includes('material-form')) {
         this.exsituFormService.currentTab = 'materials';
+
+
+        /*
+         * En arrivant sur la liste des matériels,
+         * aucun matériel n'est sélectionné par défaut.
+         *
+         * Les autres onglets deviennent accessibles
+         * uniquement après sélection d'une ligne.
+         */
+        this.idMaterial = null;
+
+
+        this.exsituFormService
+          .setIdMaterial(null);
+
   
         // Vérifie que l'ID de récolte est bien présent avant
         if (!this.exsituFormService.idHarvest) {

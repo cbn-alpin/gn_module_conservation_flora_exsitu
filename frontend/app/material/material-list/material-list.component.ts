@@ -1336,41 +1336,42 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
     }
 
     goToSeedDetails(material: any): void {
-      const idMaterial = material.id_material
-      this.exsituFormService.setIdMaterial(idMaterial);
-      this.handleSeedByMaterial(
-        idMaterial,
-        seed => this.router.navigate([
-          `${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/seed-details/${seed.id_seed}`
-        ]),
-        () => console.warn('Pas de seed disponible pour ce material'),
-        err => console.error('Erreur lors de la récupération de la seed:', err)
-      );
-    }    
+      const idMaterial =
+        Number(
+          material?.id_material
+        );
 
-    private handleSeedByMaterial(
-      materialId: number,
-      onFound: (seed: any) => void,
-      onNotFound: () => void,
-      onError?: (err: any) => void
-    ): void {
-      this.api.getSeedByMaterial(materialId).subscribe({
-        next: seed => {
-          if (seed && seed.seed) {
-            onFound(seed.seed);
-          } else {
-            onNotFound();
-          }
-        },
-        error: err => {
-          if (err.status === 204) {
-            onNotFound();
-          } else {
-            console.error('Erreur lors de la récupération de la seed:', err);
-            if (onError) onError(err);
-          }
-        }
-      });
+
+      const idHarvest =
+        this.exsituFormService.idHarvest;
+
+
+      if (
+        !idMaterial ||
+        !idHarvest
+      ) {
+        return;
+      }
+
+
+      this.exsituFormService
+        .setIdMaterial(
+          idMaterial
+        );
+
+
+      this.exsituFormService.currentTab =
+        'seed';
+
+
+      /*
+       * La page Semence gère les deux cas :
+       * - une fiche Semence existe déjà ;
+       * - aucune fiche Semence n'existe encore.
+       */
+      this.router.navigate([
+        `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/seed-details`
+      ]);
     }
     
 }
