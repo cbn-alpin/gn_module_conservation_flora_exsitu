@@ -1,6 +1,6 @@
 # Module GeoNature
 config/settings.ini
-config/conf_gn_module.toml
+config/conservation_flora_exsitu_config.toml
 tsconfig.json
 /frontend/app/module.config.ts
 /log/
@@ -157,8 +157,3 @@ speed-measure-plugin*.json
 # System Files
 .DS_Store
 Thumbs.db
-
-
-config/conservation_flora_exsitu_config.toml
-venv
-frontend/package-lock copy.json
