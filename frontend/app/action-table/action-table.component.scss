@@ -545,11 +545,452 @@ table tr.mat-row {
   background-color: #fff3f3;
 }
 
-/* Pagination */
-:host ::ng-deep .sowing-action-list-card .mat-mdc-paginator {
-  margin-top: 10px;
-  border-top: 1px solid #edf5ed;
-  background: #fbfffb;
+/* =========================================================
+   PAGINATION DES LISTES D'ACTIONS
+   Même géométrie que les listes principales
+   ========================================================= */
+
+.action-list-paginator {
+  margin-top: 8px;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
+   GÉOMÉTRIE COMMUNE
+   ========================================================= */
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-container {
+  display: flex;
+  align-items: center;
+
+  min-height: 56px;
+
+  padding: 0 14px;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-page-size-label {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0 8px 0 0;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-page-size-select {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+
+  margin: 0;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  background-color: #ffffff;
+
+  border-radius: 8px;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  font-weight: 750;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-range-actions {
+  display: flex;
+  align-items: center;
+
+  height: 36px;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-range-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 32px;
+  margin: 0 12px;
+  padding: 6px 11px;
+
+  box-sizing: border-box;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  border-radius: 999px;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  margin-left: 3px;
+
+  border-radius: 50%;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-icon-button:disabled {
+  opacity: 0.8;
+}
+
+
+:host ::ng-deep
+.action-list-paginator
+.mat-mdc-paginator-icon {
+  width: 26px;
+  height: 26px;
+
+  fill: currentColor;
+}
+
+
+/* =========================================================
+   SEMIS
+   Identique à Liste des semis
+   ========================================================= */
+
+.sowing-action-list-paginator {
+  background:
+    linear-gradient(
+      90deg,
+      #fbfffb 0%,
+      #f3faf4 50%,
+      #fbfffb 100%
+    );
+
+  border: 1px solid #c8e6c9;
+
+  box-shadow:
+    0 2px 7px rgba(46, 125, 50, 0.08);
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-paginator-container {
+  color: #355e3b;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-paginator-page-size-label {
+  color: #607d63;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  box-shadow:
+    0 1px 4px rgba(46, 125, 50, 0.08);
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  color: #1b5e20;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-arrow {
+  color: #2e7d32;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-paginator-range-label {
+  color: #1b5e20;
+
+  background-color: #e8f5e9;
+
+  border: 1px solid #d2ead4;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-icon-button {
+  color: #2e7d32;
+
+  background-color: #f0f8f1;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  background-color: #dcefe0;
+}
+
+
+:host ::ng-deep
+.sowing-action-list-paginator
+.mat-mdc-icon-button:disabled {
+  color: #78957c;
+
+  background-color: #edf5ee;
+}
+
+
+/* =========================================================
+   GERMINATION
+   Identique à Liste des tests de germination
+   ========================================================= */
+
+.germination-action-list-paginator {
+  background:
+    linear-gradient(
+      90deg,
+      #f7fcfb 0%,
+      #eef8f6 50%,
+      #f7fcfb 100%
+    );
+
+  border: 1px solid #b2dfdb;
+
+  box-shadow:
+    0 2px 7px rgba(0, 137, 123, 0.08);
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-paginator-container {
+  color: #275f5a;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-paginator-page-size-label {
+  color: #4f7a76;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  box-shadow:
+    0 1px 4px rgba(0, 137, 123, 0.08);
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  color: #00564e;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-arrow {
+  color: #00897b;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-paginator-range-label {
+  color: #00564e;
+
+  background-color: #e5f6f3;
+
+  border: 1px solid #c7e8e4;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-icon-button {
+  color: #00897b;
+
+  background-color: #edf8f7;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  background-color: #d9f0ed;
+}
+
+
+:host ::ng-deep
+.germination-action-list-paginator
+.mat-mdc-icon-button:disabled {
+  color: #709d98;
+
+  background-color: #edf6f5;
+}
+
+
+/* =========================================================
+   VIABILITÉ
+   Identique à Liste des tests de viabilité
+   ========================================================= */
+
+.viability-action-list-paginator {
+  background:
+    linear-gradient(
+      90deg,
+      #fffaf6 0%,
+      #fff4ea 50%,
+      #fffaf6 100%
+    );
+
+  border: 1px solid #f2c79f;
+
+  box-shadow:
+    0 2px 7px rgba(224, 122, 31, 0.08);
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-paginator-container {
+  color: #7a3b00;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-paginator-page-size-label {
+  color: #9a6230;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-text-field-wrapper {
+  box-shadow:
+    0 1px 4px rgba(224, 122, 31, 0.08);
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-value {
+  color: #7a3b00;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-paginator-page-size-select
+.mat-mdc-select-arrow {
+  color: #e07a1f;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-paginator-range-label {
+  color: #7a3b00;
+
+  background-color: #fff0e3;
+
+  border: 1px solid #f3d5b7;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-icon-button {
+  color: #e07a1f;
+
+  background-color: #fff5ec;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-icon-button:not(:disabled):hover {
+  background-color: #fde6d2;
+}
+
+
+:host ::ng-deep
+.viability-action-list-paginator
+.mat-mdc-icon-button:disabled {
+  color: #b58d68;
+
+  background-color: #fcf2e9;
 }
 
 /* Aucune donnée */
@@ -741,7 +1182,17 @@ table tr.mat-row {
   display: none;
 }
 
+/* =========================================================
+   NOTIFICATION DE SUPPRESSION DES ACTIONS
+   ========================================================= */
 
+::ng-deep
+.toast-error
+.toast-message {
+  white-space: pre-line;
+
+  text-align: left;
+}
 
 
 

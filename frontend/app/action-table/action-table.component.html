@@ -275,6 +275,10 @@
     </table>
 
     <mat-paginator
+      class="action-list-paginator"
+      [class.sowing-action-list-paginator]="idSowing"
+      [class.germination-action-list-paginator]="isGerminationContext"
+      [class.viability-action-list-paginator]="isViabilityContext"
       [class.hidden-paginator]="!enablePagination || dataSource.data.length === 0"
       [length]="dataSource.data.length"
       [pageSize]="rowPerPage"
