@@ -695,19 +695,23 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
 
             next: () => {
 
-              const currentSowingCode =
-                this.sowingCode || '';
+              const currentContextCode =
+                this.idSowing
+                  ? this.sowingCode
+                  : this.testCode;
+
 
               const currentActionType =
-                action?.label_action_type || '';
+                actionType;
+
 
               const actionLabel =
-                `${
-                  currentSowingCode
-                } - ${
+                [
+                  currentContextCode,
                   currentActionType
-                }`
-                  .trim();
+                ]
+                  .filter(Boolean)
+                  .join(' - ');
 
 
               const dateStart =
@@ -722,7 +726,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
                   this.toBoldText(
                     actionLabel
                   )
-                } supprimée avec succès. Date de début : ${
+                } supprimée avec succès.\nDate de début : ${
                   this.toBoldText(
                     dateStart
                   )

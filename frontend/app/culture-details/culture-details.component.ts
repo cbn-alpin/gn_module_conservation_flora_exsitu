@@ -49,6 +49,10 @@ import {
   Sort
 } from '@angular/material/sort';
 
+import {
+  CommonService
+} from '@geonature_common/service/common.service';
+
 @Component({
   selector: 'app-culture-details',
   templateUrl: './culture-details.component.html',
@@ -124,7 +128,8 @@ export class CultureDetailsComponent
     private exsituFormService: ExsituFormService,
     private dialog: MatDialog,
     private api: DataService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private toast: CommonService
   ) {}
 
   ngOnInit(): void {
@@ -974,6 +979,117 @@ export class CultureDetailsComponent
   }
 
 
+  private toBoldText(
+    value: string
+  ): string {
+
+    const boldItalicChars:
+      Record<string, string> = {
+
+      A: '𝑨', B: '𝑩', C: '𝑪',
+      D: '𝑫', E: '𝑬', F: '𝑭',
+      G: '𝑮', H: '𝑯', I: '𝑰',
+      J: '𝑱', K: '𝑲', L: '𝑳',
+      M: '𝑴', N: '𝑵', O: '𝑶',
+      P: '𝑷', Q: '𝑸', R: '𝑹',
+      S: '𝑺', T: '𝑻', U: '𝑼',
+      V: '𝑽', W: '𝑾', X: '𝑿',
+      Y: '𝒀', Z: '𝒁',
+
+      a: '𝒂', b: '𝒃', c: '𝒄',
+      d: '𝒅', e: '𝒆', f: '𝒇',
+      g: '𝒈', h: '𝒉', i: '𝒊',
+      j: '𝒋', k: '𝒌', l: '𝒍',
+      m: '𝒎', n: '𝒏', o: '𝒐',
+      p: '𝒑', q: '𝒒', r: '𝒓',
+      s: '𝒔', t: '𝒕', u: '𝒖',
+      v: '𝒗', w: '𝒘', x: '𝒙',
+      y: '𝒚', z: '𝒛',
+
+      0: '𝟎', 1: '𝟏', 2: '𝟐',
+      3: '𝟑', 4: '𝟒', 5: '𝟓',
+      6: '𝟔', 7: '𝟕', 8: '𝟖',
+      9: '𝟗'
+    };
+
+
+    return value.replace(
+      /[A-Za-z0-9]/g,
+      (char) =>
+        boldItalicChars[char] ||
+        char
+    );
+  }
+
+
+  private formatDateForToaster(
+    value: any
+  ): string {
+
+    if (!value) {
+      return '-';
+    }
+
+
+    if (
+      typeof value === 'string'
+    ) {
+
+      const datePart =
+        value.split('T')[0];
+
+      const [
+        year,
+        month,
+        day
+      ] =
+        datePart.split('-');
+
+
+      if (
+        year &&
+        month &&
+        day
+      ) {
+        return `${day}/${month}/${year}`;
+      }
+
+    }
+
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return '-';
+    }
+
+
+    const day =
+      String(
+        date.getDate()
+      )
+        .padStart(2, '0');
+
+    const month =
+      String(
+        date.getMonth() + 1
+      )
+        .padStart(2, '0');
+
+    const year =
+      date.getFullYear();
+
+
+    return `${day}/${month}/${year}`;
+  }
+
+
   onDeleteCultureAction(
     action: any
   ): void {
@@ -1014,6 +1130,46 @@ export class CultureDetailsComponent
           .subscribe({
 
             next: () => {
+
+              const currentCultureCode =
+                this.culture
+                  ?.code_culture ||
+                '';
+
+
+              const currentActionType =
+                actionType;
+
+
+              const actionLabel =
+                [
+                  currentCultureCode,
+                  currentActionType
+                ]
+                  .filter(Boolean)
+                  .join(' - ');
+
+
+              const dateStart =
+                this.formatDateForToaster(
+                  action?.date_start
+                );
+
+
+              this.toast.translateToaster(
+                'error',
+                `Action ${
+                  this.toBoldText(
+                    actionLabel
+                  )
+                } supprimée avec succès.\nDate de début : ${
+                  this.toBoldText(
+                    dateStart
+                  )
+                }`
+              );
+
+
               this.loadCultureActions();
             },
 
