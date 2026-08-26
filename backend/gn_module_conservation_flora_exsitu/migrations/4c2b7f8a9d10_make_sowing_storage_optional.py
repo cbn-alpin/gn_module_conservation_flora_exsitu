@@ -42,42 +42,8 @@ def upgrade():
         'code',
         existing_type=sa.String(length=50),
         nullable=False,
-        schema='pr_conservation_flora_exsitu'
-    )
 
-    op.create_unique_constraint(
-        'uq_t_sowing_code',
-        't_sowing',
-        ['code'],
-        schema='pr_conservation_flora_exsitu'
-    )
-
-    op.create_check_constraint(
-        'ck_t_sowing_end_date_after_start_date',
-        't_sowing',
-        'end_date IS NULL OR end_date > start_date',
-        schema='pr_conservation_flora_exsitu'
-    )
-
-    op.create_check_constraint(
-        'ck_t_sowing_depth_positive',
-        't_sowing',
-        'depth IS NULL OR depth > 0',
-        schema='pr_conservation_flora_exsitu'
-    )
-
-    op.create_check_constraint(
-        'ck_t_sowing_initial_count_positive',
-        't_sowing',
-        'initial_count IS NULL OR initial_count > 0',
-        schema='pr_conservation_flora_exsitu'
-    )
-
-    op.create_check_constraint(
-        'ck_t_sowing_replicate_count_positive',
-        't_sowing',
-        'replicate_count IS NULL OR replicate_count > 0',
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
@@ -2018,6 +1984,8 @@ def upgrade():
     )
 
 def downgrade():
+    # Create temporary indexes for deleting nomenclatures with performance
+    created_temp_indexes = create_missing_nomenclature_indexes()
 
     # Suppression des actions de prélèvement de Culture
     op.execute("""
@@ -2094,41 +2062,12 @@ def downgrade():
             WHERE mnemonique = 'CFE_SOWING_SUBSTRATE'
         )
         AND label_default = 'Sol prélevé in-situ';
-    """)
 
-    op.drop_constraint(
-        'ck_t_sowing_replicate_count_positive',
-        't_sowing',
-        schema='pr_conservation_flora_exsitu',
-        type_='check'
-    )
 
-    op.drop_constraint(
-        'ck_t_sowing_initial_count_positive',
-        't_sowing',
-        schema='pr_conservation_flora_exsitu',
-        type_='check'
-    )
 
-    op.drop_constraint(
-        'ck_t_sowing_depth_positive',
-        't_sowing',
-        schema='pr_conservation_flora_exsitu',
-        type_='check'
-    )
 
-    op.drop_constraint(
-        'ck_t_sowing_end_date_after_start_date',
-        't_sowing',
-        schema='pr_conservation_flora_exsitu',
-        type_='check'
-    )
 
-    op.drop_constraint(
-        'uq_t_sowing_code',
-        't_sowing',
-        schema='pr_conservation_flora_exsitu',
-        type_='unique'
+    """
     )
 
     op.alter_column(
@@ -2224,59 +2163,16 @@ def downgrade():
                 WHERE id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
                 AND cd_nomenclature = 'aut'
         );
-    """)
-    # Suppression de la nomenclature des localisations principales
-    op.execute("""
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_MAIN_LOCATION'
-        );
+    """
+    )
 
-        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_MAIN_LOCATION';
-    """)
+    # Delete nomenclatures types and values
+    delete_nomenclatures("CFE_PHENOLOGICAL_STAGE")
+    delete_nomenclatures("CFE_PHYSIOLOGICAL_STAGE")
+    delete_nomenclatures("CFE_TRANSPLANTATION_TYPE")
 
-    # Suppression de la nomenclature des stades phénologiques
-    op.execute("""
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
-        );
-
-        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE';
-    """)
-
-    # Suppression de la nomenclature des stades physiologiques
-    op.execute("""
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_PHYSIOLOGICAL_STAGE'
-        );
-
-        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_PHYSIOLOGICAL_STAGE';
-    """)
-    # Suppression de la nomenclature des types de transplantation
-    op.execute("""
-        DELETE FROM ref_nomenclatures.t_nomenclatures
-        WHERE id_type = (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_TRANSPLANTATION_TYPE'
-        );
-
-        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
-        WHERE mnemonique = 'CFE_TRANSPLANTATION_TYPE';
-    """)
-    # Suppression des types d'action réservés à la Culture
-    op.execute("""
+    op.execute(
+        """
         DELETE FROM ref_nomenclatures.t_nomenclatures
         WHERE id_type = (
             SELECT id_type
@@ -2586,4 +2482,82 @@ def downgrade():
             WHERE mnemonique = 'CFE_SCARIFICATION_MEC'
         )
         AND cd_nomenclature = 'tot';
-    """)
+    """
+    )
+
+    delete_nomenclature_indexes(created_temp_indexes)
+
+
+def create_missing_nomenclature_indexes():
+    operation = text(
+        """
+        SELECT
+            n.nspname AS schema_name,
+            cl.relname AS table_name,
+            a.attname AS column_name
+        FROM pg_constraint AS c
+            JOIN pg_class AS cl 
+                ON cl.oid = c.conrelid
+            JOIN pg_namespace AS n 
+                ON n.oid = cl.relnamespace
+            JOIN pg_attribute AS a 
+                ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid
+        WHERE c.confrelid = 'ref_nomenclatures.t_nomenclatures'::regclass
+          AND NOT EXISTS (
+              SELECT 1 
+              FROM pg_index i 
+              WHERE i.indrelid = c.conrelid 
+                AND a.attnum = ANY(i.indkey)
+          );
+        """
+    )
+    result = op.get_bind().execute(operation).fetchall()
+
+    created_indexes = []
+    print(f"Creating of {len(result)} temporary nomenclature indexes to accelerate the deletion...")
+    for row in result:
+        schema_name = row.schema_name
+        table_name = row.table_name
+        column_name = row.column_name
+
+        # Max index name of 63 characters
+        index_name = f"idx_tmp_{table_name}_{column_name}"
+        index_name = index_name[:63]
+
+        op.get_bind().execute(
+            text(
+                f"""
+            CREATE INDEX IF NOT EXISTS {index_name} 
+            ON {schema_name}.{table_name} ({column_name});
+        """
+            )
+        )
+
+        created_indexes.append((schema_name, index_name))
+
+    return created_indexes
+
+
+def delete_nomenclature_indexes(indexes_to_deleted):
+    print(f"Deleting of {len(indexes_to_deleted)} temporary nomenclature indexes...")
+    for schema_name, index_name in indexes_to_deleted:
+        try:
+            op.get_bind().execute(text(f"DROP INDEX IF EXISTS {schema_name}.{index_name};"))
+        except Exception as e:
+            print(f"Error while deleting index {schema_name}.{index_name}: {e}")
+
+
+def delete_nomenclatures(mnemonique):
+    operation = text(
+        """
+            DELETE FROM ref_nomenclatures.t_nomenclatures
+            WHERE id_type = (
+                SELECT id_type
+                FROM ref_nomenclatures.bib_nomenclatures_types
+                WHERE mnemonique = :mnemonique
+            ) ;
+            DELETE FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = :mnemonique ;
+        """
+    )
+    op.get_bind().execute(operation, {"mnemonique": mnemonique})
