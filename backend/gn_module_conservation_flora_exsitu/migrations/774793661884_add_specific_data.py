@@ -4,6 +4,7 @@ Revision ID: 774793661884
 Create Date: 2025-01-06 23:07:42.754140
 
 """
+
 import importlib
 from gn_module_conservation_flora_exsitu import MODULE_DB_BRANCH, MODULE_CODE
 from csv import DictReader
@@ -14,10 +15,10 @@ from sqlalchemy.sql import text
 
 
 # revision identifiers, used by Alembic.
-revision = '774793661884'
+revision = "774793661884"
 down_revision = None
 branch_labels = MODULE_DB_BRANCH
-depends_on = 'f06cc80cc8ba' # GN 2.14.2
+depends_on = "f06cc80cc8ba"  # GN 2.14.2
 
 
 def copy_from_csv(
@@ -64,7 +65,6 @@ def copy_from_csv(
         op.drop_table(table, schema=schema)
 
 
-
 def get_csv_field_names(f, encoding, delimiter):
     if encoding == "WIN1252":  # postgresql encoding
         encoding = "cp1252"  # python encoding
@@ -78,7 +78,9 @@ def get_csv_field_names(f, encoding, delimiter):
 
 def upgrade():
     operations = text(
-        importlib.resources.read_text("gn_module_conservation_flora_exsitu.migrations.data", "data.sql")
+        importlib.resources.read_text(
+            "gn_module_conservation_flora_exsitu.migrations.data", "data.sql"
+        )
     )
     op.get_bind().execute(operations, {"moduleCode": MODULE_CODE})
 
@@ -151,7 +153,6 @@ def downgrade():
     delete_nomenclatures("CFE_HUMIDITY_DEVICE")
     delete_nomenclatures("CFE_STORAGE_ACTION")
     delete_nomenclatures("CFE_MEDIA_TYPE")
-    
 
     delete_taxhub_attribute("cfe_form1")
     delete_taxhub_attribute("cfe_form2")
@@ -163,11 +164,13 @@ def downgrade():
     delete_taxhub_attribute("cfe_embryo_type1")
     delete_taxhub_attribute("cfe_embryo_type2")
     delete_taxhub_attribute("cfe_comm_dim_forme")
-   
+
     delete_taxhub_attribute_theme("Semence")
-    delete_medias_for_table_location("pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed")
+    delete_medias_for_table_location(
+        "pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed"
+    )
     delete_table_location("pr_conservation_flora_exsitu", "t_material_seed", "unique_id_seed")
-    
+
     delete_nomenclatures("CFE_WATERING_METHOD")
     delete_nomenclatures("CFE_TEST_SUBSTRATE")
     delete_nomenclatures("CFE_SOWING_METHOD")
@@ -264,9 +267,9 @@ def delete_nomenclatures(mnemonique):
                 SELECT id_type
                 FROM ref_nomenclatures.bib_nomenclatures_types
                 WHERE mnemonique = :mnemonique
-            );
+            ) ;
             DELETE FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = :mnemonique
+            WHERE mnemonique = :mnemonique ;
         """
     )
     op.get_bind().execute(operation, {"mnemonique": mnemonique})
@@ -328,17 +331,19 @@ def delete_taxhub_attribute(attribut_name):
 
 
 def delete_table_location(schema_name, table_name, uuid_field_name):
-    operation = text("""
+    operation = text(
+        """
         DELETE FROM gn_commons.bib_tables_location
         WHERE schema_name = :schema_name
           AND table_name = :table_name
           AND uuid_field_name = :uuid_field_name
-    """)
-    op.get_bind().execute(operation, {
-        "schema_name": schema_name,
-        "table_name": table_name,
-        "uuid_field_name": uuid_field_name
-    })
+    """
+    )
+    op.get_bind().execute(
+        operation,
+        {"schema_name": schema_name, "table_name": table_name, "uuid_field_name": uuid_field_name},
+    )
+
 
 def delete_medias_for_table_location(schema_name, table_name, uuid_field_name):
     operation = sa.text(
@@ -354,8 +359,7 @@ def delete_medias_for_table_location(schema_name, table_name, uuid_field_name):
             );
         """
     )
-    op.get_bind().execute(operation, {
-        "schema_name": schema_name,
-        "table_name": table_name,
-        "uuid_field_name": uuid_field_name
-    })
+    op.get_bind().execute(
+        operation,
+        {"schema_name": schema_name, "table_name": table_name, "uuid_field_name": uuid_field_name},
+    )

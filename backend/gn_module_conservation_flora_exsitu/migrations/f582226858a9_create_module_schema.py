@@ -5,6 +5,7 @@ Revises: 774793661884
 Create Date: 2025-01-22 11:57:56.515152
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 import importlib
@@ -12,8 +13,8 @@ from sqlalchemy.sql import text
 
 
 # revision identifiers, used by Alembic.
-revision = 'f582226858a9'
-down_revision = '774793661884'
+revision = "f582226858a9"
+down_revision = "774793661884"
 branch_labels = None
 depends_on = None
 

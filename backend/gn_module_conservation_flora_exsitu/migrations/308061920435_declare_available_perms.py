@@ -5,13 +5,14 @@ Revises: f582226858a9
 Create Date: 2025-01-29 16:32:59.485261
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '308061920435'
-down_revision = 'f582226858a9'
+revision = "308061920435"
+down_revision = "f582226858a9"
 branch_labels = None
 depends_on = None
 
@@ -79,7 +80,6 @@ def upgrade():
             bp.id_permission = p.id_permission;
         """
     )
-
 
 
 def downgrade():

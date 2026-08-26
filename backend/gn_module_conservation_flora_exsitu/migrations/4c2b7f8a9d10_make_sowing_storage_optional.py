@@ -5,64 +5,65 @@ Revises: 308061920435
 Create Date: 2026-04-18 15:00:00
 
 """
+
 import importlib.resources
 from csv import DictReader
 
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
-
+from sqlalchemy.sql import text
 
 # revision identifiers, used by Alembic.
-revision = '4c2b7f8a9d10'
-down_revision = '308061920435'
+revision = "4c2b7f8a9d10"
+down_revision = "308061920435"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.alter_column(
-        't_sowing',
-        'id_storage',
+        "t_sowing",
+        "id_storage",
         existing_type=sa.Integer(),
         nullable=True,
-        schema='pr_conservation_flora_exsitu'
-    )
-
-    op.alter_column(
-        't_sowing',
-        'id_actor',
-        existing_type=sa.Integer(),
-        nullable=True,
-        schema='pr_conservation_flora_exsitu'
-    )
-
-    op.alter_column(
-        't_sowing',
-        'code',
-        existing_type=sa.String(length=50),
-        nullable=False,
-
         schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
-        't_test',
-        'id_actor',
+        "t_sowing",
+        "id_actor",
         existing_type=sa.Integer(),
         nullable=True,
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
-        't_action',
-        'id_actor',
-        existing_type=sa.Integer(),
-        nullable=True,
-        schema='pr_conservation_flora_exsitu'
+        "t_sowing",
+        "code",
+        existing_type=sa.String(length=50),
+        nullable=False,
+        schema="pr_conservation_flora_exsitu",
     )
 
-    op.execute("""
+    op.alter_column(
+        "t_test",
+        "id_actor",
+        existing_type=sa.Integer(),
+        nullable=True,
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    op.alter_column(
+        "t_action",
+        "id_actor",
+        existing_type=sa.Integer(),
+        nullable=True,
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Jardin alpin',
@@ -73,9 +74,11 @@ def upgrade():
             WHERE mnemonique = 'CFE_SOWING_LOCATION'
         )
         AND cd_nomenclature = 'jar';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Sol prélevé in-situ',
@@ -86,9 +89,11 @@ def upgrade():
             WHERE mnemonique = 'CFE_SOWING_SUBSTRATE'
         )
         AND label_default = 'Sol in situ';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         DELETE FROM ref_nomenclatures.t_nomenclatures
         WHERE id_type = (
             SELECT id_type
@@ -96,9 +101,11 @@ def upgrade():
             WHERE mnemonique = 'CFE_WATERING_METHOD'
         )
         AND cd_nomenclature = 'aut';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             hierarchy = '.001'
@@ -164,10 +171,12 @@ def upgrade():
             WHERE mnemonique = 'CFE_ACTION_TYPE'
         )
         AND cd_nomenclature = 'tra';
-    """)
+    """
+    )
 
     # Type d'action réservé aux actions de Culture
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.t_nomenclatures (
             id_type,
             cd_nomenclature,
@@ -198,9 +207,11 @@ def upgrade():
                 ref_nomenclatures.bib_nomenclatures_types.id_type
             AND n.cd_nomenclature = 'transp'
         );
-    """)
+    """
+    )
     # Types d'action supplémentaires réservés aux actions de Culture
-    op.execute("""
+    op.execute(
+        """
         WITH action_type AS (
             SELECT id_type
             FROM ref_nomenclatures.bib_nomenclatures_types
@@ -268,10 +279,12 @@ def upgrade():
             WHERE n.id_type = at.id_type
             AND n.cd_nomenclature = ev.cd_nomenclature
         );
-    """)
+    """
+    )
 
     # Type de transplantation des actions de Culture
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
             mnemonique,
             label_default,
@@ -360,9 +373,11 @@ def upgrade():
             WHERE n.id_type = tt.id_type
             AND n.cd_nomenclature = ev.cd_nomenclature
         );
-    """)
+    """
+    )
     # Stades de développement physiologique des Cultures
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
             mnemonique,
             label_default,
@@ -493,10 +508,12 @@ def upgrade():
             WHERE n.id_type = pst.id_type
             AND n.cd_nomenclature = ev.cd_nomenclature
         );
-    """)
+    """
+    )
 
     # Stades phénologiques des actions d'observation de Culture
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
             mnemonique,
             label_default,
@@ -518,21 +535,16 @@ def upgrade():
             WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
         );
 
-    """)
+    """
+    )
 
     with importlib.resources.open_text(
-        "gn_module_conservation_flora_exsitu.migrations.data",
-        "nomenclatures.csv",
-        encoding="UTF-8"
+        "gn_module_conservation_flora_exsitu.migrations.data", "nomenclatures.csv", encoding="UTF-8"
     ) as csvfile:
         phenological_stages = [
             row
-            for row in DictReader(
-                csvfile,
-                delimiter=";"
-            )
-            if row.get("type_nomenclature_code") ==
-            "CFE_PHENOLOGICAL_STAGE"
+            for row in DictReader(csvfile, delimiter=";")
+            if row.get("type_nomenclature_code") == "CFE_PHENOLOGICAL_STAGE"
         ]
 
     bind = op.get_bind()
@@ -583,12 +595,13 @@ def upgrade():
                 "label_fr": stage["label_fr"],
                 "definition_fr": stage["definition_fr"],
                 "source": stage["source"],
-                "hierarchy": stage["hierarchy"]
-            }
+                "hierarchy": stage["hierarchy"],
+            },
         )
 
     # Localisations principales des actions de Culture
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
             mnemonique,
             label_default,
@@ -677,9 +690,11 @@ def upgrade():
             WHERE n.id_type = mlt.id_type
             AND n.cd_nomenclature = ev.cd_nomenclature
         );
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
             label_default = 'Produit prétraitement',
@@ -1064,9 +1079,11 @@ def upgrade():
         SET label_default = 'Autre', label_fr = 'Autre', hierarchy = '.013'
         WHERE id_type = (SELECT id_type FROM ref_nomenclatures.bib_nomenclatures_types WHERE mnemonique = 'CFE_STERILIZATION_LIQUID')
         AND cd_nomenclature = 'aut';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
             label_default = 'Liquide traitement',
@@ -1165,9 +1182,11 @@ def upgrade():
         JOIN expected_values ev ON TRUE
         WHERE n.id_type = lt.id_type
         AND n.cd_nomenclature = ev.cd_nomenclature;
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         WITH treatment_type AS (
         SELECT id_type
         FROM ref_nomenclatures.bib_nomenclatures_types
@@ -1210,9 +1229,11 @@ def upgrade():
         USING aut_values a
         WHERE n.id_nomenclature = a.id_nomenclature
         AND a.id_nomenclature <> a.keep_id;
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.t_nomenclatures (
             id_type,
             cd_nomenclature,
@@ -1278,9 +1299,11 @@ def upgrade():
             WHERE mnemonique = 'CFE_TG_SUPPORT'
         )
         AND cd_nomenclature = 'aut';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET hierarchy = '.001'
         WHERE id_type = (
@@ -1316,9 +1339,11 @@ def upgrade():
             WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
         )
         AND cd_nomenclature = 'torb';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Partielle',
@@ -1340,705 +1365,350 @@ def upgrade():
             WHERE mnemonique = 'CFE_SCARIFICATION_MEC'
         )
         AND cd_nomenclature = 'tot';
-    """)
+    """
+    )
 
-        # Création de la table Culture
+    # Création de la table Culture
     op.create_table(
-        't_culture',
-
+        "t_culture",
+        sa.Column("id_culture", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("code_culture", sa.String(length=50), nullable=False),
+        sa.Column("id_material", sa.Integer(), nullable=False),
+        sa.Column("id_sowing", sa.Integer(), nullable=True),
+        sa.Column("id_test", sa.Integer(), nullable=True),
+        sa.Column("id_actor", sa.Integer(), nullable=True),
+        sa.Column("date_start", sa.DateTime(), nullable=False),
+        sa.Column("date_end", sa.DateTime(), nullable=True),
+        sa.Column("remarks", sa.Text(), nullable=True),
+        sa.Column("additional_data", JSONB(), nullable=True),
+        sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            'id_culture',
-            sa.Integer(),
-            autoincrement=True,
-            nullable=False
+            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
         ),
-
-        sa.Column(
-            'code_culture',
-            sa.String(length=50),
-            nullable=False
-        ),
-
-        sa.Column(
-            'id_material',
-            sa.Integer(),
-            nullable=False
-        ),
-
-        sa.Column(
-            'id_sowing',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'id_test',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'id_actor',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'date_start',
-            sa.DateTime(),
-            nullable=False
-        ),
-
-        sa.Column(
-            'date_end',
-            sa.DateTime(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'remarks',
-            sa.Text(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'additional_data',
-            JSONB(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'meta_create_by',
-            sa.Integer(),
-            nullable=False
-        ),
-
-        sa.Column(
-            'meta_create_date',
-            sa.DateTime(),
-            nullable=False,
-            server_default=sa.text('now()')
-        ),
-
-        sa.Column(
-            'meta_update_by',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'meta_update_date',
-            sa.DateTime(),
-            nullable=True
-        ),
-
-        sa.PrimaryKeyConstraint(
-            'id_culture',
-            name='pk_t_culture'
-        ),
-
-        sa.UniqueConstraint(
-            'code_culture',
-            name='uq_t_culture_code_culture'
-        ),
-
+        sa.Column("meta_update_by", sa.Integer(), nullable=True),
+        sa.Column("meta_update_date", sa.DateTime(), nullable=True),
+        sa.PrimaryKeyConstraint("id_culture", name="pk_t_culture"),
+        sa.UniqueConstraint("code_culture", name="uq_t_culture_code_culture"),
         sa.CheckConstraint(
-            'date_end IS NULL OR date_end >= date_start',
-            name='ck_t_culture_end_date_after_start_date'
+            "date_end IS NULL OR date_end >= date_start",
+            name="ck_t_culture_end_date_after_start_date",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_material'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_material.id_material'
-            ],
-            name='fk_t_culture_id_material'
+            ["id_material"],
+            ["pr_conservation_flora_exsitu." "t_material.id_material"],
+            name="fk_t_culture_id_material",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_sowing'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_sowing.id_sowing'
-            ],
-            name='fk_t_culture_id_sowing'
+            ["id_sowing"],
+            ["pr_conservation_flora_exsitu." "t_sowing.id_sowing"],
+            name="fk_t_culture_id_sowing",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_test'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_test.id_test'
-            ],
-            name='fk_t_culture_id_test'
+            ["id_test"],
+            ["pr_conservation_flora_exsitu." "t_test.id_test"],
+            name="fk_t_culture_id_test",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_actor'],
-            ['utilisateurs.t_roles.id_role'],
-            name='fk_t_culture_id_actor'
+            ["id_actor"], ["utilisateurs.t_roles.id_role"], name="fk_t_culture_id_actor"
         ),
-
         sa.ForeignKeyConstraint(
-            ['meta_create_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name='fk_t_culture_meta_create_by'
+            ["meta_create_by"], ["utilisateurs.t_roles.id_role"], name="fk_t_culture_meta_create_by"
         ),
-
         sa.ForeignKeyConstraint(
-            ['meta_update_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name='fk_t_culture_meta_update_by'
+            ["meta_update_by"], ["utilisateurs.t_roles.id_role"], name="fk_t_culture_meta_update_by"
         ),
-
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     # Liaison entre les actions et la Culture
     op.add_column(
-        't_action',
-        sa.Column(
-            'id_culture',
-            sa.Integer(),
-            nullable=True
-        ),
-        schema='pr_conservation_flora_exsitu'
+        "t_action",
+        sa.Column("id_culture", sa.Integer(), nullable=True),
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.create_foreign_key(
-        'fk_t_action_id_culture',
-        't_action',
-        't_culture',
-        ['id_culture'],
-        ['id_culture'],
-        source_schema='pr_conservation_flora_exsitu',
-        referent_schema='pr_conservation_flora_exsitu',
-        ondelete='SET NULL'
+        "fk_t_action_id_culture",
+        "t_action",
+        "t_culture",
+        ["id_culture"],
+        ["id_culture"],
+        source_schema="pr_conservation_flora_exsitu",
+        referent_schema="pr_conservation_flora_exsitu",
+        ondelete="SET NULL",
     )
 
     op.create_check_constraint(
-        'ck_t_action_end_date_after_start_date',
-        't_action',
-        'date_end IS NULL OR date_end >= date_start',
-        schema='pr_conservation_flora_exsitu'
+        "ck_t_action_end_date_after_start_date",
+        "t_action",
+        "date_end IS NULL OR date_end >= date_start",
+        schema="pr_conservation_flora_exsitu",
     )
 
     # Table spécifique aux actions de transplantation de Culture
     op.create_table(
-        't_culture_action_transplantation',
-
+        "t_culture_action_transplantation",
         sa.Column(
-            'id_culture_action_transplantation',
-            sa.Integer(),
-            autoincrement=True,
-            nullable=False
+            "id_culture_action_transplantation", sa.Integer(), autoincrement=True, nullable=False
         ),
-
+        sa.Column("id_action", sa.Integer(), nullable=False),
+        sa.Column("id_type", sa.Integer(), nullable=True),
+        sa.Column("intervention_quantity", sa.Integer(), nullable=True),
+        sa.Column("in_progress_quantity", sa.Integer(), nullable=True),
+        sa.Column("packaging", sa.String(length=100), nullable=True),
+        sa.Column("substrat", JSONB(), nullable=True),
+        sa.Column("id_physiological_development_stage", sa.Integer(), nullable=True),
+        sa.Column("id_main_location", sa.Integer(), nullable=True),
+        sa.Column("precise_location", sa.String(length=100), nullable=True),
+        sa.Column("remarks", sa.Text(), nullable=True),
+        sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            'id_action',
-            sa.Integer(),
-            nullable=False
+            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
         ),
-
-        sa.Column(
-            'id_type',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'intervention_quantity',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'in_progress_quantity',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'packaging',
-            sa.String(length=100),
-            nullable=True
-        ),
-
-        sa.Column(
-            'substrat',
-            JSONB(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'id_physiological_development_stage',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'id_main_location',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'precise_location',
-            sa.String(length=100),
-            nullable=True
-        ),
-
-        sa.Column(
-            'remarks',
-            sa.Text(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'meta_create_by',
-            sa.Integer(),
-            nullable=False
-        ),
-
-        sa.Column(
-            'meta_create_date',
-            sa.DateTime(),
-            nullable=False,
-            server_default=sa.text('now()')
-        ),
-
-        sa.Column(
-            'meta_update_by',
-            sa.Integer(),
-            nullable=True
-        ),
-
-        sa.Column(
-            'meta_update_date',
-            sa.DateTime(),
-            nullable=True
-        ),
-
+        sa.Column("meta_update_by", sa.Integer(), nullable=True),
+        sa.Column("meta_update_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint(
-            'id_culture_action_transplantation',
-            name='pk_t_culture_action_transplantation'
+            "id_culture_action_transplantation", name="pk_t_culture_action_transplantation"
         ),
-
-        sa.UniqueConstraint(
-            'id_action',
-            name='uq_t_culture_action_transplantation_id_action'
-        ),
-
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_transplantation_id_action"),
         sa.ForeignKeyConstraint(
-            ['id_action'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_action.id_action'
-            ],
-            name='fk_t_culture_action_transplantation_id_action',
-            ondelete='CASCADE'
+            ["id_action"],
+            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            name="fk_t_culture_action_transplantation_id_action",
+            ondelete="CASCADE",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_type'],
-            [
-                'ref_nomenclatures.'
-                't_nomenclatures.id_nomenclature'
-            ],
-            name='fk_t_culture_action_transplantation_id_type',
-            ondelete='SET NULL'
+            ["id_type"],
+            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
+            name="fk_t_culture_action_transplantation_id_type",
+            ondelete="SET NULL",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_physiological_development_stage'],
-            [
-                'ref_nomenclatures.'
-                't_nomenclatures.id_nomenclature'
-            ],
-            name=(
-                'fk_culture_transplantation_'
-                'physiological_stage'
-            ),
-            ondelete='SET NULL'
+            ["id_physiological_development_stage"],
+            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
+            name=("fk_culture_transplantation_" "physiological_stage"),
+            ondelete="SET NULL",
         ),
-
         sa.ForeignKeyConstraint(
-            ['id_main_location'],
-            [
-                'ref_nomenclatures.'
-                't_nomenclatures.id_nomenclature'
-            ],
-            name=(
-                'fk_t_culture_action_transplantation_'
-                'id_main_location'
-            ),
-            ondelete='SET NULL'
+            ["id_main_location"],
+            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
+            name=("fk_t_culture_action_transplantation_" "id_main_location"),
+            ondelete="SET NULL",
         ),
-
         sa.ForeignKeyConstraint(
-            ['meta_create_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_transplantation_'
-                'meta_create_by'
-            )
+            ["meta_create_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_transplantation_" "meta_create_by"),
         ),
-
         sa.ForeignKeyConstraint(
-            ['meta_update_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_transplantation_'
-                'meta_update_by'
-            ),
-            ondelete='SET NULL'
+            ["meta_update_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_transplantation_" "meta_update_by"),
+            ondelete="SET NULL",
         ),
-
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     # Table spécifique aux actions d'observation de Culture
     op.create_table(
-        't_culture_action_observation',
+        "t_culture_action_observation",
         sa.Column(
-            'id_culture_action_observation',
-            sa.Integer(),
-            autoincrement=True,
-            nullable=False
+            "id_culture_action_observation", sa.Integer(), autoincrement=True, nullable=False
         ),
+        sa.Column("id_action", sa.Integer(), nullable=False),
+        sa.Column("individual_count", sa.Integer(), nullable=True),
+        sa.Column("id_phenological_stage", sa.Integer(), nullable=True),
+        sa.Column("remarks", sa.Text(), nullable=True),
+        sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            'id_action',
-            sa.Integer(),
-            nullable=False
+            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
         ),
-        sa.Column(
-            'individual_count',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'id_phenological_stage',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'remarks',
-            sa.Text(),
-            nullable=True
-        ),
-        sa.Column(
-            'meta_create_by',
-            sa.Integer(),
-            nullable=False
-        ),
-        sa.Column(
-            'meta_create_date',
-            sa.DateTime(),
-            nullable=False,
-            server_default=sa.text('now()')
-        ),
-        sa.Column(
-            'meta_update_by',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'meta_update_date',
-            sa.DateTime(),
-            nullable=True
-        ),
+        sa.Column("meta_update_by", sa.Integer(), nullable=True),
+        sa.Column("meta_update_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint(
-            'id_culture_action_observation',
-            name='pk_t_culture_action_observation'
+            "id_culture_action_observation", name="pk_t_culture_action_observation"
         ),
-        sa.UniqueConstraint(
-            'id_action',
-            name='uq_t_culture_action_observation_id_action'
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_observation_id_action"),
+        sa.ForeignKeyConstraint(
+            ["id_action"],
+            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            name="fk_t_culture_action_observation_id_action",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
-            ['id_action'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_action.id_action'
-            ],
-            name='fk_t_culture_action_observation_id_action',
-            ondelete='CASCADE'
+            ["id_phenological_stage"],
+            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
+            name=("fk_t_culture_action_observation_" "id_phenological_stage"),
+            ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
-            ['id_phenological_stage'],
-            [
-                'ref_nomenclatures.'
-                't_nomenclatures.id_nomenclature'
-            ],
-            name=(
-                'fk_t_culture_action_observation_'
-                'id_phenological_stage'
-            ),
-            ondelete='SET NULL'
+            ["meta_create_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_observation_" "meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
-            ['meta_create_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_observation_'
-                'meta_create_by'
-            )
+            ["meta_update_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_observation_" "meta_update_by"),
+            ondelete="SET NULL",
         ),
-        sa.ForeignKeyConstraint(
-            ['meta_update_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_observation_'
-                'meta_update_by'
-            ),
-            ondelete='SET NULL'
-        ),
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     # Table spécifique aux actions de traitement de Culture
     op.create_table(
-        't_culture_action_treatment',
+        "t_culture_action_treatment",
+        sa.Column("id_culture_action_treatment", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("id_action", sa.Integer(), nullable=False),
+        sa.Column("id_physiological_development_stage", sa.Integer(), nullable=True),
+        sa.Column("disease_or_deficiency", sa.String(length=50), nullable=True),
+        sa.Column("type", sa.String(length=50), nullable=True),
+        sa.Column("success", sa.Boolean(), nullable=True),
+        sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            'id_culture_action_treatment',
-            sa.Integer(),
-            autoincrement=True,
-            nullable=False
+            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
         ),
-        sa.Column(
-            'id_action',
-            sa.Integer(),
-            nullable=False
-        ),
-        sa.Column(
-            'id_physiological_development_stage',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'disease_or_deficiency',
-            sa.String(length=50),
-            nullable=True
-        ),
-        sa.Column(
-            'type',
-            sa.String(length=50),
-            nullable=True
-        ),
-        sa.Column(
-            'success',
-            sa.Boolean(),
-            nullable=True
-        ),
-        sa.Column(
-            'meta_create_by',
-            sa.Integer(),
-            nullable=False
-        ),
-        sa.Column(
-            'meta_create_date',
-            sa.DateTime(),
-            nullable=False,
-            server_default=sa.text('now()')
-        ),
-        sa.Column(
-            'meta_update_by',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'meta_update_date',
-            sa.DateTime(),
-            nullable=True
-        ),
+        sa.Column("meta_update_by", sa.Integer(), nullable=True),
+        sa.Column("meta_update_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint(
-            'id_culture_action_treatment',
-            name='pk_t_culture_action_treatment'
+            "id_culture_action_treatment", name="pk_t_culture_action_treatment"
         ),
-        sa.UniqueConstraint(
-            'id_action',
-            name='uq_t_culture_action_treatment_id_action'
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_treatment_id_action"),
+        sa.ForeignKeyConstraint(
+            ["id_action"],
+            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            name="fk_t_culture_action_treatment_id_action",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
-            ['id_action'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_action.id_action'
-            ],
-            name='fk_t_culture_action_treatment_id_action',
-            ondelete='CASCADE'
+            ["id_physiological_development_stage"],
+            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
+            name=("fk_t_culture_action_treatment_" "physiological_stage"),
+            ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
-            ['id_physiological_development_stage'],
-            [
-                'ref_nomenclatures.'
-                't_nomenclatures.id_nomenclature'
-            ],
-            name=(
-                'fk_t_culture_action_treatment_'
-                'physiological_stage'
-            ),
-            ondelete='SET NULL'
+            ["meta_create_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_treatment_" "meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
-            ['meta_create_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_treatment_'
-                'meta_create_by'
-            )
+            ["meta_update_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_treatment_" "meta_update_by"),
+            ondelete="SET NULL",
         ),
-        sa.ForeignKeyConstraint(
-            ['meta_update_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_treatment_'
-                'meta_update_by'
-            ),
-            ondelete='SET NULL'
-        ),
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     # Table spécifique aux actions de prélèvement de Culture
     op.create_table(
-        't_culture_action_sampling',
+        "t_culture_action_sampling",
+        sa.Column("id_culture_action_sampling", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("id_action", sa.Integer(), nullable=False),
+        sa.Column("quantity", sa.Integer(), nullable=True),
+        sa.Column("remarks", sa.Text(), nullable=True),
+        sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            'id_culture_action_sampling',
-            sa.Integer(),
-            autoincrement=True,
-            nullable=False
+            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
         ),
-        sa.Column(
-            'id_action',
-            sa.Integer(),
-            nullable=False
-        ),
-        sa.Column(
-            'quantity',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'remarks',
-            sa.Text(),
-            nullable=True
-        ),
-        sa.Column(
-            'meta_create_by',
-            sa.Integer(),
-            nullable=False
-        ),
-        sa.Column(
-            'meta_create_date',
-            sa.DateTime(),
-            nullable=False,
-            server_default=sa.text('now()')
-        ),
-        sa.Column(
-            'meta_update_by',
-            sa.Integer(),
-            nullable=True
-        ),
-        sa.Column(
-            'meta_update_date',
-            sa.DateTime(),
-            nullable=True
-        ),
-        sa.PrimaryKeyConstraint(
-            'id_culture_action_sampling',
-            name='pk_t_culture_action_sampling'
-        ),
-        sa.UniqueConstraint(
-            'id_action',
-            name='uq_t_culture_action_sampling_id_action'
+        sa.Column("meta_update_by", sa.Integer(), nullable=True),
+        sa.Column("meta_update_date", sa.DateTime(), nullable=True),
+        sa.PrimaryKeyConstraint("id_culture_action_sampling", name="pk_t_culture_action_sampling"),
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_sampling_id_action"),
+        sa.ForeignKeyConstraint(
+            ["id_action"],
+            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            name="fk_t_culture_action_sampling_id_action",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
-            ['id_action'],
-            [
-                'pr_conservation_flora_exsitu.'
-                't_action.id_action'
-            ],
-            name='fk_t_culture_action_sampling_id_action',
-            ondelete='CASCADE'
+            ["meta_create_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_sampling_" "meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
-            ['meta_create_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_sampling_'
-                'meta_create_by'
-            )
+            ["meta_update_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name=("fk_t_culture_action_sampling_" "meta_update_by"),
+            ondelete="SET NULL",
         ),
-        sa.ForeignKeyConstraint(
-            ['meta_update_by'],
-            ['utilisateurs.t_roles.id_role'],
-            name=(
-                'fk_t_culture_action_sampling_'
-                'meta_update_by'
-            ),
-            ondelete='SET NULL'
-        ),
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
+
 
 def downgrade():
     # Create temporary indexes for deleting nomenclatures with performance
     created_temp_indexes = create_missing_nomenclature_indexes()
 
     # Suppression des actions de prélèvement de Culture
-    op.execute("""
+    op.execute(
+        """
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.t_culture_action_sampling;
-    """)
+    """
+    )
 
     # Suppression des actions de traitement de Culture
-    op.execute("""
+    op.execute(
+        """
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.t_culture_action_treatment;
-    """)
+    """
+    )
 
     # Suppression des actions d'observation de Culture
-    op.execute("""
+    op.execute(
+        """
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.t_culture_action_observation;
-    """)
+    """
+    )
 
     # Suppression des actions de transplantation de Culture
-    op.execute("""
+    op.execute(
+        """
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.
         t_culture_action_transplantation;
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         ALTER TABLE
         pr_conservation_flora_exsitu.t_action
         DROP CONSTRAINT IF EXISTS
         ck_t_action_end_date_after_start_date;
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         ALTER TABLE
         pr_conservation_flora_exsitu.t_action
         DROP CONSTRAINT IF EXISTS
         fk_t_action_id_culture;
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         ALTER TABLE
         pr_conservation_flora_exsitu.t_action
         DROP COLUMN IF EXISTS
         id_culture;
-    """)
-    
-    op.execute("""
+    """
+    )
+
+    op.execute(
+        """
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.t_culture;
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Jardin',
@@ -2049,9 +1719,11 @@ def downgrade():
             WHERE mnemonique = 'CFE_SOWING_LOCATION'
         )
         AND cd_nomenclature = 'jar';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Sol in situ',
@@ -2062,55 +1734,51 @@ def downgrade():
             WHERE mnemonique = 'CFE_SOWING_SUBSTRATE'
         )
         AND label_default = 'Sol prélevé in-situ';
-
-
-
-
-
     """
     )
 
     op.alter_column(
-        't_sowing',
-        'code',
+        "t_sowing",
+        "code",
         existing_type=sa.String(length=50),
         nullable=True,
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
-        't_sowing',
-        'id_actor',
+        "t_sowing",
+        "id_actor",
         existing_type=sa.Integer(),
         nullable=False,
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
-        't_sowing',
-        'id_storage',
+        "t_sowing",
+        "id_storage",
         existing_type=sa.Integer(),
         nullable=False,
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
-        't_action',
-        'id_actor',
+        "t_action",
+        "id_actor",
         existing_type=sa.Integer(),
         nullable=False,
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
     op.alter_column(
-        't_test',
-        'id_actor',
+        "t_test",
+        "id_actor",
         existing_type=sa.Integer(),
         nullable=False,
-        schema='pr_conservation_flora_exsitu'
+        schema="pr_conservation_flora_exsitu",
     )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Mécanique',
@@ -2131,9 +1799,11 @@ def downgrade():
             WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
         )
         AND cd_nomenclature = 'chi';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         INSERT INTO ref_nomenclatures.t_nomenclatures (
             id_type,
             cd_nomenclature,
@@ -2185,9 +1855,11 @@ def downgrade():
             'tracult',
             'prel'
         );
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             cd_nomenclature = 'ster',
@@ -2248,9 +1920,11 @@ def downgrade():
             WHERE mnemonique = 'CFE_ACTION_TYPE'
         )
         AND cd_nomenclature = 'synth';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
             label_default = 'Produit de stérilisation',
@@ -2410,9 +2084,11 @@ def downgrade():
             WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
             AND n.cd_nomenclature = 'exrad'
         );
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.bib_nomenclatures_types
         SET
             label_default = 'Traitement liquide',
@@ -2420,9 +2096,11 @@ def downgrade():
             definition_default = 'Nomenclature des liquides utilisés pour les traitements des semences.',
             definition_fr = 'Nomenclature des liquides utilisés pour les traitements des semences.'
         WHERE mnemonique = 'CFE_LIQUID_TREATMENT';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         DELETE FROM ref_nomenclatures.t_nomenclatures AS n
         WHERE n.id_type = (
             SELECT id_type
@@ -2435,9 +2113,11 @@ def downgrade():
             FROM pr_conservation_flora_exsitu.t_test AS t
             WHERE t.id_support = n.id_nomenclature
         );
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Mécanique ',
@@ -2458,9 +2138,11 @@ def downgrade():
             WHERE mnemonique = 'CFE_SCARIFICATION_TYPE'
         )
         AND cd_nomenclature = 'chi';
-    """)
+    """
+    )
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET
             label_default = 'Partielle',
