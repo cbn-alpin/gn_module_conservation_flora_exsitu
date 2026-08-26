@@ -647,3 +647,15 @@ button[disabled] {
   scrollbar-gutter:
     stable;
 }
+
+/* =========================================================
+   NOTIFICATION DE CRÉATION D'UNE ACTION
+   ========================================================= */
+
+::ng-deep
+.toast-success
+.toast-message {
+  white-space: pre-line;
+
+  text-align: left;
+}

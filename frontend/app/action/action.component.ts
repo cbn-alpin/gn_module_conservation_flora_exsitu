@@ -1032,7 +1032,11 @@ export class ActionComponent implements OnInit {
   }
 
   private getActionSuccessLabel(): string {
-    const sowingCode = this.dialogData?.sowingCode || '';
+    const contextCode =
+      this.idSowing
+        ? this.dialogData?.sowingCode || ''
+        : this.dialogData?.testCode || '';
+
 
     const actionTypeLabel =
       this.dialogData?.actionTypeLabel ||
@@ -1040,7 +1044,13 @@ export class ActionComponent implements OnInit {
       this.germinationForm.get('id_action_type')?.value?.mnemonique ||
       '';
 
-    return `${sowingCode} - ${actionTypeLabel}`.trim();
+
+    return [
+      contextCode,
+      actionTypeLabel
+    ]
+      .filter(Boolean)
+      .join(' - ');
   }
 
   private triggerActionStartDateFieldShake(): void {
@@ -1356,12 +1366,33 @@ export class ActionComponent implements OnInit {
   }
 
   private showActionSuccessToaster(isEdit: boolean): void {
-    const actionLabel = this.getActionSuccessLabel();
-    const dateStart = this.formatDateForToaster(this.germinationForm.get('date_start')?.value);
+    const actionLabel =
+      this.getActionSuccessLabel();
+
+
+    const dateStart =
+      this.formatDateForToaster(
+        this.germinationForm
+          .get('date_start')
+          ?.value
+      );
+
 
     this.toast.translateToaster(
       isEdit ? 'info' : 'success',
-      `Action ${this.toBoldItalicText(actionLabel)} ${isEdit ? 'mise à jour' : 'créée'} avec succès. Date de début : ${this.toBoldItalicText(dateStart)}`
+      `Action ${
+        this.toBoldItalicText(
+          actionLabel
+        )
+      } ${
+        isEdit
+          ? 'mise à jour'
+          : 'créée'
+      } avec succès.\nDate de début : ${
+        this.toBoldItalicText(
+          dateStart
+        )
+      }`
     );
   }
   

@@ -215,6 +215,139 @@ export class CultureActionComponent implements OnInit {
       });
   }
 
+
+  private toBoldItalicText(
+    value: string
+  ): string {
+
+    const boldItalicChars:
+      Record<string, string> = {
+
+      A: '𝑨', B: '𝑩', C: '𝑪',
+      D: '𝑫', E: '𝑬', F: '𝑭',
+      G: '𝑮', H: '𝑯', I: '𝑰',
+      J: '𝑱', K: '𝑲', L: '𝑳',
+      M: '𝑴', N: '𝑵', O: '𝑶',
+      P: '𝑷', Q: '𝑸', R: '𝑹',
+      S: '𝑺', T: '𝑻', U: '𝑼',
+      V: '𝑽', W: '𝑾', X: '𝑿',
+      Y: '𝒀', Z: '𝒁',
+
+      a: '𝒂', b: '𝒃', c: '𝒄',
+      d: '𝒅', e: '𝒆', f: '𝒇',
+      g: '𝒈', h: '𝒉', i: '𝒊',
+      j: '𝒋', k: '𝒌', l: '𝒍',
+      m: '𝒎', n: '𝒏', o: '𝒐',
+      p: '𝒑', q: '𝒒', r: '𝒓',
+      s: '𝒔', t: '𝒕', u: '𝒖',
+      v: '𝒗', w: '𝒘', x: '𝒙',
+      y: '𝒚', z: '𝒛',
+
+      0: '𝟎', 1: '𝟏', 2: '𝟐',
+      3: '𝟑', 4: '𝟒', 5: '𝟓',
+      6: '𝟔', 7: '𝟕', 8: '𝟖',
+      9: '𝟗'
+    };
+
+
+    return value.replace(
+      /[A-Za-z0-9]/g,
+      char =>
+        boldItalicChars[char] ||
+        char
+    );
+  }
+
+
+  private formatDateForToaster(
+    value: any
+  ): string {
+
+    const formattedDate =
+      this.formatDateForApi(
+        value
+      );
+
+
+    if (!formattedDate) {
+      return '-';
+    }
+
+
+    const [
+      year,
+      month,
+      day
+    ] =
+      formattedDate.split('-');
+
+
+    return `${day}/${month}/${year}`;
+  }
+
+
+  private showCultureActionSuccessToaster(): void {
+
+    const selectedActionTypeId =
+      Number(
+        this.cultureActionForm
+          .get('id_action_type')
+          ?.value
+      );
+
+
+    const selectedActionType =
+      this.cultureActionTypeOptions
+        .find(
+          option =>
+            Number(
+              option?.id_nomenclature
+            ) ===
+            selectedActionTypeId
+        );
+
+
+    const actionTypeLabel =
+      selectedActionType
+        ? this.getOptionLabel(
+            selectedActionType
+          )
+        : '';
+
+
+    const actionLabel =
+      [
+        this.dialogData?.codeCulture || '',
+        actionTypeLabel
+      ]
+        .filter(Boolean)
+        .join(' - ');
+
+
+    const dateStart =
+      this.formatDateForToaster(
+        this.cultureActionForm
+          .get('date_start')
+          ?.value
+      );
+
+
+    this.toast
+      .translateToaster(
+        'success',
+        `Action ${
+          this.toBoldItalicText(
+            actionLabel
+          )
+        } créée avec succès.\nDate de début : ${
+          this.toBoldItalicText(
+            dateStart
+          )
+        }`
+      );
+  }
+
+
   onSubmit(): void {
     this.formSubmitted = true;
 
@@ -294,11 +427,7 @@ export class CultureActionComponent implements OnInit {
 
             next: result => {
 
-              this.toast
-                .translateToaster(
-                  'success',
-                  'Action de transplantation créée avec succès.'
-                );
+              this.showCultureActionSuccessToaster();
 
 
               this.dialogRef.close(
@@ -362,11 +491,7 @@ export class CultureActionComponent implements OnInit {
 
         next: () => {
 
-          this.toast
-            .translateToaster(
-              'success',
-              'Action de transplantation créée avec succès.'
-            );
+          this.showCultureActionSuccessToaster();
 
 
           this.substrates.clear();

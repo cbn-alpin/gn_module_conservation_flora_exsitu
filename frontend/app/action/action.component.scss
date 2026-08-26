@@ -1611,3 +1611,19 @@ mat-icon {
   }
 
 }
+
+/* =========================================================
+   NOTIFICATIONS CRÉATION / MODIFICATION DES ACTIONS
+   ========================================================= */
+
+::ng-deep
+.toast-success
+.toast-message,
+
+::ng-deep
+.toast-info
+.toast-message {
+  white-space: pre-line;
+
+  text-align: left;
+}
