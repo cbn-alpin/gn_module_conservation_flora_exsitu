@@ -189,16 +189,31 @@ export class MaterialFormService {
     }
 
 
-    deleteOccurrence(occurrence) {
-      this.dataService.deleteMaterial(occurrence.id_material).subscribe(
-        (confirm: boolean) => {
-          this.exstiuFormService.removeOccurrenceData(occurrence.id_material);
-          this._commonService.translateToaster('info', 'Matériel supprimé');
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    deleteOccurrence(
+      occurrence: any
+    ): Observable<any> {
+
+      return this.dataService
+        .deleteMaterial(
+          occurrence.id_material
+        )
+        .pipe(
+          tap(() => {
+
+            this.exstiuFormService
+              .removeOccurrenceData(
+                occurrence.id_material
+              );
+
+
+            this._commonService
+              .translateToaster(
+                'info',
+                'Matériel supprimé'
+              );
+
+          })
+        );
     }
 
     addTaxon(taxonValue, allowMultiple: boolean = true) {

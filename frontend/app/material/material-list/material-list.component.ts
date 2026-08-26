@@ -18,6 +18,7 @@ import { MaterialModalComponent } from '../../components/material-modal/material
 import { ConstantsService } from '../../services/constants.service';
 import { Router } from '@angular/router';
 import { ConfigService } from '../../services/config.service';
+import { CommonService } from '@geonature_common/service/common.service';
 
 
 @Component({
@@ -124,7 +125,8 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         private dialogService: DialogService,
         public constants: ConstantsService,
         public router: Router,
-        public cfg: ConfigService
+        public cfg: ConfigService,
+        private toast: CommonService
         
     ){
 
@@ -801,10 +803,147 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
       this.addModalMaterial();
     }
 
+    private toBoldText(value: string): string {
+      const boldItalicChars: Record<string, string> = {
+        A: '𝑨', B: '𝑩', C: '𝑪', D: '𝑫', E: '𝑬', F: '𝑭', G: '𝑮', H: '𝑯', I: '𝑰', J: '𝑱',
+        K: '𝑲', L: '𝑳', M: '𝑴', N: '𝑵', O: '𝑶', P: '𝑷', Q: '𝑸', R: '𝑹', S: '𝑺', T: '𝑻',
+        U: '𝑼', V: '𝑽', W: '𝑾', X: '𝑿', Y: '𝒀', Z: '𝒁',
+        a: '𝒂', b: '𝒃', c: '𝒄', d: '𝒅', e: '𝒆', f: '𝒇', g: '𝒈', h: '𝒉', i: '𝒊', j: '𝒋',
+        k: '𝒌', l: '𝒍', m: '𝒎', n: '𝒏', o: '𝒐', p: '𝒑', q: '𝒒', r: '𝒓', s: '𝒔', t: '𝒕',
+        u: '𝒖', v: '𝒗', w: '𝒘', x: '𝒙', y: '𝒚', z: '𝒛',
+        0: '𝟎', 1: '𝟏', 2: '𝟐', 3: '𝟑', 4: '𝟒', 5: '𝟓', 6: '𝟔', 7: '𝟕', 8: '𝟖', 9: '𝟗'
+      };
+
+      return value.replace(
+        /[A-Za-z0-9]/g,
+        (char) =>
+          boldItalicChars[char] ||
+          char
+      );
+    }
+
+
+    private showMaterialDeleteBlockedWarning(
+      occurrence: any,
+      hasSeedDescription: boolean,
+      storageCount: number
+    ): void {
+
+      const currentCode =
+        this.removeHtml(
+          occurrence?.code_material
+        );
+
+
+      const hasStorage =
+        storageCount > 0;
+
+
+      let linkedContent = '';
+      let instruction = '';
+
+
+      if (
+        hasSeedDescription &&
+        hasStorage
+      ) {
+
+        const storageLabel =
+          storageCount > 1
+            ? 'stockages liés'
+            : 'stockage lié';
+
+
+        linkedContent =
+          `${this.toBoldText('1')} fiche semence liée et ${
+            this.toBoldText(
+              String(storageCount)
+            )
+          } ${storageLabel}`;
+
+
+        instruction =
+          'Supprimez d\'abord la fiche semence et les stockages liés à ce matériel récolté.';
+
+      } else if (hasSeedDescription) {
+
+        linkedContent =
+          `${this.toBoldText('1')} fiche semence liée`;
+
+
+        instruction =
+          'Supprimez d\'abord la fiche semence liée à ce matériel récolté.';
+
+      } else if (hasStorage) {
+
+        const storageLabel =
+          storageCount > 1
+            ? 'stockages liés'
+            : 'stockage lié';
+
+
+        linkedContent =
+          `${this.toBoldText(
+            String(storageCount)
+          )} ${storageLabel}`;
+
+
+        instruction =
+          storageCount > 1
+            ? 'Supprimez d\'abord les stockages liés à ce matériel récolté.'
+            : 'Supprimez d\'abord le stockage lié à ce matériel récolté.';
+
+      }
+
+
+      if (!linkedContent) {
+        return;
+      }
+
+
+      this.toast.translateToaster(
+        'warning',
+        `Suppression impossible : le matériel récolté ${
+          this.toBoldText(
+            currentCode
+          )
+        } contient ${linkedContent}. ${instruction}`
+      );
+    }
+
+
     deleteOccurrence(occurrence) {
+
+      const hasSeedDescription =
+        !!occurrence?.has_seed_description;
+
+
+      const storageCount =
+        Number(
+          occurrence?.storage_count || 0
+        );
+
+
+      if (
+        hasSeedDescription ||
+        storageCount > 0
+      ) {
+
+        this.showMaterialDeleteBlockedWarning(
+          occurrence,
+          hasSeedDescription,
+          storageCount
+        );
+
+
+        return;
+      }
+
+
       const hasLinkedTaxons =
         occurrence.taxons
         && occurrence.taxons.length > 0;
+
 
       this.dialogService
         .confirmDialog({
@@ -818,10 +957,52 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
           disableClose: false
         })
         .subscribe((yes) => {
-          if (yes) {
-            this.materialFormService
-              .deleteOccurrence(occurrence);
+
+          if (!yes) {
+            return;
           }
+
+
+          this.materialFormService
+            .deleteOccurrence(
+              occurrence
+            )
+            .subscribe({
+
+              error: (err) => {
+
+                if (err?.status === 409) {
+
+                  const backendHasSeedDescription =
+                    !!err?.error?.has_seed_description;
+
+
+                  const backendStorageCount =
+                    Number(
+                      err?.error?.storage_count || 0
+                    );
+
+
+                  this.showMaterialDeleteBlockedWarning(
+                    occurrence,
+                    backendHasSeedDescription,
+                    backendStorageCount
+                  );
+
+
+                  return;
+                }
+
+
+                console.error(
+                  'Erreur lors de la suppression du matériel récolté :',
+                  err
+                );
+
+              }
+
+            });
+
         });
     }
 
@@ -1095,22 +1276,18 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         return;
       }
 
+
       /*
-      * Le matériel sélectionné devient
-      * le contexte de l'onglet Culture.
+      * Le clic sur une ligne sélectionne
+      * uniquement le matériel récolté.
+      *
+      * L'ouverture de la fiche détail reste
+      * réservée au bouton Détails/Action.
       */
       this.exsituFormService
         .setIdMaterial(
           idMaterial
         );
-
-      /*
-      * Un accès par l'onglet supérieur Culture
-      * correspond toujours à un accès direct
-      * depuis le matériel récolté.
-      */
-      this.exsituFormService
-        .setCultureSourceFromMaterial();
     }
 
     goToCulture(material: any): void {

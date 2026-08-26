@@ -549,9 +549,42 @@ def update_material(id_harvest, id_material):
 @json_resp
 def delete_material(id_material):
     """Suppression d'un matériel végétal d'une récolte"""
+    material = TMaterial.query.get(id_material)
+
+    if not material:
+        return {"error": "Matériel non trouvé."}, 404
+
+
+    has_seed_description = (
+        TMaterielSeed.query
+        .filter_by(id_material=id_material)
+        .first()
+        is not None
+    )
+
+
+    storage_count = (
+        TStorage.query
+        .filter_by(id_material=id_material)
+        .count()
+    )
+
+
+    if (
+        has_seed_description
+        or storage_count > 0
+    ):
+        return {
+            "error": "Suppression impossible",
+            "message": "Ce matériel récolté contient des données liées.",
+            "has_seed_description": has_seed_description,
+            "storage_count": storage_count
+        }, 409
+
+
     material_repo = HarvestMaterialRepository()
     deleted = material_repo.delete(id_material)
-    
+
     if not deleted:
         return {"error": "Matériel non trouvé."}, 404
 
@@ -627,6 +660,7 @@ def get_materials(id_harvest):
 
             material_dict["has_seed_description"] = material.has_seed_description
             material_dict["has_storage"] = material.has_storage
+            material_dict["storage_count"] = len(material.storages)
 
             materials_list.append(material_dict)
 

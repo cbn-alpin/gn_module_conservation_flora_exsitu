@@ -401,7 +401,6 @@
             <button
               mat-menu-item
               class="delete-action-red"
-              [disabled]="element.has_seed_description || element.has_storage"
               (click)="deleteOccurrence(element)"
             >
               <mat-icon>delete</mat-icon>
@@ -453,7 +452,7 @@
             row.id_material ===
             exsituFormService.idMaterial
         }"
-        (click)="goToMaterialDetails(row)"
+        (click)="selectMaterial(row)"
       ></tr>
     </table>
 
