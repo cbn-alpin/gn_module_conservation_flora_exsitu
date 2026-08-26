@@ -649,11 +649,15 @@ button[disabled] {
 }
 
 /* =========================================================
-   NOTIFICATION DE CRÉATION D'UNE ACTION
+   NOTIFICATIONS DES ACTIONS
    ========================================================= */
 
 ::ng-deep
 .toast-success
+.toast-message,
+
+::ng-deep
+.toast-info
 .toast-message {
   white-space: pre-line;
 

@@ -548,6 +548,100 @@ export class CultureActionComponent implements OnInit {
   }
 
 
+  private getCultureActionCancelLabel(): string {
+
+    const selectedActionTypeId =
+      Number(
+        this.cultureActionForm
+          .get('id_action_type')
+          ?.value
+      );
+
+
+    const selectedActionType =
+      this.cultureActionTypeOptions
+        .find(
+          option =>
+            Number(
+              option?.id_nomenclature
+            ) ===
+            selectedActionTypeId
+        );
+
+
+    const actionTypeLabel =
+      selectedActionType
+        ? this.getOptionLabel(
+            selectedActionType
+          )
+        : '';
+
+
+    if (!actionTypeLabel) {
+      return '';
+    }
+
+
+    return [
+      this.dialogData?.codeCulture || '',
+      actionTypeLabel
+    ]
+      .filter(Boolean)
+      .join(' - ');
+  }
+
+
+  private showCultureActionCancelToaster(): void {
+
+    const actionLabel =
+      this.getCultureActionCancelLabel();
+
+
+    const dateStart =
+      this.formatDateForToaster(
+        this.cultureActionForm
+          .get('date_start')
+          ?.value
+      );
+
+
+    const hasDateStart =
+      dateStart !== '-';
+
+
+    const dateLine =
+      hasDateStart
+        ? `\nDate de début : ${
+            this.toBoldItalicText(
+              dateStart
+            )
+          }`
+        : '';
+
+
+    if (actionLabel) {
+
+      this.toast.translateToaster(
+        'info',
+        `Action ${
+          this.toBoldItalicText(
+            actionLabel
+          )
+        } non créée${dateLine}`
+      );
+
+
+      return;
+    }
+
+
+    this.toast.translateToaster(
+      'info',
+      `Création de l’action annulée${dateLine}`
+    );
+  }
+
+
   onCancel(): void {
     if (
       this.cancelDialogOpen ||
@@ -621,9 +715,16 @@ export class CultureActionComponent implements OnInit {
 
           this.cancelDialogOpen = false;
 
-          if (yes) {
-            this.dialogRef.close();
+
+          if (!yes) {
+            return;
           }
+
+
+          this.showCultureActionCancelToaster();
+
+
+          this.dialogRef.close();
 
         },
 

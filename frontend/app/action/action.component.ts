@@ -1844,54 +1844,110 @@ export class ActionComponent implements OnInit {
   }
 
   private getActionCancelLabel(): string {
-    const sowingCode = this.dialogData?.sowingCode || '';
-    const actionTypeLabel = this.getSelectedActionTypeLabel();
+    const contextCode =
+      this.idSowing
+        ? this.dialogData?.sowingCode || ''
+        : this.dialogData?.testCode || '';
 
-    if (!this.dialogData?.edit && !actionTypeLabel) {
+
+    const actionTypeLabel =
+      this.getSelectedActionTypeLabel();
+
+
+    if (
+      !this.dialogData?.edit &&
+      !actionTypeLabel
+    ) {
       return '';
     }
 
-    if (sowingCode && actionTypeLabel) {
-      return `${sowingCode} - ${actionTypeLabel}`;
+
+    if (
+      contextCode &&
+      actionTypeLabel
+    ) {
+      return `${contextCode} - ${actionTypeLabel}`;
     }
 
-    if (this.dialogData?.edit && sowingCode) {
-      return sowingCode;
+
+    if (
+      this.dialogData?.edit &&
+      contextCode
+    ) {
+      return contextCode;
     }
+
 
     if (actionTypeLabel) {
       return actionTypeLabel;
     }
 
+
     return '';
   }
 
   private showActionCancelToaster(): void {
-    const actionLabel = this.getActionCancelLabel();
-    const dateStart = this.formatDateForToaster(this.germinationForm.get('date_start')?.value);
-    const hasDateStart = dateStart !== '-';
+    const actionLabel =
+      this.getActionCancelLabel();
+
+
+    const dateStart =
+      this.formatDateForToaster(
+        this.germinationForm
+          .get('date_start')
+          ?.value
+      );
+
+
+    const hasDateStart =
+      dateStart !== '-';
+
+
+    const dateLine =
+      hasDateStart
+        ? `\nDate de début : ${
+            this.toBoldItalicText(
+              dateStart
+            )
+          }`
+        : '';
+
 
     if (this.dialogData?.edit) {
+
       this.toast.translateToaster(
         'info',
-        `Action ${this.toBoldItalicText(actionLabel)} non modifiée${hasDateStart ? `. Date de début : ${this.toBoldItalicText(dateStart)}` : ''}`
+        `Action ${
+          this.toBoldItalicText(
+            actionLabel
+          )
+        } non modifiée${dateLine}`
       );
+
 
       return;
     }
+
 
     if (actionLabel) {
+
       this.toast.translateToaster(
         'info',
-        `Action ${this.toBoldItalicText(actionLabel)} non créée${hasDateStart ? `. Date de début : ${this.toBoldItalicText(dateStart)}` : ''}`
+        `Action ${
+          this.toBoldItalicText(
+            actionLabel
+          )
+        } non créée${dateLine}`
       );
+
 
       return;
     }
+
 
     this.toast.translateToaster(
       'info',
-      `Création de l’action annulée${hasDateStart ? `. Date de début : ${this.toBoldItalicText(dateStart)}` : ''}`
+      `Création de l’action annulée${dateLine}`
     );
   }
 
