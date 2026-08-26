@@ -978,6 +978,11 @@ export class ActionComponent implements OnInit {
 
     request$.subscribe({
       next: (res) => {
+        this.showActionSuccessToaster(
+          false
+        );
+
+
         this.actionAdded.emit(res);
         this.resetSowingActionValidationState();
 
