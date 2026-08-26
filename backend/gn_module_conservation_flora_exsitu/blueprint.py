@@ -2032,6 +2032,28 @@ def delete_culture(
     id_material,
     id_culture
 ):
+    action_count = (
+        TAction.query
+        .filter_by(
+            id_culture=id_culture
+        )
+        .count()
+    )
+
+
+    if action_count > 0:
+        return {
+            "error":
+                "Suppression impossible",
+
+            "message":
+                "Cette culture contient des actions liées.",
+
+            "action_count":
+                action_count
+        }, 409
+
+
     repo = CultureRepository()
 
     deleted = repo.delete(
@@ -2039,13 +2061,16 @@ def delete_culture(
         id_culture
     )
 
+
     if not deleted:
         return {
             "error": "Culture non trouvée"
         }, 404
 
+
     return {
-        "message": "Culture supprimée avec succès"
+        "message":
+            "Culture supprimée avec succès"
     }, 200
 
 @blueprint.route("/nomenclatures/<string:code_type>", methods=["GET"])
@@ -2215,13 +2240,39 @@ def get_nomenclature_by_code(cd_nomenclature):
 
 @blueprint.route('/materials/<int:id_material>/tests/<int:id_test>', methods=['DELETE'])
 def delete_test(id_material, id_test):
-    test = db.session.query(TTest).filter_by(id_test=id_test, id_material=id_material).first()
+    test = db.session.query(TTest).filter_by(
+        id_test=id_test,
+        id_material=id_material
+    ).first()
+
     if not test:
-        return jsonify({'error': 'Test non trouvé'}), 404
-    db.session.query(TAction).filter_by(id_test=id_test).delete()
+        return jsonify({
+            'error': 'Test non trouvé'
+        }), 404
+
+
+    action_count = (
+        db.session.query(TAction)
+        .filter_by(id_test=id_test)
+        .count()
+    )
+
+
+    if action_count > 0:
+        return jsonify({
+            'error': 'Suppression impossible',
+            'message': 'Ce test contient des actions liées.',
+            'action_count': action_count
+        }), 409
+
+
     db.session.delete(test)
     db.session.commit()
-    return jsonify({'success': True}), 200
+
+
+    return jsonify({
+        'success': True
+    }), 200
 
 
 @blueprint.route("/tests/<int:id_test>/actions", methods=["POST"])
