@@ -260,7 +260,12 @@ export class ActionComponent implements OnInit {
 
     this.api.getNomenclaturesByTypeCode(this.codeNomenclatureType).subscribe({
       next: (actionTypes) => {
-        this.actionTypes = actionTypes || [];
+        this.actionTypes =
+          this.codeNomenclatureType === 'CFE_ACTION_TYPE'
+            ? (actionTypes || []).filter(
+                actionType => actionType?.cd_nomenclature !== 'transp'
+              )
+            : actionTypes || [];
       },
       error: (err) => {
         console.error('Erreur lors du chargement des types d’action :', err);
