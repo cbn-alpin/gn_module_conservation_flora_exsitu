@@ -1476,3 +1476,123 @@ th.mat-column-actions {
 
   text-align: left;
 }
+
+/* =========================================================
+   DÉTAIL D'UNE ACTION CULTURE
+   Même logique que Semi : liste + panneau détail
+   ========================================================= */
+
+.culture-actions-wrapper.with-action-details {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 20px;
+}
+
+
+.culture-actions-wrapper.with-action-details
+.culture-actions-panel,
+
+.culture-action-detail-pane {
+  flex: 1 1 0;
+
+  min-width: 0;
+}
+
+
+.culture-action-detail-pane {
+  padding: 15px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbf5ff 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid #e1bee7;
+  border-radius: 6px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(142, 36, 170, 0.12);
+}
+
+
+.culture-action-detail-navigation {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+
+.culture-action-details-wrapper {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.culture-detail-navigation-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+
+  margin-top: 18px;
+  padding: 0 !important;
+
+  color: #7b1fa2 !important;
+  background-color: #f3e5f5 !important;
+
+  border: 1px solid #ba68c8 !important;
+  border-radius: 50%;
+
+  box-shadow:
+    0 3px 8px
+    rgba(142, 36, 170, 0.16);
+}
+
+
+.culture-detail-navigation-button:hover:not(:disabled) {
+  color: #6a1b9a !important;
+  background-color: #e1bee7 !important;
+}
+
+
+.culture-detail-navigation-button:disabled {
+  color: #9e9e9e !important;
+  background-color: #eeeeee !important;
+
+  border-color: #d0d0d0 !important;
+
+  box-shadow: none;
+
+  opacity: 0.4;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.selected-row
+.mat-mdc-cell {
+  background-color: #f7ecfb !important;
+}
+
+
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.selected-row
+.mat-mdc-cell:first-child {
+  box-shadow:
+    inset 4px 0 0 #8e24aa;
+}

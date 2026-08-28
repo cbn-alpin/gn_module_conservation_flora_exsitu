@@ -369,7 +369,12 @@
        LISTE DES ACTIONS CULTURE
        STRUCTURE CONSERVÉE MAIS PAS ENCORE FONCTIONNELLE
        ===================================================== -->
-<div class="culture-actions-wrapper">
+<div
+  class="culture-actions-wrapper"
+  [class.with-action-details]="
+    !!selectedCultureAction
+  "
+>
 
   <mat-card class="culture-actions-panel">
 
@@ -735,6 +740,7 @@
               type="button"
               class="culture-actions-trigger-red"
               [matMenuTriggerFor]="cultureActionMenu"
+              (click)="$event.stopPropagation()"
             >
 
               <mat-icon>
@@ -755,13 +761,37 @@
                   'transp'
                 "
                 (click)="
-                  onOpenCultureActionDetails(
+                  onEditCultureAction(
                     element
                   )
                 "
               >
 
                 <mat-icon>
+                  edit
+                </mat-icon>
+
+                <span>
+                  Modifier
+                </span>
+
+              </button>
+
+
+              <button
+                mat-menu-item
+                *ngIf="
+                  element.code_action_type ===
+                  'transp'
+                "
+                (click)="
+                  onOpenCultureActionDetails(
+                    element
+                  )
+                "
+              >
+
+                <mat-icon style="color: #6a1b9a;">
                   visibility
                 </mat-icon>
 
@@ -814,6 +844,15 @@
             let row;
             columns:
               displayedActionColumns
+          "
+          [class.selected-row]="
+            row.id_action ===
+            selectedCultureAction?.id_action
+          "
+          (click)="
+            onOpenCultureActionDetails(
+              row
+            )
           "
         >
         </tr>
@@ -874,6 +913,74 @@
 
     </div>
   </mat-card>
+
+
+  <div
+    class="culture-action-detail-pane"
+    *ngIf="selectedCultureAction"
+  >
+
+    <div class="culture-action-detail-navigation">
+
+      <button
+        mat-icon-button
+        type="button"
+        class="culture-detail-navigation-button"
+        [disabled]="
+          !canGoToPreviousCultureAction()
+        "
+        (click)="
+          showPreviousCultureActionDetails()
+        "
+        matTooltip="Action précédente"
+      >
+        <mat-icon>
+          chevron_left
+        </mat-icon>
+      </button>
+
+
+      <div class="culture-action-details-wrapper">
+
+        <app-culture-action-details
+          [actionId]="
+            selectedCultureAction.id_action
+          "
+          [codeCulture]="
+            culture?.code_culture || null
+          "
+          [refreshKey]="
+            cultureActionDetailsRefreshKey
+          "
+          (hideDetails)="
+            hideSelectedCultureActionDetails()
+          "
+        >
+        </app-culture-action-details>
+
+      </div>
+
+
+      <button
+        mat-icon-button
+        type="button"
+        class="culture-detail-navigation-button"
+        [disabled]="
+          !canGoToNextCultureAction()
+        "
+        (click)="
+          showNextCultureActionDetails()
+        "
+        matTooltip="Action suivante"
+      >
+        <mat-icon>
+          chevron_right
+        </mat-icon>
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
 

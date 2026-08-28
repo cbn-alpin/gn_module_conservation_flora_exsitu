@@ -20,6 +20,9 @@ import { FrenchDateAdapter } from '../services/french-date-adapter';
 interface CultureActionDialogData {
   idCulture: number;
   codeCulture?: string | null;
+  idAction?: number | null;
+  edit?: boolean;
+  action?: any;
 }
 
 @Component({
@@ -173,12 +176,28 @@ export class CultureActionComponent implements OnInit {
         icon: 'local_florist',
         variant: 'culture-reset',
         entityLabel:
-          'cette action de culture',
+          this.dialogData?.edit
+            ? 'les modifications de cette action de culture'
+            : 'cette action de culture',
         disableClose: false
       })
       .subscribe(yes => {
 
         if (!yes) {
+          return;
+        }
+
+
+        if (
+          this.dialogData?.edit &&
+          this.dialogData?.action
+        ) {
+
+          this.populateEditForm(
+            this.dialogData.action
+          );
+
+
           return;
         }
 
@@ -286,7 +305,9 @@ export class CultureActionComponent implements OnInit {
   }
 
 
-  private showCultureActionSuccessToaster(): void {
+  private showCultureActionSuccessToaster(
+    isEdit: boolean
+  ): void {
 
     const selectedActionTypeId =
       Number(
@@ -334,12 +355,18 @@ export class CultureActionComponent implements OnInit {
 
     this.toast
       .translateToaster(
-        'success',
+        isEdit
+          ? 'info'
+          : 'success',
         `Action ${
           this.toBoldItalicText(
             actionLabel
           )
-        } créée avec succès.\nDate de début : ${
+        } ${
+          isEdit
+            ? 'mise à jour'
+            : 'créée'
+        } avec succès.\nDate de début : ${
           this.toBoldItalicText(
             dateStart
           )
@@ -399,7 +426,9 @@ export class CultureActionComponent implements OnInit {
         variant: 'culture-save',
 
         entityLabel:
-          'l’action de culture',
+          this.dialogData?.edit
+            ? 'les modifications de l’action de culture'
+            : 'l’action de culture',
 
         entityCode:
           actionTypeLabel ||
@@ -418,16 +447,37 @@ export class CultureActionComponent implements OnInit {
           true;
 
 
-        this.cultureService
-          .createCultureTransplantation(
-            this.dialogData.idCulture,
-            this.buildPayload()
-          )
+        const isEdit =
+          !!(
+            this.dialogData?.edit &&
+            this.dialogData?.idAction
+          );
+
+
+        const request$ =
+          isEdit
+            ? this.cultureService
+                .updateCultureTransplantation(
+                  Number(
+                    this.dialogData.idAction
+                  ),
+                  this.buildPayload()
+                )
+            : this.cultureService
+                .createCultureTransplantation(
+                  this.dialogData.idCulture,
+                  this.buildPayload()
+                );
+
+
+        request$
           .subscribe({
 
             next: result => {
 
-              this.showCultureActionSuccessToaster();
+              this.showCultureActionSuccessToaster(
+                isEdit
+              );
 
 
               this.dialogRef.close(
@@ -443,7 +493,9 @@ export class CultureActionComponent implements OnInit {
 
 
               console.error(
-                'Erreur lors de la création de la transplantation :',
+                isEdit
+                  ? 'Erreur lors de la modification de la transplantation :'
+                  : 'Erreur lors de la création de la transplantation :',
                 error
               );
 
@@ -451,7 +503,9 @@ export class CultureActionComponent implements OnInit {
               this.toast
                 .translateToaster(
                   'error',
-                  'Impossible de créer l’action de transplantation.'
+                  isEdit
+                    ? 'Impossible de modifier l’action de transplantation.'
+                    : 'Impossible de créer l’action de transplantation.'
                 );
 
             }
@@ -491,7 +545,9 @@ export class CultureActionComponent implements OnInit {
 
         next: () => {
 
-          this.showCultureActionSuccessToaster();
+          this.showCultureActionSuccessToaster(
+            false
+          );
 
 
           this.substrates.clear();
@@ -619,6 +675,22 @@ export class CultureActionComponent implements OnInit {
         : '';
 
 
+    if (this.dialogData?.edit) {
+
+      this.toast.translateToaster(
+        'info',
+        `Action ${
+          this.toBoldItalicText(
+            actionLabel
+          )
+        } non modifiée${dateLine}`
+      );
+
+
+      return;
+    }
+
+
     if (actionLabel) {
 
       this.toast.translateToaster(
@@ -694,7 +766,11 @@ export class CultureActionComponent implements OnInit {
         variant: 'culture-exit',
 
         actionCancellation: true,
-        actionCancellationMode: 'create',
+
+        actionCancellationMode:
+          this.dialogData?.edit
+            ? 'edit'
+            : 'create',
 
         actionContextLabel:
           'de culture',
@@ -735,6 +811,177 @@ export class CultureActionComponent implements OnInit {
       });
   }
 
+  private populateEditForm(
+    action: any
+  ): void {
+
+    const transplantationActionType =
+      this.cultureActionTypeOptions
+        .find(
+          option =>
+            String(
+              option?.cd_nomenclature ||
+              ''
+            )
+              .trim()
+              .toLowerCase() ===
+            'transp'
+        );
+
+
+    this.substrates.clear();
+
+
+    const substrates =
+      Array.isArray(action?.substrat)
+        ? action.substrat
+        : [];
+
+
+    substrates.forEach(
+      substrate => {
+
+        this.substrates.push(
+          this.fb.group({
+            type: [
+              substrate?.type || ''
+            ],
+
+            category: [
+              substrate?.category || null
+            ],
+
+            percentage: [
+              substrate?.percentage ?? null,
+              [
+                Validators.min(0),
+                Validators.max(100)
+              ]
+            ]
+          })
+        );
+
+      }
+    );
+
+
+    this.cultureActionForm.patchValue({
+      id_action_type:
+        transplantationActionType
+          ?.id_nomenclature ||
+        null,
+
+      date_start:
+        this.parseDateForForm(
+          action?.date_start
+        ),
+
+      date_end:
+        this.parseDateForForm(
+          action?.date_end
+        ),
+
+      id_actor:
+        action?.id_actor
+          ? [
+              {
+                id_role:
+                  action.id_actor
+              }
+            ]
+          : [],
+
+      id_type:
+        action?.id_type ?? null,
+
+      intervention_quantity:
+        action?.intervention_quantity ??
+        null,
+
+      in_progress_quantity:
+        action?.in_progress_quantity ??
+        null,
+
+      packaging:
+        action?.packaging || '',
+
+      id_physiological_development_stage:
+        action
+          ?.id_physiological_development_stage ??
+        null,
+
+      id_main_location:
+        action?.id_main_location ?? null,
+
+      precise_location:
+        action?.precise_location || '',
+
+      remarks:
+        action?.remarks || ''
+    }, {
+      emitEvent: false
+    });
+
+
+    this.formSubmitted = false;
+
+
+    this.cultureActionForm
+      .markAsPristine();
+
+    this.cultureActionForm
+      .markAsUntouched();
+  }
+
+
+  private parseDateForForm(
+    value: any
+  ): Date | null {
+
+    if (!value) {
+      return null;
+    }
+
+
+    const datePart =
+      String(value)
+        .split('T')[0];
+
+
+    const [
+      year,
+      month,
+      day
+    ] =
+      datePart.split('-');
+
+
+    if (
+      year &&
+      month &&
+      day
+    ) {
+
+      return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      );
+    }
+
+
+    const date =
+      new Date(value);
+
+
+    return Number.isNaN(
+      date.getTime()
+    )
+      ? null
+      : date;
+  }
+
+
   getOptionLabel(option: any): string {
     return (
       option?.label_fr ||
@@ -766,6 +1013,16 @@ export class CultureActionComponent implements OnInit {
                 .toLowerCase() ===
               'transp'
           );
+
+
+        if (
+          this.dialogData?.edit &&
+          this.dialogData?.action
+        ) {
+          this.populateEditForm(
+            this.dialogData.action
+          );
+        }
       },
 
       'types d’action de Culture'

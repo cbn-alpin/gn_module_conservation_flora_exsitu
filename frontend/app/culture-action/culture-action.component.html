@@ -17,7 +17,11 @@
 
 
     <mat-card-title>
-      Ajouter une action de culture
+      {{
+        dialogData?.edit
+          ? 'Modifier une action de culture'
+          : 'Ajouter une action de culture'
+      }}
     </mat-card-title>
 
   </mat-card-header>
@@ -44,7 +48,10 @@
         </div>
       </div>
 
-            <div class="form-group full-width">
+            <div
+        class="form-group full-width"
+        *ngIf="!dialogData?.edit"
+      >
 
         <mat-form-field
           appearance="outline"
@@ -453,6 +460,7 @@
       mat-button
       type="button"
       class="add-another-action-button with-border"
+      *ngIf="!dialogData?.edit"
       [disabled]="isSubmitting"
       (click)="addNewAction()"
     >

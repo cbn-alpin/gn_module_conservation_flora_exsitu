@@ -30,10 +30,6 @@ import {
 } from '../culture-action/culture-action.component';
 
 import {
-  CultureActionDetailsComponent
-} from '../culture-action-details/culture-action-details.component';
-
-import {
   DataService
 } from '../services/data.service';
 
@@ -65,6 +61,10 @@ export class CultureDetailsComponent
   idCulture = 0;
 
   culture: any = null;
+
+  selectedCultureAction: any = null;
+
+  cultureActionDetailsRefreshKey = 0;
 
   /*
    * Stock utilisé par l'origine de la Culture.
@@ -948,6 +948,96 @@ export class CultureDetailsComponent
       });
   }
 
+  onEditCultureAction(
+    action: any
+  ): void {
+
+    if (
+      !this.idCulture ||
+      !action?.id_action ||
+      action?.code_action_type !== 'transp'
+    ) {
+      return;
+    }
+
+
+    this.cultureService
+      .getCultureTransplantation(
+        Number(action.id_action)
+      )
+      .subscribe({
+
+        next: transplantation => {
+
+          const dialogRef =
+            this.dialog.open(
+              CultureActionComponent,
+              {
+                width: '900px',
+                height: '90vh',
+                maxWidth: '95vw',
+                panelClass:
+                  'culture-action-dialog-panel',
+                disableClose: true,
+                autoFocus: false,
+                restoreFocus: false,
+
+                data: {
+                  idCulture:
+                    this.idCulture,
+
+                  codeCulture:
+                    this.culture
+                      ?.code_culture ||
+                    null,
+
+                  idAction:
+                    Number(
+                      action.id_action
+                    ),
+
+                  edit: true,
+
+                  action:
+                    transplantation
+                }
+              }
+            );
+
+
+          dialogRef
+            .afterClosed()
+            .subscribe(result => {
+
+              if (result) {
+                this.loadCultureActions();
+
+                if (
+                  this.selectedCultureAction
+                    ?.id_action ===
+                  action.id_action
+                ) {
+                  this.cultureActionDetailsRefreshKey++;
+                }
+              }
+
+            });
+
+        },
+
+        error: error => {
+
+          console.error(
+            'Erreur lors du chargement de l’action de culture à modifier :',
+            error
+          );
+
+        }
+
+      });
+  }
+
+
   onOpenCultureActionDetails(
     action: any
   ): void {
@@ -959,22 +1049,112 @@ export class CultureDetailsComponent
       return;
     }
 
-    this.dialog.open(
-      CultureActionDetailsComponent,
-      {
-        width: '900px',
-        maxWidth: '95vw',
-        maxHeight: '90vh',
 
-        data: {
-          idAction:
-            Number(action.id_action),
+    this.selectedCultureAction =
+      action;
+  }
 
-          codeCulture:
-            this.culture?.code_culture ||
-            null
-        }
-      }
+
+  hideSelectedCultureActionDetails(): void {
+
+    this.selectedCultureAction =
+      null;
+  }
+
+
+  private getCultureActionRows(): any[] {
+
+    return this.actionDataSource?.data ||
+      [];
+  }
+
+
+  private getSelectedCultureActionIndex(): number {
+
+    if (!this.selectedCultureAction) {
+      return -1;
+    }
+
+
+    return this.getCultureActionRows()
+      .findIndex(
+        action =>
+          action.id_action ===
+          this.selectedCultureAction
+            .id_action
+      );
+  }
+
+
+  canGoToPreviousCultureAction(): boolean {
+
+    return (
+      this.getSelectedCultureActionIndex() >
+      0
+    );
+  }
+
+
+  canGoToNextCultureAction(): boolean {
+
+    const selectedIndex =
+      this.getSelectedCultureActionIndex();
+
+
+    const actions =
+      this.getCultureActionRows();
+
+
+    return (
+      selectedIndex >= 0 &&
+      selectedIndex <
+        actions.length - 1
+    );
+  }
+
+
+  showPreviousCultureActionDetails(): void {
+
+    const selectedIndex =
+      this.getSelectedCultureActionIndex();
+
+
+    if (selectedIndex <= 0) {
+      return;
+    }
+
+
+    this.onOpenCultureActionDetails(
+      this.getCultureActionRows()[
+        selectedIndex - 1
+      ]
+    );
+  }
+
+
+  showNextCultureActionDetails(): void {
+
+    const selectedIndex =
+      this.getSelectedCultureActionIndex();
+
+
+    const actions =
+      this.getCultureActionRows();
+
+
+    if (
+      selectedIndex < 0 ||
+      selectedIndex >=
+        actions.length - 1
+    ) {
+      return;
+    }
+
+
+    this.onOpenCultureActionDetails(
+      actions[
+        selectedIndex + 1
+      ]
     );
   }
 

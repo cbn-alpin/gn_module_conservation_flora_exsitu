@@ -1,23 +1,19 @@
 import {
   Component,
-  Inject,
-  OnInit
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
 } from '@angular/core';
-
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef
-} from '@angular/material/dialog';
 
 import {
   CultureService
 } from '../culture/culture.service';
 
 
-interface CultureActionDetailsDialogData {
-  idAction: number;
-  codeCulture?: string | null;
-}
+
 
 
 @Component({
@@ -29,7 +25,21 @@ interface CultureActionDetailsDialogData {
   ]
 })
 export class CultureActionDetailsComponent
-  implements OnInit {
+  implements OnInit, OnChanges {
+
+  @Input()
+  actionId: number | null = null;
+
+  @Input()
+  codeCulture: string | null = null;
+
+  @Input()
+  refreshKey = 0;
+
+  @Output()
+  hideDetails =
+    new EventEmitter<void>();
+
 
   public transplantation: any = null;
 
@@ -39,20 +49,34 @@ export class CultureActionDetailsComponent
 
 
   constructor(
-    public dialogRef:
-      MatDialogRef<CultureActionDetailsComponent>,
-
     private cultureService:
-      CultureService,
-
-    @Inject(MAT_DIALOG_DATA)
-    public dialogData:
-      CultureActionDetailsDialogData
+      CultureService
   ) {}
 
 
   ngOnInit(): void {
     this.loadDetails();
+  }
+
+
+  ngOnChanges(
+    changes: SimpleChanges
+  ): void {
+
+    if (
+      changes['actionId']?.firstChange &&
+      changes['refreshKey']?.firstChange
+    ) {
+      return;
+    }
+
+
+    if (
+      changes['actionId'] ||
+      changes['refreshKey']
+    ) {
+      this.loadDetails();
+    }
   }
 
 
@@ -66,14 +90,14 @@ export class CultureActionDetailsComponent
   }
 
 
-  onClose(): void {
-    this.dialogRef.close();
+  onHideDetails(): void {
+    this.hideDetails.emit();
   }
 
 
   private loadDetails(): void {
 
-    if (!this.dialogData?.idAction) {
+    if (!this.actionId) {
 
       this.isLoading = false;
 
@@ -84,9 +108,14 @@ export class CultureActionDetailsComponent
     }
 
 
+    this.isLoading = true;
+
+    this.errorMessage = '';
+
+
     this.cultureService
       .getCultureTransplantation(
-        this.dialogData.idAction
+        this.actionId
       )
       .subscribe({
 

@@ -175,3 +175,122 @@
   }
 
 }
+
+/* =========================================================
+   VARIANTE VIOLETTE
+   Même identité que Détails d'une action de Semi
+   ========================================================= */
+
+.culture-action-details-card {
+  border: 1px solid #e1bee7;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbf5ff 0%,
+      #ffffff 45%
+    );
+
+  box-shadow:
+    0 8px 22px
+    rgba(142, 36, 170, 0.14);
+}
+
+
+.culture-action-details-header {
+  position: relative;
+
+  justify-content: center;
+
+  min-height: 62px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8e24aa 0%,
+      #ab47bc 100%
+    );
+
+  border-bottom: none;
+}
+
+
+.culture-action-details-header
+mat-card-title {
+  width: 100%;
+
+  color: #ffffff;
+
+  text-align: center;
+}
+
+
+.culture-action-hide-details-button {
+  position: absolute;
+
+  right: 16px;
+
+  color: #8e24aa !important;
+
+  background-color:
+    rgba(255, 255, 255, 0.96) !important;
+}
+
+
+.culture-action-hide-details-button:hover {
+  color: #7b1fa2 !important;
+
+  background-color: #ffffff !important;
+}
+
+
+.culture-action-associated-banner {
+  color: #6a1b9a;
+
+  background-color: #f3e5f5;
+
+  border: 1px solid #e1bee7;
+  border-left: 4px solid #8e24aa;
+}
+
+
+.culture-action-associated-banner
+mat-icon {
+  color: #8e24aa;
+}
+
+
+.culture-action-detail-section {
+  border: 1px solid #ead7ef;
+  border-left: 4px solid #ba68c8;
+
+  background-color: #fdf8ff;
+}
+
+
+.culture-action-detail-section:hover {
+  background-color: #fbf1ff;
+
+  border-left-color: #8e24aa;
+}
+
+
+.culture-action-detail-section
+h3 {
+  color: #6a1b9a;
+}
+
+
+.culture-action-detail-grid
+span {
+  color: #7b1fa2;
+}
+
+
+.culture-action-substrate-item {
+  background-color: #fbf5ff;
+
+  border-color: #ead7ef;
+}
