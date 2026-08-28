@@ -580,6 +580,12 @@ mat-card-title {
    ========================================================= */
 
 .sowing-action-form-card
+mat-card-content,
+
+.germination-action-form-card
+mat-card-content,
+
+.viability-action-form-card
 mat-card-content {
   flex: 1 1 auto;
 
@@ -589,37 +595,32 @@ mat-card-content {
 
   padding-bottom: 0 !important;
 
-  background-color: #f8fbf8;
-
   scrollbar-gutter:
     auto;
 }
 
 
 .sowing-action-form-card
-.semis-form {
-  padding: 18px 20px 0;
-}
-
-
-.sowing-action-form-card
-.semis-form {
-  padding: 18px 20px 0;
-}
-
+.semis-form,
 
 .germination-action-form-card
 .semis-form,
 
 .viability-action-form-card
 .semis-form {
-  padding: 16px 20px 18px;
+  padding: 18px 20px 0;
 }
 
 
 /* Champs moins espacés */
 
 .sowing-action-form-card
+.form-row,
+
+.germination-action-form-card
+.form-row,
+
+.viability-action-form-card
 .form-row {
   gap: 16px;
 
@@ -893,6 +894,12 @@ mat-icon {
    ========================================================= */
 
 .sowing-action-form-card
+.action-subsection-header,
+
+.germination-action-form-card
+.action-subsection-header,
+
+.viability-action-form-card
 .action-subsection-header {
   display: flex;
   align-items: center;
@@ -904,6 +911,17 @@ mat-icon {
   margin: 5px 0 10px;
   padding: 7px 10px;
 
+  border-radius: 6px;
+
+  box-sizing: border-box;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+.sowing-action-form-card
+.action-subsection-header {
   color: #2e7d32;
 
   background:
@@ -915,26 +933,78 @@ mat-icon {
 
   border-left:
     3px solid #66bb6a;
+}
 
-  border-radius: 6px;
 
-  box-sizing: border-box;
+.germination-action-form-card
+.action-subsection-header {
+  color: #00695c;
 
-  font-size: 12px;
-  font-weight: 750;
+  background:
+    linear-gradient(
+      90deg,
+      #e8f7f5 0%,
+      #fbfefd 100%
+    );
+
+  border-left:
+    3px solid #26a69a;
+}
+
+
+.viability-action-form-card
+.action-subsection-header {
+  color: #8a4b08;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff3e0 0%,
+      #fffdf9 100%
+    );
+
+  border-left:
+    3px solid #e67e22;
+}
+
+
+.sowing-action-form-card
+.action-subsection-header
+mat-icon,
+
+.germination-action-form-card
+.action-subsection-header
+mat-icon,
+
+.viability-action-form-card
+.action-subsection-header
+mat-icon {
+  width: 17px;
+  height: 17px;
+
+  font-size: 17px;
+  line-height: 17px;
 }
 
 
 .sowing-action-form-card
 .action-subsection-header
 mat-icon {
-  width: 17px;
-  height: 17px;
-
   color: #43a047;
+}
 
-  font-size: 17px;
-  line-height: 17px;
+
+.germination-action-form-card
+.action-subsection-header
+mat-icon {
+  color: #26a69a;
+}
+
+
+.viability-action-form-card
+.action-subsection-header
+mat-icon {
+  color: #e67e22;
 }
 
 
@@ -1085,6 +1155,14 @@ mat-icon {
 
 .sowing-action-form-card
 .form-group
+small,
+
+.germination-action-form-card
+.form-group
+small,
+
+.viability-action-form-card
+.form-group
 small {
   display: block;
 
@@ -1096,7 +1174,14 @@ small {
   font-weight: 650;
 }
 
+
 .sowing-action-form-card
+textarea,
+
+.germination-action-form-card
+textarea,
+
+.viability-action-form-card
 textarea {
   resize: vertical;
 

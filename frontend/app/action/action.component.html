@@ -256,7 +256,10 @@
       <div *ngIf="code === 'pret'">
         <div
           class="action-section-header full-width"
-          *ngIf="idSowing"
+          *ngIf="
+            idSowing ||
+            dialogData?.actionContext === 'germination'
+          "
         >
 
           <div class="action-section-icon">
@@ -366,7 +369,10 @@
         </div>
         <div
           class="action-subsection-header"
-          *ngIf="idSowing"
+          *ngIf="
+            idSowing ||
+            dialogData?.actionContext === 'germination'
+          "
         >
           <mat-icon>wb_sunny</mat-icon>
 
@@ -391,7 +397,11 @@
       <div *ngIf="code === 'scar'">
         <div
           class="action-section-header full-width"
-          *ngIf="idSowing"
+          *ngIf="
+            idSowing ||
+            dialogData?.actionContext === 'germination' ||
+            dialogData?.actionContext === 'viability'
+          "
         >
 
           <div class="action-section-icon">
@@ -447,7 +457,11 @@
           <div *ngIf="scarTypeCode === 'mec'">
               <div
                 class="action-subsection-header"
-                *ngIf="idSowing"
+                *ngIf="
+                  idSowing ||
+                  dialogData?.actionContext === 'germination' ||
+                  dialogData?.actionContext === 'viability'
+                "
               >
                 <mat-icon>construction</mat-icon>
 
@@ -517,7 +531,11 @@
           <div *ngIf="scarTypeCode === 'chi'">
             <div
               class="action-subsection-header"
-              *ngIf="idSowing"
+              *ngIf="
+                idSowing ||
+                dialogData?.actionContext === 'germination' ||
+                dialogData?.actionContext === 'viability'
+              "
             >
               <mat-icon>opacity</mat-icon>
 
@@ -621,7 +639,10 @@
 
             <div
               class="action-section-header full-width"
-              *ngIf="idSowing"
+              *ngIf="
+                idSowing ||
+                dialogData?.actionContext === 'germination'
+              "
             >
 
               <div class="action-section-icon">
@@ -644,30 +665,38 @@
 
             <h3
               class="section-subtitle"
-              *ngIf="!idSowing"
+              *ngIf="
+                !idSowing &&
+                dialogData?.actionContext !== 'germination'
+              "
             >
               Régime thermo-photo
             </h3>
+
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>T° Lumière</mat-label>
                 <input matInput type="number" formControlName="temperature_light">
               </mat-form-field>
+
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>T° Obscurité</mat-label>
                 <input matInput type="number" formControlName="temperature_shadow">
               </mat-form-field>
             </div>
+
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Nb heures Lumière</mat-label>
                 <input matInput type="number" formControlName="hour_count_light">
               </mat-form-field>
+
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Nb heures Obscurité</mat-label>
                 <input matInput type="number" formControlName="hour_count_shadow">
               </mat-form-field>
             </div>
+
           </div>
           
           
@@ -677,7 +706,11 @@
             <div *ngIf="code === 'tra'">
               <div
                 class="action-section-header full-width"
-                *ngIf="idSowing"
+                *ngIf="
+                  idSowing ||
+                  dialogData?.actionContext === 'germination' ||
+                  dialogData?.actionContext === 'viability'
+                "
               >
 
                 <div class="action-section-icon">
@@ -697,9 +730,14 @@
                 </div>
 
               </div>
+
               <div
                 class="action-subsection-header"
-                *ngIf="idSowing"
+                *ngIf="
+                  idSowing ||
+                  dialogData?.actionContext === 'germination' ||
+                  dialogData?.actionContext === 'viability'
+                "
               >
                 <mat-icon>water_drop</mat-icon>
 
@@ -707,13 +745,6 @@
                   Solution de traitement
                 </span>
               </div>
-
-              <h3
-                class="section-subtitle"
-                *ngIf="!idSowing"
-              >
-                Traitement
-              </h3>
 
                 <div class="form-row">
                   <div class="form-group half-width" *ngIf="idSowing">
@@ -771,7 +802,11 @@
             
               <div
                 class="action-subsection-header"
-                *ngIf="idSowing"
+                *ngIf="
+                  idSowing ||
+                  dialogData?.actionContext === 'germination' ||
+                  dialogData?.actionContext === 'viability'
+                "
               >
                 <mat-icon>thermostat</mat-icon>
 
@@ -780,12 +815,6 @@
                 </span>
               </div>
 
-              <h3
-                class="section-subtitle"
-                *ngIf="!idSowing"
-              >
-                Régime thermo-photo
-              </h3>
               <div class="form-row">
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>T° Lumière</mat-label>
@@ -796,6 +825,7 @@
                   <input matInput type="number" formControlName="temperature_shadow">
                 </mat-form-field>
               </div>
+
               <div class="form-row">
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>Nb heures Lumière</mat-label>
@@ -806,9 +836,14 @@
                   <input matInput type="number" formControlName="hour_count_shadow">
                 </mat-form-field>
               </div>
+
               <div
                 class="action-subsection-header"
-                *ngIf="idSowing"
+                *ngIf="
+                  idSowing ||
+                  dialogData?.actionContext === 'germination' ||
+                  dialogData?.actionContext === 'viability'
+                "
               >
                 <mat-icon>date_range</mat-icon>
 
@@ -816,6 +851,7 @@
                   Période du traitement
                 </span>
               </div>
+
               <div class="form-row">
                 
                 <mat-form-field
@@ -847,7 +883,29 @@
 
             <div
               class="action-section-header full-width"
-              *ngIf="idSowing"
+              *ngIf="
+                idSowing ||
+                (
+                  dialogData?.actionContext === 'germination' &&
+                  (
+                    code === 'pret' ||
+                    code === 'scar' ||
+                    code === 'strat' ||
+                    code === 'tra' ||
+                    code === 'svr' ||
+                    code === 'synth'
+                  )
+                ) ||
+                (
+                  dialogData?.actionContext === 'viability' &&
+                  (
+                    code === 'scar' ||
+                    code === 'tra' ||
+                    code === 'svr' ||
+                    code === 'synth'
+                  )
+                )
+              "
             >
 
               <div class="action-section-icon">
@@ -924,11 +982,8 @@
             <div
               class="action-section-header full-width"
               *ngIf="
-                idSowing &&
-                (
-                  code === 'svr' ||
-                  code === 'synth'
-                )
+                code === 'svr' ||
+                code === 'synth'
               "
             >
 
@@ -958,11 +1013,33 @@
 
                 <span class="action-section-subtitle">
 
-                  {{
-                    code === 'svr'
-                      ? 'Saisie des résultats observés pour chaque réplicat'
-                      : 'Synthèse globale des résultats du semis'
-                  }}
+                  <ng-container *ngIf="code === 'svr'">
+                    Saisie des résultats observés pour chaque réplicat
+                  </ng-container>
+
+                  <ng-container *ngIf="code === 'synth'">
+
+                    <ng-container *ngIf="idSowing">
+                      Synthèse globale des résultats du semis
+                    </ng-container>
+
+                    <ng-container
+                      *ngIf="
+                        dialogData?.actionContext === 'germination'
+                      "
+                    >
+                      Synthèse globale des résultats du test de germination
+                    </ng-container>
+
+                    <ng-container
+                      *ngIf="
+                        dialogData?.actionContext === 'viability'
+                      "
+                    >
+                      Synthèse globale des résultats du test de viabilité
+                    </ng-container>
+
+                  </ng-container>
 
                 </span>
 
