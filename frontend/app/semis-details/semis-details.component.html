@@ -423,37 +423,64 @@
     </div>
 
     <div class="germination-detail" *ngIf="selectedAction">
-      <div class="sowing-action-detail-navigation">
 
-        <button
-          mat-icon-button
-          type="button"
-          class="detail-navigation-button"
-          [disabled]="!canGoToPreviousAction()"
-          (click)="showPreviousActionDetails()"
-          matTooltip="Action précédente">
-          <mat-icon>chevron_left</mat-icon>
-        </button>
+      <ng-container *ngIf="!noActionMatchesFilters; else noFilteredActionDetails">
 
-        <div class="sowing-action-details-wrapper">
-          <app-action-details
-            [actionId]="selectedAction.id_action"
-            [isSowingContext]="true"
-            [refreshKey]="actionDetailsRefreshKey"
-            (hideDetails)="hideSelectedActionDetails()">
-          </app-action-details>
+        <div class="sowing-action-detail-navigation">
+
+          <button
+            mat-icon-button
+            type="button"
+            class="detail-navigation-button"
+            [disabled]="!canGoToPreviousAction()"
+            (click)="showPreviousActionDetails()"
+            matTooltip="Action précédente">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <div class="sowing-action-details-wrapper">
+            <app-action-details
+              [actionId]="selectedAction.id_action"
+              [isSowingContext]="true"
+              [refreshKey]="actionDetailsRefreshKey"
+              (hideDetails)="hideSelectedActionDetails()">
+            </app-action-details>
+          </div>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="detail-navigation-button"
+            [disabled]="!canGoToNextAction()"
+            (click)="showNextActionDetails()"
+            matTooltip="Action suivante">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+
         </div>
 
-        <button
-          mat-icon-button
-          type="button"
-          class="detail-navigation-button"
-          [disabled]="!canGoToNextAction()"
-          (click)="showNextActionDetails()"
-          matTooltip="Action suivante">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
+      </ng-container>
 
-      </div>
+
+      <ng-template #noFilteredActionDetails>
+
+        <div class="sowing-action-filter-empty-detail">
+
+          <mat-icon>
+            filter_alt_off
+          </mat-icon>
+
+          <strong>
+            Aucune action ne correspond aux filtres.
+          </strong>
+
+          <span>
+            Modifiez ou réinitialisez les filtres pour afficher le détail d'une action.
+          </span>
+
+        </div>
+
+      </ng-template>
+
     </div>
   </div>

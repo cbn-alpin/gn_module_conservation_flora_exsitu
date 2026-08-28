@@ -482,6 +482,25 @@ table tr.mat-row {
   margin-bottom: 12px;
 }
 
+
+.sowing-action-list-card.sowing-action-list-with-details
+.sowing-action-filter-fields {
+  grid-template-columns:
+    minmax(0, 1.2fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 12px;
+}
+
+
+.sowing-action-list-card.sowing-action-list-with-details
+.sowing-action-filter-field {
+  min-width: 0;
+  width: 100%;
+}
+
+
 .sowing-action-list-card.sowing-action-list-with-details .action-list-header {
   min-height: 66px;
   padding: 10px 12px 12px 12px;

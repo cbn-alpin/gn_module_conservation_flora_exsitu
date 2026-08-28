@@ -16,6 +16,7 @@ export class SemisDetailsComponent implements OnInit {
   idSowing!: number;
   selectedAction: any = null;
   actionDetailsRefreshKey = 0;
+  noActionMatchesFilters = false;
 
   sowingForm: FormGroup;
   dataSource = new MatTableDataSource<any>([]);
@@ -163,6 +164,7 @@ export class SemisDetailsComponent implements OnInit {
     );
 
     this.selectedAction = null;
+    this.noActionMatchesFilters = false;
   }
 
   getSowingReplicateCount(): number | null {
@@ -174,8 +176,16 @@ export class SemisDetailsComponent implements OnInit {
 
   onVisibleActionsChanged(visibleActions: any[]): void {
     if (!this.selectedAction) {
+      this.noActionMatchesFilters = false;
       return;
     }
+
+    if (visibleActions.length === 0) {
+      this.noActionMatchesFilters = true;
+      return;
+    }
+
+    this.noActionMatchesFilters = false;
 
     const selectedActionStillVisible = visibleActions.some(
       (action) => action.id_action === this.selectedAction.id_action
@@ -185,12 +195,7 @@ export class SemisDetailsComponent implements OnInit {
       return;
     }
 
-    if (visibleActions.length > 0) {
-      this.onActionSelected(visibleActions[0]);
-      return;
-    }
-
-    this.selectedAction = null;
+    this.onActionSelected(visibleActions[0]);
   }
 
 
@@ -225,6 +230,8 @@ export class SemisDetailsComponent implements OnInit {
 
   onActionSelected(action: any): void {
     const idAction = action.id_action;
+
+    this.noActionMatchesFilters = false;
 
     this.api.getActionWithLabels(idAction).subscribe({
       next: (fullAction) => {
