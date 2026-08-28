@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DataService } from '../services/data.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-semis-details',
@@ -27,7 +28,8 @@ export class SemisDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private toast: CommonService,
     private api: DataService,
-    private exsituFormService: ExsituFormService
+    private exsituFormService: ExsituFormService,
+    private dialogService: DialogService
   ) {
     this.sowingForm = this.fb.group({
       code: [''],
@@ -303,6 +305,131 @@ export class SemisDetailsComponent implements OnInit {
         console.error('Erreur rafraîchissement des détails de l’action :', err);
       }
     });
+  }
+
+    onDeleteSowing(): void {
+    if (!this.idMaterial || !this.idSowing) {
+      return;
+    }
+
+    const currentCode =
+      this.sowingForm.get('code')?.value || '';
+
+    this.api
+      .getActionsBySowing(this.idSowing)
+      .subscribe({
+        next: (actions) => {
+          const actionCount =
+            actions?.length || 0;
+
+          if (actionCount > 0) {
+            const actionLabel =
+              actionCount > 1
+                ? 'actions liées'
+                : 'action liée';
+
+            this.toast.translateToaster(
+              'warning',
+              `Suppression impossible : le semis ${
+                this.toBoldText(currentCode)
+              } contient ${
+                this.toBoldText(String(actionCount))
+              } ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
+            );
+
+            return;
+          }
+
+          this.dialogService
+            .confirmDialog({
+              message: 'Êtes-vous certain de vouloir supprimer ce semis ?',
+              icon: 'grain',
+              variant: 'semis',
+              entityCode: currentCode,
+              disableClose: false
+            })
+            .subscribe((yes) => {
+              if (!yes) {
+                return;
+              }
+
+              this.api
+                .deleteSowing(
+                  this.idMaterial,
+                  this.idSowing
+                )
+                .subscribe({
+                  next: () => {
+                    this.toast.translateToaster(
+                      'error',
+                      `Semis ${
+                        this.toBoldText(currentCode)
+                      } supprimé avec succès`
+                    );
+
+                    const idHarvest =
+                      this.exsituFormService.idHarvest;
+
+                    if (!idHarvest) {
+                      this.onBack();
+                      return;
+                    }
+
+                    this.exsituFormService.currentTab =
+                      'semis-table';
+
+                    this.router.navigate([
+                      '/conservation_flora_exsitu/form/harvest',
+                      idHarvest,
+                      'material',
+                      this.idMaterial,
+                      'semis-table'
+                    ]);
+                  },
+
+                  error: (err) => {
+                    const linkedActionCount =
+                      err?.error?.action_count;
+
+                    if (
+                      err?.status === 409 &&
+                      linkedActionCount
+                    ) {
+                      const actionLabel =
+                        linkedActionCount > 1
+                          ? 'actions liées'
+                          : 'action liée';
+
+                      this.toast.translateToaster(
+                        'warning',
+                        `Suppression impossible : le semis ${
+                          this.toBoldText(currentCode)
+                        } contient ${
+                          this.toBoldText(
+                            String(linkedActionCount)
+                          )
+                        } ${actionLabel}. Supprimez d'abord les actions liées à ce semis.`
+                      );
+
+                      return;
+                    }
+
+                    console.error(
+                      'Erreur lors de la suppression du semis :',
+                      err
+                    );
+                  }
+                });
+            });
+        },
+
+        error: (err) => {
+          console.error(
+            'Erreur lors de la vérification des actions liées au semis :',
+            err
+          );
+        }
+      });
   }
 
   onDelete(): void {}

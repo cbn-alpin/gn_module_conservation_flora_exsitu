@@ -17,9 +17,24 @@
         <p>Vue détaillée des données principales du semis</p>
       </div>
 
-      <div class="sowing-info-code-badge">
-        <span>N° semis</span>
-        <strong>{{ sowingForm.get('code')?.value || '-' }}</strong>
+      <div class="sowing-info-code-actions">
+
+        <div class="sowing-info-code-badge">
+          <span>N° semis</span>
+          <strong>{{ sowingForm.get('code')?.value || '-' }}</strong>
+        </div>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="sowing-info-delete-button"
+          matTooltip="Supprimer le semis"
+          aria-label="Supprimer le semis"
+          (click)="onDeleteSowing()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+
       </div>
     </div>
 
