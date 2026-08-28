@@ -228,7 +228,13 @@
           <mat-form-field
             appearance="outline"
             class="half-width start-date-required shake-wrapper"
-            [hideRequiredMarker]="!idSowing"
+            [hideRequiredMarker]="
+              !(
+                idSowing ||
+                dialogData?.actionContext === 'germination' ||
+                dialogData?.actionContext === 'viability'
+              )
+            "
             [class.shake-field]="shakeActionStartDateField"
             [class.shake-error]="shakeActionStartDateField">
 
@@ -238,13 +244,37 @@
               matInput
               [matDatepicker]="startPicker"
               formControlName="date_start"
-              [required]="!!idSowing">
+              [required]="
+                !!idSowing ||
+                dialogData?.actionContext === 'germination' ||
+                dialogData?.actionContext === 'viability'
+              ">
 
             <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
             <mat-datepicker #startPicker></mat-datepicker>
 
             <mat-error *ngIf="hasSowingActionStartDateRequiredError()">
-              La date de début est obligatoire pour enregistrer une action de semis.
+
+              <ng-container *ngIf="idSowing">
+                La date de début est obligatoire pour enregistrer une action de semis.
+              </ng-container>
+
+              <ng-container
+                *ngIf="
+                  dialogData?.actionContext === 'germination'
+                "
+              >
+                La date de début est obligatoire pour enregistrer une action de germination.
+              </ng-container>
+
+              <ng-container
+                *ngIf="
+                  dialogData?.actionContext === 'viability'
+                "
+              >
+                La date de début est obligatoire pour enregistrer une action de viabilité.
+              </ng-container>
+
             </mat-error>
           </mat-form-field>
           <div *ngIf="isReplicateDateUsed()" class="alert alert-warning">
@@ -1091,7 +1121,6 @@
         mat-button
         type="button"
         class="save-button with-border"
-        [disabled]="germinationForm.invalid"
         (click)="onSubmit()"
       >
         <mat-icon>save</mat-icon>
@@ -1102,7 +1131,6 @@
         mat-button
         type="button"
         class="add-another-action-button with-border"
-        [disabled]="!germinationForm.valid"
         (click)="addNewAction()"
       >
         <mat-icon>add</mat-icon>

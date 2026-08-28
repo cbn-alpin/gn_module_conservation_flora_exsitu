@@ -1134,7 +1134,11 @@ export class ActionComponent implements OnInit {
 
   public hasSowingActionStartDateRequiredError(): boolean {
     return !!(
-      this.idSowing &&
+      (
+        this.idSowing ||
+        this.dialogData?.actionContext === 'germination' ||
+        this.dialogData?.actionContext === 'viability'
+      ) &&
       this.actionFormSubmitted &&
       this.germinationForm.get('date_start')?.hasError('required')
     );
@@ -1324,15 +1328,6 @@ export class ActionComponent implements OnInit {
     }
 
 
-    /*
-     * Les règles supplémentaires ci-dessous
-     * restent propres au Semis.
-     */
-    if (!this.idSowing) {
-      return isValid;
-    }
-
-
     const dateStartControl =
       this.germinationForm.get(
         'date_start'
@@ -1355,7 +1350,12 @@ export class ActionComponent implements OnInit {
     }
 
 
+    /*
+     * Les règles métier supplémentaires du traitement
+     * restent propres au Semis.
+     */
     if (
+      this.idSowing &&
       !this.validateSowingTreatmentBusinessRules()
     ) {
       isValid = false;
