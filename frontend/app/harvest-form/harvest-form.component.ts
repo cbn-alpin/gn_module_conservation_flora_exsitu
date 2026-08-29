@@ -9,6 +9,7 @@ import { HarvestFormService } from './harvest-form.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { ConfigService } from '../services/config.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'ex-harvest-form',
@@ -35,7 +36,8 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
     public harvertFormService: HarvestFormService,
     private _commonService: CommonService,
     private cdr: ChangeDetectorRef,
-    public cfg: ConfigService
+    public cfg: ConfigService,
+    private dialogService: DialogService
   ) {
     
   }
@@ -69,22 +71,51 @@ export class HarvestFormComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   onSubmit() {
-    let finalForm = this.formatDataForm();    
-    if(!this.exsituFormService.editionMode['_value']){
-      this.api.addHarvest(finalForm).subscribe((harvest) => {
-        this._commonService.translateToaster('info', 'Récolte enregistrée');
-        this.onFormSaved(harvest.harvest);
+    const isEdit =
+      !!this.exsituFormService.editionMode['_value'];
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'place',
+        variant: 'harvest-save',
+        entityLabel: isEdit
+          ? 'les modifications de la récolte'
+          : 'la récolte',
+        disableClose: false
+      })
+      .subscribe((yes) => {
+        if (!yes) {
+          return;
+        }
+
+        let finalForm = this.formatDataForm();
+
+        if(!isEdit){
+          this.api.addHarvest(finalForm).subscribe((harvest) => {
+            this._commonService.translateToaster(
+              'success',
+              'Récolte créée avec succès'
+            );
+
+            this.onFormSaved(harvest.harvest);
+          });
+
+          console.log(finalForm);
+        }
+        else{
+          console.log(finalForm);
+
+          this.api.updateHarvest(this.exsituFormService.idHarvest, finalForm).subscribe(() => {
+            this._commonService.translateToaster(
+              'success',
+              'Récolte mise à jour avec succès'
+            );
+
+            // this.onFormSaved(harvest.harvest);
+          });
+        }
       });
-      console.log(finalForm);
-    }
-    else{
-      console.log(finalForm);
-      this.api.updateHarvest(this.exsituFormService.idHarvest, finalForm).subscribe(() => {
-        this._commonService.translateToaster('info', 'Récolte modifiée');
-        // this.onFormSaved(harvest.harvest);
-      });
-    }
-    
   }
 
   private onFormSaved(harvest) {

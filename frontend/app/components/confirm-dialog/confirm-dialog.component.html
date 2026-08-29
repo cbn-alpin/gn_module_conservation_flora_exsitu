@@ -1,5 +1,7 @@
 <div
     class="confirm-dialog-shell"
+    [class.harvest-confirm-dialog]="dialogData?.variant === 'harvest-save'"
+
     [class.semis-confirm-dialog]="
         dialogData?.variant === 'semis'
         || dialogData?.variant === 'semis-reset'
@@ -53,7 +55,8 @@
     "
 
     [class.workflow-confirm-dialog]="
-        dialogData?.variant === 'viability'
+        dialogData?.variant === 'harvest-save'
+        || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
         || dialogData?.variant === 'viability-save'
@@ -95,7 +98,8 @@
     "
 
     [class.workflow-save-dialog]="
-        dialogData?.variant === 'semis-save'
+        dialogData?.variant === 'harvest-save'
+        || dialogData?.variant === 'semis-save'
         || dialogData?.variant === 'culture-save'
         || dialogData?.variant === 'viability-save'
         || dialogData?.variant === 'germination-save'
@@ -248,7 +252,8 @@
 
         <p
             *ngIf="
-                dialogData?.variant === 'semis-save'
+                dialogData?.variant === 'harvest-save'
+                || dialogData?.variant === 'semis-save'
                 || dialogData?.variant === 'culture-save'
                 || dialogData?.variant === 'viability-save'
                 || dialogData?.variant === 'germination-save'

@@ -5,6 +5,7 @@ export interface ConfirmDialogData {
     cancelCaption?: string;
     icon?: string;
     variant?:
+        | 'harvest-save'
         | 'semis'
         | 'semis-reset'
         | 'semis-exit'

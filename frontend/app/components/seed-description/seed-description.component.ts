@@ -218,7 +218,14 @@ export class SeddDescriptionComponent implements OnInit {
                 this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
                     (response)=>{
                         this.uploadSeedMedia(response.id_seed);
-                        this._commonService.translateToaster('info', 'Semence ajoutée avec succès');
+
+                        this._commonService.translateToaster(
+                          'success',
+                          currentCode
+                            ? `Semence du matériel ${this.toBoldText(currentCode)} créée avec succès`
+                            : 'Semence créée avec succès'
+                        );
+
                         this.close()
                     },
                     (error) => {
@@ -230,10 +237,23 @@ export class SeddDescriptionComponent implements OnInit {
                     ()=>{
                       if (this.seedForm.value.has_photo) {
                         this.uploadSeedMedia(this.data.seedData.id_seed);
-                        this._commonService.translateToaster('info', 'Semence modifiée avec succès');
+
+                        this._commonService.translateToaster(
+                          'success',
+                          currentCode
+                            ? `Semence du matériel ${this.toBoldText(currentCode)} mise à jour avec succès`
+                            : 'Semence mise à jour avec succès'
+                        );
+
                         this.close();
                       } else {
-                        this._commonService.translateToaster('info', 'Semence modifiée avec succès');
+                        this._commonService.translateToaster(
+                          'success',
+                          currentCode
+                            ? `Semence du matériel ${this.toBoldText(currentCode)} mise à jour avec succès`
+                            : 'Semence mise à jour avec succès'
+                        );
+
                         this.close();
                       }
                     },

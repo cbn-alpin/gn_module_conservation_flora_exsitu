@@ -539,3 +539,16 @@
   font-size: 20px;
   line-height: 20px;
 }
+
+
+/* =========================================================
+   NOTIFICATIONS DE CRÉATION / MODIFICATION DU STOCKAGE
+   ========================================================= */
+
+::ng-deep
+.toast-success
+.toast-message {
+  white-space: pre-line;
+
+  text-align: left;
+}

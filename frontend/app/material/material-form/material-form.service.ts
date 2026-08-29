@@ -149,6 +149,13 @@ export class MaterialFormService {
     }
 
     submitOccurrence(data) {
+
+      const currentCode =
+        String(
+          data?.code_material ||
+          this.occurrence.getValue()?.code_material ||
+          ''
+        ).trim();
   
       let api: Observable<any>;
   
@@ -160,6 +167,13 @@ export class MaterialFormService {
           .pipe(
             tap((occurrence) => {
               this.exstiuFormService.replaceOccurrenceData(occurrence);
+
+              this._commonService.translateToaster(
+                'success',
+                currentCode
+                  ? `Matériel récolté ${this.toBoldText(currentCode)} mis à jour avec succès`
+                  : 'Matériel récolté mis à jour avec succès'
+              );
             })
           );
       } else {
@@ -168,7 +182,14 @@ export class MaterialFormService {
         api = this.dataService.addMaterial(data, this.exstiuFormService.idHarvest).pipe(
           tap((occurrence) => {
             this.exstiuFormService.addOccurrenceData(occurrence);
-            this._commonService.translateToaster('info', 'Matériel ajouté');
+
+            this._commonService.translateToaster(
+              'success',
+              currentCode
+                ? `Matériel récolté ${this.toBoldText(currentCode)} créé avec succès`
+                : 'Matériel récolté créé avec succès'
+            );
+
             this.form.reset()
             const taxonsArray = this.form.get('taxons') as UntypedFormArray;
             taxonsArray.clear();

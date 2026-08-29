@@ -414,7 +414,9 @@ export class ViabilityComponent implements OnInit {
               next: (res) => {
                 this._commonService.translateToaster(
                   'success',
-                  'Test mis à jour avec succès'
+                  currentCode
+                    ? `Test de viabilité ${this.toBoldText(String(currentCode))} mis à jour avec succès`
+                    : 'Test de viabilité mis à jour avec succès'
                 );
                 this.dialogRef.close(res);
               },
@@ -434,8 +436,10 @@ export class ViabilityComponent implements OnInit {
             .subscribe({
               next: (res) => {
                 this._commonService.translateToaster(
-                  'info',
-                  'Test créé avec succès'
+                  'success',
+                  currentCode
+                    ? `Test de viabilité ${this.toBoldText(String(currentCode))} créé avec succès`
+                    : 'Test de viabilité créé avec succès'
                 );
                 this.dialogRef.close(res);
               },

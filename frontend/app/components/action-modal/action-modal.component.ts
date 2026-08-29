@@ -44,6 +44,11 @@ export class ActionModalComponent implements OnInit {
     idMaterial: number | null = null;
     public codeMaterial: string | null = null;
     public storagePlaces: Array<{ code: string; label: string }> = [];
+    public storageActionTypes: Array<{
+      id_nomenclature: number;
+      label_default: string;
+      cd_nomenclature: string;
+    }> = [];
 
     public isInitialStorage = false;
 
@@ -101,6 +106,7 @@ export class ActionModalComponent implements OnInit {
         }
       ];
 
+      this.loadStorageActionTypes();
       this.loadAssociatedMaterialCode();
 
       this.initForm();
@@ -276,6 +282,97 @@ export class ActionModalComponent implements OnInit {
     }
 
 
+    private loadStorageActionTypes(): void {
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_STORAGE_ACTION'
+        )
+        .subscribe({
+          next: (items) => {
+            this.storageActionTypes =
+              Array.isArray(items)
+                ? items
+                : [];
+          },
+
+          error: () => {
+            this.storageActionTypes = [];
+          }
+        });
+    }
+
+
+    private getStorageActionLabel(
+      idNomenclature: any
+    ): string {
+      const selectedAction =
+        this.storageActionTypes.find(
+          (item) =>
+            Number(item.id_nomenclature) ===
+            Number(idNomenclature)
+        );
+
+      return (
+        String(
+          selectedAction?.label_default ||
+          this.data?.data?.action_type_label ||
+          '-'
+        ).trim() || '-'
+      );
+    }
+
+
+    private formatDateForToaster(
+      value: any
+    ): string {
+      if (!value) {
+        return '-';
+      }
+
+      if (typeof value === 'string') {
+        const isoMatch =
+          value.match(
+            /^(\d{4})-(\d{2})-(\d{2})/
+          );
+
+        if (isoMatch) {
+          return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+        }
+
+        const frenchMatch =
+          value.match(
+            /^(\d{2})\/(\d{2})\/(\d{4})$/
+          );
+
+        if (frenchMatch) {
+          return value;
+        }
+      }
+
+      const date =
+        value instanceof Date
+          ? value
+          : new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return '-';
+      }
+
+      const day =
+        String(date.getDate())
+          .padStart(2, '0');
+
+      const month =
+        String(date.getMonth() + 1)
+          .padStart(2, '0');
+
+      const year =
+        date.getFullYear();
+
+      return `${day}/${month}/${year}`;
+    }
+
+
     getIdPlaceFromCode(code: string): number | null {
       const mapping: { [key: string]: number } = {
         [this.constants.PLACE_CODES.PRE_DRYING_ROOM]: this.context?.place_mapping?.sdps,
@@ -360,6 +457,22 @@ export class ActionModalComponent implements OnInit {
         let finalForm =
           this.formatDataForm();
 
+        const actionTypeLabel =
+          this.getStorageActionLabel(
+            finalForm.id_storage_action
+          );
+
+        const dateLabel =
+          this.formatDateForToaster(
+            finalForm.date_start
+          );
+
+        const storageLocation =
+          this.getStoragePlaceLabel(
+            this.actionForm.get('code_place')?.value ||
+            this.data?.data?.placeCode
+          );
+
         if(this.edit){
           this.api.upAction(
             this.data.data.id_material,
@@ -368,8 +481,10 @@ export class ActionModalComponent implements OnInit {
           ).subscribe({
             next: ()=>{
               this._commonService.translateToaster(
-                'info',
-                'Action modifiée avec succès'
+                'success',
+                `Action de stockage ${this.toBoldText(actionTypeLabel)} mise à jour avec succès
+Date de début : ${this.toBoldText(dateLabel)}
+Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
               );
 
               this.dialogRef.close(true);
@@ -391,8 +506,10 @@ export class ActionModalComponent implements OnInit {
           ).subscribe(
             (response)=>{
               this._commonService.translateToaster(
-                'info',
-                'Action ajoutée avec succès'
+                'success',
+                `Action de stockage ${this.toBoldText(actionTypeLabel)} créée avec succès
+Date de début : ${this.toBoldText(dateLabel)}
+Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
               );
 
               this.dialogRef.close(true);
@@ -773,6 +890,22 @@ export class ActionModalComponent implements OnInit {
   submetAndResetForm() {
     const finalForm = this.formatDataForm();
 
+    const actionTypeLabel =
+      this.getStorageActionLabel(
+        finalForm.id_storage_action
+      );
+
+    const dateLabel =
+      this.formatDateForToaster(
+        finalForm.date_start
+      );
+
+    const storageLocation =
+      this.getStoragePlaceLabel(
+        this.actionForm.get('code_place')?.value ||
+        this.data?.data?.placeCode
+      );
+
     const goToTargetAndOpenModal = (idDestination: number | null | undefined) => {
       if (!idDestination) return;
 
@@ -802,7 +935,13 @@ export class ActionModalComponent implements OnInit {
     if (this.edit) {
       this.api.upAction(this.data.data.id_material, this.data.data.id_storage, finalForm).subscribe({
         next: () => {
-          this._commonService.translateToaster('info', 'Action modifiée avec succès');
+          this._commonService.translateToaster(
+            'success',
+            `Action de stockage ${this.toBoldText(actionTypeLabel)} mise à jour avec succès
+Date de début : ${this.toBoldText(dateLabel)}
+Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
+          );
+
           goToTargetAndOpenModal(finalForm.id_destination);
         },
         error: (err) => {
@@ -820,7 +959,14 @@ export class ActionModalComponent implements OnInit {
           this.exsituFormService.idStorage = idStorage;
           this.exsituFormService.id_storage.next(idStorage);
         }
-        this._commonService.translateToaster('info', 'Action ajoutée avec succès');
+
+        this._commonService.translateToaster(
+          'success',
+          `Action de stockage ${this.toBoldText(actionTypeLabel)} créée avec succès
+Date de début : ${this.toBoldText(dateLabel)}
+Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
+        );
+
         goToTargetAndOpenModal(finalForm.id_destination);
       },
       error: (err) => {

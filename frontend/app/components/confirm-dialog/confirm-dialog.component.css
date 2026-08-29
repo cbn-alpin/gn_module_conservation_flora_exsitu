@@ -416,8 +416,16 @@
 
 /* =========================================================
    CONFIRMATIONS WORKFLOW
-   VIABILITÉ / GERMINATION / STOCKAGE / MATÉRIEL / SEMENCE
+   RÉCOLTE / VIABILITÉ / GERMINATION / STOCKAGE / MATÉRIEL / SEMENCE
    ========================================================= */
+
+.harvest-confirm-dialog {
+    --dialog-accent: #1e88e5;
+    --dialog-title: #0d4f8b;
+    --dialog-border: #bbdefb;
+    --dialog-shadow: rgba(30, 136, 229, 0.14);
+}
+
 
 .viability-confirm-dialog {
     --dialog-accent: #e07a1f;

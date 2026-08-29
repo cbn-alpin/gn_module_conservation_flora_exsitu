@@ -919,7 +919,7 @@ export class CultureComponent implements OnInit {
                 this.toast.translateToaster(
                   'success',
                   cultureCode
-                    ? `Culture ${cultureCode} mise à jour avec succès`
+                    ? `Culture ${this.toBoldText(String(cultureCode))} mise à jour avec succès`
                     : 'Culture mise à jour avec succès'
                 );
 
@@ -958,7 +958,7 @@ export class CultureComponent implements OnInit {
                 this.toast.translateToaster(
                   'success',
                   cultureCode
-                    ? `Culture ${cultureCode} créée avec succès`
+                    ? `Culture ${this.toBoldText(String(cultureCode))} créée avec succès`
                     : 'Culture créée avec succès'
                 );
 

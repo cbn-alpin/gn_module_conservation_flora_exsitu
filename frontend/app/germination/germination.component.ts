@@ -504,7 +504,9 @@ ngOnInit(): void {
               next: (res) => {
                 this._commonService.translateToaster(
                   'success',
-                  'Test mis à jour avec succès'
+                  currentCode
+                    ? `Test de germination ${this.toBoldText(String(currentCode))} mis à jour avec succès`
+                    : 'Test de germination mis à jour avec succès'
                 );
                 this.dialogRef.close(res);
               },
@@ -524,8 +526,10 @@ ngOnInit(): void {
             .subscribe({
               next: (res) => {
                 this._commonService.translateToaster(
-                  'info',
-                  'Test créé avec succès'
+                  'success',
+                  currentCode
+                    ? `Test de germination ${this.toBoldText(String(currentCode))} créé avec succès`
+                    : 'Test de germination créé avec succès'
                 );
                 this.dialogRef.close(res);
               },
