@@ -556,6 +556,57 @@ def update_material(id_harvest, id_material):
     data = request.get_json()
     data["meta_update_by"] = g.current_user.id_role
 
+    material = TMaterial.query.get(id_material)
+
+    if not material:
+        return {"error": "Ce matériel n'existe pas"}, 404
+
+    has_seed_description = (
+        TMaterielSeed.query
+        .filter_by(id_material=id_material)
+        .first()
+        is not None
+    )
+
+    if has_seed_description:
+        requested_material_type = data.get("id_material_type")
+
+        if requested_material_type is not None:
+            requested_material_type_code = (
+                db.session.query(TNomenclatures.cd_nomenclature)
+                .filter(
+                    TNomenclatures.id_nomenclature
+                    == requested_material_type
+                )
+                .scalar()
+            )
+
+            if requested_material_type_code != SEED_MATERIAL_CODE:
+                return {
+                    "error": "Modification impossible",
+                    "message": (
+                        "Ce matériel récolté possède une fiche Semence. "
+                        "Supprimez d'abord la fiche Semence avant de modifier "
+                        "le type de matériel récolté."
+                    )
+                }, 409
+
+        requested_taxons = data.get("taxons")
+
+        if (
+            requested_taxons is not None
+            and len(requested_taxons) == 0
+        ):
+            return {
+                "error": "Modification impossible",
+                "message": (
+                    "Ce matériel récolté possède une fiche Semence. "
+                    "Au moins un taxon doit rester associé. "
+                    "Supprimez d'abord la fiche Semence avant de retirer "
+                    "le dernier taxon."
+                )
+            }, 409
+
     material_repo = HarvestMaterialRepository()
     result = material_repo.update(id_material, data)
 
@@ -864,6 +915,31 @@ def delete_material_taxon(id_material, cd_nom):
 
         if not assoc:
             return jsonify({"message": "Association non trouvée"}), 404
+
+        has_seed_description = (
+            TMaterielSeed.query
+            .filter_by(id_material=id_material)
+            .first()
+            is not None
+        )
+
+        if has_seed_description:
+            taxon_count = (
+                CorMaterialTaxon.query
+                .filter_by(id_material=id_material)
+                .count()
+            )
+
+            if taxon_count <= 1:
+                return jsonify({
+                    "error": "Suppression impossible",
+                    "message": (
+                        "Ce matériel récolté possède une fiche Semence. "
+                        "Au moins un taxon doit rester associé. "
+                        "Supprimez d'abord la fiche Semence avant de supprimer "
+                        "le dernier taxon."
+                    )
+                }), 409
 
         db.session.delete(assoc)
         db.session.commit()

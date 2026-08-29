@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { DataService } from '../../services/data.service';
-import { map, filter, switchMap, tap, pairwise, retry, catchError } from 'rxjs/operators';
+import { map, filter, switchMap, tap, pairwise, catchError } from 'rxjs/operators';
 import { Observable, of, forkJoin } from 'rxjs';
 
 import {
@@ -99,6 +99,19 @@ export class MaterialFormService {
       taxons.forEach(taxon => {
         taxonControls.push(this.createTaxonControl(taxon));
       });
+
+      const materialTypeControl =
+        this.form.get('id_material_type');
+
+      if (occurrence?.has_seed_description) {
+        materialTypeControl?.disable({
+          emitEvent: false
+        });
+      } else {
+        materialTypeControl?.enable({
+          emitEvent: false
+        });
+      }
     });
   }
 
@@ -156,7 +169,6 @@ export class MaterialFormService {
         api = this.dataService
           .updateMaterial(data, this.occurrence.getValue().id_harvest, this.occurrence.getValue().id_material)
           .pipe(
-            retry(3),
             tap((occurrence) => {
               this.exstiuFormService.replaceOccurrenceData(occurrence);
             })
@@ -277,15 +289,38 @@ export class MaterialFormService {
       
       const taxonsArray = this.form.get('taxons') as UntypedFormArray;
       const value = taxon.get('parentFormControl')?.value;
+
+      const currentOccurrence =
+        this.occurrence.getValue();
+
+      const hasSeedDescription =
+        !!currentOccurrence?.has_seed_description;
+
+      if (
+        hasSeedDescription &&
+        taxonsArray.length <= 1
+      ) {
+        this._commonService.translateToaster(
+          'warning',
+          'Suppression impossible : ce matériel récolté possède une fiche Semence. Au moins un taxon doit rester associé. Supprimez d\'abord la fiche Semence avant de supprimer le dernier taxon.'
+        );
+        return;
+      }
     
-      const id_material = this.occurrence.getValue()?.id_material;
+      const id_material = currentOccurrence?.id_material;
       const cd_nom = value?.cd_nom;
     
-      const existingTaxons = this.occurrence.getValue()?.taxons || [];
+      const existingTaxons = currentOccurrence?.taxons || [];
     
       const isAlreadySaved = existingTaxons.some(t => t.cd_nom === cd_nom);
       this.dialogService
-          .confirmDialog({ message: `Supprimer le taxon "${value.nom_valide}" ?` })
+          .confirmDialog({
+            message: '',
+            icon: 'spa',
+            variant: 'material-taxon-delete',
+            entityLabel: value.nom_valide,
+            disableClose: false
+          })
           .subscribe((yes) => {
             if (yes) {
               if (id_material && cd_nom && isAlreadySaved) {
@@ -297,6 +332,16 @@ export class MaterialFormService {
                   },
                   error: (err) => {
                     console.error('Erreur lors de la suppression du taxon', err);
+
+                    if (err?.status === 409) {
+                      this._commonService.translateToaster(
+                        'warning',
+                        err?.error?.message ||
+                        'Suppression impossible : une fiche Semence est liée à ce matériel récolté.'
+                      );
+                      return;
+                    }
+
                     this._commonService.translateToaster('error', 'Erreur lors de la suppression');
                   }
                 });

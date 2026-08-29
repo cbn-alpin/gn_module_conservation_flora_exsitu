@@ -296,10 +296,40 @@ export class MaterialModalComponent implements OnInit {
           this.initialFormState?.code_material ||
           '';
 
-        const isEdit =
-          !!this.materialFormService
+        const currentOccurrence =
+          this.materialFormService
             .occurrence
             .getValue();
+
+        const isEdit =
+          !!currentOccurrence;
+
+        const initialMaterialType =
+          Number(
+            currentOccurrence?.id_material_type || 0
+          );
+
+        const selectedMaterialType =
+          Number(
+            this.materialForm
+              .get('id_material_type')
+              ?.value || 0
+          );
+
+        if (
+          isEdit &&
+          currentOccurrence?.has_seed_description &&
+          initialMaterialType > 0 &&
+          selectedMaterialType > 0 &&
+          initialMaterialType !== selectedMaterialType
+        ) {
+          this._commonService.translateToaster(
+            'warning',
+            'Modification impossible : ce matériel récolté possède une fiche Semence. Supprimez d\'abord la fiche Semence avant de modifier le type de matériel récolté.'
+          );
+
+          return;
+        }
 
         this.dialogService
           .confirmDialog({
