@@ -1357,6 +1357,17 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
     }
 
     goToSeedDetails(material: any): void {
+      if (
+        !this.constants.SEED_DESCRIPTION_CODES.includes(
+          material?.harvest_material_code
+        ) ||
+        !material?.taxons ||
+        material.taxons.length === 0
+      ) {
+        return;
+      }
+
+
       const idMaterial =
         Number(
           material?.id_material

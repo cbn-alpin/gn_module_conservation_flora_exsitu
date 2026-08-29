@@ -409,6 +409,13 @@
 
             <button
               mat-menu-item
+              *ngIf="
+                constants.SEED_DESCRIPTION_CODES.includes(
+                  element.harvest_material_code
+                ) &&
+                element.taxons &&
+                element.taxons.length > 0
+              "
               class="seed-action"
               (click)="goToSeedDetails(element)"
             >

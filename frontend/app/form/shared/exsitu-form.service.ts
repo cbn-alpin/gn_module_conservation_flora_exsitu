@@ -18,7 +18,17 @@ export class ExsituFormService{
     public exsituData: BehaviorSubject<any> = new BehaviorSubject(null);
     public materials$: BehaviorSubject<any> = new BehaviorSubject(null);
     public id_harvest: BehaviorSubject<number> = new BehaviorSubject(null);
-    public idMaterial: number;
+    private _idMaterial: number;
+    public materialTypeCode: string | null = null;
+    public materialHasTaxon: boolean = false;
+
+    public get idMaterial(): number {
+      return this._idMaterial;
+    }
+
+    public set idMaterial(id: number) {
+      this.setIdMaterial(id);
+    }
     public idSeed: number;
     public idTest: number;
     /*
@@ -84,8 +94,37 @@ export class ExsituFormService{
     }
 
     setIdMaterial(id: number) {
-      this.idMaterial = id;
+      this._idMaterial = id;
       this.idMaterialChange.next(id);
+
+      if (!id) {
+        this.materialTypeCode = null;
+        this.materialHasTaxon = false;
+        return;
+      }
+
+      this.dataService
+        .getMaterialInfos(id)
+        .subscribe({
+          next: (material) => {
+            if (this._idMaterial !== id) {
+              return;
+            }
+
+            this.materialTypeCode =
+              material?.harvest_material_code || null;
+
+            this.materialHasTaxon =
+              !!material?.has_taxon;
+          },
+
+          error: () => {
+            if (this._idMaterial === id) {
+              this.materialTypeCode = null;
+              this.materialHasTaxon = false;
+            }
+          }
+        });
     }
 
     setCultureSourceFromMaterial(): void {

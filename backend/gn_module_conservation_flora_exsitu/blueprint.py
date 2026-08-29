@@ -57,6 +57,42 @@ blueprint = Blueprint("conservation_flora_exsitu", __name__)
 log = logging.getLogger(__name__)
 
 
+SEED_MATERIAL_CODE = "gr"
+
+
+def get_material_type_code(material):
+    if not material:
+        return None
+
+    return (
+        db.session.query(TNomenclatures.cd_nomenclature)
+        .filter(
+            TNomenclatures.id_nomenclature == material.id_material_type
+        )
+        .scalar()
+    )
+
+
+def material_has_taxon(material):
+    if not material:
+        return False
+
+    return (
+        CorMaterialTaxon.query
+        .filter_by(id_material=material.id_material)
+        .first()
+        is not None
+    )
+
+
+def material_can_have_seed_description(material):
+    return (
+        get_material_type_code(material)
+        == SEED_MATERIAL_CODE
+        and material_has_taxon(material)
+    )
+
+
 def group_geometries(results):
     geom_dict = defaultdict(list)
     # Groupement des récoltes par géométrie
@@ -768,7 +804,12 @@ def get_materials(id_harvest):
 def get_material_code(id_material):
     material = db.session.get(TMaterial, id_material)
     if material:
-        return jsonify({"id_material": material.id_material, "code_material": material.code_material})
+        return jsonify({
+            "id_material": material.id_material,
+            "code_material": material.code_material,
+            "harvest_material_code": get_material_type_code(material),
+            "has_taxon": material_has_taxon(material)
+        })
     else:
         return jsonify({"error": "Material not found"}), 404
 
@@ -1071,6 +1112,11 @@ def add_multiple_media_to_seed(id_seed):
     if not seed:
         return {"error": "Seed not found"}, 404
 
+    if not material_can_have_seed_description(seed.material):
+        return {
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }, 403
+
     id_media_type = request.form.get("id_media_type", type=int)
     if not id_media_type:
         return {"error": "id_media_type is required"}, 400
@@ -1140,6 +1186,11 @@ def update_media_for_seed(id_seed):
     seed = TMaterielSeed.query.get(id_seed)
     if not seed:
         return {"error": "Seed not found"}, 404
+
+    if not material_can_have_seed_description(seed.material):
+        return {
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }, 403
 
     id_media_type = request.form.get("id_media_type", type=int)
     if not id_media_type:
@@ -1252,6 +1303,13 @@ def add_seed_to_material(id_material):
     material = TMaterial.query.get(id_material)
     if not material:
         return jsonify({'error': 'Matériel non trouvé'}), 404
+
+    if not material_can_have_seed_description(material):
+        return {
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }, 403
+
+    data["id_material"] = id_material
     data["meta_create_by"] = g.current_user.id_role
     seed_repo = TMaterielSeedRepository()
     seed = seed_repo.create(data)
@@ -1262,6 +1320,16 @@ def add_seed_to_material(id_material):
 @permissions.check_cruved_scope("R", module_code=MODULE_CODE)
 @json_resp
 def get_seed_of_material(id_material):
+    material = TMaterial.query.get(id_material)
+
+    if not material:
+        return {"error": "Matériel non trouvé"}, 404
+
+    if not material_can_have_seed_description(material):
+        return {
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }, 403
+
     seed = TMaterielSeed.query.filter_by(id_material=id_material).first()
     if not seed:
         return {}, 204
@@ -1303,6 +1371,11 @@ def get_full_seed_info(id_seed):
 
     if not seed:
         return jsonify({"error": "Semence non trouvée"}), 404
+
+    if not material_can_have_seed_description(seed.material):
+        return jsonify({
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }), 403
 
     seed_dict = seed.to_dic()
 
@@ -1403,6 +1476,11 @@ def delete_seed(id_seed):
     if not seed:
         return {"error": "Semence non trouvée"}, 404
 
+    if not material_can_have_seed_description(seed.material):
+        return {
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }, 403
+
     try:
         existing_media = TMedias.query.filter_by(
             uuid_attached_row=seed.unique_id_seed
@@ -1433,6 +1511,16 @@ def delete_seed(id_seed):
 @json_resp
 def update_seed(id_seed):
     """Mise à jour d'une description de semence"""
+    seed = TMaterielSeed.query.get(id_seed)
+
+    if not seed:
+        return {"error": "Description non trouvée"}, 404
+
+    if not material_can_have_seed_description(seed.material):
+        return {
+            "error": "La fiche Semence est réservée aux matériels récoltés de type Graine possédant au moins un taxon associé."
+        }, 403
+
     data = request.get_json()
     data["meta_update_by"] = g.current_user.id_role
 

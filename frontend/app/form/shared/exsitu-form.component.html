@@ -31,12 +31,26 @@
                 Matériels récoltés
             </a>
 
-            <!-- Semence (Activé après avoir choisi un matériel) -->
+            <!-- Semence (Activé uniquement pour une Graine avec au moins un taxon) -->
             <a 
                 class="tablinks themed-tab seed-tab"
-                [class.disabled]="!exsituFormService.idMaterial"
+                [class.disabled]="
+                    !exsituFormService.idMaterial ||
+                    !constants.SEED_DESCRIPTION_CODES.includes(
+                        exsituFormService.materialTypeCode
+                    ) ||
+                    !exsituFormService.materialHasTaxon
+                "
                 [ngClass]="{ active: exsituFormService.currentTab === 'seed' }"
-                (click)="exsituFormService.idMaterial ? goToTab('seed') : null">
+                (click)="
+                    exsituFormService.idMaterial &&
+                    constants.SEED_DESCRIPTION_CODES.includes(
+                        exsituFormService.materialTypeCode
+                    ) &&
+                    exsituFormService.materialHasTaxon
+                        ? goToTab('seed')
+                        : null
+                ">
                 <mat-icon class="example-tab-icon">description</mat-icon>
                 Semence
             </a>

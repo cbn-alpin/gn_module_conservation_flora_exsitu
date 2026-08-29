@@ -9,6 +9,7 @@ import { HarvestStoreService } from '../../services/store.service';
 import { ExsituFormService } from './exsitu-form.service';
 import { MapService } from '@geonature_common/map/map.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { ConstantsService } from '../../services/constants.service';
 
 
 
@@ -35,7 +36,8 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
         public moduleService: ModuleService,
         public exsituFormService: ExsituFormService,
         private _mapService: MapService,
-        private _commonService: CommonService
+        private _commonService: CommonService,
+        public constants: ConstantsService
     ){
 
     }
@@ -109,7 +111,15 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material-form`]);
         } else if (tab === 'harvest' && this.exsituFormService.idHarvest) {
           this.router.navigate([`${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}`]);
-        }else if (tab === 'seed' && this.exsituFormService.idHarvest && selectedMaterialId) {
+        }else if (
+          tab === 'seed' &&
+          this.exsituFormService.idHarvest &&
+          selectedMaterialId &&
+          this.constants.SEED_DESCRIPTION_CODES.includes(
+            this.exsituFormService.materialTypeCode
+          ) &&
+          this.exsituFormService.materialHasTaxon
+        ) {
           this.router.navigate([
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/seed-details`
           ]);
