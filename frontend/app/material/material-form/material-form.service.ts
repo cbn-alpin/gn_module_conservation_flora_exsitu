@@ -100,18 +100,7 @@ export class MaterialFormService {
         taxonControls.push(this.createTaxonControl(taxon));
       });
 
-      const materialTypeControl =
-        this.form.get('id_material_type');
 
-      if (occurrence?.has_seed_description) {
-        materialTypeControl?.disable({
-          emitEvent: false
-        });
-      } else {
-        materialTypeControl?.enable({
-          emitEvent: false
-        });
-      }
     });
   }
 
@@ -192,7 +181,21 @@ export class MaterialFormService {
           // console.log('occ1', occurrence);
         },
         (error) => {
-          console.log(error);
+
+          if (error?.status === 409) {
+            this._commonService.translateToaster(
+              'warning',
+              error?.error?.message ||
+              'Modification impossible : ce matériel récolté possède une fiche Semence. Supprimez d\'abord la fiche Semence avant de modifier le type de matériel récolté.'
+            );
+
+            return;
+          }
+
+          console.error(
+            'Erreur lors de l’enregistrement du matériel récolté :',
+            error
+          );
         }
       );
   

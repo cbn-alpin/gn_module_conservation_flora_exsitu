@@ -29,6 +29,7 @@ export class MaterialModalComponent implements OnInit {
     private initialFormState: any = null;
     private initialParentCode: string = '';
     private cancelDialogOpen = false;
+    private hasSeedDescription = false;
 
     constructor(
         public dialogRef: MatDialogRef<MaterialModalComponent>,
@@ -44,7 +45,34 @@ export class MaterialModalComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.initializeMaterialForm();    
+        this.initializeMaterialForm();
+
+        const currentOccurrence =
+          this.materialFormService
+            .occurrence
+            .getValue();
+
+        this.hasSeedDescription =
+          !!currentOccurrence?.has_seed_description;
+
+        if (currentOccurrence?.id_material) {
+          this.api
+            .getMaterialInfos(
+              currentOccurrence.id_material
+            )
+            .subscribe({
+              next: (material) => {
+                this.hasSeedDescription =
+                  !!material?.has_seed_description;
+              },
+
+              error: () => {
+                this.hasSeedDescription =
+                  !!currentOccurrence?.has_seed_description;
+              }
+            });
+        }
+
         this.filteredMaterials$ = this.codeMaterialControl.valueChanges.pipe(
               startWith(''),
               debounceTime(300),
@@ -64,12 +92,62 @@ export class MaterialModalComponent implements OnInit {
                 this.codeMaterialExists = false;
             }
         });
-        this.materialForm.controls['id_material_type'].valueChanges.subscribe(value => {   
+        this.materialForm.controls['id_material_type'].valueChanges.subscribe(value => {
+
+            const currentOccurrence =
+              this.materialFormService
+                .occurrence
+                .getValue();
+
+
+            const initialMaterialType =
+              Number(
+                currentOccurrence?.id_material_type || 0
+              );
+
+
+            const selectedMaterialType =
+              Number(
+                value || 0
+              );
+
+
+            if (
+              this.hasSeedDescription &&
+              initialMaterialType > 0 &&
+              selectedMaterialType > 0 &&
+              initialMaterialType !== selectedMaterialType
+            ) {
+
+              this._commonService.translateToaster(
+                'warning',
+                'Modification impossible : ce matériel récolté possède une fiche Semence. Supprimez d\'abord la fiche Semence avant de modifier le type de matériel récolté.'
+              );
+
+
+              this.materialForm
+                .controls['id_material_type']
+                .setValue(
+                  initialMaterialType,
+                  {
+                    emitEvent: false
+                  }
+                );
+
+
+              return;
+            }
+
+
             if(value) {
               this.api.getCodesNomenclature(value).subscribe({
                 next: (code: string) => {
                   this.allowMultipleTaxons = this.constants.MULTIPLE_TAXON_CODES.includes(code);
-                  if (!this.allowMultipleTaxons && this.materialFormService.taxons.length > 1) {
+
+                  if (
+                    !this.allowMultipleTaxons &&
+                    this.materialFormService.taxons.length > 1
+                  ) {
                     this.materialFormService.taxons.clear();
                   }
                 },
@@ -318,7 +396,7 @@ export class MaterialModalComponent implements OnInit {
 
         if (
           isEdit &&
-          currentOccurrence?.has_seed_description &&
+          this.hasSeedDescription &&
           initialMaterialType > 0 &&
           selectedMaterialType > 0 &&
           initialMaterialType !== selectedMaterialType

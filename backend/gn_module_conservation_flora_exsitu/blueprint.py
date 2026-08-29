@@ -859,7 +859,8 @@ def get_material_code(id_material):
             "id_material": material.id_material,
             "code_material": material.code_material,
             "harvest_material_code": get_material_type_code(material),
-            "has_taxon": material_has_taxon(material)
+            "has_taxon": material_has_taxon(material),
+            "has_seed_description": material.has_seed_description
         })
     else:
         return jsonify({"error": "Material not found"}), 404
