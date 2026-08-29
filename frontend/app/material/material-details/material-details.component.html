@@ -47,15 +47,30 @@
       </div>
 
 
-      <div class="material-info-code-badge">
+      <div class="material-info-code-actions">
 
-        <span>
-          N° récolte
-        </span>
+        <div class="material-info-code-badge">
 
-        <strong>
-          {{ codeMaterial || '-' }}
-        </strong>
+          <span>
+            N° récolte
+          </span>
+
+          <strong>
+            {{ codeMaterial || '-' }}
+          </strong>
+
+        </div>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="material-info-delete-button"
+          matTooltip="Supprimer le matériel récolté"
+          aria-label="Supprimer le matériel récolté"
+          (click)="onDeleteMaterial()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
 
       </div>
 

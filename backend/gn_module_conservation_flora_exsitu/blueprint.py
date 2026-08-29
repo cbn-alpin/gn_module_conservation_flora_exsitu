@@ -570,15 +570,65 @@ def delete_material(id_material):
     )
 
 
+    germination_test_count = (
+        db.session.query(TTest)
+        .join(
+            TNomenclatures,
+            TTest.id_test_type == TNomenclatures.id_nomenclature
+        )
+        .filter(
+            TTest.id_material == id_material,
+            TNomenclatures.cd_nomenclature == "ger"
+        )
+        .count()
+    )
+
+
+    viability_test_count = (
+        db.session.query(TTest)
+        .join(
+            TNomenclatures,
+            TTest.id_test_type == TNomenclatures.id_nomenclature
+        )
+        .filter(
+            TTest.id_material == id_material,
+            TNomenclatures.cd_nomenclature == "via"
+        )
+        .count()
+    )
+
+
+    sowing_count = (
+        TSowing.query
+        .filter_by(id_material=id_material)
+        .count()
+    )
+
+
+    culture_count = (
+        TCulture.query
+        .filter_by(id_material=id_material)
+        .count()
+    )
+
+
     if (
         has_seed_description
         or storage_count > 0
+        or germination_test_count > 0
+        or viability_test_count > 0
+        or sowing_count > 0
+        or culture_count > 0
     ):
         return {
             "error": "Suppression impossible",
             "message": "Ce matériel récolté contient des données liées.",
             "has_seed_description": has_seed_description,
-            "storage_count": storage_count
+            "storage_count": storage_count,
+            "germination_test_count": germination_test_count,
+            "viability_test_count": viability_test_count,
+            "sowing_count": sowing_count,
+            "culture_count": culture_count
         }, 409
 
 
@@ -661,6 +711,44 @@ def get_materials(id_harvest):
             material_dict["has_seed_description"] = material.has_seed_description
             material_dict["has_storage"] = material.has_storage
             material_dict["storage_count"] = len(material.storages)
+
+            material_dict["germination_test_count"] = (
+                db.session.query(TTest)
+                .join(
+                    TNomenclatures,
+                    TTest.id_test_type == TNomenclatures.id_nomenclature
+                )
+                .filter(
+                    TTest.id_material == material.id_material,
+                    TNomenclatures.cd_nomenclature == "ger"
+                )
+                .count()
+            )
+
+            material_dict["viability_test_count"] = (
+                db.session.query(TTest)
+                .join(
+                    TNomenclatures,
+                    TTest.id_test_type == TNomenclatures.id_nomenclature
+                )
+                .filter(
+                    TTest.id_material == material.id_material,
+                    TNomenclatures.cd_nomenclature == "via"
+                )
+                .count()
+            )
+
+            material_dict["sowing_count"] = (
+                TSowing.query
+                .filter_by(id_material=material.id_material)
+                .count()
+            )
+
+            material_dict["culture_count"] = (
+                TCulture.query
+                .filter_by(id_material=material.id_material)
+                .count()
+            )
 
             materials_list.append(material_dict)
 

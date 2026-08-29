@@ -30,15 +30,30 @@
       </div>
 
 
-      <div class="germination-info-code-badge">
+      <div class="germination-info-code-actions">
 
-        <span>
-          N° test
-        </span>
+        <div class="germination-info-code-badge">
 
-        <strong>
-          {{ germinationForm.get('code')?.value || '-' }}
-        </strong>
+          <span>
+            N° test
+          </span>
+
+          <strong>
+            {{ germinationForm.get('code')?.value || '-' }}
+          </strong>
+
+        </div>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="germination-info-delete-button"
+          matTooltip="Supprimer le test de germination"
+          aria-label="Supprimer le test de germination"
+          (click)="onDeleteTest()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
 
       </div>
 

@@ -49,15 +49,30 @@
       </div>
 
 
-      <div class="culture-info-code-badge">
+      <div class="culture-info-code-actions">
 
-        <span>
-          N° culture
-        </span>
+        <div class="culture-info-code-badge">
 
-        <strong>
-          {{ culture.code_culture || '-' }}
-        </strong>
+          <span>
+            N° culture
+          </span>
+
+          <strong>
+            {{ culture.code_culture || '-' }}
+          </strong>
+
+        </div>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="culture-info-delete-button"
+          matTooltip="Supprimer la culture"
+          aria-label="Supprimer la culture"
+          (click)="onDeleteCulture()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
 
       </div>
 

@@ -4,6 +4,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { DataService } from '../services/data.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
+import { CommonService } from '@geonature_common/service/common.service';
+import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 
 interface Viability {
   numSemis: string;
@@ -40,7 +42,9 @@ idMaterial!: number;
     private fb: FormBuilder,
     public router: Router,
     private api: DataService,
-    private exsituFormService: ExsituFormService
+    private exsituFormService: ExsituFormService,
+    private toast: CommonService,
+    private dialogService: DialogService
   ) {
     this.germinationForm = this.fb.group({
       code: [''],
@@ -159,7 +163,148 @@ idMaterial!: number;
   }
   
 
-  onDelete(): void {}
+  private toBoldText(value: string): string {
+    const boldChars: Record<string, string> = {
+      A: '𝐀', B: '𝐁', C: '𝐂', D: '𝐃', E: '𝐄', F: '𝐅', G: '𝐆', H: '𝐇', I: '𝐈', J: '𝐉',
+      K: '𝐊', L: '𝐋', M: '𝐌', N: '𝐍', O: '𝐎', P: '𝐏', Q: '𝐐', R: '𝐑', S: '𝐒', T: '𝐓',
+      U: '𝐔', V: '𝐕', W: '𝐖', X: '𝐗', Y: '𝐘', Z: '𝐙',
+      a: '𝐚', b: '𝐛', c: '𝐜', d: '𝐝', e: '𝐞', f: '𝐟', g: '𝐠', h: '𝐡', i: '𝐢', j: '𝐣',
+      k: '𝐤', l: '𝐥', m: '𝐦', n: '𝐧', o: '𝐨', p: '𝐩', q: '𝐪', r: '𝐫', s: '𝐬', t: '𝐭',
+      u: '𝐮', v: '𝐯', w: '𝐰', x: '𝐱', y: '𝐲', z: '𝐳',
+      0: '𝟎', 1: '𝟏', 2: '𝟐', 3: '𝟑', 4: '𝟒', 5: '𝟓', 6: '𝟔', 7: '𝟕', 8: '𝟖', 9: '𝟗'
+    };
+
+    return value.replace(
+      /[A-Za-z0-9]/g,
+      (char) => boldChars[char] || char
+    );
+  }
+
+  onDeleteTest(): void {
+    if (!this.idMaterial || !this.idTest) {
+      return;
+    }
+
+    const currentCode =
+      this.germinationForm.get('code')?.value || '';
+
+    this.api
+      .getActionsByTest(this.idTest)
+      .subscribe({
+        next: (actions) => {
+          const actionCount =
+            actions?.length || 0;
+
+          if (actionCount > 0) {
+            const actionLabel =
+              actionCount > 1
+                ? 'actions liées'
+                : 'action liée';
+
+            this.toast.translateToaster(
+              'warning',
+              `Suppression impossible : le test de viabilité ${
+                this.toBoldText(currentCode)
+              } contient ${
+                this.toBoldText(String(actionCount))
+              } ${actionLabel}. Supprimez d'abord les actions liées à ce test de viabilité.`
+            );
+
+            return;
+          }
+
+          this.dialogService
+            .confirmDialog({
+              message: '',
+              icon: 'check_circle',
+              variant: 'viability',
+              entityCode: currentCode,
+              disableClose: false
+            })
+            .subscribe((yes) => {
+              if (!yes) {
+                return;
+              }
+
+              this.api
+                .deleteTest(
+                  this.idMaterial,
+                  this.idTest
+                )
+                .subscribe({
+                  next: () => {
+                    this.toast.translateToaster(
+                      'error',
+                      `Test de viabilité ${
+                        this.toBoldText(currentCode)
+                      } supprimé avec succès`
+                    );
+
+                    const idHarvest =
+                      this.exsituFormService.idHarvest;
+
+                    if (!idHarvest) {
+                      this.onBack();
+                      return;
+                    }
+
+                    this.exsituFormService.currentTab =
+                      'viability-table';
+
+                    this.router.navigate([
+                      '/conservation_flora_exsitu/form/harvest',
+                      idHarvest,
+                      'material',
+                      this.idMaterial,
+                      'viability-table'
+                    ]);
+                  },
+
+                  error: (err) => {
+                    const linkedActionCount =
+                      err?.error?.action_count;
+
+                    if (
+                      err?.status === 409 &&
+                      linkedActionCount
+                    ) {
+                      const actionLabel =
+                        linkedActionCount > 1
+                          ? 'actions liées'
+                          : 'action liée';
+
+                      this.toast.translateToaster(
+                        'warning',
+                        `Suppression impossible : le test de viabilité ${
+                          this.toBoldText(currentCode)
+                        } contient ${
+                          this.toBoldText(
+                            String(linkedActionCount)
+                          )
+                        } ${actionLabel}. Supprimez d'abord les actions liées à ce test de viabilité.`
+                      );
+
+                      return;
+                    }
+
+                    console.error(
+                      'Erreur lors de la suppression du test de viabilité :',
+                      err
+                    );
+                  }
+                });
+            });
+        },
+
+        error: (err) => {
+          console.error(
+            'Erreur lors de la vérification des actions liées au test de viabilité :',
+            err
+          );
+        }
+      });
+  }
+
   onView(): void {}
   onEdit(): void {}
   onCancel(): void {}

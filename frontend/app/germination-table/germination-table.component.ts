@@ -1105,6 +1105,13 @@ export class GerminationTableComponent implements OnInit, AfterViewInit {
                 .subscribe({
 
                   next: () => {
+                    this.toast.translateToaster(
+                      'error',
+                      `Test de germination ${
+                        this.toBoldText(currentCode)
+                      } supprimé avec succès`
+                    );
+
                     this.loadTests();
                   },
 

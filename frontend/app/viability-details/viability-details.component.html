@@ -23,12 +23,27 @@
         </p>
       </div>
 
-      <div class="viability-info-code-badge">
-        <span>N° test</span>
+      <div class="viability-info-code-actions">
 
-        <strong>
-          {{ germinationForm.get('code')?.value || '-' }}
-        </strong>
+        <div class="viability-info-code-badge">
+          <span>N° test</span>
+
+          <strong>
+            {{ germinationForm.get('code')?.value || '-' }}
+          </strong>
+        </div>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="viability-info-delete-button"
+          matTooltip="Supprimer le test de viabilité"
+          aria-label="Supprimer le test de viabilité"
+          (click)="onDeleteTest()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+
       </div>
 
     </div>

@@ -923,6 +923,13 @@ import {
                    .subscribe({
 
                      next: () => {
+                       this.toast.translateToaster(
+                         'error',
+                         `Test de viabilité ${
+                           this.toBoldText(currentCode)
+                         } supprimé avec succès`
+                       );
+
                        this.loadTests();
                      },
 

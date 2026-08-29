@@ -15,6 +15,22 @@ import {
   DataService
 } from '../../services/data.service';
 
+import {
+  CommonService
+} from '@geonature_common/service/common.service';
+
+import {
+  DialogService
+} from '../../components/confirm-dialog/confirm-dialog.service';
+
+import {
+  ExsituFormService
+} from '../../form/shared/exsitu-form.service';
+
+import {
+  MaterialFormService
+} from '../material-form/material-form.service';
+
 
 @Component({
   selector: 'app-material-details',
@@ -62,7 +78,11 @@ export class MaterialDetailsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private api: DataService
+    private api: DataService,
+    private toast: CommonService,
+    private dialogService: DialogService,
+    private exsituFormService: ExsituFormService,
+    private materialFormService: MaterialFormService
   ) {}
 
 
@@ -536,6 +556,251 @@ export class MaterialDetailsComponent implements OnInit {
       .join('\n');
   }
 
+    private toBoldText(value: string): string {
+    const boldItalicChars: Record<string, string> = {
+      A: '𝑨', B: '𝑩', C: '𝑪', D: '𝑫', E: '𝑬', F: '𝑭', G: '𝑮', H: '𝑯', I: '𝑰', J: '𝑱',
+      K: '𝑲', L: '𝑳', M: '𝑴', N: '𝑵', O: '𝑶', P: '𝑷', Q: '𝑸', R: '𝑹', S: '𝑺', T: '𝑻',
+      U: '𝑼', V: '𝑽', W: '𝑾', X: '𝑿', Y: '𝒀', Z: '𝒁',
+      a: '𝒂', b: '𝒃', c: '𝒄', d: '𝒅', e: '𝒆', f: '𝒇', g: '𝒈', h: '𝒉', i: '𝒊', j: '𝒋',
+      k: '𝒌', l: '𝒍', m: '𝒎', n: '𝒏', o: '𝒐', p: '𝒑', q: '𝒒', r: '𝒓', s: '𝒔', t: '𝒕',
+      u: '𝒖', v: '𝒗', w: '𝒘', x: '𝒙', y: '𝒚', z: '𝒛',
+      0: '𝟎', 1: '𝟏', 2: '𝟐', 3: '𝟑', 4: '𝟒', 5: '𝟓', 6: '𝟔', 7: '𝟕', 8: '𝟖', 9: '𝟗'
+    };
+
+    return value.replace(
+      /[A-Za-z0-9]/g,
+      (char) =>
+        boldItalicChars[char] ||
+        char
+    );
+  }
+
+
+  private getMaterialDeleteDependencies(
+    source: any
+  ): string[] {
+
+    const linkedItems: string[] = [];
+
+
+    const addCount = (
+      countValue: any,
+      singularLabel: string,
+      pluralLabel: string
+    ): void => {
+
+      const count =
+        Number(
+          countValue || 0
+        );
+
+
+      if (count <= 0) {
+        return;
+      }
+
+
+      linkedItems.push(
+        `${this.toBoldText(
+          String(count)
+        )} ${
+          count > 1
+            ? pluralLabel
+            : singularLabel
+        }`
+      );
+    };
+
+
+    if (source?.has_seed_description) {
+      linkedItems.push(
+        `${this.toBoldText('1')} fiche semence liée`
+      );
+    }
+
+
+    addCount(
+      source?.storage_count,
+      'stockage lié',
+      'stockages liés'
+    );
+
+    addCount(
+      source?.germination_test_count,
+      'test de germination lié',
+      'tests de germination liés'
+    );
+
+    addCount(
+      source?.viability_test_count,
+      'test de viabilité lié',
+      'tests de viabilité liés'
+    );
+
+    addCount(
+      source?.sowing_count,
+      'semis lié',
+      'semis liés'
+    );
+
+    addCount(
+      source?.culture_count,
+      'culture liée',
+      'cultures liées'
+    );
+
+
+    return linkedItems;
+  }
+
+
+  private showMaterialDeleteBlockedWarning(
+    source: any
+  ): void {
+
+    const linkedItems =
+      this.getMaterialDeleteDependencies(
+        source
+      );
+
+
+    if (linkedItems.length === 0) {
+      return;
+    }
+
+
+    const linkedContent =
+      linkedItems.length === 1
+        ? linkedItems[0]
+        : `${
+            linkedItems
+              .slice(0, -1)
+              .join(', ')
+          } et ${
+            linkedItems[
+              linkedItems.length - 1
+            ]
+          }`;
+
+
+    this.toast.translateToaster(
+      'warning',
+      `Suppression impossible : le matériel récolté ${
+        this.toBoldText(
+          this.codeMaterial || ''
+        )
+      } contient ${linkedContent}. Supprimez d'abord les éléments liés à ce matériel récolté.`
+    );
+  }
+
+
+  onDeleteMaterial(): void {
+
+    if (
+      !this.idMaterial ||
+      !this.material
+    ) {
+      return;
+    }
+
+
+    const linkedDependencies =
+      this.getMaterialDeleteDependencies(
+        this.material
+      );
+
+
+    if (linkedDependencies.length > 0) {
+
+      this.showMaterialDeleteBlockedWarning(
+        this.material
+      );
+
+      return;
+    }
+
+
+    const hasLinkedTaxons =
+      this.material?.taxons &&
+      this.material.taxons.length > 0;
+
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'spa',
+        variant: 'material',
+        entityCode:
+          this.codeMaterial || '',
+        warningMessage:
+          hasLinkedTaxons
+            ? 'Ce matériel est lié à un ou plusieurs taxons.'
+            : undefined,
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        if (!yes) {
+          return;
+        }
+
+
+        this.materialFormService
+          .deleteOccurrence(
+            this.material
+          )
+          .subscribe({
+
+            next: () => {
+
+              this.exsituFormService
+                .setIdMaterial(
+                  null
+                );
+
+              this.exsituFormService.currentTab =
+                'materials';
+
+
+              const materialsUrl =
+                this.router.url
+                  .split('?')[0]
+                  .replace(
+                    /\/material\/[^/]+\/material-details$/,
+                    '/material-form'
+                  );
+
+
+              this.router.navigateByUrl(
+                materialsUrl
+              );
+
+            },
+
+            error: (err) => {
+
+              if (err?.status === 409) {
+
+                this.showMaterialDeleteBlockedWarning({
+                  ...this.material,
+                  ...err?.error
+                });
+
+                return;
+              }
+
+
+              console.error(
+                'Erreur lors de la suppression du matériel récolté :',
+                err
+              );
+
+            }
+
+          });
+
+      });
+  }
 
   onBack(): void {
     window.history.back();

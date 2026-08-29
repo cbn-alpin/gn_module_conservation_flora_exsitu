@@ -19,6 +19,14 @@ import {
   ConstantsService
 } from '../../services/constants.service';
 
+import {
+  CommonService
+} from '@geonature_common/service/common.service';
+
+import {
+  DialogService
+} from '../../components/confirm-dialog/confirm-dialog.service';
+
 
 @Component({
   selector: 'app-stock-details',
@@ -66,7 +74,9 @@ export class StockDetailsComponent implements OnInit {
   constructor(
     private router: Router,
     private api: DataService,
-    private constants: ConstantsService
+    private constants: ConstantsService,
+    private toast: CommonService,
+    private dialogService: DialogService
   ) {}
 
 
@@ -553,6 +563,105 @@ export class StockDetailsComponent implements OnInit {
         }
       )
       .join('\n');
+  }
+
+
+  onDeleteStorage(): void {
+
+    if (
+      !this.idMaterial ||
+      !this.idStorage
+    ) {
+      return;
+    }
+
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'store',
+        variant: 'stock',
+        entityLabel:
+          this.actionTypeLabel,
+        entityDate:
+          this.storageAction?.date_start,
+        storageLocation:
+          this.placeLabel,
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        if (!yes) {
+          return;
+        }
+
+
+        this.api
+          .deleteAction(
+            this.idMaterial,
+            this.idStorage
+          )
+          .subscribe({
+
+            next: () => {
+
+              this.toast
+                .translateToaster(
+                  'info',
+                  'Action supprimée avec succès'
+                );
+
+
+              const stockUrl =
+                this.router.url
+                  .split('?')[0]
+                  .replace(
+                    /\/stock-details\/[^/]+\/[^/]+$/,
+                    '/stock'
+                  );
+
+
+              this.router.navigateByUrl(
+                stockUrl
+              );
+
+            },
+
+            error: (err) => {
+
+              if (
+                err?.status === 403 &&
+                err?.error?.error
+              ) {
+
+                this.toast
+                  .translateToaster(
+                    'warning',
+                    err.error.error
+                  );
+
+
+                return;
+              }
+
+
+              this.toast
+                .translateToaster(
+                  'warning',
+                  'Erreur lors de la suppression de l\'action'
+                );
+
+
+              console.error(
+                'Erreur lors de la suppression de l’action de stockage :',
+                err
+              );
+
+            }
+
+          });
+
+      });
   }
 
 

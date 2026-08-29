@@ -209,12 +209,8 @@ export class DataService {
   
   
   deleteTest(id_material: number, id_test: number): Observable<any> {
-    return this.api.delete(`${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`).pipe(
-      map(() => {
-        // ✅ Message intégré ici
-        alert('Test supprimé avec succès'); // ou toaster si tu veux
-        return { deleted: true };
-      })
+    return this.api.delete(
+      `${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`
     );
   }
 

@@ -823,10 +823,92 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
     }
 
 
+    private getMaterialDeleteDependencies(
+      source: any
+    ): string[] {
+
+      const linkedItems: string[] = [];
+
+
+      const addCount = (
+        countValue: any,
+        singularLabel: string,
+        pluralLabel: string
+      ): void => {
+
+        const count =
+          Number(
+            countValue || 0
+          );
+
+
+        if (count <= 0) {
+          return;
+        }
+
+
+        linkedItems.push(
+          `${this.toBoldText(
+            String(count)
+          )} ${
+            count > 1
+              ? pluralLabel
+              : singularLabel
+          }`
+        );
+      };
+
+
+      if (source?.has_seed_description) {
+
+        linkedItems.push(
+          `${this.toBoldText('1')} fiche semence liée`
+        );
+
+      }
+
+
+      addCount(
+        source?.storage_count,
+        'stockage lié',
+        'stockages liés'
+      );
+
+
+      addCount(
+        source?.germination_test_count,
+        'test de germination lié',
+        'tests de germination liés'
+      );
+
+
+      addCount(
+        source?.viability_test_count,
+        'test de viabilité lié',
+        'tests de viabilité liés'
+      );
+
+
+      addCount(
+        source?.sowing_count,
+        'semis lié',
+        'semis liés'
+      );
+
+
+      addCount(
+        source?.culture_count,
+        'culture liée',
+        'cultures liées'
+      );
+
+
+      return linkedItems;
+    }
+
+
     private showMaterialDeleteBlockedWarning(
-      occurrence: any,
-      hasSeedDescription: boolean,
-      storageCount: number
+      occurrence: any
     ): void {
 
       const currentCode =
@@ -835,70 +917,29 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         );
 
 
-      const hasStorage =
-        storageCount > 0;
+      const linkedItems =
+        this.getMaterialDeleteDependencies(
+          occurrence
+        );
 
 
-      let linkedContent = '';
-      let instruction = '';
-
-
-      if (
-        hasSeedDescription &&
-        hasStorage
-      ) {
-
-        const storageLabel =
-          storageCount > 1
-            ? 'stockages liés'
-            : 'stockage lié';
-
-
-        linkedContent =
-          `${this.toBoldText('1')} fiche semence liée et ${
-            this.toBoldText(
-              String(storageCount)
-            )
-          } ${storageLabel}`;
-
-
-        instruction =
-          'Supprimez d\'abord la fiche semence et les stockages liés à ce matériel récolté.';
-
-      } else if (hasSeedDescription) {
-
-        linkedContent =
-          `${this.toBoldText('1')} fiche semence liée`;
-
-
-        instruction =
-          'Supprimez d\'abord la fiche semence liée à ce matériel récolté.';
-
-      } else if (hasStorage) {
-
-        const storageLabel =
-          storageCount > 1
-            ? 'stockages liés'
-            : 'stockage lié';
-
-
-        linkedContent =
-          `${this.toBoldText(
-            String(storageCount)
-          )} ${storageLabel}`;
-
-
-        instruction =
-          storageCount > 1
-            ? 'Supprimez d\'abord les stockages liés à ce matériel récolté.'
-            : 'Supprimez d\'abord le stockage lié à ce matériel récolté.';
-
-      }
-
-
-      if (!linkedContent) {
+      if (linkedItems.length === 0) {
         return;
       }
+
+
+      const linkedContent =
+        linkedItems.length === 1
+          ? linkedItems[0]
+          : `${
+              linkedItems
+                .slice(0, -1)
+                .join(', ')
+            } et ${
+              linkedItems[
+                linkedItems.length - 1
+              ]
+            }`;
 
 
       this.toast.translateToaster(
@@ -907,32 +948,23 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
           this.toBoldText(
             currentCode
           )
-        } contient ${linkedContent}. ${instruction}`
+        } contient ${linkedContent}. Supprimez d'abord les éléments liés à ce matériel récolté.`
       );
     }
 
 
     deleteOccurrence(occurrence) {
 
-      const hasSeedDescription =
-        !!occurrence?.has_seed_description;
-
-
-      const storageCount =
-        Number(
-          occurrence?.storage_count || 0
+      const linkedDependencies =
+        this.getMaterialDeleteDependencies(
+          occurrence
         );
 
 
-      if (
-        hasSeedDescription ||
-        storageCount > 0
-      ) {
+      if (linkedDependencies.length > 0) {
 
         this.showMaterialDeleteBlockedWarning(
-          occurrence,
-          hasSeedDescription,
-          storageCount
+          occurrence
         );
 
 
@@ -973,21 +1005,10 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
 
                 if (err?.status === 409) {
 
-                  const backendHasSeedDescription =
-                    !!err?.error?.has_seed_description;
-
-
-                  const backendStorageCount =
-                    Number(
-                      err?.error?.storage_count || 0
-                    );
-
-
-                  this.showMaterialDeleteBlockedWarning(
-                    occurrence,
-                    backendHasSeedDescription,
-                    backendStorageCount
-                  );
+                  this.showMaterialDeleteBlockedWarning({
+                    ...occurrence,
+                    ...err?.error
+                  });
 
 
                   return;

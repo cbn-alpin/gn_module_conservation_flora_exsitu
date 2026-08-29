@@ -1366,6 +1366,234 @@ export class CultureDetailsComponent
   }
 
 
+  onDeleteCulture(): void {
+    if (
+      !this.idMaterial ||
+      !this.idCulture ||
+      !this.culture
+    ) {
+      return;
+    }
+
+
+    const cultureCode =
+      this.culture?.code_culture || '';
+
+
+    this.cultureService
+      .getCultureActions(
+        this.idCulture
+      )
+      .subscribe({
+
+        next: (actions) => {
+
+          const actionCount =
+            actions?.length || 0;
+
+
+          if (actionCount > 0) {
+
+            const actionLabel =
+              actionCount > 1
+                ? 'actions liées'
+                : 'action liée';
+
+
+            this.toast.translateToaster(
+              'warning',
+              `Suppression impossible : la culture ${
+                this.toBoldText(
+                  cultureCode
+                )
+              } contient ${
+                this.toBoldText(
+                  String(actionCount)
+                )
+              } ${actionLabel}. Supprimez d'abord les actions liées à cette culture.`
+            );
+
+
+            return;
+          }
+
+
+          this.dialogService
+            .confirmDialog({
+              message:
+                'Êtes-vous certain de vouloir supprimer cette culture ?',
+              icon: 'local_florist',
+              variant: 'culture',
+              entityCode: cultureCode,
+              disableClose: false
+            })
+            .subscribe((yes) => {
+
+              if (!yes) {
+                return;
+              }
+
+
+              this.api
+                .deleteCulture(
+                  this.idMaterial,
+                  this.idCulture
+                )
+                .subscribe({
+
+                  next: () => {
+
+                    this.toast.translateToaster(
+                      'error',
+                      cultureCode
+                        ? `Culture ${
+                            this.toBoldText(
+                              cultureCode
+                            )
+                          } supprimée avec succès`
+                        : 'Culture supprimée avec succès'
+                    );
+
+
+                    this.navigateToCultureTableAfterDelete();
+
+                  },
+
+                  error: (err) => {
+
+                    const linkedActionCount =
+                      err?.error?.action_count;
+
+
+                    if (
+                      err?.status === 409 &&
+                      linkedActionCount
+                    ) {
+
+                      const actionLabel =
+                        linkedActionCount > 1
+                          ? 'actions liées'
+                          : 'action liée';
+
+
+                      this.toast.translateToaster(
+                        'warning',
+                        `Suppression impossible : la culture ${
+                          this.toBoldText(
+                            cultureCode
+                          )
+                        } contient ${
+                          this.toBoldText(
+                            String(
+                              linkedActionCount
+                            )
+                          )
+                        } ${actionLabel}. Supprimez d'abord les actions liées à cette culture.`
+                      );
+
+
+                      return;
+                    }
+
+
+                    console.error(
+                      'Erreur lors de la suppression de la culture :',
+                      err
+                    );
+
+                  }
+
+                });
+
+            });
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Erreur lors de la vérification des actions liées à la culture :',
+            err
+          );
+
+        }
+
+      });
+  }
+
+
+  private navigateToCultureTableAfterDelete(): void {
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+
+    if (!idHarvest) {
+      this.onBack();
+      return;
+    }
+
+
+    this.exsituFormService.currentTab =
+      'culture-table';
+
+
+    const idSowing =
+      Number(
+        this.culture?.id_sowing
+      );
+
+
+    if (idSowing) {
+
+      this.router.navigate([
+        '/conservation_flora_exsitu/form/harvest',
+        idHarvest,
+        'material',
+        this.idMaterial,
+        'sowing',
+        idSowing,
+        'culture-table'
+      ]);
+
+
+      return;
+    }
+
+
+    const idTest =
+      Number(
+        this.culture?.id_test
+      );
+
+
+    if (idTest) {
+
+      this.router.navigate([
+        '/conservation_flora_exsitu/form/harvest',
+        idHarvest,
+        'material',
+        this.idMaterial,
+        'test',
+        idTest,
+        'culture-table'
+      ]);
+
+
+      return;
+    }
+
+
+    this.router.navigate([
+      '/conservation_flora_exsitu/form/harvest',
+      idHarvest,
+      'material',
+      this.idMaterial,
+      'culture-table'
+    ]);
+  }
+
+
   getSourceLabel(): string {
 
     if (!this.culture) {

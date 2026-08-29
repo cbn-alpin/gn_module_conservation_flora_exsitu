@@ -47,15 +47,30 @@
       </div>
 
 
-      <div class="stock-info-code-badge">
+      <div class="stock-info-code-actions">
 
-        <span>
-          Type d'action
-        </span>
+        <div class="stock-info-code-badge">
 
-        <strong>
-          {{ actionTypeLabel || '-' }}
-        </strong>
+          <span>
+            Type d'action
+          </span>
+
+          <strong>
+            {{ actionTypeLabel || '-' }}
+          </strong>
+
+        </div>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="stock-info-delete-button"
+          matTooltip="Supprimer l'action de stockage"
+          aria-label="Supprimer l'action de stockage"
+          (click)="onDeleteStorage()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
 
       </div>
 
