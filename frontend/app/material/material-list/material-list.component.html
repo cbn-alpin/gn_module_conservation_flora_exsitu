@@ -425,6 +425,11 @@
 
             <button
               mat-menu-item
+              *ngIf="
+                constants.STORABLE_MATERIAL_CODES.includes(
+                  element.harvest_material_code
+                )
+              "
               class="stock-action"
               (click)="goToStock(element)"
             >

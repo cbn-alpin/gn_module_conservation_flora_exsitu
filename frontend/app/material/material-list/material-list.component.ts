@@ -1279,9 +1279,22 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
 
 
     goToStock(material: any) {
+      if (
+        !this.constants.STORABLE_MATERIAL_CODES.includes(
+          material?.harvest_material_code
+        )
+      ) {
+        return;
+      }
+
+
       const idMaterial = material.id_material
+
       this.exsituFormService.setIdMaterial(idMaterial);
-      this.router.navigate([`${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/stock`]);
+
+      this.router.navigate([
+        `${this.cfg.getModuleUrl()}/form/harvest/${this.exsituFormService.idHarvest}/material/${idMaterial}/stock`
+      ]);
     }
 
     selectMaterial(

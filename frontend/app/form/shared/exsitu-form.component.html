@@ -55,16 +55,28 @@
                 Semence
             </a>
 
-            <!-- Stockage (Activé après avoir choisi un matériel) -->
+            <!-- Stockage (Activé uniquement pour les matériels stockables) -->
             <a 
                 class="tablinks themed-tab stock-tab"
-                [class.disabled]="!exsituFormService.idMaterial"
+                [class.disabled]="
+                    !exsituFormService.idMaterial ||
+                    !constants.STORABLE_MATERIAL_CODES.includes(
+                        exsituFormService.materialTypeCode
+                    )
+                "
                 [ngClass]="{
                     active:
                         exsituFormService.currentTab === 'stock' ||
                         exsituFormService.currentTab === 'stock-details'
                 }"
-                (click)="exsituFormService.idMaterial ? goToTab('stock') : null">
+                (click)="
+                    exsituFormService.idMaterial &&
+                    constants.STORABLE_MATERIAL_CODES.includes(
+                        exsituFormService.materialTypeCode
+                    )
+                        ? goToTab('stock')
+                        : null
+                ">
                 <mat-icon class="example-tab-icon">store</mat-icon>
                 Stockage
             </a>

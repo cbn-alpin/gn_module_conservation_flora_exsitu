@@ -58,7 +58,7 @@ export class ConstantsService {
     this.HARVEST_MATERIAL_CODES.SEED,
   ];
 
-  private readonly STORABLE_MATERIAL_CODES = [
+  public readonly STORABLE_MATERIAL_CODES = [
     this.HARVEST_MATERIAL_CODES.SEED,
     this.HARVEST_MATERIAL_CODES.SPORE,
     this.HARVEST_MATERIAL_CODES.SEED_MIX,

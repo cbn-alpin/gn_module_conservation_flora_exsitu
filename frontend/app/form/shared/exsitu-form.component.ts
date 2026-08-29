@@ -123,7 +123,14 @@ export class ExsituFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate([
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/seed-details`
           ]);
-        }else if (tab === 'stock' && this.exsituFormService.idHarvest && selectedMaterialId) {
+        }else if (
+          tab === 'stock' &&
+          this.exsituFormService.idHarvest &&
+          selectedMaterialId &&
+          this.constants.STORABLE_MATERIAL_CODES.includes(
+            this.exsituFormService.materialTypeCode
+          )
+        ) {
           this.router.navigate([
             `${this.currentModulePath}/form/harvest/${this.exsituFormService.idHarvest}/material/${selectedMaterialId}/stock`
           ]);
