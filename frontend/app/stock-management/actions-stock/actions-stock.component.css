@@ -535,4 +535,17 @@
   color: #607d8b !important;
 }
 
+
+/* =========================================================
+   NOTIFICATION DE SUPPRESSION
+   ========================================================= */
+
+::ng-deep
+.toast-error
+.toast-message {
+  white-space: pre-line;
+
+  text-align: left;
+}
+
   

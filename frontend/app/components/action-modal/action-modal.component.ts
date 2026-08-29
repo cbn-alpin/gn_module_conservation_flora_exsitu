@@ -676,6 +676,22 @@ export class ActionModalComponent implements OnInit {
   }
 
 
+  private hasCreationChanges(): boolean {
+    if (!this.initialFormState) {
+      return false;
+    }
+
+    return (
+      JSON.stringify(
+        this.actionForm.getRawValue()
+      ) !==
+      JSON.stringify(
+        this.initialFormState
+      )
+    );
+  }
+
+
   onCancel(): void {
     if (this.cancelDialogOpen) {
       return;
@@ -709,6 +725,13 @@ export class ActionModalComponent implements OnInit {
             this.codeMaterial
               ? `Fiche de stockage du matériel ${this.toBoldText(this.codeMaterial)} non modifiée`
               : 'Fiche de stockage non modifiée'
+          );
+        } else if (this.hasCreationChanges()) {
+          this._commonService.translateToaster(
+            'info',
+            this.codeMaterial
+              ? `Fiche de stockage du matériel ${this.toBoldText(this.codeMaterial)} non créée`
+              : 'Fiche de stockage non créée'
           );
         } else {
           this._commonService.translateToaster(

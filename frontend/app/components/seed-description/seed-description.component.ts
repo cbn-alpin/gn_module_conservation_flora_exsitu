@@ -344,6 +344,38 @@ export class SeddDescriptionComponent implements OnInit {
     }
 
 
+    private hasCreationChanges(): boolean {
+      if (!this.initialFormState) {
+        return false;
+      }
+
+      const formChanged =
+        JSON.stringify(
+          this.seedForm.getRawValue()
+        ) !==
+        JSON.stringify(
+          this.initialFormState
+        );
+
+      const mediaUrlsChanged =
+        JSON.stringify(
+          this.mediaUrlControls.getRawValue()
+        ) !==
+        JSON.stringify(
+          this.initialMediaUrls
+        );
+
+      const hasSelectedFiles =
+        this.selectedFiles.length > 0;
+
+      return (
+        formChanged ||
+        mediaUrlsChanged ||
+        hasSelectedFiles
+      );
+    }
+
+
     onCancel(): void {
       if (this.cancelDialogOpen) {
         return;
@@ -378,6 +410,13 @@ export class SeddDescriptionComponent implements OnInit {
                 ? `Semence du matériel ${this.toBoldText(this.codeMaterial)} non modifiée`
                 : 'Semence non modifiée'
             );
+          } else if (this.hasCreationChanges()) {
+            this._commonService.translateToaster(
+              'info',
+              this.codeMaterial
+                ? `Semence du matériel ${this.toBoldText(this.codeMaterial)} non créée`
+                : 'Semence non créée'
+            );
           } else {
             this._commonService.translateToaster(
               'info',
@@ -407,7 +446,15 @@ export class SeddDescriptionComponent implements OnInit {
             if (yes) {
                 this.dataService.deleteSeed(this.data.seedData.id_seed).subscribe({
                     next: () => {
-                      this._commonService.translateToaster('info', 'Description supprimée avec succès');
+                      const currentCode = this.codeMaterial || '';
+
+                      this._commonService.translateToaster(
+                        'error',
+                        currentCode
+                          ? `Semence du matériel ${this.toBoldText(currentCode)} supprimée avec succès`
+                          : 'Semence supprimée avec succès'
+                      );
+
                       this.seedForm.reset()
                       this.edit = false
                     },

@@ -659,6 +659,51 @@ export class ActionsStockComponent
       });
     }
 
+    private toBoldText(value: string): string {
+      const boldChars: Record<string, string> = {
+        A: '𝐀', B: '𝐁', C: '𝐂', D: '𝐃', E: '𝐄', F: '𝐅', G: '𝐆', H: '𝐇', I: '𝐈', J: '𝐉',
+        K: '𝐊', L: '𝐋', M: '𝐌', N: '𝐍', O: '𝐎', P: '𝐏', Q: '𝐐', R: '𝐑', S: '𝐒', T: '𝐓',
+        U: '𝐔', V: '𝐕', W: '𝐖', X: '𝐗', Y: '𝐘', Z: '𝐙',
+        a: '𝐚', b: '𝐛', c: '𝐜', d: '𝐝', e: '𝐞', f: '𝐟', g: '𝐠', h: '𝐡', i: '𝐢', j: '𝐣',
+        k: '𝐤', l: '𝐥', m: '𝐦', n: '𝐧', o: '𝐨', p: '𝐩', q: '𝐪', r: '𝐫', s: '𝐬', t: '𝐭',
+        u: '𝐮', v: '𝐯', w: '𝐰', x: '𝐱', y: '𝐲', z: '𝐳',
+        0: '𝟎', 1: '𝟏', 2: '𝟐', 3: '𝟑', 4: '𝟒', 5: '𝟓', 6: '𝟔', 7: '𝟕', 8: '𝟖', 9: '𝟗'
+      };
+
+      return value.replace(/[A-Za-z0-9]/g, (char) => boldChars[char] || char);
+    }
+
+
+    private formatDateForToaster(value: any): string {
+      if (!value) {
+        return '-';
+      }
+
+      if (typeof value === 'string') {
+        const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (match) {
+          return `${match[3]}/${match[2]}/${match[1]}`;
+        }
+      }
+
+      const date =
+        value instanceof Date
+          ? value
+          : new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return '-';
+      }
+
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+
+      return `${day}/${month}/${year}`;
+    }
+
+
     confirmDeleteAction(data) {
       if (!data?.id_material || !data?.id_storage) return;
 
@@ -676,7 +721,20 @@ export class ActionsStockComponent
             if (yes) {
               this.api.deleteAction(data.id_material, data.id_storage).subscribe({
                 next: () => {
-                  this._commonService.translateToaster('info', 'Action supprimée avec succès');
+                  const actionTypeLabel =
+                    String(data.action_type_label || '-').trim() || '-';
+
+                  const dateLabel =
+                    this.formatDateForToaster(data.date_start);
+
+                  const storageLocation =
+                    String(this.title || '-').trim() || '-';
+
+                  this._commonService.translateToaster(
+                    'error',
+                    `Action de stockage ${this.toBoldText(actionTypeLabel)} supprimée avec succès\nDate de début : ${this.toBoldText(dateLabel)}\nLieu de stockage associé : ${this.toBoldText(storageLocation)}`
+                  );
+
                   this.loadActions();
                   this.onGetStockSummary()
                 },
