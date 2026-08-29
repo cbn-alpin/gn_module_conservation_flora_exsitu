@@ -245,7 +245,16 @@ export class ViabilityComponent implements OnInit {
     if(this.codeTest){
       finalForm.code_parent = this.codeTest.value;
     }
-    finalForm['id_actor'] = finalForm['id_actor'][0].id_role;
+    if (
+      Array.isArray(finalForm['id_actor']) &&
+      finalForm['id_actor'].length > 0
+    ) {
+      finalForm['id_actor'] =
+        finalForm['id_actor'][0]?.id_role ?? null;
+    } else {
+      finalForm['id_actor'] = null;
+    }
+
     finalForm['id_material'] = this.idMaterial;
     finalForm['id_test_type'] = this.idGermination;
     finalForm['id_storage'] = this.idStorage;
