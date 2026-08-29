@@ -42,6 +42,7 @@
         || dialogData?.variant === 'material-reset'
         || dialogData?.variant === 'material-exit'
         || dialogData?.variant === 'material-save'
+        || dialogData?.variant === 'material-taxon-delete'
     "
 
     [class.seed-confirm-dialog]="
@@ -68,6 +69,7 @@
         || dialogData?.variant === 'material-reset'
         || dialogData?.variant === 'material-exit'
         || dialogData?.variant === 'material-save'
+        || dialogData?.variant === 'material-taxon-delete'
         || dialogData?.variant === 'seed'
         || dialogData?.variant === 'seed-reset'
         || dialogData?.variant === 'seed-exit'
@@ -363,6 +365,14 @@
             <span class="danger-word">supprimer</span>
             la semence du matériel
             <strong class="entity-code">{{ dialogData?.entityCode }}</strong>
+            ?
+        </p>
+
+        <p *ngIf="dialogData?.variant === 'material-taxon-delete'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer</span>
+            le taxon
+            "<strong class="entity-code">{{ dialogData?.entityLabel }}</strong>"
             ?
         </p>
 

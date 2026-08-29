@@ -29,6 +29,7 @@ export interface ConfirmDialogData {
         | 'material-reset'
         | 'material-exit'
         | 'material-save'
+        | 'material-taxon-delete'
         | 'seed'
         | 'seed-reset'
         | 'seed-exit'
