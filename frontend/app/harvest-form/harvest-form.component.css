@@ -1,3 +1,473 @@
+:host {
+  display: block;
+
+  --harvest-accent: #1e88e5;
+  --harvest-title: #0d4f8b;
+  --harvest-subtitle: #5f7890;
+  --harvest-soft: #eaf4fd;
+  --harvest-soft-light: #f7fbff;
+  --harvest-border: #bbdefb;
+  --harvest-border-light: #d7e9f8;
+  --harvest-shadow: rgba(30, 136, 229, 0.08);
+}
+
+
+/* =========================================================
+   CONTENEUR
+   Uniquement la partie formulaire à droite
+   ========================================================= */
+
+.harvest-details-panel {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  padding: 14px 12px 8px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CARTES D'INFORMATIONS
+
+   Même construction que :
+   .seed-details-info-card
+   ========================================================= */
+
+.harvest-details-info-card {
+  padding: 14px 16px 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f8fcff 100%
+    );
+
+  border: 1px solid var(--harvest-border);
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px var(--harvest-shadow);
+}
+
+
+/* =========================================================
+   EN-TÊTES DE SECTION
+
+   Même construction que :
+   .seed-details-section-header
+   ========================================================= */
+
+.harvest-details-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+  padding: 2px 0 9px;
+
+  border-bottom: 1px solid var(--harvest-border);
+}
+
+
+.harvest-details-section-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: var(--harvest-accent);
+
+  border-radius: 2px;
+}
+
+
+/* =========================================================
+   ICÔNES
+
+   Même taille et structure que Semence
+   ========================================================= */
+
+.harvest-details-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: var(--harvest-soft);
+
+  border: 1px solid var(--harvest-border);
+  border-radius: 7px;
+}
+
+
+.harvest-details-section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: var(--harvest-accent);
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   TITRE + SOUS-TITRE
+
+   Même hiérarchie que Semence
+   ========================================================= */
+
+.harvest-details-section-text {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.harvest-details-section-title {
+  color: var(--harvest-title);
+
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0.1px;
+}
+
+
+.harvest-details-section-subtitle {
+  margin-top: 1px;
+
+  color: var(--harvest-subtitle);
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   CHAMPS
+   ========================================================= */
+
 .form-group {
-  margin-bottom: 5px !important;
+  margin-bottom: 11px !important;
+}
+
+
+.harvest-details-info-card small,
+.harvest-details-sub-card small {
+  display: inline-block;
+
+  margin-bottom: 4px;
+
+  color: #2d2d2d;
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   INPUTS NATIFS
+   ========================================================= */
+
+.harvest-details-panel .form-control {
+  color: #2f2f2f;
+
+  background-color: #ffffff;
+
+  border: 1px solid #cbd9e5;
+  border-radius: 7px;
+
+  box-shadow: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.harvest-details-panel .form-control:hover {
+  border-color: #90caf9;
+}
+
+
+.harvest-details-panel .form-control:focus {
+  background-color: #ffffff;
+
+  border-color: var(--harvest-accent);
+
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(30, 136, 229, 0.10);
+}
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.harvest-details-panel textarea.form-control {
+  min-height: 68px;
+
+  padding: 9px 11px;
+
+  resize: vertical;
+}
+
+
+/* =========================================================
+   COMPOSANTS ANGULAR MATERIAL / GEONATURE
+   Limités au formulaire Récolte uniquement
+   ========================================================= */
+
+:host ::ng-deep
+.harvest-details-panel
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.harvest-details-panel
+.mat-mdc-text-field-wrapper {
+  border-radius: 7px;
+}
+
+
+:host ::ng-deep
+.harvest-details-panel
+.mat-mdc-form-field-focus-overlay {
+  background-color: transparent;
+}
+
+
+:host ::ng-deep
+.harvest-details-panel
+.mat-mdc-form-field.mat-focused
+.mdc-line-ripple::after {
+  border-bottom-color: var(--harvest-accent) !important;
+}
+
+
+/* =========================================================
+   INFORMATIONS SUR LA STATION
+
+   Sous-carte de "Où"
+   ========================================================= */
+
+.harvest-details-sub-card {
+  margin-top: 16px;
+  padding: 13px 14px 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f7fbff 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid var(--harvest-border-light);
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(30, 136, 229, 0.05);
+}
+
+
+.harvest-details-sub-header {
+  margin-bottom: 12px;
+}
+
+
+.harvest-details-sub-header
+.harvest-details-section-title {
+  font-size: 13px;
+}
+
+
+.harvest-details-sub-header
+.harvest-details-section-subtitle {
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   COMPLÉMENT DE LOCALISATION
+   ========================================================= */
+
+.harvest-location-remarks {
+  margin-top: 3px;
+}
+
+
+/* =========================================================
+   REMARQUES GÉNÉRALES / COMMENTAIRE MÉTÉO
+
+   Le champ existant est conservé tel quel.
+   Aucun nouveau champ.
+   ========================================================= */
+
+.harvest-details-remarks-card {
+  padding: 12px 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f8fcff 100%
+    );
+
+  border: 1px solid var(--harvest-border-light);
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(30, 136, 229, 0.05);
+}
+
+
+.harvest-details-remarks-card textarea {
+  margin: 0;
+}
+
+
+/* =========================================================
+   FORMULAIRES DYNAMIQUES
+   Programme / Meteo / etc.
+   ========================================================= */
+
+:host ::ng-deep
+.harvest-details-info-card
+pnx-dynamic-form-generator {
+  display: block;
+
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.harvest-details-info-card
+pnx-dynamic-form-generator label {
+  color: #2d2d2d;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   LIGNES / COLONNES
+   ========================================================= */
+
+.harvest-details-panel .row.row-0 {
+  row-gap: 4px;
+}
+
+
+.harvest-details-panel .padding-sm {
+  padding-right: 12px;
+}
+
+
+/* =========================================================
+   PIED DE FORMULAIRE
+
+   Boutons strictement inchangés.
+   ========================================================= */
+
+.harvest-details-panel .card-footer {
+  margin-top: 2px;
+  padding: 14px 0 4px;
+
+  background-color: transparent;
+
+  border-top: 1px solid var(--harvest-border-light);
+}
+
+
+/* =========================================================
+   SURVOL TRÈS LÉGER DES CARTES
+   ========================================================= */
+
+.harvest-details-info-card {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.harvest-details-info-card:hover {
+  border-color: #90caf9;
+
+  box-shadow:
+    0 4px 14px
+    rgba(30, 136, 229, 0.10);
+}
+
+
+/* =========================================================
+   LIBELLÉS DES COMPOSANTS GEONATURE / MATERIAL
+   Même graisse que les libellés natifs du formulaire
+   ========================================================= */
+
+:host ::ng-deep
+.harvest-details-panel
+label,
+:host ::ng-deep
+.harvest-details-panel
+mat-label,
+:host ::ng-deep
+.harvest-details-panel
+.mat-form-field-label,
+:host ::ng-deep
+.harvest-details-panel
+.mdc-floating-label {
+  color: #2d2d2d !important;
+
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+
+/* =========================================================
+   LIBELLÉS INTERNES DES COMPOSANTS GEONATURE
+   Habitat / Jeux de données / Dates
+   ========================================================= */
+
+:host ::ng-deep
+.harvest-details-panel
+pnx-autocomplete
+small,
+:host ::ng-deep
+.harvest-details-panel
+pnx-datasets
+small,
+:host ::ng-deep
+.harvest-details-panel
+pnx-date
+small {
+  color: #2d2d2d !important;
+
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
 }
