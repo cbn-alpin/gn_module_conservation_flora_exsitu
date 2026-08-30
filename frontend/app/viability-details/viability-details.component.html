@@ -298,12 +298,49 @@
           [isViabilityContext]="true"
           [enablePagination]="true"
           [selectedActionId]="selectedAction?.id_action || null"
-          (rowClicked)="onActionSelected($event)">
+          (rowClicked)="onActionSelected($event)"
+          (visibleActionsChanged)="onVisibleActionsChanged($event)">
         </app-action-table>
       </div>
     
-      <div class="germination-detail" *ngIf="selectedAction">
-        <app-action-details [actionId]="selectedAction.id_action"></app-action-details>
+      <div
+        class="germination-detail"
+        *ngIf="selectedAction"
+      >
+
+        <ng-container
+          *ngIf="
+            !noActionMatchesFilters;
+            else noFilteredActionDetails
+          "
+        >
+
+          <app-action-details
+            [actionId]="selectedAction.id_action">
+          </app-action-details>
+
+        </ng-container>
+
+
+        <ng-template #noFilteredActionDetails>
+
+          <div class="viability-action-filter-empty-detail">
+
+            <mat-icon>
+              filter_alt_off
+            </mat-icon>
+
+            <strong>
+              Aucune action ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez ou réinitialisez les filtres pour afficher le détail d'une action.
+            </span>
+
+          </div>
+
+        </ng-template>
 
       </div>
     </div>

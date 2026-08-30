@@ -642,21 +642,21 @@ mat-card-content,
 .germination-detail {
   flex: 1;
 
-  margin: 10px 15px;
+  margin: 0 15px 26px;
   padding: 15px;
 
   overflow-y: auto;
 
   box-sizing: border-box;
 
-  background-color: #f5f5f5;
+  background-color: #fff8f1;
 
-  border: 1px solid #ccc;
+  border: 1px solid #f2c79f;
   border-radius: 6px;
 
   box-shadow:
     0 2px 8px
-    rgba(0, 0, 0, 0.10);
+    rgba(224, 122, 31, 0.10);
 }
 
 
@@ -1662,6 +1662,121 @@ app-action-table
   min-height: 34px;
 
   font-size: 13px;
+}
+
+
+/* =========================================================
+   COLONNES COMPACTES
+   Exactement comme Semis avec le détail ouvert
+   ========================================================= */
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-column-date_start {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-column-label_action_type {
+  width: 175px;
+  min-width: 175px;
+  max-width: 175px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-column-label_actor {
+  width: 145px;
+  min-width: 145px;
+  max-width: 145px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.mat-column-actions {
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+}
+
+
+/* =========================================================
+   PANNEAU DROIT VIDE
+   Référent Semis
+   ========================================================= */
+
+.viability-action-filter-empty-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+
+  padding: 36px 28px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fbf5ff 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid #e1bee7;
+  border-radius: 14px;
+}
+
+.viability-action-filter-empty-detail
+mat-icon {
+  width: 38px;
+  height: 38px;
+
+  margin-bottom: 12px;
+
+  color: #8e24aa;
+
+  font-size: 38px;
+  line-height: 38px;
+}
+
+.viability-action-filter-empty-detail
+strong {
+  color: #6a1b9a;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.viability-action-filter-empty-detail
+span {
+  max-width: 360px;
+
+  margin-top: 7px;
+
+  color: #607d63;
+
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 

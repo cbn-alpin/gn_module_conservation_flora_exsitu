@@ -63,8 +63,7 @@ export class CultureDetailsComponent
   culture: any = null;
 
   selectedCultureAction: any = null;
-
-  cultureActionDetailsRefreshKey = 0;
+  noCultureActionMatchesFilters = false;
 
   /*
    * Stock utilisé par l'origine de la Culture.
@@ -806,10 +805,50 @@ export class CultureDetailsComponent
       );
 
 
-    this.actionDataSource.data =
+    const visibleActions =
       this.sortCultureActions(
         filteredActions
       );
+
+    this.actionDataSource.data =
+      visibleActions;
+
+
+    if (!this.selectedCultureAction) {
+
+      this.noCultureActionMatchesFilters =
+        false;
+
+    } else if (
+      visibleActions.length === 0
+    ) {
+
+      this.noCultureActionMatchesFilters =
+        true;
+
+    } else {
+
+      this.noCultureActionMatchesFilters =
+        false;
+
+
+      const selectedActionStillVisible =
+        visibleActions.some(
+          action =>
+            action.id_action ===
+            this.selectedCultureAction.id_action
+        );
+
+
+      if (!selectedActionStillVisible) {
+
+        this.selectedCultureAction =
+          visibleActions[0];
+
+      }
+
+    }
+
 
     setTimeout(() => {
 
@@ -1011,14 +1050,6 @@ export class CultureDetailsComponent
 
               if (result) {
                 this.loadCultureActions();
-
-                if (
-                  this.selectedCultureAction
-                    ?.id_action ===
-                  action.id_action
-                ) {
-                  this.cultureActionDetailsRefreshKey++;
-                }
               }
 
             });
@@ -1049,113 +1080,11 @@ export class CultureDetailsComponent
       return;
     }
 
+    this.noCultureActionMatchesFilters =
+      false;
 
     this.selectedCultureAction =
       action;
-  }
-
-
-  hideSelectedCultureActionDetails(): void {
-
-    this.selectedCultureAction =
-      null;
-  }
-
-
-  private getCultureActionRows(): any[] {
-
-    return this.actionDataSource?.data ||
-      [];
-  }
-
-
-  private getSelectedCultureActionIndex(): number {
-
-    if (!this.selectedCultureAction) {
-      return -1;
-    }
-
-
-    return this.getCultureActionRows()
-      .findIndex(
-        action =>
-          action.id_action ===
-          this.selectedCultureAction
-            .id_action
-      );
-  }
-
-
-  canGoToPreviousCultureAction(): boolean {
-
-    return (
-      this.getSelectedCultureActionIndex() >
-      0
-    );
-  }
-
-
-  canGoToNextCultureAction(): boolean {
-
-    const selectedIndex =
-      this.getSelectedCultureActionIndex();
-
-
-    const actions =
-      this.getCultureActionRows();
-
-
-    return (
-      selectedIndex >= 0 &&
-      selectedIndex <
-        actions.length - 1
-    );
-  }
-
-
-  showPreviousCultureActionDetails(): void {
-
-    const selectedIndex =
-      this.getSelectedCultureActionIndex();
-
-
-    if (selectedIndex <= 0) {
-      return;
-    }
-
-
-    this.onOpenCultureActionDetails(
-      this.getCultureActionRows()[
-        selectedIndex - 1
-      ]
-    );
-  }
-
-
-  showNextCultureActionDetails(): void {
-
-    const selectedIndex =
-      this.getSelectedCultureActionIndex();
-
-
-    const actions =
-      this.getCultureActionRows();
-
-
-    if (
-      selectedIndex < 0 ||
-      selectedIndex >=
-        actions.length - 1
-    ) {
-      return;
-    }
-
-
-    this.onOpenCultureActionDetails(
-      actions[
-        selectedIndex + 1
-      ]
-    );
   }
 
 

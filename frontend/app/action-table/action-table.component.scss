@@ -1177,6 +1177,44 @@ table tr.mat-row {
   max-width: 64px;
 }
 
+
+/* =========================================================
+   SEMIS - LISTE COMPACTE QUAND LE DÉTAIL EST OUVERT
+   Garde la colonne "..." entièrement visible
+   ========================================================= */
+
+:host ::ng-deep
+.sowing-action-list-card.sowing-action-list-with-details
+.mat-column-date_start {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+:host ::ng-deep
+.sowing-action-list-card.sowing-action-list-with-details
+.mat-column-label_action_type {
+  width: 175px;
+  min-width: 175px;
+  max-width: 175px;
+}
+
+:host ::ng-deep
+.sowing-action-list-card.sowing-action-list-with-details
+.mat-column-label_actor {
+  width: 145px;
+  min-width: 145px;
+  max-width: 145px;
+}
+
+:host ::ng-deep
+.sowing-action-list-card.sowing-action-list-with-details
+.mat-column-actions {
+  width: 64px;
+  min-width: 64px;
+  max-width: 64px;
+}
+
 :host ::ng-deep .sowing-action-list-card .mat-sort-header-container {
   display: inline-flex;
   align-items: center;

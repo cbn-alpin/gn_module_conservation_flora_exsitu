@@ -384,14 +384,16 @@
        LISTE DES ACTIONS CULTURE
        STRUCTURE CONSERVÉE MAIS PAS ENCORE FONCTIONNELLE
        ===================================================== -->
-<div
-  class="culture-actions-wrapper"
-  [class.with-action-details]="
-    !!selectedCultureAction
-  "
->
+<div class="action-detail split-view culture-actions-layout">
 
-  <mat-card class="culture-actions-panel">
+  <div
+    class="culture-actions-wrapper"
+    [class.with-action-details]="
+      !!selectedCultureAction
+    "
+  >
+
+    <mat-card class="culture-actions-panel">
 
     <div class="culture-action-filters-card">
 
@@ -806,7 +808,7 @@
                 "
               >
 
-                <mat-icon style="color: #6a1b9a;">
+                <mat-icon style="color: #FFA726;">
                   visibility
                 </mat-icon>
 
@@ -859,10 +861,6 @@
             let row;
             columns:
               displayedActionColumns
-          "
-          [class.selected-row]="
-            row.id_action ===
-            selectedCultureAction?.id_action
           "
           (click)="
             onOpenCultureActionDetails(
@@ -929,69 +927,29 @@
     </div>
   </mat-card>
 
+  </div>
 
   <div
-    class="culture-action-detail-pane"
+    class="culture-action-detail-shell"
     *ngIf="selectedCultureAction"
   >
 
-    <div class="culture-action-detail-navigation">
+    <div
+      class="culture-action-empty-detail-panel"
+      *ngIf="noCultureActionMatchesFilters"
+    >
 
-      <button
-        mat-icon-button
-        type="button"
-        class="culture-detail-navigation-button"
-        [disabled]="
-          !canGoToPreviousCultureAction()
-        "
-        (click)="
-          showPreviousCultureActionDetails()
-        "
-        matTooltip="Action précédente"
-      >
-        <mat-icon>
-          chevron_left
-        </mat-icon>
-      </button>
+      <mat-icon>
+        filter_alt_off
+      </mat-icon>
 
+      <strong>
+        Aucune action ne correspond aux filtres.
+      </strong>
 
-      <div class="culture-action-details-wrapper">
-
-        <app-culture-action-details
-          [actionId]="
-            selectedCultureAction.id_action
-          "
-          [codeCulture]="
-            culture?.code_culture || null
-          "
-          [refreshKey]="
-            cultureActionDetailsRefreshKey
-          "
-          (hideDetails)="
-            hideSelectedCultureActionDetails()
-          "
-        >
-        </app-culture-action-details>
-
-      </div>
-
-
-      <button
-        mat-icon-button
-        type="button"
-        class="culture-detail-navigation-button"
-        [disabled]="
-          !canGoToNextCultureAction()
-        "
-        (click)="
-          showNextCultureActionDetails()
-        "
-        matTooltip="Action suivante"
-      >
-        <mat-icon>
-          chevron_right
-        </mat-icon>
-      </button>
+      <span>
+        Modifiez ou réinitialisez les filtres pour afficher le détail d'une action.
+      </span>
 
     </div>
 

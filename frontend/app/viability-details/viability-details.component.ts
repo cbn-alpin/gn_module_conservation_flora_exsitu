@@ -21,10 +21,11 @@ interface Viability {
   styleUrls: ['./viability-details.component.scss']
 })
 export class ViabilityDetailsComponent implements OnInit {
-idMaterial!: number;
+  idMaterial!: number;
   idStorage:any;
   idTest!: number;
   selectedAction: any = null;
+  noActionMatchesFilters = false;
   labels: any = {};
 
   germinationForm: FormGroup;
@@ -150,6 +151,8 @@ idMaterial!: number;
 
   onActionSelected(action: any): void {
     const idAction = action.id_action;
+
+    this.noActionMatchesFilters = false;
   
     // Recharge les données complètes de l'action depuis l'API
     this.api.getActionWithLabels(idAction).subscribe({
@@ -160,6 +163,31 @@ idMaterial!: number;
         console.error("Erreur chargement de l'action :", err);
       }
     });
+  }
+
+
+  onVisibleActionsChanged(visibleActions: any[]): void {
+    if (!this.selectedAction) {
+      this.noActionMatchesFilters = false;
+      return;
+    }
+
+    if (visibleActions.length === 0) {
+      this.noActionMatchesFilters = true;
+      return;
+    }
+
+    this.noActionMatchesFilters = false;
+
+    const selectedActionStillVisible = visibleActions.some(
+      (action) => action.id_action === this.selectedAction.id_action
+    );
+
+    if (selectedActionStillVisible) {
+      return;
+    }
+
+    this.onActionSelected(visibleActions[0]);
   }
   
 
