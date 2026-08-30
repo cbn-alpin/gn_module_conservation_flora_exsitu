@@ -3,7 +3,7 @@
    ========================================================= */
 
 .culture-details-page {
-  padding-bottom: 26px;
+  padding-bottom: 0;
 
   background-color: #ffffff;
 }
@@ -540,6 +540,9 @@
 
 .culture-actions-wrapper,
 .culture-action-detail-shell {
+  display: flex;
+  flex-direction: column;
+
   margin: 0 15px 26px;
   padding: 15px;
 
@@ -815,6 +818,12 @@ small {
    ========================================================= */
 
 .culture-actions-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+
   margin: 0;
 
   overflow: hidden;
@@ -886,7 +895,7 @@ small {
 
   border-radius: 50%;
 
-  transform: translateX(9px);
+  transform: translateX(-6px);
 }
 
 .culture-actions-title-icon mat-icon {
@@ -907,8 +916,6 @@ small {
   font-size: 21px;
   font-weight: 850;
   line-height: 1.2;
-
-  transform: translateY(-1px);
 }
 
 .culture-actions-title-text small {
@@ -1166,6 +1173,7 @@ small {
    ========================================================= */
 
 .culture-actions-content {
+  flex: 1 1 auto;
   padding: 0 16px 16px;
 
   background-color: #ffffff;
@@ -1658,8 +1666,6 @@ th.mat-column-actions {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  min-height: 108px;
 
   margin-top: 12px;
   padding: 18px;

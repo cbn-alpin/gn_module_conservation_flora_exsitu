@@ -983,8 +983,6 @@ mat-icon {
 app-action-table
 .action-list-title-text {
   text-align: center;
-
-  transform: translateY(-1px);
 }
 
 
@@ -1556,6 +1554,30 @@ app-action-table
 app-action-table
 .sowing-action-filters-header {
   margin-bottom: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.sowing-action-filter-fields {
+  grid-template-columns:
+    minmax(0, 1.2fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 12px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.sowing-action-filter-field {
+  min-width: 0;
+  width: 100%;
 }
 
 

@@ -959,8 +959,6 @@ app-action-table
   justify-content: center;
 
   gap: 10px;
-
-  margin-top: -2px;
 }
 
 
@@ -980,7 +978,7 @@ app-action-table
 
   border-radius: 50%;
 
-  transform: translate(-6px, 1px);
+  transform: translateX(-6px);
 }
 
 
@@ -1556,12 +1554,34 @@ span {
 /* =========================================================
    VERSION COMPACTE
    Quand le détail action est ouvert
+   Géométrie strictement identique à Semis
    ========================================================= */
 
 :host
 .action-detail:has(.germination-detail)
 .germination-list {
   min-width: 0;
+}
+
+
+/* Filtres : mêmes marges et mêmes paddings que Semis */
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.sowing-action-filters-card {
+  margin: 12px 12px 14px 12px;
+  padding: 13px 14px;
+}
+
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
+.sowing-action-filters-header {
+  margin-bottom: 12px;
 }
 
 
@@ -1588,6 +1608,8 @@ app-action-table
   width: 100%;
 }
 
+
+/* Header Liste des actions */
 
 :host ::ng-deep
 .action-detail:has(.germination-detail)
@@ -1623,6 +1645,19 @@ small {
 .action-detail:has(.germination-detail)
 .germination-list
 app-action-table
+.add-action-button {
+  min-height: 34px;
+
+  font-size: 13px;
+}
+
+
+/* Contenu tableau */
+
+:host ::ng-deep
+.action-detail:has(.germination-detail)
+.germination-list
+app-action-table
 mat-card-content {
   padding: 0 12px 12px 12px;
 }
@@ -1638,8 +1673,8 @@ app-action-table
 .germination-list
 app-action-table
 .mat-mdc-cell {
-  padding-right: 10px !important;
   padding-left: 10px !important;
+  padding-right: 10px !important;
 }
 
 
@@ -1651,6 +1686,8 @@ app-action-table
   height: 56px;
 }
 
+
+/* Badges */
 
 :host ::ng-deep
 .action-detail:has(.germination-detail)
@@ -1683,21 +1720,7 @@ app-action-table
 }
 
 
-:host ::ng-deep
-.action-detail:has(.germination-detail)
-.germination-list
-app-action-table
-.add-action-button {
-  min-height: 34px;
-
-  font-size: 13px;
-}
-
-
-/* =========================================================
-   COLONNES COMPACTES
-   Exactement comme Semis avec le détail ouvert
-   ========================================================= */
+/* Colonnes : dimensions exactes Semis */
 
 :host ::ng-deep
 .action-detail:has(.germination-detail)
