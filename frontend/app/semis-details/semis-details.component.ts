@@ -162,7 +162,7 @@ export class SemisDetailsComponent implements OnInit {
 
     this.toast.translateToaster(
       'info',
-      `Détails de l’action ${this.toBoldItalicText(actionLabel)} masqués. Date de début : ${this.toBoldText(dateStart)}`
+      `Détails de l’action ${this.toBoldItalicText(actionLabel)} masqués.\nDate de début : ${this.toBoldText(dateStart)}`
     );
 
     this.selectedAction = null;

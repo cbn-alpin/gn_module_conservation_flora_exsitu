@@ -1088,6 +1088,54 @@ export class CultureDetailsComponent
   }
 
 
+  hideSelectedCultureActionDetails(): void {
+
+    if (!this.selectedCultureAction) {
+      return;
+    }
+
+
+    const cultureCode =
+      this.culture?.code_culture || '';
+
+
+    const actionType =
+      this.selectedCultureAction
+        ?.action_type_label ||
+      this.selectedCultureAction
+        ?.label_action_type ||
+      '';
+
+
+    const actionLabel =
+      [
+        cultureCode,
+        actionType
+      ]
+        .filter(Boolean)
+        .join(' - ');
+
+
+    const dateStart =
+      this.formatDateForToaster(
+        this.selectedCultureAction
+          ?.date_start
+      );
+
+
+    this.toast.translateToaster(
+      'info',
+      `Détails de l’action ${this.toBoldText(actionLabel)} masqués.\nDate de début : ${dateStart}`
+    );
+
+
+    this.selectedCultureAction = null;
+
+    this.noCultureActionMatchesFilters =
+      false;
+  }
+
+
   private toBoldText(
     value: string
   ): string {

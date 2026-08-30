@@ -316,7 +316,8 @@
         >
 
           <app-action-details
-            [actionId]="selectedAction.id_action">
+            [actionId]="selectedAction.id_action"
+            (hideDetails)="hideSelectedActionDetails()">
           </app-action-details>
 
         </ng-container>
@@ -326,7 +327,17 @@
 
           <div class="viability-action-filter-empty-detail">
 
-            <mat-icon>
+            <button
+              mat-raised-button
+              type="button"
+              class="viability-empty-detail-hide-button"
+              (click)="hideSelectedActionDetails()"
+            >
+              <mat-icon>visibility_off</mat-icon>
+              Masquer
+            </button>
+
+            <mat-icon class="viability-empty-detail-icon">
               filter_alt_off
             </mat-icon>
 
