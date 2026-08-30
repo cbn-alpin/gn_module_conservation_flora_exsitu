@@ -312,6 +312,90 @@ mat-card-content {
   color: #ffffff !important;
 }
 
+.sowing-action-detail-navigation {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.sowing-action-details-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-navigation-button {
+  margin-top: 18px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0 !important;
+  border-radius: 50%;
+  background-color: #e8f5e9 !important;
+  border: 1px solid #81c784 !important;
+  color: #2e7d32 !important;
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.16);
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.detail-navigation-button mat-icon {
+  margin: 0 !important;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-navigation-button:hover:not(:disabled) {
+  background-color: #c8e6c9 !important;
+  color: #1b5e20 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(46, 125, 50, 0.22);
+}
+
+.detail-navigation-button:disabled {
+  background-color: #eeeeee !important;
+  border-color: #d0d0d0 !important;
+  color: #9e9e9e !important;
+  box-shadow: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details mat-card {
+  width: 100%;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details .action-details-header {
+  position: relative;
+  justify-content: center;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details .action-details-header mat-card-title {
+  width: 100%;
+  text-align: center;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details .hide-details-button {
+  position: absolute;
+  right: 16px;
+}
+
+:host ::ng-deep .sowing-action-details-wrapper app-action-details mat-card-content {
+  width: 92%;
+  margin: 14px auto 18px auto !important;
+  padding: 16px 18px !important;
+  box-sizing: border-box;
+}
+
 
 /* =========================================================
    PAGE

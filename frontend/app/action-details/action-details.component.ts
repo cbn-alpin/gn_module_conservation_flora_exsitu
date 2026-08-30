@@ -18,6 +18,7 @@ interface ReplicateGroup {
 export class ActionDetailsComponent implements OnChanges {
   @Input() actionId: number | null = null;
   @Input() isSowingContext = false;
+  @Input() useSowingPretreatmentVisual = false;
   @Input() refreshKey = 0;
   @Output() hideDetails = new EventEmitter<void>();
 
@@ -26,6 +27,31 @@ export class ActionDetailsComponent implements OnChanges {
   replicates: any[] = [];
   replicatesGrouped: ReplicateGroup[] = [];
   replicateLabels: string[] = [];
+
+  get useEnhancedSowingCard(): boolean {
+    return (
+      this.isSowingContext ||
+      (
+        this.useSowingPretreatmentVisual &&
+        this.code === 'pret'
+      )
+    );
+  }
+
+  get useEnhancedSowingPretreatmentLayout(): boolean {
+    return (
+      this.useEnhancedSowingCard &&
+      this.code === 'pret'
+    );
+  }
+
+  get useGerminationPretreatmentVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.useSowingPretreatmentVisual &&
+      this.code === 'pret'
+    );
+  }
 
   action: any = null;
   scarificationTypeCode: string | null = null;

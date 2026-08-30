@@ -1,6 +1,7 @@
 <mat-card
   class="action-details-card"
-  [class.sowing-action-details-card]="isSowingContext"
+  [class.sowing-action-details-card]="useEnhancedSowingCard"
+  [class.germination-pretreatment-details-card]="useGerminationPretreatmentVisual"
 >
   <mat-card-header class="sticky-header action-details-header">
 
@@ -27,8 +28,7 @@
       [formGroup]="germinationForm"
       class="semis-form"
       [class.sowing-pretreatment-details-mode]="
-        isSowingContext &&
-        code === 'pret'
+        useEnhancedSowingPretreatmentLayout
       "
       [class.sowing-synthesis-details-mode]="
         isSowingContext &&
@@ -42,7 +42,7 @@
 
       <div
         class="sowing-detail-section-header"
-        *ngIf="isSowingContext"
+        *ngIf="useEnhancedSowingCard"
       >
 
         <div class="sowing-detail-section-icon">
@@ -93,7 +93,7 @@
 
         <div
           class="sowing-detail-section-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingCard"
         >
 
           <div class="sowing-detail-section-icon">
@@ -508,7 +508,7 @@
 
         <div
           class="sowing-detail-section-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingCard"
         >
 
           <div class="sowing-detail-section-icon">
@@ -532,7 +532,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingCard"
         >
           Prétraitement
         </h3>
@@ -540,7 +540,7 @@
 
         <ng-container
           *ngIf="
-            isSowingContext;
+            useEnhancedSowingCard;
             else defaultPretreatmentDetails
           "
         >
@@ -1431,7 +1431,8 @@
         *ngIf="
           code &&
           !isSowingContext &&
-          code !== 'svr'
+          code !== 'svr' &&
+          !useEnhancedSowingPretreatmentLayout
         "
       >
 
@@ -1456,10 +1457,7 @@
         class="field-block"
         *ngIf="
           code &&
-          !(
-            isSowingContext &&
-            code === 'pret'
-          )
+          !useEnhancedSowingPretreatmentLayout
         "
       >
 
@@ -1514,10 +1512,7 @@
         class="field-block"
         *ngIf="
           code &&
-          !(
-            isSowingContext &&
-            code === 'pret'
-          )
+          !useEnhancedSowingPretreatmentLayout
         "
       >
 
@@ -1543,10 +1538,7 @@
         class="field-block"
         *ngIf="
           code &&
-          !(
-            isSowingContext &&
-            code === 'pret'
-          )
+          !useEnhancedSowingPretreatmentLayout
         "
       >
 

@@ -28,6 +28,7 @@ export class GerminationDetailsComponent implements OnInit {
   selectedAction: any = null;
   noActionMatchesFilters = false;
   labels: any = {};
+  actionDetailsRefreshKey = 0;
 
   germinationForm: FormGroup;
   dataSource = new MatTableDataSource<Germination>([]);
@@ -162,6 +163,75 @@ export class GerminationDetailsComponent implements OnInit {
       },
       error: (err) => {
         console.error("Erreur chargement de l'action :", err);
+      }
+    });
+  }
+
+
+  private getActionRows(): any[] {
+    return (this.dataSource?.data as any[]) || [];
+  }
+
+
+  private getSelectedActionIndex(): number {
+    if (!this.selectedAction) {
+      return -1;
+    }
+
+    return this.getActionRows().findIndex(
+      (action) => action.id_action === this.selectedAction.id_action
+    );
+  }
+
+
+  canGoToPreviousAction(): boolean {
+    return this.getSelectedActionIndex() > 0;
+  }
+
+
+  canGoToNextAction(): boolean {
+    const selectedIndex = this.getSelectedActionIndex();
+    const actions = this.getActionRows();
+
+    return selectedIndex >= 0 && selectedIndex < actions.length - 1;
+  }
+
+
+  showPreviousActionDetails(): void {
+    const selectedIndex = this.getSelectedActionIndex();
+
+    if (selectedIndex <= 0) {
+      return;
+    }
+
+    this.onActionSelected(this.getActionRows()[selectedIndex - 1]);
+  }
+
+
+  showNextActionDetails(): void {
+    const selectedIndex = this.getSelectedActionIndex();
+    const actions = this.getActionRows();
+
+    if (selectedIndex < 0 || selectedIndex >= actions.length - 1) {
+      return;
+    }
+
+    this.onActionSelected(actions[selectedIndex + 1]);
+  }
+
+
+  refreshSelectedActionDetails(actionId: number): void {
+    if (!this.selectedAction || this.selectedAction.id_action !== actionId) {
+      return;
+    }
+
+    this.api.getActionWithLabels(actionId).subscribe({
+      next: (fullAction) => {
+        this.selectedAction = fullAction;
+        this.actionDetailsRefreshKey++;
+      },
+      error: (err) => {
+        console.error("Erreur rafraîchissement des détails de l'action :", err);
       }
     });
   }

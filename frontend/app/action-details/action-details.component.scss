@@ -609,3 +609,71 @@ mat-card-content {
   font-size: 17px;
   line-height: 17px;
 }
+
+/* =========================================================
+   PRÉTRAITEMENT GERMINATION
+   Couleurs identiques à la fiche de création Germination
+   Les éléments violets restent inchangés
+   ========================================================= */
+
+.germination-pretreatment-details-card
+.sowing-detail-section-header {
+  border-bottom: 1px solid #b2dfdb;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-section-header::after {
+  background-color: #26a69a;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-section-icon {
+  color: #00897b;
+
+  background-color: #e0f2f1;
+
+  border: 1px solid #b2dfdb;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-section-icon
+mat-icon {
+  color: #00897b;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-section-title {
+  color: #00695c;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-section-subtitle {
+  color: #5c7d79;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-subsection-header {
+  color: #00695c;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e8f7f5 0%,
+      #fbfefd 100%
+    );
+
+  border-left: 3px solid #26a69a;
+}
+
+
+.germination-pretreatment-details-card
+.sowing-detail-subsection-header
+mat-icon {
+  color: #26a69a;
+}
