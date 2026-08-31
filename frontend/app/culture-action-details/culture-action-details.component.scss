@@ -294,3 +294,435 @@ span {
 
   border-color: #ead7ef;
 }
+
+
+/* =========================================================
+   TRANSPLANTATION CULTURE
+   Rendu de détail harmonisé avec les actions de Semis
+   Les champs restent violets ; les titres suivent Culture
+   ========================================================= */
+
+.culture-action-details-card mat-card-content {
+  width: 94%;
+
+  margin: 16px auto 20px auto;
+  padding: 18px 18px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #ead7ef;
+  border-radius: 14px;
+
+  box-shadow:
+    0 3px 12px
+    rgba(142, 36, 170, 0.08);
+}
+
+
+.culture-action-detail-section-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  width: 100%;
+
+  margin: 16px 0 10px;
+  padding: 8px 5px 9px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid #d7ccc8;
+}
+
+
+.culture-action-detail-section-header::after {
+  content: '';
+
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+
+  width: 52px;
+  height: 2px;
+
+  background-color: #8d6e63;
+
+  border-radius: 2px;
+}
+
+
+.culture-action-detail-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  background-color: #efebe9;
+
+  border: 1px solid #d7ccc8;
+  border-radius: 7px;
+}
+
+
+.culture-action-detail-section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  color: #6d4c41;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.culture-action-detail-section-text {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+
+.culture-action-detail-section-title {
+  color: #4e342e;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.culture-action-detail-section-subtitle {
+  margin-top: 1px;
+
+  color: #7b6a64;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+.culture-action-detail-subsection-header {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin: 8px 0 10px;
+  padding: 7px 10px;
+
+  color: #5d4037;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f5f0ed 0%,
+      #fdfbf9 100%
+    );
+
+  border-left: 3px solid #a1887f;
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+.culture-action-detail-subsection-header mat-icon {
+  width: 17px;
+  height: 17px;
+
+  color: #8d6e63;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+.culture-action-field-block {
+  display: grid;
+
+  grid-template-columns:
+    220px minmax(0, 1fr);
+
+  column-gap: 16px;
+  align-items: center;
+
+  margin-bottom: 9px;
+  padding: 9px 12px;
+
+  background-color: #fdf8ff;
+
+  border: 1px solid #ead7ef;
+  border-left: 4px solid #ba68c8;
+  border-radius: 10px;
+}
+
+
+.culture-action-field-block label {
+  min-width: 0;
+
+  margin-right: 0;
+
+  color: #7b1fa2;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+.culture-action-field-block span {
+  min-width: 0;
+
+  color: #263238;
+
+  font-weight: 500;
+
+  word-break: break-word;
+}
+
+
+.culture-action-field-block:hover {
+  background-color: #fbf1ff;
+
+  border-left-color: #8e24aa;
+}
+
+
+.culture-action-type-highlight {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  margin: 4px 0 22px 0;
+  padding: 18px 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f3e5f5 0%,
+      #fbf5ff 55%,
+      #ffffff 100%
+    );
+
+  border: 1px solid #ba68c8;
+  border-left: 9px solid #7b1fa2;
+  border-radius: 14px;
+
+  box-shadow:
+    0 6px 18px
+    rgba(142, 36, 170, 0.18);
+}
+
+
+.culture-action-type-highlight label {
+  color: #6a1b9a;
+
+  font-size: 17px;
+  font-weight: 900;
+
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+
+.culture-action-type-highlight span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 190px;
+
+  padding: 9px 18px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7b1fa2 0%,
+      #ab47bc 100%
+    );
+
+  border-radius: 999px;
+
+  font-size: 16px;
+  font-weight: 900;
+  text-align: center;
+
+  box-shadow:
+    0 4px 10px
+    rgba(123, 31, 162, 0.28);
+}
+
+
+.culture-action-substrate-table-wrapper {
+  width: 100%;
+
+  margin-bottom: 12px;
+  padding: 12px;
+
+  box-sizing: border-box;
+  overflow-x: auto;
+
+  background-color: #fdf8ff;
+
+  border: 1px solid #ead7ef;
+  border-radius: 12px;
+}
+
+
+.culture-action-substrate-table {
+  width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(142, 36, 170, 0.08);
+}
+
+
+.culture-action-substrate-table th,
+.culture-action-substrate-table td {
+  padding: 10px 12px;
+
+  text-align: left;
+
+  border-right: 1px solid #ead7ef;
+  border-bottom: 1px solid #ead7ef;
+}
+
+
+.culture-action-substrate-table th:last-child,
+.culture-action-substrate-table td:last-child {
+  border-right: none;
+}
+
+
+.culture-action-substrate-table th:nth-child(3),
+.culture-action-substrate-table
+tbody
+tr:not(.culture-action-substrate-total-row)
+td:nth-child(3),
+.culture-action-substrate-table
+.culture-action-substrate-total-row
+td:last-child {
+  text-align: center !important;
+}
+
+
+.culture-action-substrate-table th {
+  color: #6a1b9a;
+  background-color: #f3e5f5;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+.culture-action-substrate-table td {
+  color: #263238;
+  background-color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+.culture-action-substrate-table tbody tr:nth-child(even) td {
+  background-color: #fdf8ff;
+}
+
+
+.culture-action-substrate-table tbody tr:hover td {
+  background-color: #fbf1ff;
+}
+
+
+.culture-action-substrate-table
+.culture-action-substrate-total-row td {
+  color: #6a1b9a;
+  background-color: #f3e5f5;
+
+  font-weight: 800;
+}
+
+
+.culture-action-substrate-table
+.culture-action-substrate-total-row td:last-child {
+  text-align: center;
+}
+
+
+.culture-action-empty-substrate {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 12px;
+  padding: 11px 12px;
+
+  color: #7b1fa2;
+  background-color: #fdf8ff;
+
+  border: 1px dashed #ce93d8;
+  border-radius: 8px;
+
+  font-size: 12px;
+}
+
+
+.culture-action-empty-substrate mat-icon {
+  width: 17px;
+  height: 17px;
+
+  color: #8e24aa;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+@media (max-width: 900px) {
+
+  .culture-action-field-block {
+    grid-template-columns: 1fr;
+
+    row-gap: 4px;
+  }
+
+
+  .culture-action-field-block label {
+    white-space: normal;
+  }
+
+
+  .culture-action-type-highlight {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .culture-action-type-highlight span {
+    min-width: 0;
+  }
+
+}
