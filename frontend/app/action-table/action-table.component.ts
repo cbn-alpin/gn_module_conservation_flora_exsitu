@@ -296,7 +296,13 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
               if (result) {
                 this.loadActions();
 
-                if (this.idSowing) {
+                if (
+                  this.idSowing ||
+                  (
+                    this.isGerminationContext &&
+                    code === 'pret'
+                  )
+                ) {
                   this.actionSaved.emit(element.id_action);
                 }
               }
