@@ -283,6 +283,7 @@
       [length]="dataSource.data.length"
       [pageSize]="rowPerPage"
       [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onSowingActionPageChange($event)"
       showFirstLastButtons>
     </mat-paginator>
 

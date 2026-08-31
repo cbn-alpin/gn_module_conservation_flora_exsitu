@@ -164,6 +164,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
           id_action: action.id_action,
           date_start: action.date_start,
           label_action_type: action.label_action_type,
+          label_scarification_type: action.label_scarification_type,
           label_actor: action.label_actor,
           meta_create_date: action.meta_create_date
         })).sort((a, b) => {
@@ -363,7 +364,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   getActionTypeDisplayValue(element: any): string {
     const actionType = element?.label_action_type || '-';
 
-    if (!this.idSowing) {
+    if (
+      !this.idSowing &&
+      !this.isGerminationContext &&
+      !this.isViabilityContext
+    ) {
       return actionType;
     }
 
@@ -549,7 +554,9 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  public applySowingActionFilters(): void {
+  public applySowingActionFilters(
+    syncSelectedActionPage = true
+  ): void {
     if (
       !this.idSowing &&
       !this.isGerminationContext &&
@@ -591,7 +598,10 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     this.dataSource.data = sortedActions;
     this.visibleActionsChanged.emit(sortedActions);
     this.syncSowingActionPaginator(sortedActions.length);
-    this.syncPaginatorWithSelectedAction();
+
+    if (syncSelectedActionPage) {
+      this.syncPaginatorWithSelectedAction();
+    }
   }
 
   public onSowingActionTypeFilterChange(value: string | null): void {
@@ -612,7 +622,11 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   public onSowingActionTableSortChange(sort: Sort): void {
     this.sowingActionSortActive = sort.active || 'date_start';
     this.sowingActionSortDirection = sort.direction || 'desc';
-    this.applySowingActionFilters();
+    this.applySowingActionFilters(false);
+  }
+
+  public onSowingActionPageChange(event: PageEvent): void {
+    this.rowPerPage = event.pageSize;
   }
 
   public resetSowingActionFilters(): void {

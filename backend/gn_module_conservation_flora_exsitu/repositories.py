@@ -1790,6 +1790,7 @@ class ActionRepository:
     
     def get_actions_by_id_test(self, id_test: int):
         ActionType = aliased(TNomenclatures)
+        ScarificationType = aliased(TNomenclatures)
         Actor = aliased(User)
         
 
@@ -1800,10 +1801,12 @@ class ActionRepository:
                 TAction.date_end,
                 TAction.meta_create_date,
                 ActionType.label_default.label("label_action_type"),
+                ScarificationType.label_default.label("label_scarification_type"),
                 Actor.nom_role.label("nom_actor"),
                 Actor.prenom_role.label("prenom_actor")
             )
             .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
+            .outerjoin(ScarificationType, TAction.id_scarification_type == ScarificationType.id_nomenclature)
             .outerjoin(Actor, TAction.id_actor == Actor.id_role)
             .filter(TAction.id_test == id_test)
             .order_by(TAction.meta_create_date.desc())
@@ -1818,6 +1821,7 @@ class ActionRepository:
                 "date_end": row.date_end.isoformat() if row.date_end else None,
                 "meta_create_date": row.meta_create_date.isoformat() if row.meta_create_date else None,
                 "label_action_type": row.label_action_type,
+                "label_scarification_type": row.label_scarification_type,
                 "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip()
             }
             for row in results

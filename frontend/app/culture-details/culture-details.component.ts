@@ -38,7 +38,8 @@ import {
 } from '../components/confirm-dialog/confirm-dialog.service';
 
 import {
-  MatPaginator
+  MatPaginator,
+  PageEvent
 } from '@angular/material/paginator';
 
 import {
@@ -106,6 +107,8 @@ export class CultureDetailsComponent
 
   public cultureActionTypeFilterOptions:
     string[] = [];
+
+  public cultureActionRowPerPage = 5;
 
 
   private readonly cultureActionTypeFilterOrder = [
@@ -910,7 +913,20 @@ export class CultureDetailsComponent
       sort.direction ||
       'desc';
 
+    if (this.actionPaginator) {
+      this.actionPaginator.firstPage();
+    }
+
     this.applyCultureActionFilters();
+  }
+
+
+  public onCultureActionPageChange(
+    event: PageEvent
+  ): void {
+
+    this.cultureActionRowPerPage =
+      event.pageSize;
   }
 
 

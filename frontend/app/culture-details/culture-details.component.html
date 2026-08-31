@@ -878,13 +878,14 @@
           actionDataSource.data.length === 0
         "
         [length]="actionDataSource.data.length"
-        [pageSize]="5"
+        [pageSize]="cultureActionRowPerPage"
         [pageSizeOptions]="[
           5,
           10,
           25,
           100
         ]"
+        (page)="onCultureActionPageChange($event)"
         showFirstLastButtons
       >
       </mat-paginator>
