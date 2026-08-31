@@ -87,6 +87,50 @@
       </div>
 
 
+      <div
+        class="field-block"
+        *ngIf="useEnhancedSowingPretreatmentLayout"
+      >
+
+        <label>
+          Date de début :
+        </label>
+
+        <span>
+          {{
+            formatDateForDisplay(
+              germinationForm
+                .get('date_start')
+                ?.value
+            )
+          }}
+        </span>
+
+      </div>
+
+
+      <div
+        class="field-block"
+        *ngIf="useEnhancedSowingPretreatmentLayout"
+      >
+
+        <label>
+          Date de fin :
+        </label>
+
+        <span>
+          {{
+            formatDateForDisplay(
+              germinationForm
+                .get('date_end')
+                ?.value
+            )
+          }}
+        </span>
+
+      </div>
+
+
       <!-- ===================================================
            SUIVI DES RÉPLICATS
            =================================================== -->
@@ -666,44 +710,6 @@
                 germinationForm
                   .get('hour_count_shadow')
                   ?.value ?? '-'
-              }}
-            </span>
-
-          </div>
-
-
-          <div class="field-block">
-
-            <label>
-              Date de début :
-            </label>
-
-            <span>
-              {{
-                formatDateForDisplay(
-                  germinationForm
-                    .get('date_start')
-                    ?.value
-                )
-              }}
-            </span>
-
-          </div>
-
-
-          <div class="field-block">
-
-            <label>
-              Date de fin :
-            </label>
-
-            <span>
-              {{
-                formatDateForDisplay(
-                  germinationForm
-                    .get('date_end')
-                    ?.value
-                )
               }}
             </span>
 
