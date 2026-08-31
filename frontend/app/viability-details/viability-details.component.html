@@ -299,6 +299,7 @@
           [enablePagination]="true"
           [selectedActionId]="selectedAction?.id_action || null"
           (rowClicked)="onActionSelected($event)"
+          (actionSaved)="refreshSelectedActionDetails($event)"
           (visibleActionsChanged)="onVisibleActionsChanged($event)">
         </app-action-table>
       </div>
@@ -315,10 +316,42 @@
           "
         >
 
-          <app-action-details
-            [actionId]="selectedAction.id_action"
-            (hideDetails)="hideSelectedActionDetails()">
-          </app-action-details>
+          <div class="sowing-action-detail-navigation">
+
+            <button
+              mat-icon-button
+              type="button"
+              class="detail-navigation-button"
+              [disabled]="!canGoToPreviousAction()"
+              (click)="showPreviousActionDetails()"
+              matTooltip="Action précédente"
+            >
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <div class="sowing-action-details-wrapper">
+
+              <app-action-details
+                [actionId]="selectedAction.id_action"
+                detailContext="viability"
+                [refreshKey]="actionDetailsRefreshKey"
+                (hideDetails)="hideSelectedActionDetails()">
+              </app-action-details>
+
+            </div>
+
+            <button
+              mat-icon-button
+              type="button"
+              class="detail-navigation-button"
+              [disabled]="!canGoToNextAction()"
+              (click)="showNextActionDetails()"
+              matTooltip="Action suivante"
+            >
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+
+          </div>
 
         </ng-container>
 
