@@ -64,6 +64,7 @@ export class CultureDetailsComponent
 
   selectedCultureAction: any = null;
   noCultureActionMatchesFilters = false;
+  cultureActionDetailsRefreshKey = 0;
 
   /*
    * Stock utilisé par l'origine de la Culture.
@@ -1049,6 +1050,15 @@ export class CultureDetailsComponent
             .subscribe(result => {
 
               if (result) {
+
+                if (
+                  this.selectedCultureAction
+                    ?.id_action ===
+                  action.id_action
+                ) {
+                  this.cultureActionDetailsRefreshKey++;
+                }
+
                 this.loadCultureActions();
               }
 
@@ -1085,6 +1095,94 @@ export class CultureDetailsComponent
 
     this.selectedCultureAction =
       action;
+  }
+
+
+  private getCultureActionRows(): any[] {
+
+    return (
+      this.actionDataSource?.data || []
+    ).filter(
+      action =>
+        action?.code_action_type ===
+        'transp'
+    );
+  }
+
+
+  private getSelectedCultureActionIndex(): number {
+
+    if (!this.selectedCultureAction) {
+      return -1;
+    }
+
+    return this.getCultureActionRows()
+      .findIndex(
+        action =>
+          action.id_action ===
+          this.selectedCultureAction.id_action
+      );
+  }
+
+
+  canGoToPreviousCultureAction(): boolean {
+
+    return (
+      this.getSelectedCultureActionIndex() > 0
+    );
+  }
+
+
+  canGoToNextCultureAction(): boolean {
+
+    const selectedIndex =
+      this.getSelectedCultureActionIndex();
+
+    const actions =
+      this.getCultureActionRows();
+
+    return (
+      selectedIndex >= 0 &&
+      selectedIndex < actions.length - 1
+    );
+  }
+
+
+  showPreviousCultureActionDetails(): void {
+
+    const selectedIndex =
+      this.getSelectedCultureActionIndex();
+
+    if (selectedIndex <= 0) {
+      return;
+    }
+
+    this.onOpenCultureActionDetails(
+      this.getCultureActionRows()[
+        selectedIndex - 1
+      ]
+    );
+  }
+
+
+  showNextCultureActionDetails(): void {
+
+    const selectedIndex =
+      this.getSelectedCultureActionIndex();
+
+    const actions =
+      this.getCultureActionRows();
+
+    if (
+      selectedIndex < 0 ||
+      selectedIndex >= actions.length - 1
+    ) {
+      return;
+    }
+
+    this.onOpenCultureActionDetails(
+      actions[selectedIndex + 1]
+    );
   }
 
 

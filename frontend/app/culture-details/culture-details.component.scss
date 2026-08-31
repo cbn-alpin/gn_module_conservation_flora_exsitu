@@ -1834,3 +1834,151 @@ th.mat-column-actions {
 
   text-align: left;
 }
+
+
+/* =========================================================
+   NAVIGATION DÉTAIL ACTION CULTURE
+   Référent Semis
+   ========================================================= */
+
+.culture-action-detail-navigation {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+
+.culture-action-details-wrapper {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.detail-navigation-button {
+  margin-top: 18px;
+
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  color: #2e7d32 !important;
+  background-color: #e8f5e9 !important;
+
+  border: 1px solid #81c784 !important;
+  border-radius: 50%;
+
+  box-shadow:
+    0 3px 8px
+    rgba(46, 125, 50, 0.16);
+
+  line-height: 1 !important;
+
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.detail-navigation-button mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 24px;
+
+  margin: 0 !important;
+
+  font-size: 24px;
+  line-height: 24px;
+}
+
+
+.detail-navigation-button:hover:not(:disabled) {
+  color: #1b5e20 !important;
+  background-color: #c8e6c9 !important;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 12px
+    rgba(46, 125, 50, 0.22);
+}
+
+
+.detail-navigation-button:disabled {
+  color: #9e9e9e !important;
+  background-color: #eeeeee !important;
+
+  border-color: #d0d0d0 !important;
+
+  box-shadow: none;
+
+  opacity: 0.4;
+
+  cursor: not-allowed;
+}
+
+
+:host ::ng-deep
+.culture-action-details-wrapper
+app-culture-action-details
+.culture-action-details-card {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.culture-action-details-wrapper
+app-culture-action-details
+.culture-action-details-header {
+  position: relative;
+
+  justify-content: center;
+}
+
+
+:host ::ng-deep
+.culture-action-details-wrapper
+app-culture-action-details
+.culture-action-details-header
+mat-card-title {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+:host ::ng-deep
+.culture-action-details-wrapper
+app-culture-action-details
+.culture-action-hide-details-button {
+  position: absolute;
+
+  right: 16px;
+}
+
+
+:host ::ng-deep
+.culture-action-details-wrapper
+app-culture-action-details
+mat-card-content {
+  width: 92%;
+
+  margin: 14px auto 18px auto !important;
+  padding: 16px 18px !important;
+
+  box-sizing: border-box;
+}

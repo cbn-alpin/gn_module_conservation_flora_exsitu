@@ -934,34 +934,85 @@
     *ngIf="selectedCultureAction"
   >
 
-    <div
-      class="culture-action-empty-detail-panel"
-      *ngIf="noCultureActionMatchesFilters"
+    <ng-container
+      *ngIf="
+        !noCultureActionMatchesFilters;
+        else noFilteredCultureActionDetails
+      "
     >
 
-      <button
-        mat-raised-button
-        type="button"
-        class="culture-empty-detail-hide-button"
-        (click)="hideSelectedCultureActionDetails()"
-      >
-        <mat-icon>visibility_off</mat-icon>
-        Masquer
-      </button>
+      <div class="culture-action-detail-navigation">
 
-      <mat-icon class="culture-empty-detail-icon">
-        filter_alt_off
-      </mat-icon>
+        <button
+          mat-icon-button
+          type="button"
+          class="detail-navigation-button"
+          [disabled]="!canGoToPreviousCultureAction()"
+          (click)="showPreviousCultureActionDetails()"
+          matTooltip="Action précédente"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
 
-      <strong>
-        Aucune action ne correspond aux filtres.
-      </strong>
 
-      <span>
-        Modifiez ou réinitialisez les filtres pour afficher le détail d'une action.
-      </span>
+        <div class="culture-action-details-wrapper">
 
-    </div>
+          <app-culture-action-details
+            [actionId]="selectedCultureAction.id_action"
+            [codeCulture]="culture?.code_culture || null"
+            [refreshKey]="cultureActionDetailsRefreshKey"
+            (hideDetails)="hideSelectedCultureActionDetails()"
+          >
+          </app-culture-action-details>
+
+        </div>
+
+
+        <button
+          mat-icon-button
+          type="button"
+          class="detail-navigation-button"
+          [disabled]="!canGoToNextCultureAction()"
+          (click)="showNextCultureActionDetails()"
+          matTooltip="Action suivante"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+      </div>
+
+    </ng-container>
+
+
+    <ng-template #noFilteredCultureActionDetails>
+
+      <div class="culture-action-empty-detail-panel">
+
+        <button
+          mat-raised-button
+          type="button"
+          class="culture-empty-detail-hide-button"
+          (click)="hideSelectedCultureActionDetails()"
+        >
+          <mat-icon>visibility_off</mat-icon>
+          Masquer
+        </button>
+
+        <mat-icon class="culture-empty-detail-icon">
+          filter_alt_off
+        </mat-icon>
+
+        <strong>
+          Aucune action ne correspond aux filtres.
+        </strong>
+
+        <span>
+          Modifiez ou réinitialisez les filtres pour afficher le détail d'une action.
+        </span>
+
+      </div>
+
+    </ng-template>
 
   </div>
 
