@@ -611,24 +611,36 @@ mat-card-content {
 }
 
 /* =========================================================
-   PRÉTRAITEMENT GERMINATION
+   PRÉTRAITEMENT + SCARIFICATION + STRATIFICATION GERMINATION
    Couleurs identiques à la fiche de création Germination
    Les éléments violets restent inchangés
    ========================================================= */
 
 .germination-pretreatment-details-card
+.sowing-detail-section-header,
+.germination-scarification-details-card
+.sowing-detail-section-header,
+.germination-stratification-details-card
 .sowing-detail-section-header {
   border-bottom: 1px solid #b2dfdb;
 }
 
 
 .germination-pretreatment-details-card
+.sowing-detail-section-header::after,
+.germination-scarification-details-card
+.sowing-detail-section-header::after,
+.germination-stratification-details-card
 .sowing-detail-section-header::after {
   background-color: #26a69a;
 }
 
 
 .germination-pretreatment-details-card
+.sowing-detail-section-icon,
+.germination-scarification-details-card
+.sowing-detail-section-icon,
+.germination-stratification-details-card
 .sowing-detail-section-icon {
   color: #00897b;
 
@@ -640,24 +652,42 @@ mat-card-content {
 
 .germination-pretreatment-details-card
 .sowing-detail-section-icon
+mat-icon,
+.germination-scarification-details-card
+.sowing-detail-section-icon
+mat-icon,
+.germination-stratification-details-card
+.sowing-detail-section-icon
 mat-icon {
   color: #00897b;
 }
 
 
 .germination-pretreatment-details-card
+.sowing-detail-section-title,
+.germination-scarification-details-card
+.sowing-detail-section-title,
+.germination-stratification-details-card
 .sowing-detail-section-title {
   color: #00695c;
 }
 
 
 .germination-pretreatment-details-card
+.sowing-detail-section-subtitle,
+.germination-scarification-details-card
+.sowing-detail-section-subtitle,
+.germination-stratification-details-card
 .sowing-detail-section-subtitle {
   color: #5c7d79;
 }
 
 
 .germination-pretreatment-details-card
+.sowing-detail-subsection-header,
+.germination-scarification-details-card
+.sowing-detail-subsection-header,
+.germination-stratification-details-card
 .sowing-detail-subsection-header {
   color: #00695c;
 
@@ -674,6 +704,218 @@ mat-icon {
 
 .germination-pretreatment-details-card
 .sowing-detail-subsection-header
+mat-icon,
+.germination-scarification-details-card
+.sowing-detail-subsection-header
+mat-icon,
+.germination-stratification-details-card
+.sowing-detail-subsection-header
 mat-icon {
   color: #26a69a;
+}
+
+/* =========================================================
+   SCARIFICATION VIABILITÉ
+   Couleurs identiques à la fiche de création Viabilité
+   Les éléments violets restent inchangés
+   ========================================================= */
+
+.viability-scarification-details-card
+.sowing-detail-section-header {
+  border-bottom: 1px solid #f2c79f;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-section-header::after {
+  background-color: #e67e22;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-section-icon {
+  color: #bf6d1a;
+
+  background-color: #fff3e0;
+
+  border: 1px solid #f2c79f;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-section-icon
+mat-icon {
+  color: #bf6d1a;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-section-title {
+  color: #8a4b08;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-section-subtitle {
+  color: #9a6f4c;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-subsection-header {
+  color: #8a4b08;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff3e0 0%,
+      #fffdf9 100%
+    );
+
+  border-left: 3px solid #e67e22;
+}
+
+
+.viability-scarification-details-card
+.sowing-detail-subsection-header
+mat-icon {
+  color: #e67e22;
+}
+
+
+/* =========================================================
+   TRAITEMENT GERMINATION
+   Couleurs identiques à la fiche de création Germination
+   Les éléments violets restent inchangés
+   ========================================================= */
+
+.germination-treatment-details-card
+.sowing-detail-section-header {
+  border-bottom: 1px solid #b2dfdb;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-section-header::after {
+  background-color: #26a69a;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-section-icon {
+  color: #00897b;
+
+  background-color: #e0f2f1;
+
+  border: 1px solid #b2dfdb;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-section-icon
+mat-icon {
+  color: #00897b;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-section-title {
+  color: #00695c;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-section-subtitle {
+  color: #5c7d79;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-subsection-header {
+  color: #00695c;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e8f7f5 0%,
+      #fbfefd 100%
+    );
+
+  border-left: 3px solid #26a69a;
+}
+
+
+.germination-treatment-details-card
+.sowing-detail-subsection-header
+mat-icon {
+  color: #26a69a;
+}
+
+
+/* =========================================================
+   TRAITEMENT VIABILITÉ
+   Couleurs identiques à la fiche de création Viabilité
+   Les éléments violets restent inchangés
+   ========================================================= */
+
+.viability-treatment-details-card
+.sowing-detail-section-header {
+  border-bottom: 1px solid #f2c79f;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-section-header::after {
+  background-color: #e67e22;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-section-icon {
+  color: #bf6d1a;
+
+  background-color: #fff3e0;
+
+  border: 1px solid #f2c79f;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-section-icon
+mat-icon {
+  color: #bf6d1a;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-section-title {
+  color: #8a4b08;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-section-subtitle {
+  color: #9a6f4c;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-subsection-header {
+  color: #8a4b08;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff3e0 0%,
+      #fffdf9 100%
+    );
+
+  border-left: 3px solid #e67e22;
+}
+
+
+.viability-treatment-details-card
+.sowing-detail-subsection-header
+mat-icon {
+  color: #e67e22;
 }
