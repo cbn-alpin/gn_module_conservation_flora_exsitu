@@ -2,6 +2,11 @@
   class="action-details-card"
   [class.sowing-action-details-card]="useEnhancedSowingCard"
   [class.germination-pretreatment-details-card]="useGerminationPretreatmentVisual"
+  [class.germination-scarification-details-card]="useGerminationScarificationVisual"
+  [class.germination-stratification-details-card]="useGerminationStratificationVisual"
+  [class.germination-treatment-details-card]="useGerminationTreatmentVisual"
+  [class.viability-scarification-details-card]="useViabilityScarificationVisual"
+  [class.viability-treatment-details-card]="useViabilityTreatmentVisual"
 >
   <mat-card-header class="sticky-header action-details-header">
 
@@ -809,7 +814,7 @@
 
         <div
           class="sowing-detail-section-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingScarificationLayout"
         >
 
           <div class="sowing-detail-section-icon">
@@ -833,7 +838,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingScarificationLayout"
         >
           Scarification
         </h3>
@@ -862,7 +867,7 @@
 
           <div
             class="sowing-detail-subsection-header"
-            *ngIf="isSowingContext"
+            *ngIf="useEnhancedSowingScarificationLayout"
           >
 
             <mat-icon>
@@ -916,7 +921,7 @@
 
           <div
             class="sowing-detail-subsection-header"
-            *ngIf="isSowingContext"
+            *ngIf="useEnhancedSowingScarificationLayout"
           >
 
             <mat-icon>
@@ -1016,7 +1021,7 @@
 
         <div
           class="sowing-detail-section-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingStratificationLayout"
         >
 
           <div class="sowing-detail-section-icon">
@@ -1040,7 +1045,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingStratificationLayout"
         >
           Stratification
         </h3>
@@ -1124,7 +1129,7 @@
 
         <div
           class="sowing-detail-section-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingTreatmentLayout"
         >
 
           <div class="sowing-detail-section-icon">
@@ -1148,7 +1153,7 @@
 
         <div
           class="sowing-detail-subsection-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingTreatmentLayout"
         >
 
           <mat-icon>
@@ -1164,7 +1169,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingTreatmentLayout"
         >
           Traitement
         </h3>
@@ -1174,7 +1179,7 @@
 
           <label>
             {{
-              isSowingContext
+              useEnhancedSowingTreatmentLayout
                 ? 'Liquide traitement :'
                 : 'Produit utilisé :'
             }}
@@ -1208,7 +1213,7 @@
 
         <div
           class="sowing-detail-subsection-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingTreatmentLayout"
         >
 
           <mat-icon>
@@ -1224,7 +1229,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingTreatmentLayout"
         >
           Régime thermo-photo
         </h3>
@@ -1300,7 +1305,7 @@
 
         <div
           class="sowing-detail-subsection-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingTreatmentLayout"
         >
 
           <mat-icon>
@@ -1483,9 +1488,9 @@
       <div
         class="sowing-detail-section-header"
         *ngIf="
-          isSowingContext &&
+          useEnhancedSowingCard &&
           code &&
-          code !== 'pret'
+          !useEnhancedSowingPretreatmentLayout
         "
       >
 

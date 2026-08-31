@@ -19,6 +19,7 @@ export class ActionDetailsComponent implements OnChanges {
   @Input() actionId: number | null = null;
   @Input() isSowingContext = false;
   @Input() useSowingPretreatmentVisual = false;
+  @Input() detailContext: 'germination' | 'viability' | null = null;
   @Input() refreshKey = 0;
   @Output() hideDetails = new EventEmitter<void>();
 
@@ -34,6 +35,26 @@ export class ActionDetailsComponent implements OnChanges {
       (
         this.useSowingPretreatmentVisual &&
         this.code === 'pret'
+      ) ||
+      (
+        this.detailContext === 'germination' &&
+        this.code === 'scar'
+      ) ||
+      (
+        this.detailContext === 'viability' &&
+        this.code === 'scar'
+      ) ||
+      (
+        this.detailContext === 'germination' &&
+        this.code === 'strat'
+      ) ||
+      (
+        this.detailContext === 'germination' &&
+        this.code === 'tra'
+      ) ||
+      (
+        this.detailContext === 'viability' &&
+        this.code === 'tra'
       )
     );
   }
@@ -45,11 +66,72 @@ export class ActionDetailsComponent implements OnChanges {
     );
   }
 
+  get useEnhancedSowingScarificationLayout(): boolean {
+    return (
+      this.useEnhancedSowingCard &&
+      this.code === 'scar'
+    );
+  }
+
+  get useEnhancedSowingStratificationLayout(): boolean {
+    return (
+      this.useEnhancedSowingCard &&
+      this.code === 'strat'
+    );
+  }
+
+  get useEnhancedSowingTreatmentLayout(): boolean {
+    return (
+      this.useEnhancedSowingCard &&
+      this.code === 'tra'
+    );
+  }
+
   get useGerminationPretreatmentVisual(): boolean {
     return (
       !this.isSowingContext &&
       this.useSowingPretreatmentVisual &&
       this.code === 'pret'
+    );
+  }
+
+  get useGerminationScarificationVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'germination' &&
+      this.code === 'scar'
+    );
+  }
+
+  get useGerminationStratificationVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'germination' &&
+      this.code === 'strat'
+    );
+  }
+
+  get useGerminationTreatmentVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'germination' &&
+      this.code === 'tra'
+    );
+  }
+
+  get useViabilityScarificationVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'viability' &&
+      this.code === 'scar'
+    );
+  }
+
+  get useViabilityTreatmentVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'viability' &&
+      this.code === 'tra'
     );
   }
 
@@ -98,6 +180,7 @@ export class ActionDetailsComponent implements OnChanges {
       id_chemical_liquid: [null],
       id_liquid_treatment: [null],
       concentration_chemical_liquid: [null],
+      temperature: [null],
       temperature_light: [null],
       temperature_shadow: [null],
       hour_count_light: [null],
