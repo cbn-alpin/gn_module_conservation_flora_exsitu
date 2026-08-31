@@ -89,7 +89,7 @@
 
       <div
         class="field-block"
-        *ngIf="useEnhancedSowingPretreatmentLayout"
+        *ngIf="useEnhancedSowingPretreatmentLayout || useEnhancedSowingScarificationLayout"
       >
 
         <label>
@@ -111,7 +111,7 @@
 
       <div
         class="field-block"
-        *ngIf="useEnhancedSowingPretreatmentLayout"
+        *ngIf="useEnhancedSowingPretreatmentLayout || useEnhancedSowingScarificationLayout"
       >
 
         <label>
@@ -985,13 +985,7 @@
             <span>
 
               {{
-                isSowingContext
-                  ? getSowingChemicalTemperatureDisplayValue()
-                  : (
-                      germinationForm
-                        .get('temperature')
-                        ?.value || '-'
-                    )
+                getSowingChemicalTemperatureDisplayValue()
               }}
 
             </span>
@@ -1452,7 +1446,8 @@
           code &&
           !isSowingContext &&
           code !== 'svr' &&
-          !useEnhancedSowingPretreatmentLayout
+          !useEnhancedSowingPretreatmentLayout &&
+          !useEnhancedSowingScarificationLayout
         "
       >
 
@@ -1477,7 +1472,8 @@
         class="field-block"
         *ngIf="
           code &&
-          !useEnhancedSowingPretreatmentLayout
+          !useEnhancedSowingPretreatmentLayout &&
+          !useEnhancedSowingScarificationLayout
         "
       >
 

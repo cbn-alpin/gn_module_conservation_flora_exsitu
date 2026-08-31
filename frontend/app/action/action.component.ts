@@ -377,6 +377,10 @@ export class ActionComponent implements OnInit {
     });
 
     this.germinationForm.get('id_liquid_treatment')?.valueChanges.subscribe(() => {
+      if (this.code !== 'tra') {
+        return;
+      }
+
       if (!this.hasSelectedTreatmentLiquid()) {
         this.germinationForm.get('concentration_chemical_liquid')?.reset(null, { emitEvent: false });
         this.clearControlError('concentration_chemical_liquid', 'invalidConcentrationRange');
@@ -1574,7 +1578,7 @@ export class ActionComponent implements OnInit {
   private formatDataFormAction() {
     const rawForm = { ...this.germinationForm.value };
 
-    if (this.idSowing && this.code === 'scar' && this.scarTypeCode === 'chi') {
+    if (this.code === 'scar' && this.scarTypeCode === 'chi') {
       rawForm.temperature_light = this.parseNumber(rawForm.temperature_light);
     }
 

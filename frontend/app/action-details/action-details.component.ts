@@ -263,6 +263,7 @@ export class ActionDetailsComponent implements OnChanges {
       next: (action) => {
         console.log("✅ Action chargée :", action);
         this.action = action;
+        this.scarificationTypeCode = null;
 
         this.labels = {
           id_action_type: action.label_action_type,
@@ -281,6 +282,7 @@ export class ActionDetailsComponent implements OnChanges {
         };
 
         this.patchForm(action);
+        this.resolveScarificationTypeFromAction(action);
 
         if (action.id_action_type) {
           this.getActionByCode(action.id_action_type, 'code');
@@ -307,6 +309,56 @@ export class ActionDetailsComponent implements OnChanges {
 
       }
     });
+  }
+
+  private resolveScarificationTypeFromAction(action: any): void {
+    const actionTypeLabel = String(
+      action?.label_action_type || ''
+    )
+      .trim()
+      .toLowerCase();
+
+    if (actionTypeLabel !== 'scarification') {
+      return;
+    }
+
+    const label = String(
+      action?.label_scarification_type || ''
+    )
+      .trim()
+      .toLowerCase();
+
+    if (
+      label.includes('mécanique') ||
+      label.includes('mecanique')
+    ) {
+      this.scarificationTypeCode = 'mec';
+      return;
+    }
+
+    if (label.includes('chimique')) {
+      this.scarificationTypeCode = 'chi';
+      return;
+    }
+
+    if (
+      action?.id_scarification_mecanique != null ||
+      action?.id_tool != null
+    ) {
+      this.scarificationTypeCode = 'mec';
+      this.labels.id_scarification_type = 'Mécanique';
+      return;
+    }
+
+    if (
+      action?.id_chemical_liquid != null ||
+      action?.concentration_chemical_liquid != null ||
+      action?.temperature_light != null ||
+      action?.duration_chemical_liquid != null
+    ) {
+      this.scarificationTypeCode = 'chi';
+      this.labels.id_scarification_type = 'Chimique';
+    }
   }
 
   getActionByCode(id_nomenclature: number, target: 'code' | 'scarification'): void {

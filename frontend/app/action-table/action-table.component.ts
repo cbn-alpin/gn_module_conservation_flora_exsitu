@@ -302,6 +302,13 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
                   (
                     this.isGerminationContext &&
                     code === 'pret'
+                  ) ||
+                  (
+                    (
+                      this.isGerminationContext ||
+                      this.isViabilityContext
+                    ) &&
+                    code === 'scar'
                   )
                 ) {
                   this.actionSaved.emit(element.id_action);
