@@ -55,6 +55,22 @@ export class ActionDetailsComponent implements OnChanges {
       (
         this.detailContext === 'viability' &&
         this.code === 'tra'
+      ) ||
+      (
+        this.detailContext === 'germination' &&
+        this.code === 'svr'
+      ) ||
+      (
+        this.detailContext === 'viability' &&
+        this.code === 'svr'
+      ) ||
+      (
+        this.detailContext === 'germination' &&
+        this.code === 'synth'
+      ) ||
+      (
+        this.detailContext === 'viability' &&
+        this.code === 'synth'
       )
     );
   }
@@ -84,6 +100,20 @@ export class ActionDetailsComponent implements OnChanges {
     return (
       this.useEnhancedSowingCard &&
       this.code === 'tra'
+    );
+  }
+
+  get useEnhancedSowingFollowUpLayout(): boolean {
+    return (
+      this.useEnhancedSowingCard &&
+      this.code === 'svr'
+    );
+  }
+
+  get useEnhancedSowingSynthesisLayout(): boolean {
+    return (
+      this.useEnhancedSowingCard &&
+      this.code === 'synth'
     );
   }
 
@@ -119,6 +149,22 @@ export class ActionDetailsComponent implements OnChanges {
     );
   }
 
+  get useGerminationFollowUpVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'germination' &&
+      this.code === 'svr'
+    );
+  }
+
+  get useGerminationSynthesisVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'germination' &&
+      this.code === 'synth'
+    );
+  }
+
   get useViabilityScarificationVisual(): boolean {
     return (
       !this.isSowingContext &&
@@ -132,6 +178,22 @@ export class ActionDetailsComponent implements OnChanges {
       !this.isSowingContext &&
       this.detailContext === 'viability' &&
       this.code === 'tra'
+    );
+  }
+
+  get useViabilityFollowUpVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'viability' &&
+      this.code === 'svr'
+    );
+  }
+
+  get useViabilitySynthesisVisual(): boolean {
+    return (
+      !this.isSowingContext &&
+      this.detailContext === 'viability' &&
+      this.code === 'synth'
     );
   }
 

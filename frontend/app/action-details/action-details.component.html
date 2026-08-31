@@ -5,8 +5,12 @@
   [class.germination-scarification-details-card]="useGerminationScarificationVisual"
   [class.germination-stratification-details-card]="useGerminationStratificationVisual"
   [class.germination-treatment-details-card]="useGerminationTreatmentVisual"
+  [class.germination-follow-up-details-card]="useGerminationFollowUpVisual"
+  [class.germination-synthesis-details-card]="useGerminationSynthesisVisual"
   [class.viability-scarification-details-card]="useViabilityScarificationVisual"
   [class.viability-treatment-details-card]="useViabilityTreatmentVisual"
+  [class.viability-follow-up-details-card]="useViabilityFollowUpVisual"
+  [class.viability-synthesis-details-card]="useViabilitySynthesisVisual"
 >
   <mat-card-header class="sticky-header action-details-header">
 
@@ -36,8 +40,7 @@
         useEnhancedSowingPretreatmentLayout
       "
       [class.sowing-synthesis-details-mode]="
-        isSowingContext &&
-        code === 'synth'
+        useEnhancedSowingSynthesisLayout
       "
     >
 
@@ -122,7 +125,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingFollowUpLayout"
         >
           Suivi par réplicats
         </h3>
@@ -1329,7 +1332,7 @@
 
         <div
           class="sowing-detail-section-header"
-          *ngIf="isSowingContext"
+          *ngIf="useEnhancedSowingSynthesisLayout"
         >
 
           <div class="sowing-detail-section-icon">
@@ -1343,7 +1346,13 @@
             </span>
 
             <span class="sowing-detail-section-subtitle">
-              Synthèse globale des résultats du semis
+              {{
+                isSowingContext
+                  ? 'Synthèse globale des résultats du semis'
+                  : detailContext === 'germination'
+                    ? 'Synthèse globale des résultats du test de germination'
+                    : 'Synthèse globale des résultats du test de viabilité'
+              }}
             </span>
 
           </div>
@@ -1353,7 +1362,7 @@
 
         <h3
           class="section-subtitle"
-          *ngIf="!isSowingContext"
+          *ngIf="!useEnhancedSowingSynthesisLayout"
         >
           Synthèse du suivi
         </h3>
