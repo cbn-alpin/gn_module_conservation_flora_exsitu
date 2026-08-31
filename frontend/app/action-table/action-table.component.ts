@@ -53,7 +53,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
   public sowingActionStartDateFromFilter: Date | null = null;
   public sowingActionStartDateToFilter: Date | null = null;
   public sowingActionSortActive = 'date_start';
-  public sowingActionSortDirection: 'asc' | 'desc' = 'desc';
+  public sowingActionSortDirection: 'asc' | 'desc' = 'asc';
   public sowingActionTypeFilterOptions: string[] = [];
 
   private readonly sowingActionTypeFilterOrder = [
@@ -636,7 +636,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
 
   public onSowingActionTableSortChange(sort: Sort): void {
     this.sowingActionSortActive = sort.active || 'date_start';
-    this.sowingActionSortDirection = sort.direction || 'desc';
+    this.sowingActionSortDirection = sort.direction || 'asc';
     this.applySowingActionFilters(false);
   }
 
@@ -649,7 +649,7 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
     this.sowingActionStartDateFromFilter = null;
     this.sowingActionStartDateToFilter = null;
     this.sowingActionSortActive = 'date_start';
-    this.sowingActionSortDirection = 'desc';
+    this.sowingActionSortDirection = 'asc';
 
     this.updateSowingActionTypeFilterOptions(this.allSowingActions);
     this.applySowingActionFilters();
