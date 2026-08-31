@@ -313,7 +313,9 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
                     ) &&
                     (
                       code === 'scar' ||
-                      code === 'tra'
+                      code === 'tra' ||
+                      code === 'svr' ||
+                      code === 'synth'
                     )
                   )
                 ) {
