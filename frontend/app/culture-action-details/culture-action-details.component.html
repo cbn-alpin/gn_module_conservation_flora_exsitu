@@ -70,229 +70,395 @@
       "
     >
 
-      <section class="culture-action-detail-section">
+      <div class="culture-action-detail-section-header">
 
-        <h3>
-          Identification de l’action
-        </h3>
-
-        <div class="culture-action-detail-grid">
-
-          <div>
-            <span>Type d’action</span>
-            <strong>Transplantation</strong>
-          </div>
-
-          <div>
-            <span>Date de début</span>
-            <strong>
-              {{
-                transplantation.date_start
-                  ? (
-                      transplantation.date_start
-                      | date:'dd/MM/yyyy'
-                    )
-                  : '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Date de fin</span>
-            <strong>
-              {{
-                transplantation.date_end
-                  ? (
-                      transplantation.date_end
-                      | date:'dd/MM/yyyy'
-                    )
-                  : '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Effectué par</span>
-            <strong>
-              {{
-                transplantation.actor_label ||
-                '-'
-              }}
-            </strong>
-          </div>
-
+        <div class="culture-action-detail-section-icon">
+          <mat-icon>assignment</mat-icon>
         </div>
 
-      </section>
+        <div class="culture-action-detail-section-text">
 
-
-      <section class="culture-action-detail-section">
-
-        <h3>
-          Paramètres de transplantation
-        </h3>
-
-        <div class="culture-action-detail-grid">
-
-          <div>
-            <span>Type de transplantation</span>
-            <strong>
-              {{
-                transplantation
-                  .transplantation_type_label ||
-                '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Quantité intervention</span>
-            <strong>
-              {{
-                transplantation
-                  .intervention_quantity ??
-                '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Quantité en cours</span>
-            <strong>
-              {{
-                transplantation
-                  .in_progress_quantity ??
-                '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Conditionnement</span>
-            <strong>
-              {{
-                transplantation.packaging ||
-                '-'
-              }}
-            </strong>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <section class="culture-action-detail-section">
-
-        <h3>
-          Substrat
-        </h3>
-
-        <div
-          class="culture-action-substrate-list"
-          *ngIf="
-            substrates.length > 0;
-            else noSubstrate
-          "
-        >
-
-          <div
-            class="culture-action-substrate-item"
-            *ngFor="
-              let substrate of substrates
-            "
-          >
-
-            <strong>
-              {{ substrate.type || '-' }}
-            </strong>
-
-            <span>
-              {{ substrate.category || '-' }}
-            </span>
-
-            <span>
-              {{
-                substrate.percentage !== null &&
-                substrate.percentage !== undefined
-                  ? substrate.percentage + ' %'
-                  : '-'
-              }}
-            </span>
-
-          </div>
-
-        </div>
-
-        <ng-template #noSubstrate>
-          <span class="culture-action-empty-value">
-            -
+          <span class="culture-action-detail-section-title">
+            Identification de l'action
           </span>
-        </ng-template>
 
-      </section>
-
-
-      <section class="culture-action-detail-section">
-
-        <h3>
-          Développement et localisation
-        </h3>
-
-        <div class="culture-action-detail-grid">
-
-          <div>
-            <span>Stade physiologique</span>
-            <strong>
-              {{
-                transplantation
-                  .physiological_stage_label ||
-                '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Localisation principale</span>
-            <strong>
-              {{
-                transplantation
-                  .main_location_label ||
-                '-'
-              }}
-            </strong>
-          </div>
-
-          <div>
-            <span>Localisation précise</span>
-            <strong>
-              {{
-                transplantation
-                  .precise_location ||
-                '-'
-              }}
-            </strong>
-          </div>
+          <span class="culture-action-detail-section-subtitle">
+            Type d'action et date de réalisation
+          </span>
 
         </div>
 
-      </section>
+      </div>
 
 
-      <section class="culture-action-detail-section">
+      <div class="culture-action-field-block culture-action-type-highlight">
 
-        <h3>
-          Remarques générales
-        </h3>
+        <label>
+          Type d'action :
+        </label>
 
-        <p class="culture-action-remarks">
+        <span>
+          Transplantation
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Date de début :
+        </label>
+
+        <span>
+          {{
+            transplantation.date_start
+              ? (
+                  transplantation.date_start
+                  | date:'dd/MM/yyyy'
+                )
+              : '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Date de fin :
+        </label>
+
+        <span>
+          {{
+            transplantation.date_end
+              ? (
+                  transplantation.date_end
+                  | date:'dd/MM/yyyy'
+                )
+              : '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-detail-section-header">
+
+        <div class="culture-action-detail-section-icon">
+          <mat-icon>swap_horiz</mat-icon>
+        </div>
+
+        <div class="culture-action-detail-section-text">
+
+          <span class="culture-action-detail-section-title">
+            Paramètres de transplantation
+          </span>
+
+          <span class="culture-action-detail-section-subtitle">
+            Type, quantités et conditionnement de l'intervention
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Type de transplantation :
+        </label>
+
+        <span>
+          {{
+            transplantation
+              .transplantation_type_label ||
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Quantité intervention :
+        </label>
+
+        <span>
+          {{
+            transplantation
+              .intervention_quantity ??
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Quantité en cours :
+        </label>
+
+        <span>
+          {{
+            transplantation
+              .in_progress_quantity ??
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Conditionnement :
+        </label>
+
+        <span>
+          {{
+            transplantation.packaging ||
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-detail-subsection-header">
+
+        <mat-icon>terrain</mat-icon>
+
+        <span>
+          Composition du substrat
+        </span>
+
+      </div>
+
+
+      <div
+        class="culture-action-substrate-table-wrapper"
+        *ngIf="
+          substrates.length > 0;
+          else noSubstrate
+        "
+      >
+
+        <table class="culture-action-substrate-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Type de substrat
+              </th>
+
+              <th>
+                Catégorie
+              </th>
+
+              <th>
+                Pourcentage
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr
+              *ngFor="let substrate of substrates"
+            >
+
+              <td>
+                {{ substrate.type || '-' }}
+              </td>
+
+              <td>
+                {{
+                  formatSubstrateCategory(
+                    substrate.category
+                  )
+                }}
+              </td>
+
+              <td>
+                {{
+                  substrate.percentage !== null &&
+                  substrate.percentage !== undefined
+                    ? substrate.percentage + ' %'
+                    : '-'
+                }}
+              </td>
+
+            </tr>
+
+            <tr class="culture-action-substrate-total-row">
+
+              <td colspan="2">
+                Total renseigné
+              </td>
+
+              <td>
+                {{ substratePercentageTotal }} %
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <ng-template #noSubstrate>
+
+        <div class="culture-action-empty-substrate">
+
+          <mat-icon>info</mat-icon>
+
+          <span>
+            Aucun substrat renseigné.
+          </span>
+
+        </div>
+
+      </ng-template>
+
+
+      <div class="culture-action-detail-section-header">
+
+        <div class="culture-action-detail-section-icon">
+          <mat-icon>place</mat-icon>
+        </div>
+
+        <div class="culture-action-detail-section-text">
+
+          <span class="culture-action-detail-section-title">
+            Développement et localisation
+          </span>
+
+          <span class="culture-action-detail-section-subtitle">
+            Stade physiologique et emplacement de la Culture
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Phase de développement physiologique :
+        </label>
+
+        <span>
+          {{
+            transplantation
+              .physiological_stage_label ||
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Localisation principale :
+        </label>
+
+        <span>
+          {{
+            transplantation
+              .main_location_label ||
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Localisation précise :
+        </label>
+
+        <span>
+          {{
+            transplantation
+              .precise_location ||
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-detail-section-header">
+
+        <div class="culture-action-detail-section-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+
+        <div class="culture-action-detail-section-text">
+
+          <span class="culture-action-detail-section-title">
+            Suivi et informations complémentaires
+          </span>
+
+          <span class="culture-action-detail-section-subtitle">
+            Personne ayant effectué l'action et remarques générales
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Effectué par :
+        </label>
+
+        <span>
+          {{
+            transplantation.actor_label ||
+            '-'
+          }}
+        </span>
+
+      </div>
+
+
+      <div class="culture-action-field-block">
+
+        <label>
+          Remarques :
+        </label>
+
+        <span>
           {{
             transplantation.remarks ||
             '-'
           }}
-        </p>
+        </span>
 
-      </section>
+      </div>
 
     </ng-container>
 

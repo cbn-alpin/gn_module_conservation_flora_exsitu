@@ -90,6 +90,50 @@ export class CultureActionDetailsComponent
   }
 
 
+  get substratePercentageTotal(): number {
+
+    return this.substrates.reduce(
+      (total: number, substrate: any) => {
+
+        const rawPercentage =
+          substrate?.percentage;
+
+        if (
+          rawPercentage === null ||
+          rawPercentage === undefined ||
+          rawPercentage === ''
+        ) {
+          return total;
+        }
+
+        const percentage =
+          Number(rawPercentage);
+
+        return Number.isFinite(percentage)
+          ? total + percentage
+          : total;
+      },
+      0
+    );
+  }
+
+
+  formatSubstrateCategory(
+    value: any
+  ): string {
+
+    if (value === 'principal') {
+      return 'Principal';
+    }
+
+    if (value === 'secondary') {
+      return 'Secondaire';
+    }
+
+    return value || '-';
+  }
+
+
   onHideDetails(): void {
     this.hideDetails.emit();
   }
