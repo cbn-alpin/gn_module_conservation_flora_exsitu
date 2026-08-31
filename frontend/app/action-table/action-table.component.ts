@@ -301,14 +301,20 @@ export class ActionTableComponent implements OnInit, OnChanges, AfterViewInit {
                   this.idSowing ||
                   (
                     this.isGerminationContext &&
-                    code === 'pret'
+                    (
+                      code === 'pret' ||
+                      code === 'strat'
+                    )
                   ) ||
                   (
                     (
                       this.isGerminationContext ||
                       this.isViabilityContext
                     ) &&
-                    code === 'scar'
+                    (
+                      code === 'scar' ||
+                      code === 'tra'
+                    )
                   )
                 ) {
                   this.actionSaved.emit(element.id_action);

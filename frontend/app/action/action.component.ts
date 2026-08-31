@@ -1149,7 +1149,14 @@ export class ActionComponent implements OnInit {
   }
 
   private isSowingTreatmentAction(): boolean {
-    return !!this.idSowing && this.code === 'tra';
+    return !!(
+      this.code === 'tra' &&
+      (
+        this.idSowing ||
+        this.dialogData?.actionContext === 'germination' ||
+        this.dialogData?.actionContext === 'viability'
+      )
+    );
   }
 
   public hasSelectedTreatmentLiquid(): boolean {
@@ -1356,10 +1363,9 @@ export class ActionComponent implements OnInit {
 
     /*
      * Les règles métier supplémentaires du traitement
-     * restent propres au Semis.
+     * s'appliquent à Semis, Germination et Viabilité.
      */
     if (
-      this.idSowing &&
       !this.validateSowingTreatmentBusinessRules()
     ) {
       isValid = false;
@@ -1582,7 +1588,7 @@ export class ActionComponent implements OnInit {
       rawForm.temperature_light = this.parseNumber(rawForm.temperature_light);
     }
 
-    if (this.idSowing && this.code === 'tra') {
+    if (this.code === 'tra') {
       rawForm.concentration_chemical_liquid = this.parseNumber(rawForm.concentration_chemical_liquid);
     }
 

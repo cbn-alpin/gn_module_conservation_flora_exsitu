@@ -89,7 +89,12 @@
 
       <div
         class="field-block"
-        *ngIf="useEnhancedSowingPretreatmentLayout || useEnhancedSowingScarificationLayout"
+        *ngIf="
+          useEnhancedSowingPretreatmentLayout ||
+          useEnhancedSowingScarificationLayout ||
+          useEnhancedSowingStratificationLayout ||
+          useEnhancedSowingTreatmentLayout
+        "
       >
 
         <label>
@@ -111,7 +116,12 @@
 
       <div
         class="field-block"
-        *ngIf="useEnhancedSowingPretreatmentLayout || useEnhancedSowingScarificationLayout"
+        *ngIf="
+          useEnhancedSowingPretreatmentLayout ||
+          useEnhancedSowingScarificationLayout ||
+          useEnhancedSowingStratificationLayout ||
+          useEnhancedSowingTreatmentLayout
+        "
       >
 
         <label>
@@ -1447,7 +1457,9 @@
           !isSowingContext &&
           code !== 'svr' &&
           !useEnhancedSowingPretreatmentLayout &&
-          !useEnhancedSowingScarificationLayout
+          !useEnhancedSowingScarificationLayout &&
+          !useEnhancedSowingStratificationLayout &&
+          !useEnhancedSowingTreatmentLayout
         "
       >
 
@@ -1473,7 +1485,9 @@
         *ngIf="
           code &&
           !useEnhancedSowingPretreatmentLayout &&
-          !useEnhancedSowingScarificationLayout
+          !useEnhancedSowingScarificationLayout &&
+          !useEnhancedSowingStratificationLayout &&
+          !useEnhancedSowingTreatmentLayout
         "
       >
 
