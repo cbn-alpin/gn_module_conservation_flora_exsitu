@@ -230,6 +230,77 @@ def upgrade():
             AND n.cd_nomenclature = 'transp'
         );
     """)
+    # Types d'action supplémentaires réservés aux actions de Culture
+    op.execute("""
+        WITH action_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_ACTION_TYPE'
+        ),
+        expected_values AS (
+            SELECT *
+            FROM (
+                VALUES
+                    (
+                        'obs',
+                        'observation',
+                        'Observation',
+                        'Action d’observation réalisée dans le cadre du suivi d’une Culture',
+                        '.008'
+                    ),
+                    (
+                        'tracult',
+                        'traitementCulture',
+                        'Traitement',
+                        'Action de traitement réalisée dans le cadre du suivi d’une Culture',
+                        '.009'
+                    ),
+                    (
+                        'prel',
+                        'prelevement',
+                        'Prélèvement',
+                        'Action de prélèvement réalisée dans le cadre du suivi d’une Culture',
+                        '.010'
+                    )
+            ) AS v(
+                cd_nomenclature,
+                mnemonique,
+                label,
+                definition,
+                hierarchy
+            )
+        )
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            at.id_type,
+            ev.cd_nomenclature,
+            ev.mnemonique,
+            ev.label,
+            ev.definition,
+            ev.label,
+            ev.definition,
+            'conservation_flora_exsitu',
+            ev.hierarchy
+        FROM action_type at
+        CROSS JOIN expected_values ev
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = at.id_type
+            AND n.cd_nomenclature = ev.cd_nomenclature
+        );
+    """)
+
     # Type de transplantation des actions de Culture
     op.execute("""
         INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
@@ -452,6 +523,73 @@ def upgrade():
             FROM ref_nomenclatures.t_nomenclatures n
             WHERE n.id_type = pst.id_type
             AND n.cd_nomenclature = ev.cd_nomenclature
+        );
+    """)
+
+    # Stades phénologiques des actions d'observation de Culture
+    op.execute("""
+        INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source
+        )
+        SELECT
+            'CFE_PHENOLOGICAL_STAGE',
+            'Stade phénologique',
+            'Nomenclature des stades phénologiques observés sur une Culture.',
+            'Stade phénologique',
+            'Nomenclature des stades phénologiques observés sur une Culture.',
+            'conservation_flora_exsitu'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
+        );
+
+        WITH target_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
+        ),
+        source_type AS (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHENOLOGY'
+        )
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            target_type.id_type,
+            source_nomenclature.cd_nomenclature,
+            source_nomenclature.mnemonique,
+            source_nomenclature.label_default,
+            source_nomenclature.definition_default,
+            source_nomenclature.label_fr,
+            source_nomenclature.definition_fr,
+            'conservation_flora_exsitu',
+            source_nomenclature.hierarchy
+        FROM ref_nomenclatures.t_nomenclatures source_nomenclature
+        JOIN source_type
+            ON source_nomenclature.id_type = source_type.id_type
+        CROSS JOIN target_type
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures existing_nomenclature
+            WHERE existing_nomenclature.id_type = target_type.id_type
+            AND existing_nomenclature.cd_nomenclature =
+                source_nomenclature.cd_nomenclature
         );
     """)
 
@@ -1385,6 +1523,13 @@ def upgrade():
         ondelete='SET NULL'
     )
 
+    op.create_check_constraint(
+        'ck_t_action_end_date_after_start_date',
+        't_action',
+        'date_end IS NULL OR date_end >= date_start',
+        schema='pr_conservation_flora_exsitu'
+    )
+
     # Table spécifique aux actions de transplantation de Culture
     op.create_table(
         't_culture_action_transplantation',
@@ -1559,14 +1704,323 @@ def upgrade():
         schema='pr_conservation_flora_exsitu'
     )
 
+    # Table spécifique aux actions d'observation de Culture
+    op.create_table(
+        't_culture_action_observation',
+        sa.Column(
+            'id_culture_action_observation',
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False
+        ),
+        sa.Column(
+            'id_action',
+            sa.Integer(),
+            nullable=False
+        ),
+        sa.Column(
+            'individual_count',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'id_phenological_stage',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'remarks',
+            sa.Text(),
+            nullable=True
+        ),
+        sa.Column(
+            'meta_create_by',
+            sa.Integer(),
+            nullable=False
+        ),
+        sa.Column(
+            'meta_create_date',
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text('now()')
+        ),
+        sa.Column(
+            'meta_update_by',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'meta_update_date',
+            sa.DateTime(),
+            nullable=True
+        ),
+        sa.PrimaryKeyConstraint(
+            'id_culture_action_observation',
+            name='pk_t_culture_action_observation'
+        ),
+        sa.UniqueConstraint(
+            'id_action',
+            name='uq_t_culture_action_observation_id_action'
+        ),
+        sa.ForeignKeyConstraint(
+            ['id_action'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_action.id_action'
+            ],
+            name='fk_t_culture_action_observation_id_action',
+            ondelete='CASCADE'
+        ),
+        sa.ForeignKeyConstraint(
+            ['id_phenological_stage'],
+            [
+                'ref_nomenclatures.'
+                't_nomenclatures.id_nomenclature'
+            ],
+            name=(
+                'fk_t_culture_action_observation_'
+                'id_phenological_stage'
+            ),
+            ondelete='SET NULL'
+        ),
+        sa.ForeignKeyConstraint(
+            ['meta_create_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_observation_'
+                'meta_create_by'
+            )
+        ),
+        sa.ForeignKeyConstraint(
+            ['meta_update_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_observation_'
+                'meta_update_by'
+            ),
+            ondelete='SET NULL'
+        ),
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    # Table spécifique aux actions de traitement de Culture
+    op.create_table(
+        't_culture_action_treatment',
+        sa.Column(
+            'id_culture_action_treatment',
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False
+        ),
+        sa.Column(
+            'id_action',
+            sa.Integer(),
+            nullable=False
+        ),
+        sa.Column(
+            'id_physiological_development_stage',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'disease_or_deficiency',
+            sa.String(length=50),
+            nullable=True
+        ),
+        sa.Column(
+            'type',
+            sa.String(length=50),
+            nullable=True
+        ),
+        sa.Column(
+            'success',
+            sa.Boolean(),
+            nullable=True
+        ),
+        sa.Column(
+            'meta_create_by',
+            sa.Integer(),
+            nullable=False
+        ),
+        sa.Column(
+            'meta_create_date',
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text('now()')
+        ),
+        sa.Column(
+            'meta_update_by',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'meta_update_date',
+            sa.DateTime(),
+            nullable=True
+        ),
+        sa.PrimaryKeyConstraint(
+            'id_culture_action_treatment',
+            name='pk_t_culture_action_treatment'
+        ),
+        sa.UniqueConstraint(
+            'id_action',
+            name='uq_t_culture_action_treatment_id_action'
+        ),
+        sa.ForeignKeyConstraint(
+            ['id_action'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_action.id_action'
+            ],
+            name='fk_t_culture_action_treatment_id_action',
+            ondelete='CASCADE'
+        ),
+        sa.ForeignKeyConstraint(
+            ['id_physiological_development_stage'],
+            [
+                'ref_nomenclatures.'
+                't_nomenclatures.id_nomenclature'
+            ],
+            name=(
+                'fk_t_culture_action_treatment_'
+                'physiological_stage'
+            ),
+            ondelete='SET NULL'
+        ),
+        sa.ForeignKeyConstraint(
+            ['meta_create_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_treatment_'
+                'meta_create_by'
+            )
+        ),
+        sa.ForeignKeyConstraint(
+            ['meta_update_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_treatment_'
+                'meta_update_by'
+            ),
+            ondelete='SET NULL'
+        ),
+        schema='pr_conservation_flora_exsitu'
+    )
+
+    # Table spécifique aux actions de prélèvement de Culture
+    op.create_table(
+        't_culture_action_sampling',
+        sa.Column(
+            'id_culture_action_sampling',
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False
+        ),
+        sa.Column(
+            'id_action',
+            sa.Integer(),
+            nullable=False
+        ),
+        sa.Column(
+            'quantity',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'remarks',
+            sa.Text(),
+            nullable=True
+        ),
+        sa.Column(
+            'meta_create_by',
+            sa.Integer(),
+            nullable=False
+        ),
+        sa.Column(
+            'meta_create_date',
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text('now()')
+        ),
+        sa.Column(
+            'meta_update_by',
+            sa.Integer(),
+            nullable=True
+        ),
+        sa.Column(
+            'meta_update_date',
+            sa.DateTime(),
+            nullable=True
+        ),
+        sa.PrimaryKeyConstraint(
+            'id_culture_action_sampling',
+            name='pk_t_culture_action_sampling'
+        ),
+        sa.UniqueConstraint(
+            'id_action',
+            name='uq_t_culture_action_sampling_id_action'
+        ),
+        sa.ForeignKeyConstraint(
+            ['id_action'],
+            [
+                'pr_conservation_flora_exsitu.'
+                't_action.id_action'
+            ],
+            name='fk_t_culture_action_sampling_id_action',
+            ondelete='CASCADE'
+        ),
+        sa.ForeignKeyConstraint(
+            ['meta_create_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_sampling_'
+                'meta_create_by'
+            )
+        ),
+        sa.ForeignKeyConstraint(
+            ['meta_update_by'],
+            ['utilisateurs.t_roles.id_role'],
+            name=(
+                'fk_t_culture_action_sampling_'
+                'meta_update_by'
+            ),
+            ondelete='SET NULL'
+        ),
+        schema='pr_conservation_flora_exsitu'
+    )
 
 def downgrade():
+
+    # Suppression des actions de prélèvement de Culture
+    op.execute("""
+        DROP TABLE IF EXISTS
+        pr_conservation_flora_exsitu.t_culture_action_sampling;
+    """)
+
+    # Suppression des actions de traitement de Culture
+    op.execute("""
+        DROP TABLE IF EXISTS
+        pr_conservation_flora_exsitu.t_culture_action_treatment;
+    """)
+
+    # Suppression des actions d'observation de Culture
+    op.execute("""
+        DROP TABLE IF EXISTS
+        pr_conservation_flora_exsitu.t_culture_action_observation;
+    """)
 
     # Suppression des actions de transplantation de Culture
     op.execute("""
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.
         t_culture_action_transplantation;
+    """)
+
+    op.execute("""
+        ALTER TABLE
+        pr_conservation_flora_exsitu.t_action
+        DROP CONSTRAINT IF EXISTS
+        ck_t_action_end_date_after_start_date;
     """)
 
     op.execute("""
@@ -1756,6 +2210,19 @@ def downgrade():
         WHERE mnemonique = 'CFE_MAIN_LOCATION';
     """)
 
+    # Suppression de la nomenclature des stades phénologiques
+    op.execute("""
+        DELETE FROM ref_nomenclatures.t_nomenclatures
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
+        );
+
+        DELETE FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE';
+    """)
+
     # Suppression de la nomenclature des stades physiologiques
     op.execute("""
         DELETE FROM ref_nomenclatures.t_nomenclatures
@@ -1780,7 +2247,7 @@ def downgrade():
         DELETE FROM ref_nomenclatures.bib_nomenclatures_types
         WHERE mnemonique = 'CFE_TRANSPLANTATION_TYPE';
     """)
-    # Suppression du type d'action Culture : Transplantation
+    # Suppression des types d'action réservés à la Culture
     op.execute("""
         DELETE FROM ref_nomenclatures.t_nomenclatures
         WHERE id_type = (
@@ -1788,7 +2255,12 @@ def downgrade():
             FROM ref_nomenclatures.bib_nomenclatures_types
             WHERE mnemonique = 'CFE_ACTION_TYPE'
         )
-        AND cd_nomenclature = 'transp';
+        AND cd_nomenclature IN (
+            'transp',
+            'obs',
+            'tracult',
+            'prel'
+        );
     """)
 
     op.execute("""

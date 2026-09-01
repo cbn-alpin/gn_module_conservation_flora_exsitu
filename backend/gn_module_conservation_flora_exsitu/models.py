@@ -889,7 +889,13 @@ class TCulture(db.Model):
 @serializable
 class TAction(db.Model):
     __tablename__ = 't_action'
-    __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
+    __table_args__ = (
+        db.CheckConstraint(
+            "date_end IS NULL OR date_end >= date_start",
+            name="ck_t_action_end_date_after_start_date"
+        ),
+        {"schema": "pr_conservation_flora_exsitu"}
+    )
 
     id_action = db.Column(db.Integer, primary_key=True, unique=True)
 
@@ -1160,6 +1166,306 @@ class TCultureActionTransplantation(db.Model):
                 else None
             )
         }
+
+@serializable
+class TCultureActionObservation(db.Model):
+    __tablename__ = "t_culture_action_observation"
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "id_action",
+            name="uq_t_culture_action_observation_id_action"
+        ),
+        {
+            "schema": "pr_conservation_flora_exsitu"
+        }
+    )
+
+    id_culture_action_observation = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    id_action = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_action.id_action",
+            ondelete="CASCADE"
+        ),
+        nullable=False
+    )
+
+    individual_count = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
+    id_phenological_stage = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    remarks = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=False
+    )
+
+    meta_create_date = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
+
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    meta_update_date = db.Column(
+        db.DateTime,
+        nullable=True,
+        onupdate=sa.func.now()
+    )
+
+    def to_dic(self):
+        return {
+            "id_culture_action_observation":
+                self.id_culture_action_observation,
+            "id_action": self.id_action,
+            "individual_count": self.individual_count,
+            "id_phenological_stage":
+                self.id_phenological_stage,
+            "remarks": self.remarks,
+            "meta_create_by": self.meta_create_by,
+            "meta_create_date": (
+                self.meta_create_date.isoformat()
+                if self.meta_create_date
+                else None
+            ),
+            "meta_update_by": self.meta_update_by,
+            "meta_update_date": (
+                self.meta_update_date.isoformat()
+                if self.meta_update_date
+                else None
+            )
+        }
+
+
+@serializable
+class TCultureActionTreatment(db.Model):
+    __tablename__ = "t_culture_action_treatment"
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "id_action",
+            name="uq_t_culture_action_treatment_id_action"
+        ),
+        {
+            "schema": "pr_conservation_flora_exsitu"
+        }
+    )
+
+    id_culture_action_treatment = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    id_action = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_action.id_action",
+            ondelete="CASCADE"
+        ),
+        nullable=False
+    )
+
+    id_physiological_development_stage = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    disease_or_deficiency = db.Column(
+        db.String(50),
+        nullable=True
+    )
+
+    type = db.Column(
+        db.String(50),
+        nullable=True
+    )
+
+    success = db.Column(
+        db.Boolean,
+        nullable=True
+    )
+
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=False
+    )
+
+    meta_create_date = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
+
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    meta_update_date = db.Column(
+        db.DateTime,
+        nullable=True,
+        onupdate=sa.func.now()
+    )
+
+    def to_dic(self):
+        return {
+            "id_culture_action_treatment":
+                self.id_culture_action_treatment,
+            "id_action": self.id_action,
+            "id_physiological_development_stage":
+                self.id_physiological_development_stage,
+            "disease_or_deficiency":
+                self.disease_or_deficiency,
+            "type": self.type,
+            "success": self.success,
+            "meta_create_by": self.meta_create_by,
+            "meta_create_date": (
+                self.meta_create_date.isoformat()
+                if self.meta_create_date
+                else None
+            ),
+            "meta_update_by": self.meta_update_by,
+            "meta_update_date": (
+                self.meta_update_date.isoformat()
+                if self.meta_update_date
+                else None
+            )
+        }
+
+
+@serializable
+class TCultureActionSampling(db.Model):
+    __tablename__ = "t_culture_action_sampling"
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "id_action",
+            name="uq_t_culture_action_sampling_id_action"
+        ),
+        {
+            "schema": "pr_conservation_flora_exsitu"
+        }
+    )
+
+    id_culture_action_sampling = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    id_action = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_action.id_action",
+            ondelete="CASCADE"
+        ),
+        nullable=False
+    )
+
+    quantity = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
+    remarks = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    meta_create_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role"
+        ),
+        nullable=False
+    )
+
+    meta_create_date = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=sa.func.now()
+    )
+
+    meta_update_by = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="SET NULL"
+        ),
+        nullable=True
+    )
+
+    meta_update_date = db.Column(
+        db.DateTime,
+        nullable=True,
+        onupdate=sa.func.now()
+    )
+
+    def to_dic(self):
+        return {
+            "id_culture_action_sampling":
+                self.id_culture_action_sampling,
+            "id_action": self.id_action,
+            "quantity": self.quantity,
+            "remarks": self.remarks,
+            "meta_create_by": self.meta_create_by,
+            "meta_create_date": (
+                self.meta_create_date.isoformat()
+                if self.meta_create_date
+                else None
+            ),
+            "meta_update_by": self.meta_update_by,
+            "meta_update_date": (
+                self.meta_update_date.isoformat()
+                if self.meta_update_date
+                else None
+            )
+        }
+
+
 @serializable
 class TActionReplicate(db.Model):
     __tablename__ = 't_action_replicate'
