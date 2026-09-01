@@ -2985,7 +2985,26 @@ def get_test_by_material(id_material):
 @blueprint.route("/materials/<int:id_material>/tests", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 def get_all_tests_by_material(id_material):
-    tests = db.session.query(TTest).filter_by(id_material=id_material).all()
+    TestType = aliased(TNomenclatures)
+
+    tests = (
+        db.session.query(
+            TTest,
+            TestType.cd_nomenclature.label(
+                "test_type_code"
+            )
+        )
+        .outerjoin(
+            TestType,
+            TTest.id_test_type ==
+            TestType.id_nomenclature
+        )
+        .filter(
+            TTest.id_material == id_material
+        )
+        .all()
+    )
+
     return jsonify([
         {
             "id_test": t.id_test,
@@ -2997,9 +3016,10 @@ def get_all_tests_by_material(id_material):
             "pre_treatment":t.pre_treatment,
             "germination_rate":t.germination_rate,
             "id_test_type":t.id_test_type,
+            "test_type_code": test_type_code,
 
 
-        } for t in tests
+        } for t, test_type_code in tests
     ])
 
 @blueprint.route("/tests/<int:id_test>", methods=["GET"])
@@ -3219,6 +3239,63 @@ def delete_actio(id_action):
         action = db.session.query(TAction).get(id_action)
         if not action:
             return {"message": "Action non trouvée"}, 404
+
+        if action.id_culture:
+            initial_action = (
+                CultureRepository
+                .get_initial_action(
+                    action.id_culture
+                )
+            )
+
+            is_initial_action = (
+                initial_action is not None
+                and initial_action.id_action ==
+                action.id_action
+            )
+
+            if (
+                is_initial_action
+                and CultureRepository
+                    .has_initial_transplantation(
+                        action.id_culture
+                    )
+            ):
+                action_count = (
+                    TAction.query
+                    .filter_by(
+                        id_culture=
+                            action.id_culture
+                    )
+                    .count()
+                )
+
+                if action_count > 1:
+                    culture = (
+                        CultureRepository()
+                        .get_by_id(
+                            action.id_culture
+                        )
+                    )
+
+                    return {
+                        "error": "Suppression impossible",
+                        "message": (
+                            "La transplantation initiale "
+                            "doit être la dernière action "
+                            "supprimée de la culture."
+                        ),
+                        "initial_transplantation": True,
+                        "action_count": action_count,
+                        "remaining_action_count": (
+                            action_count - 1
+                        ),
+                        "code_culture": (
+                            culture.code_culture
+                            if culture
+                            else None
+                        )
+                    }, 409
 
         db.session.delete(action)
         db.session.commit()

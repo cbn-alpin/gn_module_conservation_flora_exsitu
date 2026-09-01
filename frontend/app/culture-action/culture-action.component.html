@@ -293,10 +293,28 @@
       </div>
 
       <div class="form-row">
-        <mat-form-field appearance="outline" class="third-width">
+        <mat-form-field
+          appearance="outline"
+          class="third-width"
+          [hideRequiredMarker]="
+            !isInitialCultureActionContext
+          "
+        >
           <mat-label>Type de transplantation</mat-label>
-          <mat-select formControlName="id_type">
-            <mat-option [value]="null">Aucun</mat-option>
+          <mat-select
+            formControlName="id_type"
+            [required]="
+              isInitialCultureActionContext
+            "
+          >
+            <mat-option
+              *ngIf="
+                !isInitialCultureActionContext
+              "
+              [value]="null"
+            >
+              Aucun
+            </mat-option>
             <mat-option
               *ngFor="let option of transplantationTypeOptions"
               [value]="option.id_nomenclature"
@@ -304,6 +322,16 @@
               {{ getOptionLabel(option) }}
             </mat-option>
           </mat-select>
+
+          <mat-error
+            *ngIf="
+              cultureActionForm
+                .get('id_type')
+                ?.hasError('required')
+            "
+          >
+            Le type de transplantation est obligatoire pour la transplantation initiale.
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="third-width">
@@ -616,9 +644,7 @@
             </mat-label>
 
             <mat-select
-              formControlName="
-                id_physiological_development_stage
-              "
+              formControlName="id_physiological_development_stage"
             >
               <mat-option [value]="null">
                 Aucune
@@ -652,9 +678,7 @@
             <input
               matInput
               maxlength="50"
-              formControlName="
-                disease_or_deficiency
-              "
+              formControlName="disease_or_deficiency"
             >
 
             <mat-hint align="end">
@@ -735,7 +759,7 @@
 
           <div class="action-section-icon">
             <mat-icon>
-              science
+              content_cut
             </mat-icon>
           </div>
 

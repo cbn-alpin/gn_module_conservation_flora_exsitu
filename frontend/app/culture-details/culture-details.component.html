@@ -665,6 +665,43 @@
         </ng-container>
 
 
+        <!-- DATE FIN -->
+
+        <ng-container
+          matColumnDef="date_end"
+        >
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="date_end"
+          >
+            Fin
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let element"
+          >
+
+            <span class="culture-action-date-pill">
+
+              {{
+                element.date_end
+                  ? (
+                      element.date_end
+                      | date:'dd/MM/yyyy'
+                    )
+                  : '-'
+              }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
         <!-- TYPE -->
 
         <ng-container
@@ -687,8 +724,9 @@
             <span class="culture-action-type-pill">
 
               {{
-                element.action_type_label ||
-                '-'
+                getCultureActionTypeDisplayValue(
+                  element
+                )
               }}
 
             </span>
@@ -774,8 +812,10 @@
               <button
                 mat-menu-item
                 *ngIf="
-                  element.code_action_type ===
-                  'transp'
+                  element.code_action_type === 'transp' ||
+                  element.code_action_type === 'obs' ||
+                  element.code_action_type === 'tracult' ||
+                  element.code_action_type === 'prel'
                 "
                 (click)="
                   onEditCultureAction(
@@ -798,8 +838,10 @@
               <button
                 mat-menu-item
                 *ngIf="
-                  element.code_action_type ===
-                  'transp'
+                  element.code_action_type === 'transp' ||
+                  element.code_action_type === 'obs' ||
+                  element.code_action_type === 'tracult' ||
+                  element.code_action_type === 'prel'
                 "
                 (click)="
                   onOpenCultureActionDetails(
@@ -857,6 +899,9 @@
         <tr
           mat-row
           class="culture-action-row"
+          [class.initial-culture-action-row]="
+            row.is_initial_culture_action
+          "
           [class.selected-row]="
             row.id_action ===
             selectedCultureAction?.id_action
@@ -964,6 +1009,7 @@
 
           <app-culture-action-details
             [actionId]="selectedCultureAction.id_action"
+            [actionTypeCode]="selectedCultureAction.code_action_type"
             [refreshKey]="cultureActionDetailsRefreshKey"
             (hideDetails)="hideSelectedCultureActionDetails()"
           >

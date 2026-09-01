@@ -50,6 +50,10 @@ import {
   CommonService
 } from '@geonature_common/service/common.service';
 
+import {
+  Observable
+} from 'rxjs';
+
 @Component({
   selector: 'app-culture-details',
   templateUrl: './culture-details.component.html',
@@ -112,21 +116,18 @@ export class CultureDetailsComponent
 
 
   private readonly cultureActionTypeFilterOrder = [
+    'Transplantation Repiquage',
+    'Transplantation Rempotage',
+    'Transplantation Plantation',
     'Transplantation',
     'Observation',
     'Traitement',
     'Prélèvement'
   ];
 
-  private readonly cultureActionTypeCodeOrder = [
-    'transp',
-    'obs',
-    'tracult',
-    'prel'
-  ];
-
   displayedActionColumns: string[] = [
     'date_start',
+    'date_end',
     'action_type',
     'actor',
     'actions'
@@ -464,6 +465,45 @@ export class CultureDetailsComponent
       });
   }
 
+
+  public getCultureActionTypeDisplayValue(
+    action: any
+  ): string {
+
+    const actionType =
+      action?.action_type_label ||
+      action?.label_action_type ||
+      '-';
+
+
+    const actionCode =
+      String(
+        action?.code_action_type ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if (actionCode !== 'transp') {
+      return actionType;
+    }
+
+
+    const transplantationType =
+      String(
+        action?.transplantation_type_label ||
+        ''
+      )
+        .trim();
+
+
+    return transplantationType
+      ? `${actionType} ${transplantationType}`
+      : actionType;
+  }
+
+
   private getCultureActionDateKey(
     value: any
   ): string {
@@ -560,8 +600,9 @@ export class CultureDetailsComponent
         actionsForOptions
           .map(
             action =>
-              action.action_type_label ||
-              '-'
+              this.getCultureActionTypeDisplayValue(
+                action
+              )
           )
           .filter(
             label =>
@@ -653,34 +694,42 @@ export class CultureDetailsComponent
             );
 
         } else if (
+          active === 'date_end'
+        ) {
+
+          valueA =
+            this.getCultureActionDateTimestamp(
+              actionA.date_end
+            );
+
+          valueB =
+            this.getCultureActionDateTimestamp(
+              actionB.date_end
+            );
+
+        } else if (
           active === 'action_type'
         ) {
 
-          const codeA =
-            String(
-              actionA.code_action_type ||
-              ''
-            )
-              .trim()
-              .toLowerCase();
+          const actionTypeA =
+            this.getCultureActionTypeDisplayValue(
+              actionA
+            );
 
-          const codeB =
-            String(
-              actionB.code_action_type ||
-              ''
-            )
-              .trim()
-              .toLowerCase();
+          const actionTypeB =
+            this.getCultureActionTypeDisplayValue(
+              actionB
+            );
 
           const indexA =
             this
-              .cultureActionTypeCodeOrder
-              .indexOf(codeA);
+              .cultureActionTypeFilterOrder
+              .indexOf(actionTypeA);
 
           const indexB =
             this
-              .cultureActionTypeCodeOrder
-              .indexOf(codeB);
+              .cultureActionTypeFilterOrder
+              .indexOf(actionTypeB);
 
 
           valueA =
@@ -812,8 +861,9 @@ export class CultureDetailsComponent
         action => {
 
           const actionType =
-            action.action_type_label ||
-            '-';
+            this.getCultureActionTypeDisplayValue(
+              action
+            );
 
 
           return (
@@ -1004,7 +1054,19 @@ export class CultureDetailsComponent
 
             codeCulture:
               this.culture?.code_culture ||
-              null
+              null,
+
+            cultureDateStart:
+              this.culture?.date_start ||
+              null,
+
+            cultureHasSource: !!(
+              this.culture?.id_sowing ||
+              this.culture?.id_test
+            ),
+
+            isFirstCultureAction:
+              !this.hasCultureActions
           }
         }
       );
@@ -1027,20 +1089,67 @@ export class CultureDetailsComponent
 
     if (
       !this.idCulture ||
-      !action?.id_action ||
-      action?.code_action_type !== 'transp'
+      !action?.id_action
     ) {
       return;
     }
 
 
-    this.cultureService
-      .getCultureTransplantation(
-        Number(action.id_action)
+    const actionCode =
+      String(
+        action?.code_action_type ||
+        ''
       )
+        .trim()
+        .toLowerCase();
+
+
+    let actionRequest: Observable<any>;
+
+
+    switch (actionCode) {
+
+      case 'transp':
+        actionRequest =
+          this.cultureService
+            .getCultureTransplantation(
+              Number(action.id_action)
+            );
+        break;
+
+      case 'obs':
+        actionRequest =
+          this.cultureService
+            .getCultureObservation(
+              Number(action.id_action)
+            );
+        break;
+
+      case 'tracult':
+        actionRequest =
+          this.cultureService
+            .getCultureTreatment(
+              Number(action.id_action)
+            );
+        break;
+
+      case 'prel':
+        actionRequest =
+          this.cultureService
+            .getCultureSampling(
+              Number(action.id_action)
+            );
+        break;
+
+      default:
+        return;
+    }
+
+
+    actionRequest
       .subscribe({
 
-        next: transplantation => {
+        next: actionDetails => {
 
           const dialogRef =
             this.dialog.open(
@@ -1064,6 +1173,21 @@ export class CultureDetailsComponent
                       ?.code_culture ||
                     null,
 
+                  cultureDateStart:
+                    this.culture
+                      ?.date_start ||
+                    null,
+
+                  cultureHasSource: !!(
+                    this.culture?.id_sowing ||
+                    this.culture?.id_test
+                  ),
+
+                  isInitialCultureAction: !!(
+                    action
+                      ?.is_initial_culture_action
+                  ),
+
                   idAction:
                     Number(
                       action.id_action
@@ -1071,8 +1195,11 @@ export class CultureDetailsComponent
 
                   edit: true,
 
-                  action:
-                    transplantation
+                  action: {
+                    ...actionDetails,
+                    code_action_type:
+                      actionCode
+                  }
                 }
               }
             );
@@ -1195,9 +1322,23 @@ export class CultureDetailsComponent
     action: any
   ): void {
 
+    const actionCode =
+      String(
+        action?.code_action_type ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
     if (
       !action?.id_action ||
-      action?.code_action_type !== 'transp'
+      ![
+        'transp',
+        'obs',
+        'tracult',
+        'prel'
+      ].includes(actionCode)
     ) {
       return;
     }
@@ -1218,8 +1359,19 @@ export class CultureDetailsComponent
       this.actionDataSource?.data || []
     ).filter(
       action =>
-        action?.code_action_type ===
-        'transp'
+        [
+          'transp',
+          'obs',
+          'tracult',
+          'prel'
+        ].includes(
+          String(
+            action?.code_action_type ||
+            ''
+          )
+            .trim()
+            .toLowerCase()
+        )
     );
   }
 
@@ -1468,6 +1620,44 @@ export class CultureDetailsComponent
     }
 
 
+    if (
+      action?.is_initial_culture_action &&
+      this.allCultureActions.length > 1
+    ) {
+
+      const cultureCode =
+        this.culture?.code_culture ||
+        '';
+
+      const remainingActionCount =
+        this.allCultureActions.length - 1;
+
+      const actionLabel =
+        remainingActionCount > 1
+          ? 'autres actions liées'
+          : 'autre action liée';
+
+
+      this.toast.translateToaster(
+        'warning',
+        `Suppression impossible : la transplantation initiale de la culture ${
+          this.toBoldText(
+            cultureCode
+          )
+        } doit être la dernière action supprimée. Supprimez d'abord les ${
+          this.toBoldText(
+            String(
+              remainingActionCount
+            )
+          )
+        } ${actionLabel} à cette culture.`
+      );
+
+
+      return;
+    }
+
+
     const actionType =
       action.action_type_label ||
       action.label_action_type ||
@@ -1543,6 +1733,51 @@ export class CultureDetailsComponent
             },
 
             error: (err) => {
+
+              if (
+                err?.status === 409 &&
+                err?.error
+                  ?.initial_transplantation
+              ) {
+
+                const cultureCode =
+                  err?.error?.code_culture ||
+                  this.culture
+                    ?.code_culture ||
+                  '';
+
+                const remainingActionCount =
+                  Number(
+                    err?.error
+                      ?.remaining_action_count ||
+                    0
+                  );
+
+                const actionLabel =
+                  remainingActionCount > 1
+                    ? 'autres actions liées'
+                    : 'autre action liée';
+
+
+                this.toast.translateToaster(
+                  'warning',
+                  `Suppression impossible : la transplantation initiale de la culture ${
+                    this.toBoldText(
+                      cultureCode
+                    )
+                  } doit être la dernière action supprimée. Supprimez d'abord les ${
+                    this.toBoldText(
+                      String(
+                        remainingActionCount
+                      )
+                    )
+                  } ${actionLabel} à cette culture.`
+                );
+
+
+                return;
+              }
+
               console.error(
                 'Erreur lors de la suppression de l’action de Culture :',
                 err

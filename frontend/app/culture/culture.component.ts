@@ -345,7 +345,16 @@ export class CultureComponent implements OnInit {
         next: (tests) => {
 
           this.availableTests =
-            tests || [];
+            (tests || []).filter(
+              test =>
+                String(
+                  test?.test_type_code ||
+                  ''
+                )
+                  .trim()
+                  .toLowerCase() ===
+                'ger'
+            );
         },
 
         error: (error) => {

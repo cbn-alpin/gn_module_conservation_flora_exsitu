@@ -1020,15 +1020,26 @@ class CultureRepository:
                 )
 
         if id_test:
-            test = TTest.query.filter_by(
-                id_test=id_test,
-                id_material=id_material
-            ).first()
+            test = (
+                db.session.query(TTest)
+                .join(
+                    TNomenclatures,
+                    TTest.id_test_type ==
+                    TNomenclatures.id_nomenclature
+                )
+                .filter(
+                    TTest.id_test == id_test,
+                    TTest.id_material == id_material,
+                    TNomenclatures.cd_nomenclature == 'ger'
+                )
+                .first()
+            )
 
             if not test:
                 raise ValueError(
-                    "Le test sélectionné n'existe pas "
-                    "ou n'appartient pas à ce matériel"
+                    "Le test sélectionné n'existe pas, "
+                    "n'appartient pas à ce matériel "
+                    "ou n'est pas un test de germination"
                 )
 
     @staticmethod
@@ -1057,6 +1068,60 @@ class CultureRepository:
             )
 
         return code_culture
+
+    @staticmethod
+    def get_initial_action(id_culture: int):
+        return (
+            db.session.query(TAction)
+            .filter(
+                TAction.id_culture == id_culture
+            )
+            .order_by(
+                TAction.meta_create_date.asc(),
+                TAction.id_action.asc()
+            )
+            .first()
+        )
+
+    @staticmethod
+    def has_initial_transplantation(
+        id_culture: int
+    ) -> bool:
+        initial_action = (
+            CultureRepository
+            .get_initial_action(id_culture)
+        )
+
+        if not initial_action:
+            return False
+
+        return (
+            db.session.query(
+                TCultureActionTransplantation
+            )
+            .filter(
+                TCultureActionTransplantation.id_action ==
+                initial_action.id_action
+            )
+            .first()
+            is not None
+        )
+
+    @staticmethod
+    def require_initial_transplantation(
+        id_culture: int
+    ) -> None:
+        if not (
+            CultureRepository
+            .has_initial_transplantation(
+                id_culture
+            )
+        ):
+            raise ValueError(
+                "La première action d'une culture "
+                "doit obligatoirement être "
+                "une transplantation."
+            )
 
     def create(self, id_material: int, data: dict):
         try:
@@ -1456,6 +1521,50 @@ class CultureRepository:
                 id_test
             )
 
+            initial_action = (
+                self.get_initial_action(
+                    id_culture
+                )
+            )
+
+            if initial_action:
+                initial_transplantation = (
+                    db.session.query(
+                        TCultureActionTransplantation
+                    )
+                    .filter(
+                        TCultureActionTransplantation.id_action ==
+                        initial_action.id_action
+                    )
+                    .first()
+                )
+
+                if initial_transplantation:
+                    if (
+                        initial_action.date_end
+                        and initial_action.date_end < date_start
+                    ):
+                        raise ValueError(
+                            "La date de début de la culture "
+                            "ne peut pas être postérieure "
+                            "à la date de fin de sa "
+                            "transplantation initiale."
+                        )
+
+                    initial_action.date_start = (
+                        date_start
+                    )
+
+                    initial_action.meta_update_by = (
+                        payload.get(
+                            "meta_update_by"
+                        )
+                    )
+
+                    initial_action.meta_update_date = (
+                        datetime.utcnow()
+                    )
+
             culture.code_culture = code_culture
             culture.date_start = date_start
             culture.date_end = date_end
@@ -1838,8 +1947,25 @@ class ActionRepository:
             TNomenclatures
         )
 
+        TransplantationType = aliased(
+            TNomenclatures
+        )
+
         Actor = aliased(
             User
+        )
+
+        initial_action = (
+            CultureRepository
+            .get_initial_action(
+                id_culture
+            )
+        )
+
+        initial_action_id = (
+            initial_action.id_action
+            if initial_action
+            else None
         )
 
         results = (
@@ -1854,6 +1980,12 @@ class ActionRepository:
                 ActionType.label_default.label(
                     "label_action_type"
                 ),
+                TransplantationType.label_fr.label(
+                    "transplantation_type_label_fr"
+                ),
+                TransplantationType.label_default.label(
+                    "transplantation_type_label_default"
+                ),
                 Actor.nom_role.label(
                     "nom_actor"
                 ),
@@ -1865,6 +1997,16 @@ class ActionRepository:
                 ActionType,
                 TAction.id_action_type ==
                 ActionType.id_nomenclature
+            )
+            .outerjoin(
+                TCultureActionTransplantation,
+                TCultureActionTransplantation.id_action ==
+                TAction.id_action
+            )
+            .outerjoin(
+                TransplantationType,
+                TransplantationType.id_nomenclature ==
+                TCultureActionTransplantation.id_type
             )
             .outerjoin(
                 Actor,
@@ -1910,6 +2052,18 @@ class ActionRepository:
 
                 "label_action_type":
                     row.label_action_type,
+
+                "transplantation_type_label": (
+                    row.transplantation_type_label_fr
+                    or row.transplantation_type_label_default
+                ),
+
+                "is_initial_culture_action": (
+                    row.id_action ==
+                    initial_action_id
+                    and row.code_action_type ==
+                    "transp"
+                ),
 
                 "label_actor": (
                     f"{row.prenom_actor or ''} "
@@ -2320,6 +2474,27 @@ class ActionRepository:
         ]
 
 class CultureActionTransplantationRepository:
+    @staticmethod
+    def _get_transplantation_type_code(
+        id_type
+    ):
+        if not id_type:
+            return None
+
+        return db.session.execute(
+            text("""
+                SELECT n.cd_nomenclature
+                FROM ref_nomenclatures.t_nomenclatures n
+                JOIN ref_nomenclatures.bib_nomenclatures_types t
+                    ON t.id_type = n.id_type
+                WHERE t.mnemonique = 'CFE_TRANSPLANTATION_TYPE'
+                AND n.id_nomenclature = :id_type
+            """),
+            {
+                "id_type": id_type
+            }
+        ).scalar()
+
     def create_with_action(
         self,
         id_culture: int,
@@ -2328,6 +2503,17 @@ class CultureActionTransplantationRepository:
         meta_create_by: int
     ):
         try:
+            culture = (
+                TCulture.query.get(
+                    id_culture
+                )
+            )
+
+            if not culture:
+                raise ValueError(
+                    "Culture non trouvée."
+                )
+
             id_action_type = db.session.execute(
                 text("""
                     SELECT n.id_nomenclature
@@ -2344,22 +2530,113 @@ class CultureActionTransplantationRepository:
                     "Le type d'action Transplantation est introuvable."
                 )
 
-            date_start = action_data.get(
-                "date_start"
+            initial_action = (
+                CultureRepository
+                .get_initial_action(
+                    id_culture
+                )
             )
+
+            is_initial_action = (
+                initial_action is None
+            )
+
+            specific_data = dict(
+                transplantation_data or {}
+            )
+
+            id_type = (
+                specific_data.get(
+                    "id_type"
+                )
+            )
+
+            transplantation_type_code = (
+                self._get_transplantation_type_code(
+                    id_type
+                )
+            )
+
+            if is_initial_action:
+                if not transplantation_type_code:
+                    raise ValueError(
+                        "Le type de transplantation "
+                        "est obligatoire pour la "
+                        "première action de culture."
+                    )
+
+                if (
+                    culture.id_sowing is not None
+                    or culture.id_test is not None
+                ):
+                    allowed_codes = {
+                        "repiq"
+                    }
+                else:
+                    allowed_codes = {
+                        "remp",
+                        "plant"
+                    }
+
+                if (
+                    transplantation_type_code
+                    not in allowed_codes
+                ):
+                    raise ValueError(
+                        "Le type de transplantation "
+                        "sélectionné n'est pas autorisé "
+                        "pour la transplantation initiale."
+                    )
+
+                date_start = (
+                    culture.date_start
+                )
+
+            else:
+                if (
+                    transplantation_type_code ==
+                    "repiq"
+                ):
+                    raise ValueError(
+                        "Le repiquage est réservé "
+                        "à la première action "
+                        "de transplantation de la culture."
+                    )
+
+                date_start = action_data.get(
+                    "date_start"
+                )
 
             date_end = action_data.get(
                 "date_end"
             )
 
             if isinstance(date_start, str):
-                date_start = isoparse(
-                    date_start
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
                 )
 
             if isinstance(date_end, str):
-                date_end = isoparse(
-                    date_end
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
                 )
 
             action = TAction(
@@ -2377,10 +2654,6 @@ class CultureActionTransplantationRepository:
 
             db.session.add(action)
             db.session.flush()
-
-            specific_data = dict(
-                transplantation_data or {}
-            )
 
             specific_data.pop(
                 "id_action",
@@ -2613,6 +2886,17 @@ class CultureActionTransplantationRepository:
             ):
                 return None
 
+            culture = (
+                TCulture.query.get(
+                    action.id_culture
+                )
+            )
+
+            if not culture:
+                raise ValueError(
+                    "Culture non trouvée."
+                )
+
             action_data = dict(
                 action_data or {}
             )
@@ -2621,10 +2905,82 @@ class CultureActionTransplantationRepository:
                 transplantation_data or {}
             )
 
-            date_start = action_data.get(
-                "date_start",
-                action.date_start
+            initial_action = (
+                CultureRepository
+                .get_initial_action(
+                    action.id_culture
+                )
             )
+
+            is_initial_action = (
+                initial_action is not None
+                and initial_action.id_action ==
+                id_action
+            )
+
+            selected_id_type = (
+                transplantation_data.get(
+                    "id_type",
+                    transplantation.id_type
+                )
+            )
+
+            transplantation_type_code = (
+                self._get_transplantation_type_code(
+                    selected_id_type
+                )
+            )
+
+            if is_initial_action:
+                if not transplantation_type_code:
+                    raise ValueError(
+                        "Le type de transplantation "
+                        "est obligatoire pour la "
+                        "transplantation initiale."
+                    )
+
+                if (
+                    culture.id_sowing is not None
+                    or culture.id_test is not None
+                ):
+                    allowed_codes = {
+                        "repiq"
+                    }
+                else:
+                    allowed_codes = {
+                        "remp",
+                        "plant"
+                    }
+
+                if (
+                    transplantation_type_code
+                    not in allowed_codes
+                ):
+                    raise ValueError(
+                        "Le type de transplantation "
+                        "sélectionné n'est pas autorisé "
+                        "pour la transplantation initiale."
+                    )
+
+                date_start = (
+                    culture.date_start
+                )
+
+            else:
+                if (
+                    transplantation_type_code ==
+                    "repiq"
+                ):
+                    raise ValueError(
+                        "Le repiquage est réservé "
+                        "à la transplantation initiale "
+                        "de la culture."
+                    )
+
+                date_start = action_data.get(
+                    "date_start",
+                    action.date_start
+                )
 
             date_end = action_data.get(
                 "date_end",
@@ -2732,6 +3088,10 @@ class CultureActionObservationRepository:
         meta_create_by: int
     ):
         try:
+            CultureRepository.require_initial_transplantation(
+                id_culture
+            )
+
             id_action_type = db.session.execute(
                 text("""
                     SELECT n.id_nomenclature
@@ -3112,6 +3472,10 @@ class CultureActionTreatmentRepository:
         meta_create_by: int
     ):
         try:
+            CultureRepository.require_initial_transplantation(
+                id_culture
+            )
+
             id_action_type = db.session.execute(
                 text("""
                     SELECT n.id_nomenclature
@@ -3502,6 +3866,10 @@ class CultureActionSamplingRepository:
         meta_create_by: int
     ):
         try:
+            CultureRepository.require_initial_transplantation(
+                id_culture
+            )
+
             id_action_type = db.session.execute(
                 text("""
                     SELECT n.id_nomenclature

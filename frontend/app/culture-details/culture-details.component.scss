@@ -816,7 +816,11 @@ small {
 :host ::ng-deep
 .culture-actions-wrapper.with-action-details
 .culture-actions-table
-.mat-column-date_start {
+.mat-column-date_start,
+:host ::ng-deep
+.culture-actions-wrapper.with-action-details
+.culture-actions-table
+.mat-column-date_end {
   width: 120px;
   min-width: 120px;
   max-width: 120px;
@@ -1317,6 +1321,44 @@ small {
 }
 
 
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.initial-culture-action-row
+.mat-mdc-cell {
+  background-color:
+    #f4ece8 !important;
+}
+
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.initial-culture-action-row:hover
+.mat-mdc-cell,
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.initial-culture-action-row.selected-row
+.mat-mdc-cell {
+  background-color:
+    #efe1db !important;
+}
+
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.initial-culture-action-row
+.mat-mdc-cell:first-child {
+  box-shadow:
+    inset 5px 0 0 #6d4c41;
+}
+
+:host ::ng-deep
+.culture-actions-table
+.culture-action-row.initial-culture-action-row
+.culture-action-type-pill {
+  color: #4e342e;
+  background-color: #efebe9;
+  border-color: #8d6e63;
+}
+
+
 /* Date */
 
 .culture-action-date-pill {
@@ -1387,11 +1429,14 @@ small {
    LARGEURS COLONNES = SEMIS
    ========================================================= */
 
-/* Début */
+/* Début / Fin */
 
 :host ::ng-deep
 .culture-actions-table
-.mat-column-date_start {
+.mat-column-date_start,
+:host ::ng-deep
+.culture-actions-table
+.mat-column-date_end {
   width: 130px;
   min-width: 130px;
   max-width: 130px;

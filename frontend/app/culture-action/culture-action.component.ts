@@ -21,6 +21,10 @@ import { FrenchDateAdapter } from '../services/french-date-adapter';
 interface CultureActionDialogData {
   idCulture: number;
   codeCulture?: string | null;
+  cultureDateStart?: string | null;
+  cultureHasSource?: boolean;
+  isFirstCultureAction?: boolean;
+  isInitialCultureAction?: boolean;
   idAction?: number | null;
   edit?: boolean;
   action?: any;
@@ -95,6 +99,7 @@ export class CultureActionComponent implements OnInit {
   ngOnInit(): void {
     this.dialogRef.disableClose = true;
     this.observersListCode = this.cfg.getObsCode();
+    this.configureInitialCultureActionRules();
     this.loadNomenclatures();
 
     this.cultureActionForm
@@ -183,6 +188,108 @@ export class CultureActionComponent implements OnInit {
       this.getSelectedCultureActionCode() ===
       'prel'
     );
+  }
+
+
+  get isInitialCultureActionContext(): boolean {
+    return !!(
+      this.dialogData?.isFirstCultureAction ||
+      this.dialogData?.isInitialCultureAction
+    );
+  }
+
+
+  private configureInitialCultureActionRules(): void {
+
+    const dateStartControl =
+      this.cultureActionForm
+        .get('date_start');
+
+    const transplantationTypeControl =
+      this.cultureActionForm
+        .get('id_type');
+
+
+    if (this.isInitialCultureActionContext) {
+
+      transplantationTypeControl
+        ?.setValidators(
+          Validators.required
+        );
+
+      dateStartControl
+        ?.setValue(
+          this.parseDateForForm(
+            this.dialogData
+              ?.cultureDateStart
+          ),
+          {
+            emitEvent: false
+          }
+        );
+
+      dateStartControl
+        ?.disable({
+          emitEvent: false
+        });
+
+    } else {
+
+      transplantationTypeControl
+        ?.clearValidators();
+
+      dateStartControl
+        ?.enable({
+          emitEvent: false
+        });
+    }
+
+
+    transplantationTypeControl
+      ?.updateValueAndValidity({
+        emitEvent: false
+      });
+  }
+
+
+  private applyInitialCultureActionDefaults(): void {
+
+    if (
+      !this.dialogData?.isFirstCultureAction ||
+      this.dialogData?.edit
+    ) {
+      return;
+    }
+
+
+    const transplantationActionType =
+      this.cultureActionTypeOptions
+        .find(
+          option =>
+            String(
+              option?.cd_nomenclature ||
+              ''
+            )
+              .trim()
+              .toLowerCase() ===
+            'transp'
+        );
+
+
+    this.cultureActionForm.patchValue({
+      id_action_type:
+        transplantationActionType
+          ?.id_nomenclature ||
+        null,
+
+      date_start:
+        this.parseDateForForm(
+          this.dialogData
+            ?.cultureDateStart
+        )
+    }, {
+      emitEvent: false
+    });
   }
 
 
@@ -300,6 +407,9 @@ export class CultureActionComponent implements OnInit {
           quantity: null,
           remarks: ''
         });
+
+
+        this.applyInitialCultureActionDefaults();
 
 
         this.formSubmitted =
@@ -925,6 +1035,15 @@ export class CultureActionComponent implements OnInit {
           });
 
 
+          if (
+            this.dialogData?.isFirstCultureAction
+          ) {
+            this.dialogData.isFirstCultureAction = false;
+            this.configureInitialCultureActionRules();
+            this.loadNomenclatures();
+          }
+
+
           this.formSubmitted = false;
           this.isSubmitting = false;
 
@@ -1235,7 +1354,11 @@ export class CultureActionComponent implements OnInit {
 
       date_start:
         this.parseDateForForm(
-          action?.date_start
+          this.dialogData
+            ?.isInitialCultureAction
+            ? this.dialogData
+                ?.cultureDateStart
+            : action?.date_start
         ),
 
       date_end:
@@ -1437,12 +1560,18 @@ export class CultureActionComponent implements OnInit {
 
       options => {
 
-        const cultureActionCodes = [
-          'transp',
-          'obs',
-          'tracult',
-          'prel'
-        ];
+        const cultureActionCodes =
+          this.dialogData
+            ?.isFirstCultureAction
+            ? [
+                'transp'
+              ]
+            : [
+                'transp',
+                'obs',
+                'tracult',
+                'prel'
+              ];
 
 
         this.cultureActionTypeOptions =
@@ -1497,14 +1626,48 @@ export class CultureActionComponent implements OnInit {
           this.populateEditForm(
             this.dialogData.action
           );
+        } else {
+          this.applyInitialCultureActionDefaults();
         }
       },
 
       'types d’action de Culture'
     );
+
     this.loadNomenclature(
       'CFE_TRANSPLANTATION_TYPE',
-      options => (this.transplantationTypeOptions = options),
+      options => {
+
+        const allowedCodes =
+          this.isInitialCultureActionContext
+            ? this.dialogData
+                ?.cultureHasSource
+              ? [
+                  'repiq'
+                ]
+              : [
+                  'remp',
+                  'plant'
+                ]
+            : [
+                'remp',
+                'plant'
+              ];
+
+
+        this.transplantationTypeOptions =
+          options.filter(
+            option =>
+              allowedCodes.includes(
+                String(
+                  option?.cd_nomenclature ||
+                  ''
+                )
+                  .trim()
+                  .toLowerCase()
+              )
+          );
+      },
       'types de transplantation'
     );
     this.loadNomenclature(
