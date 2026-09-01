@@ -1446,17 +1446,48 @@ export class CultureActionComponent implements OnInit {
 
 
         this.cultureActionTypeOptions =
-          options.filter(
-            option =>
-              cultureActionCodes.includes(
-                String(
-                  option?.cd_nomenclature ||
-                  ''
+          options
+            .filter(
+              option =>
+                cultureActionCodes.includes(
+                  String(
+                    option?.cd_nomenclature ||
+                    ''
+                  )
+                    .trim()
+                    .toLowerCase()
                 )
-                  .trim()
-                  .toLowerCase()
-              )
-          );
+            )
+            .sort(
+              (optionA, optionB) => {
+
+                const codeA =
+                  String(
+                    optionA?.cd_nomenclature ||
+                    ''
+                  )
+                    .trim()
+                    .toLowerCase();
+
+                const codeB =
+                  String(
+                    optionB?.cd_nomenclature ||
+                    ''
+                  )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+                  cultureActionCodes.indexOf(
+                    codeA
+                  ) -
+                  cultureActionCodes.indexOf(
+                    codeB
+                  )
+                );
+              }
+            );
 
 
         if (

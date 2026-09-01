@@ -2922,7 +2922,8 @@ def get_nomenclatures_by_code_type(code_type):
             db.session.query(
                 TNomenclatures.id_nomenclature,
                 TNomenclatures.label_default,
-                TNomenclatures.cd_nomenclature
+                TNomenclatures.cd_nomenclature,
+                TNomenclatures.hierarchy
             )
             .filter(TNomenclatures.id_type == id_type)
             .order_by(TNomenclatures.hierarchy.asc(), TNomenclatures.id_nomenclature.asc())
@@ -2933,7 +2934,8 @@ def get_nomenclatures_by_code_type(code_type):
             {
                 "id_nomenclature": row.id_nomenclature,
                 "label_default": row.label_default,
-                "cd_nomenclature": row.cd_nomenclature
+                "cd_nomenclature": row.cd_nomenclature,
+                "hierarchy": row.hierarchy
             }
             for row in rows
         ])

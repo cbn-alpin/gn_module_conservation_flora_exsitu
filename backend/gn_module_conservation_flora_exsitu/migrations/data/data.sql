@@ -66,6 +66,58 @@ INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
 ) ;
 
 
+-- Create the "CFE_PHENOLOGICAL_STAGE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_PHENOLOGICAL_STAGE',
+    'Stade phénologique',
+    'Nomenclature des stades phénologiques observés sur une Culture.',
+    'Stade phénologique',
+    'Nomenclature des stades phénologiques observés sur une Culture.',
+    'conservation_flora_exsitu'
+) ;
+
+
+-- Create the "CFE_TRANSPLANTATION_TYPE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_TRANSPLANTATION_TYPE',
+    'Type de transplantation',
+    'Nomenclature des types de transplantation d’une Culture.',
+    'Type de transplantation',
+    'Nomenclature des types de transplantation d’une Culture.',
+    'conservation_flora_exsitu'
+) ;
+
+
+-- Create the "CFE_PHYSIOLOGICAL_STAGE" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_PHYSIOLOGICAL_STAGE',
+    'Stade physiologique',
+    'Nomenclature des stades de développement physiologique d’une Culture.',
+    'Stade physiologique',
+    'Nomenclature des stades de développement physiologique d’une Culture.',
+    'conservation_flora_exsitu'
+) ;
+
+
+-- Create the "CFE_MAIN_LOCATION" nomenclature type
+INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
+    mnemonique, label_default, definition_default, label_fr, definition_fr, source
+) VALUES (
+    'CFE_MAIN_LOCATION',
+    'Localisation principale',
+    'Nomenclature des localisations principales des actions de Culture.',
+    'Localisation principale',
+    'Nomenclature des localisations principales des actions de Culture.',
+    'conservation_flora_exsitu'
+) ;
+
+
 -- Create the "CFE_FORM" nomenclature type
 INSERT INTO ref_nomenclatures.bib_nomenclatures_types (
     mnemonique, label_default, definition_default, label_fr, definition_fr, source

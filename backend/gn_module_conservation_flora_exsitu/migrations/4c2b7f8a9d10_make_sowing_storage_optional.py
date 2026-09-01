@@ -5,6 +5,9 @@ Revises: 308061920435
 Create Date: 2026-04-18 15:00:00
 
 """
+import importlib.resources
+from csv import DictReader
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
@@ -549,49 +552,74 @@ def upgrade():
             WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
         );
 
-        WITH target_type AS (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_PHENOLOGICAL_STAGE'
-        ),
-        source_type AS (
-            SELECT id_type
-            FROM ref_nomenclatures.bib_nomenclatures_types
-            WHERE mnemonique = 'CFE_PHENOLOGY'
-        )
-        INSERT INTO ref_nomenclatures.t_nomenclatures (
-            id_type,
-            cd_nomenclature,
-            mnemonique,
-            label_default,
-            definition_default,
-            label_fr,
-            definition_fr,
-            source,
-            hierarchy
-        )
-        SELECT
-            target_type.id_type,
-            source_nomenclature.cd_nomenclature,
-            source_nomenclature.mnemonique,
-            source_nomenclature.label_default,
-            source_nomenclature.definition_default,
-            source_nomenclature.label_fr,
-            source_nomenclature.definition_fr,
-            'conservation_flora_exsitu',
-            source_nomenclature.hierarchy
-        FROM ref_nomenclatures.t_nomenclatures source_nomenclature
-        JOIN source_type
-            ON source_nomenclature.id_type = source_type.id_type
-        CROSS JOIN target_type
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM ref_nomenclatures.t_nomenclatures existing_nomenclature
-            WHERE existing_nomenclature.id_type = target_type.id_type
-            AND existing_nomenclature.cd_nomenclature =
-                source_nomenclature.cd_nomenclature
-        );
     """)
+
+    with importlib.resources.open_text(
+        "gn_module_conservation_flora_exsitu.migrations.data",
+        "nomenclatures.csv",
+        encoding="UTF-8"
+    ) as csvfile:
+        phenological_stages = [
+            row
+            for row in DictReader(
+                csvfile,
+                delimiter=";"
+            )
+            if row.get("type_nomenclature_code") ==
+            "CFE_PHENOLOGICAL_STAGE"
+        ]
+
+    bind = op.get_bind()
+
+    for stage in phenological_stages:
+        bind.execute(
+            sa.text(
+                """
+                INSERT INTO ref_nomenclatures.t_nomenclatures (
+                    id_type,
+                    cd_nomenclature,
+                    mnemonique,
+                    label_default,
+                    definition_default,
+                    label_fr,
+                    definition_fr,
+                    source,
+                    hierarchy
+                )
+                SELECT
+                    target_type.id_type,
+                    :cd_nomenclature,
+                    :mnemonique,
+                    :label_default,
+                    :definition_default,
+                    :label_fr,
+                    :definition_fr,
+                    :source,
+                    :hierarchy
+                FROM ref_nomenclatures.bib_nomenclatures_types target_type
+                WHERE target_type.mnemonique =
+                    'CFE_PHENOLOGICAL_STAGE'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM ref_nomenclatures.t_nomenclatures existing_nomenclature
+                    WHERE existing_nomenclature.id_type =
+                        target_type.id_type
+                    AND existing_nomenclature.cd_nomenclature =
+                        :cd_nomenclature
+                )
+                """
+            ),
+            {
+                "cd_nomenclature": stage["cd_nomenclature"],
+                "mnemonique": stage["mnemonique"],
+                "label_default": stage["label_default"],
+                "definition_default": stage["definition_default"],
+                "label_fr": stage["label_fr"],
+                "definition_fr": stage["definition_fr"],
+                "source": stage["source"],
+                "hierarchy": stage["hierarchy"]
+            }
+        )
 
     # Localisations principales des actions de Culture
     op.execute("""

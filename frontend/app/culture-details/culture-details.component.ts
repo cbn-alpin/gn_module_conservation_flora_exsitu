@@ -118,6 +118,13 @@ export class CultureDetailsComponent
     'Prélèvement'
   ];
 
+  private readonly cultureActionTypeCodeOrder = [
+    'transp',
+    'obs',
+    'tracult',
+    'prel'
+  ];
+
   displayedActionColumns: string[] = [
     'date_start',
     'action_type',
@@ -649,23 +656,31 @@ export class CultureDetailsComponent
           active === 'action_type'
         ) {
 
-          const typeA =
-            actionA.action_type_label ||
-            '';
+          const codeA =
+            String(
+              actionA.code_action_type ||
+              ''
+            )
+              .trim()
+              .toLowerCase();
 
-          const typeB =
-            actionB.action_type_label ||
-            '';
+          const codeB =
+            String(
+              actionB.code_action_type ||
+              ''
+            )
+              .trim()
+              .toLowerCase();
 
           const indexA =
             this
-              .cultureActionTypeFilterOrder
-              .indexOf(typeA);
+              .cultureActionTypeCodeOrder
+              .indexOf(codeA);
 
           const indexB =
             this
-              .cultureActionTypeFilterOrder
-              .indexOf(typeB);
+              .cultureActionTypeCodeOrder
+              .indexOf(codeB);
 
 
           valueA =
