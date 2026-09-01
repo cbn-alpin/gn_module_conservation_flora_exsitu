@@ -154,7 +154,18 @@
 
           <mat-form-field
             appearance="outline"
-            class="full-width"
+            class="
+              full-width
+              start-date-required
+              shake-wrapper
+            "
+            [hideRequiredMarker]="false"
+            [class.shake-field]="
+              shakeActionStartDateField
+            "
+            [class.shake-error]="
+              shakeActionStartDateField
+            "
           >
 
             <mat-label>Date de début</mat-label>
@@ -166,6 +177,9 @@
               "
               formControlName="date_start"
               required
+              (dateChange)="
+                refreshCultureActionDateRangeError()
+              "
             >
 
             <mat-datepicker-toggle
@@ -181,12 +195,10 @@
 
             <mat-error
               *ngIf="
-                cultureActionForm
-                  .get('date_start')
-                  ?.hasError('required')
+                hasCultureActionStartDateRequiredError()
               "
             >
-              La date de début est obligatoire.
+              La date de début est obligatoire pour enregistrer une action de culture.
             </mat-error>
 
           </mat-form-field>
@@ -198,7 +210,17 @@
 
           <mat-form-field
             appearance="outline"
-            class="full-width"
+            class="
+              full-width
+              end-date-business-rule
+              shake-wrapper
+            "
+            [class.shake-field]="
+              shakeActionEndDateField
+            "
+            [class.shake-error]="
+              shakeActionEndDateField
+            "
           >
 
             <mat-label>Date de fin</mat-label>
@@ -209,6 +231,9 @@
                 endDatePicker
               "
               formControlName="date_end"
+              (dateChange)="
+                refreshCultureActionDateRangeError()
+              "
             >
 
             <mat-datepicker-toggle
@@ -222,16 +247,17 @@
             >
             </mat-datepicker>
 
+            <mat-error
+              *ngIf="
+                hasCultureActionEndDateRangeError()
+              "
+            >
+              La date de fin doit être postérieure ou égale à la date de début.
+            </mat-error>
+
           </mat-form-field>
 
         </div>
-
-      <div
-        class="business-error"
-        *ngIf="cultureActionForm.hasError('dateEndBeforeStart')"
-      >
-        La date de fin doit être postérieure ou égale à la date de début.
-      </div>
 
       <div class="action-section-header">
 
@@ -349,7 +375,10 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field
+            appearance="outline"
+            class="substrate-percentage-field"
+          >
             <mat-label>Pourcentage</mat-label>
             <input
               matInput
@@ -358,7 +387,12 @@
               max="100"
               formControlName="percentage"
             >
-            <span matSuffix>%</span>
+            <span
+              matSuffix
+              class="substrate-percent-suffix"
+            >
+              %
+            </span>
             <mat-error
               *ngIf="
                 substrate.get('percentage')?.hasError('min') ||

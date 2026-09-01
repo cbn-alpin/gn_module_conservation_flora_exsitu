@@ -41,6 +41,8 @@ export class CultureActionComponent implements OnInit {
   public mainLocationOptions: any[] = [];
   public isSubmitting = false;
   public formSubmitted = false;
+  public shakeActionStartDateField = false;
+  public shakeActionEndDateField = false;
 
   private cancelDialogOpen = false;
 
@@ -375,8 +377,154 @@ export class CultureActionComponent implements OnInit {
   }
 
 
+  private triggerActionStartDateFieldShake(): void {
+    this.shakeActionStartDateField = false;
+
+    setTimeout(() => {
+      this.shakeActionStartDateField = true;
+
+      setTimeout(() => {
+        this.shakeActionStartDateField = false;
+      }, 400);
+    }, 0);
+  }
+
+
+  private triggerActionEndDateFieldShake(): void {
+    this.shakeActionEndDateField = false;
+
+    setTimeout(() => {
+      this.shakeActionEndDateField = true;
+
+      setTimeout(() => {
+        this.shakeActionEndDateField = false;
+      }, 400);
+    }, 0);
+  }
+
+
+  public hasCultureActionStartDateRequiredError(): boolean {
+    return !!(
+      this.formSubmitted &&
+      this.cultureActionForm
+        .get('date_start')
+        ?.hasError('required')
+    );
+  }
+
+
+  public hasCultureActionEndDateRangeError(): boolean {
+    return !!(
+      this.formSubmitted &&
+      this.cultureActionForm
+        .get('date_end')
+        ?.hasError('dateEndBeforeStart')
+    );
+  }
+
+
+  public refreshCultureActionDateRangeError(): void {
+    const dateStartControl =
+      this.cultureActionForm
+        .get('date_start');
+
+    const dateEndControl =
+      this.cultureActionForm
+        .get('date_end');
+
+
+    if (!dateEndControl) {
+      return;
+    }
+
+
+    const currentErrors = {
+      ...(dateEndControl.errors || {})
+    };
+
+    delete currentErrors[
+      'dateEndBeforeStart'
+    ];
+
+
+    const startValue =
+      dateStartControl?.value;
+
+    const endValue =
+      dateEndControl.value;
+
+
+    if (
+      startValue &&
+      endValue
+    ) {
+      const startDate =
+        new Date(startValue);
+
+      const endDate =
+        new Date(endValue);
+
+
+      if (
+        !Number.isNaN(
+          startDate.getTime()
+        ) &&
+        !Number.isNaN(
+          endDate.getTime()
+        ) &&
+        endDate < startDate
+      ) {
+        currentErrors[
+          'dateEndBeforeStart'
+        ] = true;
+      }
+    }
+
+
+    dateEndControl.setErrors(
+      Object.keys(currentErrors).length
+        ? currentErrors
+        : null
+    );
+  }
+
+
   onSubmit(): void {
     this.formSubmitted = true;
+
+
+    const dateStartControl =
+      this.cultureActionForm
+        .get('date_start');
+
+    const dateEndControl =
+      this.cultureActionForm
+        .get('date_end');
+
+
+    if (
+      dateStartControl?.hasError(
+        'required'
+      )
+    ) {
+      dateStartControl.markAsTouched();
+
+      this.triggerActionStartDateFieldShake();
+    }
+
+
+    this.refreshCultureActionDateRangeError();
+
+
+    if (
+      dateEndControl?.hasError(
+        'dateEndBeforeStart'
+      )
+    ) {
+      dateEndControl.markAsTouched();
+
+      this.triggerActionEndDateFieldShake();
+    }
 
 
     if (
