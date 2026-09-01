@@ -33,26 +33,7 @@
 }
 
 
-.culture-action-associated-banner {
-  display: flex;
-  align-items: center;
 
-  gap: 8px;
-
-  margin: 14px 0;
-  padding: 10px 12px;
-
-  color: #5d4037;
-  background-color: #efebe9;
-
-  border: 1px solid #d7ccc8;
-  border-radius: 8px;
-}
-
-
-.culture-action-associated-banner mat-icon {
-  color: #6d4c41;
-}
 
 
 .culture-action-detail-section {
@@ -183,6 +164,7 @@
 
 .culture-action-details-card {
   border: 1px solid #e1bee7;
+  border-radius: 16px;
 
   background:
     linear-gradient(
@@ -201,8 +183,6 @@
   position: relative;
 
   justify-content: center;
-
-  min-height: 62px;
 
   color: #ffffff;
 
@@ -223,6 +203,9 @@ mat-card-title {
 
   color: #ffffff;
 
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
   text-align: center;
 }
 
@@ -236,6 +219,14 @@ mat-card-title {
 
   background-color:
     rgba(255, 255, 255, 0.96) !important;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+
+  box-shadow: none;
+
+  font-weight: 600;
 }
 
 
@@ -246,20 +237,6 @@ mat-card-title {
 }
 
 
-.culture-action-associated-banner {
-  color: #6a1b9a;
-
-  background-color: #f3e5f5;
-
-  border: 1px solid #e1bee7;
-  border-left: 4px solid #8e24aa;
-}
-
-
-.culture-action-associated-banner
-mat-icon {
-  color: #8e24aa;
-}
 
 
 .culture-action-detail-section {
@@ -337,6 +314,10 @@ span {
   box-sizing: border-box;
 
   border-bottom: 1px solid #d7ccc8;
+}
+
+.culture-action-form {
+  padding: 8px;
 }
 
 
@@ -451,7 +432,7 @@ span {
   display: grid;
 
   grid-template-columns:
-    220px minmax(0, 1fr);
+    210px minmax(0, 1fr);
 
   column-gap: 16px;
   align-items: center;
@@ -490,6 +471,33 @@ span {
   word-break: break-word;
 }
 
+.culture-action-field-block--physiological-stage {
+  grid-template-columns:
+    minmax(0, 1fr) auto;
+}
+
+
+.culture-action-field-block--physiological-stage label {
+  white-space: normal;
+}
+
+
+.culture-action-field-block--physiological-stage span {
+  justify-self: end;
+
+  text-align: right;
+}
+
+  .culture-action-field-block--physiological-stage {
+    grid-template-columns: 1fr;
+  }
+
+
+  .culture-action-field-block--physiological-stage span {
+    justify-self: start;
+
+    text-align: left;
+  }
 
 .culture-action-field-block:hover {
   background-color: #fbf1ff;
@@ -500,6 +508,7 @@ span {
 
 .culture-action-type-highlight {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
 
@@ -527,6 +536,8 @@ span {
 
 
 .culture-action-type-highlight label {
+  min-width: 160px;
+
   color: #6a1b9a;
 
   font-size: 17px;
@@ -542,6 +553,7 @@ span {
   align-items: center;
   justify-content: center;
 
+  flex: 1;
   min-width: 190px;
 
   padding: 9px 18px;
@@ -566,6 +578,9 @@ span {
     rgba(123, 31, 162, 0.28);
 }
 
+.culture-action-hide-details-button mat-icon {
+  margin-right: 4px;
+}
 
 .culture-action-substrate-table-wrapper {
   width: 100%;

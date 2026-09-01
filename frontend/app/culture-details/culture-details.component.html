@@ -857,6 +857,10 @@
         <tr
           mat-row
           class="culture-action-row"
+          [class.selected-row]="
+            row.id_action ===
+            selectedCultureAction?.id_action
+          "
           *matRowDef="
             let row;
             columns:
@@ -960,7 +964,6 @@
 
           <app-culture-action-details
             [actionId]="selectedCultureAction.id_action"
-            [codeCulture]="culture?.code_culture || null"
             [refreshKey]="cultureActionDetailsRefreshKey"
             (hideDetails)="hideSelectedCultureActionDetails()"
           >

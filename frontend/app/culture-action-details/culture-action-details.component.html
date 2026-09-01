@@ -23,25 +23,7 @@
 
   <mat-card-content>
 
-    <div class="culture-action-associated-banner">
-
-      <mat-icon>
-        local_florist
-      </mat-icon>
-
-      <span>
-        Culture associée
-      </span>
-
-      <strong>
-        {{
-          codeCulture ||
-          '-'
-        }}
-      </strong>
-
-    </div>
-
+    <div class="culture-action-form">
 
     <div
       class="culture-action-loading"
@@ -309,7 +291,7 @@
               </td>
 
               <td>
-                {{ substratePercentageTotal }} %
+                {{ substratePercentageTotal }} % / 100 %
               </td>
 
             </tr>
@@ -357,7 +339,9 @@
       </div>
 
 
-      <div class="culture-action-field-block">
+      <div
+        class="culture-action-field-block culture-action-field-block--physiological-stage"
+      >
 
         <label>
           Phase de développement physiologique :
@@ -461,6 +445,8 @@
       </div>
 
     </ng-container>
+
+    </div>
 
   </mat-card-content>
 

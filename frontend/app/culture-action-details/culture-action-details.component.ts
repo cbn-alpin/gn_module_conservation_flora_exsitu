@@ -3,7 +3,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges
 } from '@angular/core';
@@ -25,13 +24,10 @@ import {
   ]
 })
 export class CultureActionDetailsComponent
-  implements OnInit, OnChanges {
+  implements OnChanges {
 
   @Input()
   actionId: number | null = null;
-
-  @Input()
-  codeCulture: string | null = null;
 
   @Input()
   refreshKey = 0;
@@ -54,28 +50,15 @@ export class CultureActionDetailsComponent
   ) {}
 
 
-  ngOnInit(): void {
-    this.loadDetails();
-  }
-
-
   ngOnChanges(
     changes: SimpleChanges
   ): void {
 
     if (
-      changes['actionId']?.firstChange &&
-      changes['refreshKey']?.firstChange
+      (changes['actionId'] || changes['refreshKey']) &&
+      this.actionId
     ) {
-      return;
-    }
-
-
-    if (
-      changes['actionId'] ||
-      changes['refreshKey']
-    ) {
-      this.loadDetails();
+      this.loadDetails(this.actionId);
     }
   }
 
@@ -139,31 +122,24 @@ export class CultureActionDetailsComponent
   }
 
 
-  private loadDetails(): void {
-
-    if (!this.actionId) {
-
-      this.isLoading = false;
-
-      this.errorMessage =
-        'Identifiant de l’action manquant.';
-
-      return;
-    }
-
-
-    this.isLoading = true;
+  private loadDetails(
+    idAction: number
+  ): void {
 
     this.errorMessage = '';
 
 
     this.cultureService
       .getCultureTransplantation(
-        this.actionId
+        idAction
       )
       .subscribe({
 
         next: (transplantation) => {
+
+          if (this.actionId !== idAction) {
+            return;
+          }
 
           this.transplantation =
             transplantation;
@@ -173,6 +149,10 @@ export class CultureActionDetailsComponent
         },
 
         error: (error) => {
+
+          if (this.actionId !== idAction) {
+            return;
+          }
 
           console.error(
             'Erreur lors du chargement des détails de la transplantation :',

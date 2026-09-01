@@ -733,7 +733,9 @@ export class CultureDetailsComponent
   }
 
 
-  public applyCultureActionFilters(): void {
+  public applyCultureActionFilters(
+    syncSelectedActionPage = true
+  ): void {
 
     const selectedDateFrom =
       this.getCultureActionDateKey(
@@ -862,6 +864,10 @@ export class CultureDetailsComponent
           this.actionPaginator;
 
         this.actionPaginator.firstPage();
+
+        if (syncSelectedActionPage) {
+          this.syncCultureActionPaginatorWithSelectedAction();
+        }
       }
 
     });
@@ -913,11 +919,7 @@ export class CultureDetailsComponent
       sort.direction ||
       'desc';
 
-    if (this.actionPaginator) {
-      this.actionPaginator.firstPage();
-    }
-
-    this.applyCultureActionFilters();
+    this.applyCultureActionFilters(false);
   }
 
 
@@ -1095,6 +1097,85 @@ export class CultureDetailsComponent
   }
 
 
+  private syncCultureActionPaginatorWithSelectedAction(): void {
+
+    if (
+      !this.actionPaginator ||
+      !this.selectedCultureAction
+    ) {
+      return;
+    }
+
+
+    setTimeout(() => {
+
+      if (
+        !this.actionPaginator ||
+        !this.selectedCultureAction
+      ) {
+        return;
+      }
+
+
+      const actionIndex =
+        this.actionDataSource.data
+          .findIndex(
+            action =>
+              action.id_action ===
+              this.selectedCultureAction.id_action
+          );
+
+
+      if (actionIndex < 0) {
+        return;
+      }
+
+
+      const pageSize =
+        this.actionPaginator.pageSize ||
+        this.cultureActionRowPerPage;
+
+      const nextPageIndex =
+        Math.floor(
+          actionIndex / pageSize
+        );
+
+
+      if (
+        this.actionPaginator.pageIndex ===
+        nextPageIndex
+      ) {
+        return;
+      }
+
+
+      const previousPageIndex =
+        this.actionPaginator.pageIndex;
+
+      this.actionPaginator.pageIndex =
+        nextPageIndex;
+
+      this.actionPaginator.length =
+        this.actionDataSource.data.length;
+
+
+      const pageEvent: PageEvent = {
+        previousPageIndex,
+        pageIndex: nextPageIndex,
+        pageSize,
+        length:
+          this.actionDataSource.data.length
+      };
+
+
+      this.actionPaginator.page.emit(
+        pageEvent
+      );
+
+    });
+  }
+
+
   onOpenCultureActionDetails(
     action: any
   ): void {
@@ -1111,6 +1192,8 @@ export class CultureDetailsComponent
 
     this.selectedCultureAction =
       action;
+
+    this.syncCultureActionPaginatorWithSelectedAction();
   }
 
 
