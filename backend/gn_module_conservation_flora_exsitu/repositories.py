@@ -32,7 +32,10 @@ from .models import(
     TStorage,
     TTest,
     TCulture,
-    TCultureActionTransplantation
+    TCultureActionTransplantation,
+    TCultureActionObservation,
+    TCultureActionTreatment,
+    TCultureActionSampling
 )
 
 
@@ -2702,6 +2705,1141 @@ class CultureActionTransplantationRepository:
             )
 
             transplantation.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            db.session.commit()
+
+            return self.get_by_action(
+                id_action
+            )
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
+class CultureActionObservationRepository:
+    def create_with_action(
+        self,
+        id_culture: int,
+        action_data: dict,
+        observation_data: dict,
+        meta_create_by: int
+    ):
+        try:
+            id_action_type = db.session.execute(
+                text("""
+                    SELECT n.id_nomenclature
+                    FROM ref_nomenclatures.t_nomenclatures n
+                    JOIN ref_nomenclatures.bib_nomenclatures_types t
+                        ON t.id_type = n.id_type
+                    WHERE t.mnemonique = 'CFE_ACTION_TYPE'
+                    AND n.cd_nomenclature = 'obs'
+                """)
+            ).scalar()
+
+            if not id_action_type:
+                raise ValueError(
+                    "Le type d'action Observation est introuvable."
+                )
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start"
+            )
+
+            date_end = action_data.get(
+                "date_end"
+            )
+
+            if isinstance(date_start, str):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(date_end, str):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action = TAction(
+                id_culture=id_culture,
+                id_sowing=None,
+                id_test=None,
+                date_start=date_start,
+                date_end=date_end,
+                id_actor=action_data.get(
+                    "id_actor"
+                ),
+                id_action_type=id_action_type,
+                meta_create_by=meta_create_by
+            )
+
+            db.session.add(action)
+            db.session.flush()
+
+            specific_data = dict(
+                observation_data or {}
+            )
+
+            for protected_field in (
+                "id_culture_action_observation",
+                "id_action",
+                "meta_create_by",
+                "meta_create_date",
+                "meta_update_by",
+                "meta_update_date"
+            ):
+                specific_data.pop(
+                    protected_field,
+                    None
+                )
+
+            observation = (
+                TCultureActionObservation(
+                    id_action=action.id_action,
+                    meta_create_by=meta_create_by,
+                    **specific_data
+                )
+            )
+
+            db.session.add(
+                observation
+            )
+
+            db.session.commit()
+
+            return {
+                "action": action.to_dic(),
+                "observation":
+                    observation.to_dic()
+            }
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
+    def get_by_action(
+        self,
+        id_action: int
+    ):
+        PhenologicalStage = aliased(
+            TNomenclatures
+        )
+
+        Actor = aliased(
+            User
+        )
+
+        row = (
+            db.session.query(
+                TCultureActionObservation,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.id_actor,
+
+                PhenologicalStage.label_fr.label(
+                    "phenological_stage_label_fr"
+                ),
+                PhenologicalStage.label_default.label(
+                    "phenological_stage_label_default"
+                ),
+
+                Actor.prenom_role.label(
+                    "actor_first_name"
+                ),
+                Actor.nom_role.label(
+                    "actor_last_name"
+                )
+            )
+            .join(
+                TAction,
+                TAction.id_action ==
+                TCultureActionObservation.id_action
+            )
+            .outerjoin(
+                PhenologicalStage,
+                PhenologicalStage.id_nomenclature ==
+                TCultureActionObservation
+                .id_phenological_stage
+            )
+            .outerjoin(
+                Actor,
+                Actor.id_role ==
+                TAction.id_actor
+            )
+            .filter(
+                TCultureActionObservation.id_action ==
+                id_action
+            )
+            .first()
+        )
+
+        if not row:
+            return None
+
+        observation = row[0]
+
+        result = (
+            observation.to_dic()
+        )
+
+        result.update({
+            "date_start": (
+                row.date_start.isoformat()
+                if row.date_start
+                else None
+            ),
+
+            "date_end": (
+                row.date_end.isoformat()
+                if row.date_end
+                else None
+            ),
+
+            "id_actor":
+                row.id_actor,
+
+            "actor_label": (
+                f"{row.actor_first_name or ''} "
+                f"{row.actor_last_name or ''}"
+            ).strip() or None,
+
+            "phenological_stage_label": (
+                row.phenological_stage_label_fr
+                or
+                row.phenological_stage_label_default
+            )
+        })
+
+        return result
+
+
+    def update_with_action(
+        self,
+        id_action: int,
+        action_data: dict,
+        observation_data: dict,
+        meta_update_by: int
+    ):
+        try:
+            action = (
+                db.session.query(
+                    TAction
+                )
+                .filter(
+                    TAction.id_action ==
+                    id_action,
+                    TAction.id_culture.isnot(
+                        None
+                    )
+                )
+                .first()
+            )
+
+            observation = (
+                db.session.query(
+                    TCultureActionObservation
+                )
+                .filter(
+                    TCultureActionObservation
+                    .id_action ==
+                    id_action
+                )
+                .first()
+            )
+
+            if (
+                not action
+                or not observation
+            ):
+                return None
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            observation_data = dict(
+                observation_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start",
+                action.date_start
+            )
+
+            date_end = action_data.get(
+                "date_end",
+                action.date_end
+            )
+
+            if isinstance(
+                date_start,
+                str
+            ):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(
+                date_end,
+                str
+            ):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action.date_start = (
+                date_start
+            )
+
+            action.date_end = (
+                date_end
+            )
+
+            if "id_actor" in action_data:
+                action.id_actor = (
+                    action_data.get(
+                        "id_actor"
+                    )
+                )
+
+            action.meta_update_by = (
+                meta_update_by
+            )
+
+            action.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            editable_fields = (
+                "individual_count",
+                "id_phenological_stage",
+                "remarks"
+            )
+
+            for field_name in editable_fields:
+                if (
+                    field_name
+                    in observation_data
+                ):
+                    setattr(
+                        observation,
+                        field_name,
+                        observation_data[
+                            field_name
+                        ]
+                    )
+
+            observation.meta_update_by = (
+                meta_update_by
+            )
+
+            observation.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            db.session.commit()
+
+            return self.get_by_action(
+                id_action
+            )
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
+class CultureActionTreatmentRepository:
+    def create_with_action(
+        self,
+        id_culture: int,
+        action_data: dict,
+        treatment_data: dict,
+        meta_create_by: int
+    ):
+        try:
+            id_action_type = db.session.execute(
+                text("""
+                    SELECT n.id_nomenclature
+                    FROM ref_nomenclatures.t_nomenclatures n
+                    JOIN ref_nomenclatures.bib_nomenclatures_types t
+                        ON t.id_type = n.id_type
+                    WHERE t.mnemonique = 'CFE_ACTION_TYPE'
+                    AND n.cd_nomenclature = 'tracult'
+                """)
+            ).scalar()
+
+            if not id_action_type:
+                raise ValueError(
+                    "Le type d'action Traitement Culture est introuvable."
+                )
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start"
+            )
+
+            date_end = action_data.get(
+                "date_end"
+            )
+
+            if isinstance(
+                date_start,
+                str
+            ):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(
+                date_end,
+                str
+            ):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action = TAction(
+                id_culture=id_culture,
+                id_sowing=None,
+                id_test=None,
+                date_start=date_start,
+                date_end=date_end,
+                id_actor=action_data.get(
+                    "id_actor"
+                ),
+                id_action_type=id_action_type,
+                meta_create_by=meta_create_by
+            )
+
+            db.session.add(
+                action
+            )
+
+            db.session.flush()
+
+            specific_data = dict(
+                treatment_data or {}
+            )
+
+            for protected_field in (
+                "id_culture_action_treatment",
+                "id_action",
+                "meta_create_by",
+                "meta_create_date",
+                "meta_update_by",
+                "meta_update_date"
+            ):
+                specific_data.pop(
+                    protected_field,
+                    None
+                )
+
+            treatment = (
+                TCultureActionTreatment(
+                    id_action=action.id_action,
+                    meta_create_by=meta_create_by,
+                    **specific_data
+                )
+            )
+
+            db.session.add(
+                treatment
+            )
+
+            db.session.commit()
+
+            return {
+                "action": action.to_dic(),
+                "treatment":
+                    treatment.to_dic()
+            }
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
+    def get_by_action(
+        self,
+        id_action: int
+    ):
+        PhysiologicalStage = aliased(
+            TNomenclatures
+        )
+
+        Actor = aliased(
+            User
+        )
+
+        row = (
+            db.session.query(
+                TCultureActionTreatment,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.id_actor,
+
+                PhysiologicalStage.label_fr.label(
+                    "physiological_stage_label_fr"
+                ),
+                PhysiologicalStage.label_default.label(
+                    "physiological_stage_label_default"
+                ),
+
+                Actor.prenom_role.label(
+                    "actor_first_name"
+                ),
+                Actor.nom_role.label(
+                    "actor_last_name"
+                )
+            )
+            .join(
+                TAction,
+                TAction.id_action ==
+                TCultureActionTreatment.id_action
+            )
+            .outerjoin(
+                PhysiologicalStage,
+                PhysiologicalStage.id_nomenclature ==
+                TCultureActionTreatment
+                .id_physiological_development_stage
+            )
+            .outerjoin(
+                Actor,
+                Actor.id_role ==
+                TAction.id_actor
+            )
+            .filter(
+                TCultureActionTreatment.id_action ==
+                id_action
+            )
+            .first()
+        )
+
+        if not row:
+            return None
+
+        treatment = row[0]
+
+        result = (
+            treatment.to_dic()
+        )
+
+        result.update({
+            "date_start": (
+                row.date_start.isoformat()
+                if row.date_start
+                else None
+            ),
+
+            "date_end": (
+                row.date_end.isoformat()
+                if row.date_end
+                else None
+            ),
+
+            "id_actor":
+                row.id_actor,
+
+            "actor_label": (
+                f"{row.actor_first_name or ''} "
+                f"{row.actor_last_name or ''}"
+            ).strip() or None,
+
+            "physiological_stage_label": (
+                row.physiological_stage_label_fr
+                or
+                row.physiological_stage_label_default
+            )
+        })
+
+        return result
+
+
+    def update_with_action(
+        self,
+        id_action: int,
+        action_data: dict,
+        treatment_data: dict,
+        meta_update_by: int
+    ):
+        try:
+            action = (
+                db.session.query(
+                    TAction
+                )
+                .filter(
+                    TAction.id_action ==
+                    id_action,
+                    TAction.id_culture.isnot(
+                        None
+                    )
+                )
+                .first()
+            )
+
+            treatment = (
+                db.session.query(
+                    TCultureActionTreatment
+                )
+                .filter(
+                    TCultureActionTreatment
+                    .id_action ==
+                    id_action
+                )
+                .first()
+            )
+
+            if (
+                not action
+                or not treatment
+            ):
+                return None
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            treatment_data = dict(
+                treatment_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start",
+                action.date_start
+            )
+
+            date_end = action_data.get(
+                "date_end",
+                action.date_end
+            )
+
+            if isinstance(
+                date_start,
+                str
+            ):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(
+                date_end,
+                str
+            ):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action.date_start = (
+                date_start
+            )
+
+            action.date_end = (
+                date_end
+            )
+
+            if "id_actor" in action_data:
+                action.id_actor = (
+                    action_data.get(
+                        "id_actor"
+                    )
+                )
+
+            action.meta_update_by = (
+                meta_update_by
+            )
+
+            action.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            editable_fields = (
+                "id_physiological_development_stage",
+                "disease_or_deficiency",
+                "type",
+                "success"
+            )
+
+            for field_name in editable_fields:
+                if (
+                    field_name
+                    in treatment_data
+                ):
+                    setattr(
+                        treatment,
+                        field_name,
+                        treatment_data[
+                            field_name
+                        ]
+                    )
+
+            treatment.meta_update_by = (
+                meta_update_by
+            )
+
+            treatment.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            db.session.commit()
+
+            return self.get_by_action(
+                id_action
+            )
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
+class CultureActionSamplingRepository:
+    def create_with_action(
+        self,
+        id_culture: int,
+        action_data: dict,
+        sampling_data: dict,
+        meta_create_by: int
+    ):
+        try:
+            id_action_type = db.session.execute(
+                text("""
+                    SELECT n.id_nomenclature
+                    FROM ref_nomenclatures.t_nomenclatures n
+                    JOIN ref_nomenclatures.bib_nomenclatures_types t
+                        ON t.id_type = n.id_type
+                    WHERE t.mnemonique = 'CFE_ACTION_TYPE'
+                    AND n.cd_nomenclature = 'prel'
+                """)
+            ).scalar()
+
+            if not id_action_type:
+                raise ValueError(
+                    "Le type d'action Prélèvement est introuvable."
+                )
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start"
+            )
+
+            date_end = action_data.get(
+                "date_end"
+            )
+
+            if isinstance(
+                date_start,
+                str
+            ):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(
+                date_end,
+                str
+            ):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action = TAction(
+                id_culture=id_culture,
+                id_sowing=None,
+                id_test=None,
+                date_start=date_start,
+                date_end=date_end,
+                id_actor=action_data.get(
+                    "id_actor"
+                ),
+                id_action_type=id_action_type,
+                meta_create_by=meta_create_by
+            )
+
+            db.session.add(
+                action
+            )
+
+            db.session.flush()
+
+            specific_data = dict(
+                sampling_data or {}
+            )
+
+            for protected_field in (
+                "id_culture_action_sampling",
+                "id_action",
+                "meta_create_by",
+                "meta_create_date",
+                "meta_update_by",
+                "meta_update_date"
+            ):
+                specific_data.pop(
+                    protected_field,
+                    None
+                )
+
+            sampling = (
+                TCultureActionSampling(
+                    id_action=action.id_action,
+                    meta_create_by=meta_create_by,
+                    **specific_data
+                )
+            )
+
+            db.session.add(
+                sampling
+            )
+
+            db.session.commit()
+
+            return {
+                "action": action.to_dic(),
+                "sampling":
+                    sampling.to_dic()
+            }
+
+        except (
+            SQLAlchemyError,
+            ValueError
+        ) as error:
+
+            db.session.rollback()
+            raise error
+
+
+    def get_by_action(
+        self,
+        id_action: int
+    ):
+        Actor = aliased(
+            User
+        )
+
+        row = (
+            db.session.query(
+                TCultureActionSampling,
+                TAction.date_start,
+                TAction.date_end,
+                TAction.id_actor,
+
+                Actor.prenom_role.label(
+                    "actor_first_name"
+                ),
+                Actor.nom_role.label(
+                    "actor_last_name"
+                )
+            )
+            .join(
+                TAction,
+                TAction.id_action ==
+                TCultureActionSampling.id_action
+            )
+            .outerjoin(
+                Actor,
+                Actor.id_role ==
+                TAction.id_actor
+            )
+            .filter(
+                TCultureActionSampling.id_action ==
+                id_action
+            )
+            .first()
+        )
+
+        if not row:
+            return None
+
+        sampling = row[0]
+
+        result = (
+            sampling.to_dic()
+        )
+
+        result.update({
+            "date_start": (
+                row.date_start.isoformat()
+                if row.date_start
+                else None
+            ),
+
+            "date_end": (
+                row.date_end.isoformat()
+                if row.date_end
+                else None
+            ),
+
+            "id_actor":
+                row.id_actor,
+
+            "actor_label": (
+                f"{row.actor_first_name or ''} "
+                f"{row.actor_last_name or ''}"
+            ).strip() or None
+        })
+
+        return result
+
+
+    def update_with_action(
+        self,
+        id_action: int,
+        action_data: dict,
+        sampling_data: dict,
+        meta_update_by: int
+    ):
+        try:
+            action = (
+                db.session.query(
+                    TAction
+                )
+                .filter(
+                    TAction.id_action ==
+                    id_action,
+                    TAction.id_culture.isnot(
+                        None
+                    )
+                )
+                .first()
+            )
+
+            sampling = (
+                db.session.query(
+                    TCultureActionSampling
+                )
+                .filter(
+                    TCultureActionSampling
+                    .id_action ==
+                    id_action
+                )
+                .first()
+            )
+
+            if (
+                not action
+                or not sampling
+            ):
+                return None
+
+            action_data = dict(
+                action_data or {}
+            )
+
+            sampling_data = dict(
+                sampling_data or {}
+            )
+
+            date_start = action_data.get(
+                "date_start",
+                action.date_start
+            )
+
+            date_end = action_data.get(
+                "date_end",
+                action.date_end
+            )
+
+            if isinstance(
+                date_start,
+                str
+            ):
+                date_start = (
+                    isoparse(date_start)
+                    if date_start.strip()
+                    else None
+                )
+
+            if isinstance(
+                date_end,
+                str
+            ):
+                date_end = (
+                    isoparse(date_end)
+                    if date_end.strip()
+                    else None
+                )
+
+            if not date_start:
+                raise ValueError(
+                    "La date de début est obligatoire."
+                )
+
+            if (
+                date_end
+                and date_end < date_start
+            ):
+                raise ValueError(
+                    "La date de fin ne peut pas "
+                    "précéder la date de début."
+                )
+
+            action.date_start = (
+                date_start
+            )
+
+            action.date_end = (
+                date_end
+            )
+
+            if "id_actor" in action_data:
+                action.id_actor = (
+                    action_data.get(
+                        "id_actor"
+                    )
+                )
+
+            action.meta_update_by = (
+                meta_update_by
+            )
+
+            action.meta_update_date = (
+                datetime.utcnow()
+            )
+
+            editable_fields = (
+                "quantity",
+                "remarks"
+            )
+
+            for field_name in editable_fields:
+                if (
+                    field_name
+                    in sampling_data
+                ):
+                    setattr(
+                        sampling,
+                        field_name,
+                        sampling_data[
+                            field_name
+                        ]
+                    )
+
+            sampling.meta_update_by = (
+                meta_update_by
+            )
+
+            sampling.meta_update_date = (
                 datetime.utcnow()
             )
 

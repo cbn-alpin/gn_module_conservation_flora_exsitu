@@ -7,7 +7,10 @@ from .repositories import (
     TestRepository,
     ActionRepository,
     CultureRepository,
-    CultureActionTransplantationRepository
+    CultureActionTransplantationRepository,
+    CultureActionObservationRepository,
+    CultureActionTreatmentRepository,
+    CultureActionSamplingRepository
 )
 from .models import (
     TSowing,
@@ -2252,6 +2255,549 @@ def update_culture_transplantation(
         return {
             "error": "Erreur interne du serveur"
         }, 500
+
+@blueprint.route(
+    "/cultures/<int:id_culture>/actions/observation",
+    methods=["POST"]
+)
+@permissions.check_cruved_scope(
+    "C",
+    module_code=MODULE_CODE
+)
+@json_resp
+def create_culture_observation(
+    id_culture
+):
+    try:
+        culture = (
+            CultureRepository()
+            .get_by_id(id_culture)
+        )
+
+        if not culture:
+            return {
+                "error": "Culture non trouvée"
+            }, 404
+
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        observation_data = (
+            data.get("observation")
+            or {}
+        )
+
+        result = (
+            CultureActionObservationRepository()
+            .create_with_action(
+                id_culture=id_culture,
+                action_data=action_data,
+                observation_data=(
+                    observation_data
+                ),
+                meta_create_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        return {
+            "message": (
+                "Action d'observation "
+                "créée avec succès"
+            ),
+            **result
+        }, 201
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "create_culture_observation failed"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/actions/<int:id_action>/observation",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def get_culture_observation(
+    id_action
+):
+    observation = (
+        CultureActionObservationRepository()
+        .get_by_action(id_action)
+    )
+
+    if not observation:
+        return {
+            "error": (
+                "Action d'observation "
+                "non trouvée"
+            )
+        }, 404
+
+    return observation, 200
+
+
+@blueprint.route(
+    "/actions/<int:id_action>/observation",
+    methods=["PUT"]
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE
+)
+@json_resp
+def update_culture_observation(
+    id_action
+):
+    try:
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        observation_data = (
+            data.get("observation")
+            or {}
+        )
+
+        result = (
+            CultureActionObservationRepository()
+            .update_with_action(
+                id_action=id_action,
+                action_data=action_data,
+                observation_data=(
+                    observation_data
+                ),
+                meta_update_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        if not result:
+            return {
+                "error": (
+                    "Action d'observation "
+                    "non trouvée"
+                )
+            }, 404
+
+        return {
+            "message": (
+                "Action d'observation "
+                "mise à jour avec succès"
+            ),
+            "observation": result
+        }, 200
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "update_culture_observation failed "
+            f"for action {id_action}"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/cultures/<int:id_culture>/actions/treatment",
+    methods=["POST"]
+)
+@permissions.check_cruved_scope(
+    "C",
+    module_code=MODULE_CODE
+)
+@json_resp
+def create_culture_treatment(
+    id_culture
+):
+    try:
+        culture = (
+            CultureRepository()
+            .get_by_id(id_culture)
+        )
+
+        if not culture:
+            return {
+                "error": "Culture non trouvée"
+            }, 404
+
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        treatment_data = (
+            data.get("treatment")
+            or {}
+        )
+
+        result = (
+            CultureActionTreatmentRepository()
+            .create_with_action(
+                id_culture=id_culture,
+                action_data=action_data,
+                treatment_data=(
+                    treatment_data
+                ),
+                meta_create_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        return {
+            "message": (
+                "Action de traitement "
+                "de culture créée avec succès"
+            ),
+            **result
+        }, 201
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "create_culture_treatment failed"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/actions/<int:id_action>/treatment",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def get_culture_treatment(
+    id_action
+):
+    treatment = (
+        CultureActionTreatmentRepository()
+        .get_by_action(id_action)
+    )
+
+    if not treatment:
+        return {
+            "error": (
+                "Action de traitement "
+                "de culture non trouvée"
+            )
+        }, 404
+
+    return treatment, 200
+
+
+@blueprint.route(
+    "/actions/<int:id_action>/treatment",
+    methods=["PUT"]
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE
+)
+@json_resp
+def update_culture_treatment(
+    id_action
+):
+    try:
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        treatment_data = (
+            data.get("treatment")
+            or {}
+        )
+
+        result = (
+            CultureActionTreatmentRepository()
+            .update_with_action(
+                id_action=id_action,
+                action_data=action_data,
+                treatment_data=(
+                    treatment_data
+                ),
+                meta_update_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        if not result:
+            return {
+                "error": (
+                    "Action de traitement "
+                    "de culture non trouvée"
+                )
+            }, 404
+
+        return {
+            "message": (
+                "Action de traitement "
+                "de culture mise à jour avec succès"
+            ),
+            "treatment": result
+        }, 200
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "update_culture_treatment failed "
+            f"for action {id_action}"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/cultures/<int:id_culture>/actions/sampling",
+    methods=["POST"]
+)
+@permissions.check_cruved_scope(
+    "C",
+    module_code=MODULE_CODE
+)
+@json_resp
+def create_culture_sampling(
+    id_culture
+):
+    try:
+        culture = (
+            CultureRepository()
+            .get_by_id(id_culture)
+        )
+
+        if not culture:
+            return {
+                "error": "Culture non trouvée"
+            }, 404
+
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        sampling_data = (
+            data.get("sampling")
+            or {}
+        )
+
+        result = (
+            CultureActionSamplingRepository()
+            .create_with_action(
+                id_culture=id_culture,
+                action_data=action_data,
+                sampling_data=(
+                    sampling_data
+                ),
+                meta_create_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        return {
+            "message": (
+                "Action de prélèvement "
+                "créée avec succès"
+            ),
+            **result
+        }, 201
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "create_culture_sampling failed"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
+
+@blueprint.route(
+    "/actions/<int:id_action>/sampling",
+    methods=["GET"]
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE
+)
+@json_resp
+def get_culture_sampling(
+    id_action
+):
+    sampling = (
+        CultureActionSamplingRepository()
+        .get_by_action(id_action)
+    )
+
+    if not sampling:
+        return {
+            "error": (
+                "Action de prélèvement "
+                "non trouvée"
+            )
+        }, 404
+
+    return sampling, 200
+
+
+@blueprint.route(
+    "/actions/<int:id_action>/sampling",
+    methods=["PUT"]
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE
+)
+@json_resp
+def update_culture_sampling(
+    id_action
+):
+    try:
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+        action_data = (
+            data.get("action")
+            or {}
+        )
+
+        sampling_data = (
+            data.get("sampling")
+            or {}
+        )
+
+        result = (
+            CultureActionSamplingRepository()
+            .update_with_action(
+                id_action=id_action,
+                action_data=action_data,
+                sampling_data=(
+                    sampling_data
+                ),
+                meta_update_by=(
+                    g.current_user.id_role
+                )
+            )
+        )
+
+        if not result:
+            return {
+                "error": (
+                    "Action de prélèvement "
+                    "non trouvée"
+                )
+            }, 404
+
+        return {
+            "message": (
+                "Action de prélèvement "
+                "mise à jour avec succès"
+            ),
+            "sampling": result
+        }, 200
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    except Exception:
+        current_app.logger.exception(
+            "update_culture_sampling failed "
+            f"for action {id_action}"
+        )
+
+        return {
+            "error": "Erreur interne du serveur"
+        }, 500
+
 
 @blueprint.route(
     "/materials/<int:id_material>/cultures/<int:id_culture>",
