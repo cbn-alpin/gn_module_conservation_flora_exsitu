@@ -293,20 +293,36 @@
       </div>
 
       <div class="form-row">
+
         <mat-form-field
           appearance="outline"
-          class="third-width"
+          class="
+            full-width
+            action-type-required
+            shake-wrapper
+          "
           [hideRequiredMarker]="
             !isInitialCultureActionContext
           "
+          [class.shake-field]="
+            shakeTransplantationTypeField
+          "
+          [class.shake-error]="
+            shakeTransplantationTypeField
+          "
         >
-          <mat-label>Type de transplantation</mat-label>
+
+          <mat-label>
+            Type de transplantation
+          </mat-label>
+
           <mat-select
             formControlName="id_type"
             [required]="
               isInitialCultureActionContext
             "
           >
+
             <mat-option
               *ngIf="
                 !isInitialCultureActionContext
@@ -315,50 +331,98 @@
             >
               Aucun
             </mat-option>
+
             <mat-option
-              *ngFor="let option of transplantationTypeOptions"
-              [value]="option.id_nomenclature"
+              *ngFor="
+                let option of
+                transplantationTypeOptions
+              "
+              [value]="
+                option.id_nomenclature
+              "
             >
-              {{ getOptionLabel(option) }}
+              {{
+                getOptionLabel(
+                  option
+                )
+              }}
             </mat-option>
+
           </mat-select>
+
 
           <mat-error
             *ngIf="
-              cultureActionForm
-                .get('id_type')
-                ?.hasError('required')
+              hasTransplantationTypeRequiredError()
             "
           >
             Le type de transplantation est obligatoire pour la transplantation initiale.
           </mat-error>
+
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="third-width">
-          <mat-label>Quantité intervention</mat-label>
+      </div>
+
+
+      <div class="form-row">
+
+        <mat-form-field
+          appearance="outline"
+          class="half-width"
+        >
+
+          <mat-label>
+            Quantité intervention
+          </mat-label>
+
           <input
             matInput
             type="number"
             min="1"
             formControlName="intervention_quantity"
           >
-          <mat-error *ngIf="cultureActionForm.get('intervention_quantity')?.hasError('min')">
+
+          <mat-error
+            *ngIf="
+              cultureActionForm
+                .get('intervention_quantity')
+                ?.hasError('min')
+            "
+          >
             La quantité doit être supérieure à 0.
           </mat-error>
+
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="third-width">
-          <mat-label>Quantité en cours</mat-label>
+
+        <mat-form-field
+          appearance="outline"
+          class="half-width"
+        >
+
+          <mat-label>
+            Quantité en cours
+          </mat-label>
+
           <input
             matInput
             type="number"
             min="0"
             formControlName="in_progress_quantity"
           >
-          <mat-error *ngIf="cultureActionForm.get('in_progress_quantity')?.hasError('min')">
+
+          <mat-error
+            *ngIf="
+              cultureActionForm
+                .get('in_progress_quantity')
+                ?.hasError('min')
+            "
+          >
             La quantité ne peut pas être négative.
           </mat-error>
+
         </mat-form-field>
+
       </div>
 
       <div class="form-row" *ngIf="showPackagingField">

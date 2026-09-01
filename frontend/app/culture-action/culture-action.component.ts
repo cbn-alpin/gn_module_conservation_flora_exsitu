@@ -49,6 +49,7 @@ export class CultureActionComponent implements OnInit {
   public formSubmitted = false;
   public shakeActionStartDateField = false;
   public shakeActionEndDateField = false;
+  public shakeTransplantationTypeField = false;
 
   private cancelDialogOpen = false;
 
@@ -592,6 +593,30 @@ export class CultureActionComponent implements OnInit {
   }
 
 
+  private triggerTransplantationTypeFieldShake(): void {
+    this.shakeTransplantationTypeField = false;
+
+    setTimeout(() => {
+      this.shakeTransplantationTypeField = true;
+
+      setTimeout(() => {
+        this.shakeTransplantationTypeField = false;
+      }, 400);
+    }, 0);
+  }
+
+
+  public hasTransplantationTypeRequiredError(): boolean {
+    return !!(
+      this.formSubmitted &&
+      this.isInitialCultureActionContext &&
+      this.cultureActionForm
+        .get('id_type')
+        ?.hasError('required')
+    );
+  }
+
+
   public hasCultureActionStartDateRequiredError(): boolean {
     return !!(
       this.formSubmitted &&
@@ -787,6 +812,21 @@ export class CultureActionComponent implements OnInit {
       this.cultureActionForm
         .get('date_end');
 
+    const transplantationTypeControl =
+      this.cultureActionForm
+        .get('id_type');
+
+
+    if (
+      transplantationTypeControl
+        ?.hasError('required')
+    ) {
+      transplantationTypeControl
+        .markAsTouched();
+
+      this.triggerTransplantationTypeFieldShake();
+    }
+
 
     if (
       dateStartControl?.hasError(
@@ -959,6 +999,22 @@ export class CultureActionComponent implements OnInit {
 
   addNewAction(): void {
     this.formSubmitted = true;
+
+
+    const transplantationTypeControl =
+      this.cultureActionForm
+        .get('id_type');
+
+
+    if (
+      transplantationTypeControl
+        ?.hasError('required')
+    ) {
+      transplantationTypeControl
+        .markAsTouched();
+
+      this.triggerTransplantationTypeFieldShake();
+    }
 
 
     if (
