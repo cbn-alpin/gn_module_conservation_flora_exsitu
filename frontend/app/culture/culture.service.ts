@@ -113,4 +113,106 @@ export class CultureService {
         data
       );
   }
+
+  createCultureObservation(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .createCultureObservation(
+        idCulture,
+        data
+      );
+  }
+
+  getCultureObservation(
+    idAction: number
+  ): Observable<any> {
+
+    return this.dataService
+      .getCultureObservation(
+        idAction
+      );
+  }
+
+  updateCultureObservation(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .updateCultureObservation(
+        idAction,
+        data
+      );
+  }
+
+  createCultureTreatment(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .createCultureTreatment(
+        idCulture,
+        data
+      );
+  }
+
+  getCultureTreatment(
+    idAction: number
+  ): Observable<any> {
+
+    return this.dataService
+      .getCultureTreatment(
+        idAction
+      );
+  }
+
+  updateCultureTreatment(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .updateCultureTreatment(
+        idAction,
+        data
+      );
+  }
+
+  createCultureSampling(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .createCultureSampling(
+        idCulture,
+        data
+      );
+  }
+
+  getCultureSampling(
+    idAction: number
+  ): Observable<any> {
+
+    return this.dataService
+      .getCultureSampling(
+        idAction
+      );
+  }
+
+  updateCultureSampling(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.dataService
+      .updateCultureSampling(
+        idAction,
+        data
+      );
+  }
 }

@@ -392,6 +392,108 @@ export class DataService {
     );
   }
 
+  // Créer une action d’observation pour une Culture
+  createCultureObservation(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.post<any>(
+      `${this.moduleBaseUrl}/cultures/${idCulture}/actions/observation`,
+      data
+    );
+  }
+
+  // Récupérer les données d’une observation
+  getCultureObservation(
+    idAction: number
+  ): Observable<any> {
+
+    return this.api.get<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/observation`
+    );
+  }
+
+  // Modifier une action d’observation
+  updateCultureObservation(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.put<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/observation`,
+      data
+    );
+  }
+
+  // Créer une action de traitement pour une Culture
+  createCultureTreatment(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.post<any>(
+      `${this.moduleBaseUrl}/cultures/${idCulture}/actions/treatment`,
+      data
+    );
+  }
+
+  // Récupérer les données d’un traitement de Culture
+  getCultureTreatment(
+    idAction: number
+  ): Observable<any> {
+
+    return this.api.get<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/treatment`
+    );
+  }
+
+  // Modifier une action de traitement de Culture
+  updateCultureTreatment(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.put<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/treatment`,
+      data
+    );
+  }
+
+  // Créer une action de prélèvement pour une Culture
+  createCultureSampling(
+    idCulture: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.post<any>(
+      `${this.moduleBaseUrl}/cultures/${idCulture}/actions/sampling`,
+      data
+    );
+  }
+
+  // Récupérer les données d’un prélèvement
+  getCultureSampling(
+    idAction: number
+  ): Observable<any> {
+
+    return this.api.get<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/sampling`
+    );
+  }
+
+  // Modifier une action de prélèvement
+  updateCultureSampling(
+    idAction: number,
+    data: any
+  ): Observable<any> {
+
+    return this.api.put<any>(
+      `${this.moduleBaseUrl}/actions/${idAction}/sampling`,
+      data
+    );
+  }
+
   // Modifier une culture
   updateCulture(
     idMaterial: number,
