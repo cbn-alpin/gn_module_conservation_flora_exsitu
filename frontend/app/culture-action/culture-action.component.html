@@ -146,8 +146,12 @@
       </div>
 
 
-            <ng-container
-        *ngIf="showTransplantationForm"
+      <ng-container
+        *ngIf="
+          cultureActionForm
+            .get('id_action_type')
+            ?.value
+        "
       >
 
         <div class="form-row">
@@ -258,6 +262,13 @@
           </mat-form-field>
 
         </div>
+
+      </ng-container>
+
+
+      <ng-container
+        *ngIf="showTransplantationForm"
+      >
 
       <div class="action-section-header">
 
@@ -485,7 +496,292 @@
         </mat-form-field>
       </div>
 
-      <div class="action-section-header">
+      </ng-container>
+
+
+      <ng-container
+        *ngIf="showObservationForm"
+      >
+
+        <div class="action-section-header">
+
+          <div class="action-section-icon">
+            <mat-icon>
+              visibility
+            </mat-icon>
+          </div>
+
+          <div class="action-section-text">
+
+            <strong class="action-section-title">
+              Paramètres de l'observation
+            </strong>
+
+            <span class="action-section-subtitle">
+              Nombre d'individus et stade phénologique
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-row">
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+            <mat-label>Nombre d'individus</mat-label>
+
+            <input
+              matInput
+              type="number"
+              formControlName="individual_count"
+            >
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+            <mat-label>Stade phénologique</mat-label>
+
+            <mat-select
+              formControlName="id_phenological_stage"
+            >
+              <mat-option [value]="null">
+                Aucun
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let option of
+                  phenologicalStageOptions
+                "
+                [value]="
+                  option.id_nomenclature
+                "
+              >
+                {{
+                  getOptionLabel(
+                    option
+                  )
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+      </ng-container>
+
+
+      <ng-container
+        *ngIf="showCultureTreatmentForm"
+      >
+
+        <div class="action-section-header">
+
+          <div class="action-section-icon">
+            <mat-icon>
+              healing
+            </mat-icon>
+          </div>
+
+          <div class="action-section-text">
+
+            <strong class="action-section-title">
+              Paramètres du traitement
+            </strong>
+
+            <span class="action-section-subtitle">
+              Stade physiologique, traitement et réussite
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-row">
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+            <mat-label>
+              Phase de développement physiologique
+            </mat-label>
+
+            <mat-select
+              formControlName="
+                id_physiological_development_stage
+              "
+            >
+              <mat-option [value]="null">
+                Aucune
+              </mat-option>
+
+              <mat-option
+                *ngFor="
+                  let option of
+                  physiologicalStageOptions
+                "
+                [value]="
+                  option.id_nomenclature
+                "
+              >
+                {{
+                  getOptionLabel(
+                    option
+                  )
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+            <mat-label>Maladie ou carence</mat-label>
+
+            <input
+              matInput
+              maxlength="50"
+              formControlName="
+                disease_or_deficiency
+              "
+            >
+
+            <mat-hint align="end">
+              {{
+                cultureActionForm
+                  .get(
+                    'disease_or_deficiency'
+                  )
+                  ?.value
+                  ?.length || 0
+              }}/50
+            </mat-hint>
+          </mat-form-field>
+
+        </div>
+
+
+        <div class="form-row">
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+            <mat-label>Type</mat-label>
+
+            <input
+              matInput
+              maxlength="50"
+              formControlName="treatment_type"
+            >
+
+            <mat-hint align="end">
+              {{
+                cultureActionForm
+                  .get(
+                    'treatment_type'
+                  )
+                  ?.value
+                  ?.length || 0
+              }}/50
+            </mat-hint>
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="half-width"
+          >
+            <mat-label>Réussite</mat-label>
+
+            <mat-select
+              formControlName="success"
+            >
+              <mat-option [value]="null">
+                Non renseigné
+              </mat-option>
+
+              <mat-option [value]="true">
+                Oui
+              </mat-option>
+
+              <mat-option [value]="false">
+                Non
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+
+      </ng-container>
+
+
+      <ng-container
+        *ngIf="showSamplingForm"
+      >
+
+        <div class="action-section-header">
+
+          <div class="action-section-icon">
+            <mat-icon>
+              science
+            </mat-icon>
+          </div>
+
+          <div class="action-section-text">
+
+            <strong class="action-section-title">
+              Paramètres du prélèvement
+            </strong>
+
+            <span class="action-section-subtitle">
+              Quantité prélevée
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-row">
+
+          <mat-form-field
+            appearance="outline"
+            class="full-width"
+          >
+            <mat-label>Quantité</mat-label>
+
+            <input
+              matInput
+              type="number"
+              formControlName="quantity"
+            >
+          </mat-form-field>
+
+        </div>
+
+      </ng-container>
+
+
+      <div
+        class="action-section-header"
+        *ngIf="
+          cultureActionForm
+            .get('id_action_type')
+            ?.value
+        "
+      >
 
         <div class="action-section-icon">
           <mat-icon>
@@ -500,34 +796,68 @@
           </strong>
 
           <span class="action-section-subtitle">
-            Personne ayant effectué l'action et remarques générales
+            {{
+              showCultureTreatmentForm
+                ? "Personne ayant effectué l'action"
+                : "Personne ayant effectué l'action et remarques générales"
+            }}
           </span>
 
         </div>
 
       </div>
 
-      <div class="form-row follow-up-row">
-        <div class="form-group half-width observer-field">
+
+      <div
+        class="form-row follow-up-row"
+        *ngIf="
+          cultureActionForm
+            .get('id_action_type')
+            ?.value
+        "
+      >
+
+        <div
+          class="form-group observer-field"
+          [ngClass]="
+            showCultureTreatmentForm
+              ? 'full-width'
+              : 'half-width'
+          "
+        >
           <small>Effectué par</small>
+
           <pnx-observers
             [bindAllItem]="true"
-            [parentFormControl]="cultureActionForm.controls.id_actor"
+            [parentFormControl]="
+              cultureActionForm.controls.id_actor
+            "
             [codeList]="observersListCode"
             [multiSelect]="true"
             matTooltipPosition="above"
-          ></pnx-observers>
+          >
+          </pnx-observers>
         </div>
 
-        <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Remarques générales (Notes)</mat-label>
-          <textarea matInput rows="4" formControlName="remarks"></textarea>
+
+        <mat-form-field
+          *ngIf="!showCultureTreatmentForm"
+          appearance="outline"
+          class="half-width"
+        >
+          <mat-label>
+            Remarques générales (Notes)
+          </mat-label>
+
+          <textarea
+            matInput
+            rows="4"
+            formControlName="remarks"
+          >
+          </textarea>
         </mat-form-field>
+
       </div>
-
-      
-
-    </ng-container>
 
     </form>
   </mat-card-content>

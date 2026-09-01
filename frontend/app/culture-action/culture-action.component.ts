@@ -10,6 +10,7 @@ import {
 import { DateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonService } from '@geonature_common/service/common.service';
+import { Observable } from 'rxjs';
 
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
 import { CultureService } from '../culture/culture.service';
@@ -38,6 +39,7 @@ export class CultureActionComponent implements OnInit {
 
   public transplantationTypeOptions: any[] = [];
   public physiologicalStageOptions: any[] = [];
+  public phenologicalStageOptions: any[] = [];
   public mainLocationOptions: any[] = [];
   public isSubmitting = false;
   public formSubmitted = false;
@@ -78,6 +80,12 @@ export class CultureActionComponent implements OnInit {
         id_physiological_development_stage: [null],
         id_main_location: [null],
         precise_location: ['', Validators.maxLength(100)],
+        individual_count: [null],
+        id_phenological_stage: [null],
+        disease_or_deficiency: ['', Validators.maxLength(50)],
+        treatment_type: ['', Validators.maxLength(50)],
+        success: [null],
+        quantity: [null],
         remarks: ['']
       },
       { validators: [this.dateRangeValidator] }
@@ -88,6 +96,15 @@ export class CultureActionComponent implements OnInit {
     this.dialogRef.disableClose = true;
     this.observersListCode = this.cfg.getObsCode();
     this.loadNomenclatures();
+
+    this.cultureActionForm
+      .get('id_action_type')
+      ?.valueChanges
+      .subscribe(() => {
+        if (!this.dialogData?.edit) {
+          this.resetSpecificActionFields();
+        }
+      });
 
     this.cultureActionForm.get('id_type')?.valueChanges.subscribe(() => {
       if (!this.showPackagingField) {
@@ -108,7 +125,7 @@ export class CultureActionComponent implements OnInit {
     return this.cultureActionForm.get('substrat') as FormArray;
   }
 
-  get showTransplantationForm(): boolean {
+  private getSelectedCultureActionCode(): string {
 
     const selectedId =
       Number(
@@ -127,17 +144,73 @@ export class CultureActionComponent implements OnInit {
       );
 
 
+    return String(
+      selectedActionType
+        ?.cd_nomenclature ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+  }
+
+
+  get showTransplantationForm(): boolean {
     return (
-      String(
-        selectedActionType
-          ?.cd_nomenclature ||
-        ''
-      )
-        .trim()
-        .toLowerCase() ===
+      this.getSelectedCultureActionCode() ===
       'transp'
     );
   }
+
+
+  get showObservationForm(): boolean {
+    return (
+      this.getSelectedCultureActionCode() ===
+      'obs'
+    );
+  }
+
+
+  get showCultureTreatmentForm(): boolean {
+    return (
+      this.getSelectedCultureActionCode() ===
+      'tracult'
+    );
+  }
+
+
+  get showSamplingForm(): boolean {
+    return (
+      this.getSelectedCultureActionCode() ===
+      'prel'
+    );
+  }
+
+
+  private resetSpecificActionFields(): void {
+
+    this.substrates.clear();
+
+
+    this.cultureActionForm.patchValue({
+      id_type: null,
+      intervention_quantity: null,
+      in_progress_quantity: null,
+      packaging: '',
+      id_physiological_development_stage: null,
+      id_main_location: null,
+      precise_location: '',
+      individual_count: null,
+      id_phenological_stage: null,
+      disease_or_deficiency: '',
+      treatment_type: '',
+      success: null,
+      quantity: null,
+      remarks: ''
+    }, {
+      emitEvent: false
+    });
+  }
+
 
   get showPackagingField(): boolean {
     const selectedId = Number(this.cultureActionForm.get('id_type')?.value);
@@ -219,6 +292,12 @@ export class CultureActionComponent implements OnInit {
           id_physiological_development_stage: null,
           id_main_location: null,
           precise_location: '',
+          individual_count: null,
+          id_phenological_stage: null,
+          disease_or_deficiency: '',
+          treatment_type: '',
+          success: null,
+          quantity: null,
           remarks: ''
         });
 
@@ -489,6 +568,103 @@ export class CultureActionComponent implements OnInit {
   }
 
 
+  private getCultureActionSaveRequest(
+    isEdit: boolean
+  ): Observable<any> | null {
+
+    const actionCode =
+      this.getSelectedCultureActionCode();
+
+
+    const payload =
+      this.buildPayload();
+
+
+    if (isEdit) {
+
+      const idAction =
+        Number(
+          this.dialogData?.idAction
+        );
+
+
+      if (!idAction) {
+        return null;
+      }
+
+
+      switch (actionCode) {
+
+        case 'transp':
+          return this.cultureService
+            .updateCultureTransplantation(
+              idAction,
+              payload
+            );
+
+        case 'obs':
+          return this.cultureService
+            .updateCultureObservation(
+              idAction,
+              payload
+            );
+
+        case 'tracult':
+          return this.cultureService
+            .updateCultureTreatment(
+              idAction,
+              payload
+            );
+
+        case 'prel':
+          return this.cultureService
+            .updateCultureSampling(
+              idAction,
+              payload
+            );
+
+        default:
+          return null;
+      }
+    }
+
+
+    switch (actionCode) {
+
+      case 'transp':
+        return this.cultureService
+          .createCultureTransplantation(
+            this.dialogData.idCulture,
+            payload
+          );
+
+      case 'obs':
+        return this.cultureService
+          .createCultureObservation(
+            this.dialogData.idCulture,
+            payload
+          );
+
+      case 'tracult':
+        return this.cultureService
+          .createCultureTreatment(
+            this.dialogData.idCulture,
+            payload
+          );
+
+      case 'prel':
+        return this.cultureService
+          .createCultureSampling(
+            this.dialogData.idCulture,
+            payload
+          );
+
+      default:
+        return null;
+    }
+  }
+
+
   onSubmit(): void {
     this.formSubmitted = true;
 
@@ -603,19 +779,26 @@ export class CultureActionComponent implements OnInit {
 
 
         const request$ =
-          isEdit
-            ? this.cultureService
-                .updateCultureTransplantation(
-                  Number(
-                    this.dialogData.idAction
-                  ),
-                  this.buildPayload()
-                )
-            : this.cultureService
-                .createCultureTransplantation(
-                  this.dialogData.idCulture,
-                  this.buildPayload()
-                );
+          this.getCultureActionSaveRequest(
+            isEdit
+          );
+
+
+        if (!request$) {
+
+          this.isSubmitting =
+            false;
+
+
+          this.toast
+            .translateToaster(
+              'error',
+              'Type d’action de culture non pris en charge.'
+            );
+
+
+          return;
+        }
 
 
         request$
@@ -642,8 +825,8 @@ export class CultureActionComponent implements OnInit {
 
               console.error(
                 isEdit
-                  ? 'Erreur lors de la modification de la transplantation :'
-                  : 'Erreur lors de la création de la transplantation :',
+                  ? 'Erreur lors de la modification de l’action de culture :'
+                  : 'Erreur lors de la création de l’action de culture :',
                 error
               );
 
@@ -652,8 +835,8 @@ export class CultureActionComponent implements OnInit {
                 .translateToaster(
                   'error',
                   isEdit
-                    ? 'Impossible de modifier l’action de transplantation.'
-                    : 'Impossible de créer l’action de transplantation.'
+                    ? 'Impossible de modifier l’action de culture.'
+                    : 'Impossible de créer l’action de culture.'
                 );
 
             }
@@ -684,11 +867,30 @@ export class CultureActionComponent implements OnInit {
     this.isSubmitting = true;
 
 
-    this.cultureService
-      .createCultureTransplantation(
-        this.dialogData.idCulture,
-        this.buildPayload()
-      )
+    const request$ =
+      this.getCultureActionSaveRequest(
+        false
+      );
+
+
+    if (!request$) {
+
+      this.isSubmitting =
+        false;
+
+
+      this.toast
+        .translateToaster(
+          'error',
+          'Type d’action de culture non pris en charge.'
+        );
+
+
+      return;
+    }
+
+
+    request$
       .subscribe({
 
         next: () => {
@@ -713,6 +915,12 @@ export class CultureActionComponent implements OnInit {
             id_physiological_development_stage: null,
             id_main_location: null,
             precise_location: '',
+            individual_count: null,
+            id_phenological_stage: null,
+            disease_or_deficiency: '',
+            treatment_type: '',
+            success: null,
+            quantity: null,
             remarks: ''
           });
 
@@ -735,7 +943,7 @@ export class CultureActionComponent implements OnInit {
 
 
           console.error(
-            'Erreur lors de la création de la transplantation :',
+            'Erreur lors de la création de l’action de culture :',
             error
           );
 
@@ -743,7 +951,7 @@ export class CultureActionComponent implements OnInit {
           this.toast
             .translateToaster(
               'error',
-              'Impossible de créer l’action de transplantation.'
+              'Impossible de créer l’action de culture.'
             );
 
         }
@@ -963,7 +1171,13 @@ export class CultureActionComponent implements OnInit {
     action: any
   ): void {
 
-    const transplantationActionType =
+    const actionCode =
+      this.getCultureActionCodeFromAction(
+        action
+      );
+
+
+    const cultureActionType =
       this.cultureActionTypeOptions
         .find(
           option =>
@@ -973,7 +1187,7 @@ export class CultureActionComponent implements OnInit {
             )
               .trim()
               .toLowerCase() ===
-            'transp'
+            actionCode
         );
 
 
@@ -1015,7 +1229,7 @@ export class CultureActionComponent implements OnInit {
 
     this.cultureActionForm.patchValue({
       id_action_type:
-        transplantationActionType
+        cultureActionType
           ?.id_nomenclature ||
         null,
 
@@ -1064,6 +1278,26 @@ export class CultureActionComponent implements OnInit {
       precise_location:
         action?.precise_location || '',
 
+      individual_count:
+        action?.individual_count ?? null,
+
+      id_phenological_stage:
+        action?.id_phenological_stage ??
+        null,
+
+      disease_or_deficiency:
+        action?.disease_or_deficiency ||
+        '',
+
+      treatment_type:
+        action?.type || '',
+
+      success:
+        action?.success ?? null,
+
+      quantity:
+        action?.quantity ?? null,
+
       remarks:
         action?.remarks || ''
     }, {
@@ -1079,6 +1313,64 @@ export class CultureActionComponent implements OnInit {
 
     this.cultureActionForm
       .markAsUntouched();
+  }
+
+
+  private getCultureActionCodeFromAction(
+    action: any
+  ): string {
+
+    const explicitCode =
+      String(
+        action?.code_action_type ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if (explicitCode) {
+      return explicitCode;
+    }
+
+
+    if (
+      action
+        ?.id_culture_action_transplantation
+      !== undefined
+    ) {
+      return 'transp';
+    }
+
+
+    if (
+      action
+        ?.id_culture_action_observation
+      !== undefined
+    ) {
+      return 'obs';
+    }
+
+
+    if (
+      action
+        ?.id_culture_action_treatment
+      !== undefined
+    ) {
+      return 'tracult';
+    }
+
+
+    if (
+      action
+        ?.id_culture_action_sampling
+      !== undefined
+    ) {
+      return 'prel';
+    }
+
+
+    return '';
   }
 
 
@@ -1145,21 +1437,25 @@ export class CultureActionComponent implements OnInit {
 
       options => {
 
-        /*
-        * Pour le moment, Transplantation
-        * est la seule action de Culture
-        * disponible.
-        */
+        const cultureActionCodes = [
+          'transp',
+          'obs',
+          'tracult',
+          'prel'
+        ];
+
+
         this.cultureActionTypeOptions =
           options.filter(
             option =>
-              String(
-                option?.cd_nomenclature ||
-                ''
+              cultureActionCodes.includes(
+                String(
+                  option?.cd_nomenclature ||
+                  ''
+                )
+                  .trim()
+                  .toLowerCase()
               )
-                .trim()
-                .toLowerCase() ===
-              'transp'
           );
 
 
@@ -1184,6 +1480,11 @@ export class CultureActionComponent implements OnInit {
       'CFE_PHYSIOLOGICAL_STAGE',
       options => (this.physiologicalStageOptions = options),
       'stades physiologiques'
+    );
+    this.loadNomenclature(
+      'CFE_PHENOLOGICAL_STAGE',
+      options => (this.phenologicalStageOptions = options),
+      'stades phénologiques'
     );
     this.loadNomenclature(
       'CFE_MAIN_LOCATION',
@@ -1231,6 +1532,79 @@ export class CultureActionComponent implements OnInit {
     const raw = this.cultureActionForm.getRawValue();
     const observer = Array.isArray(raw.id_actor) ? raw.id_actor[0] : raw.id_actor;
 
+    const action = {
+      date_start: this.formatDateForApi(raw.date_start),
+      date_end: this.formatDateForApi(raw.date_end),
+      id_actor: observer?.id_role ?? null
+    };
+
+    const actionCode =
+      this.getSelectedCultureActionCode();
+
+
+    if (actionCode === 'obs') {
+      return {
+        action,
+        observation: {
+          individual_count:
+            this.parseOptionalNumber(
+              raw.individual_count
+            ),
+          id_phenological_stage:
+            raw.id_phenological_stage ??
+            null,
+          remarks:
+            this.cleanText(
+              raw.remarks
+            )
+        }
+      };
+    }
+
+
+    if (actionCode === 'tracult') {
+      return {
+        action,
+        treatment: {
+          id_physiological_development_stage:
+            raw.id_physiological_development_stage ??
+            null,
+          disease_or_deficiency:
+            this.cleanText(
+              raw.disease_or_deficiency
+            ),
+          type:
+            this.cleanText(
+              raw.treatment_type
+            ),
+          success:
+            raw.success === true
+              ? true
+              : raw.success === false
+                ? false
+                : null
+        }
+      };
+    }
+
+
+    if (actionCode === 'prel') {
+      return {
+        action,
+        sampling: {
+          quantity:
+            this.parseOptionalNumber(
+              raw.quantity
+            ),
+          remarks:
+            this.cleanText(
+              raw.remarks
+            )
+        }
+      };
+    }
+
+
     const substrat = (raw.substrat || [])
       .map((item: any) => ({
         type: this.cleanText(item?.type),
@@ -1242,11 +1616,7 @@ export class CultureActionComponent implements OnInit {
       );
 
     return {
-      action: {
-        date_start: this.formatDateForApi(raw.date_start),
-        date_end: this.formatDateForApi(raw.date_end),
-        id_actor: observer?.id_role ?? null
-      },
+      action,
       transplantation: {
         id_type: raw.id_type ?? null,
         intervention_quantity: this.parseOptionalNumber(raw.intervention_quantity),
