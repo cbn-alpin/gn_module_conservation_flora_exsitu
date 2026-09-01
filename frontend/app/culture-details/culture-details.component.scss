@@ -767,8 +767,10 @@ small {
 .culture-actions-wrapper.with-action-details
 .culture-actions-table
 .mat-mdc-cell {
-  padding-left: 10px !important;
-  padding-right: 10px !important;
+  box-sizing: border-box;
+
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 
@@ -821,9 +823,9 @@ small {
 .culture-actions-wrapper.with-action-details
 .culture-actions-table
 .mat-column-date_end {
-  width: 120px;
-  min-width: 120px;
-  max-width: 120px;
+  width: 105px;
+  min-width: 105px;
+  max-width: 105px;
 }
 
 
@@ -831,9 +833,9 @@ small {
 .culture-actions-wrapper.with-action-details
 .culture-actions-table
 .mat-column-action_type {
-  width: 175px;
-  min-width: 175px;
-  max-width: 175px;
+  width: 165px;
+  min-width: 165px;
+  max-width: 165px;
 }
 
 
@@ -841,9 +843,9 @@ small {
 .culture-actions-wrapper.with-action-details
 .culture-actions-table
 .mat-column-actor {
-  width: 145px;
-  min-width: 145px;
-  max-width: 145px;
+  width: 110px;
+  min-width: 110px;
+  max-width: 110px;
 }
 
 
@@ -851,9 +853,9 @@ small {
 .culture-actions-wrapper.with-action-details
 .culture-actions-table
 .mat-column-actions {
-  width: 64px;
-  min-width: 64px;
-  max-width: 64px;
+  width: 54px;
+  min-width: 54px;
+  max-width: 54px;
 }
 
 
