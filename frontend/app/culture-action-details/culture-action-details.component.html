@@ -48,7 +48,7 @@
       *ngIf="
         !isLoading &&
         !errorMessage &&
-        transplantation
+        actionDetails
       "
     >
 
@@ -80,7 +80,7 @@
         </label>
 
         <span>
-          Transplantation
+          {{ actionTypeLabel }}
         </span>
 
       </div>
@@ -94,9 +94,9 @@
 
         <span>
           {{
-            transplantation.date_start
+            actionDetails.date_start
               ? (
-                  transplantation.date_start
+                  actionDetails.date_start
                   | date:'dd/MM/yyyy'
                 )
               : '-'
@@ -114,9 +114,9 @@
 
         <span>
           {{
-            transplantation.date_end
+            actionDetails.date_end
               ? (
-                  transplantation.date_end
+                  actionDetails.date_end
                   | date:'dd/MM/yyyy'
                 )
               : '-'
@@ -125,6 +125,8 @@
 
       </div>
 
+
+      <ng-container *ngIf="isTransplantation">
 
       <div class="culture-action-detail-section-header">
 
@@ -155,7 +157,7 @@
 
         <span>
           {{
-            transplantation
+            actionDetails
               .transplantation_type_label ||
             '-'
           }}
@@ -172,7 +174,7 @@
 
         <span>
           {{
-            transplantation
+            actionDetails
               .intervention_quantity ??
             '-'
           }}
@@ -189,7 +191,7 @@
 
         <span>
           {{
-            transplantation
+            actionDetails
               .in_progress_quantity ??
             '-'
           }}
@@ -206,7 +208,7 @@
 
         <span>
           {{
-            transplantation.packaging ||
+            actionDetails.packaging ||
             '-'
           }}
         </span>
@@ -349,7 +351,7 @@
 
         <span>
           {{
-            transplantation
+            actionDetails
               .physiological_stage_label ||
             '-'
           }}
@@ -366,7 +368,7 @@
 
         <span>
           {{
-            transplantation
+            actionDetails
               .main_location_label ||
             '-'
           }}
@@ -383,13 +385,209 @@
 
         <span>
           {{
-            transplantation
+            actionDetails
               .precise_location ||
             '-'
           }}
         </span>
 
       </div>
+
+
+      </ng-container>
+
+
+      <ng-container *ngIf="isObservation">
+
+        <div class="culture-action-detail-section-header">
+
+          <div class="culture-action-detail-section-icon">
+            <mat-icon>visibility</mat-icon>
+          </div>
+
+          <div class="culture-action-detail-section-text">
+
+            <span class="culture-action-detail-section-title">
+              Paramètres de l'observation
+            </span>
+
+            <span class="culture-action-detail-section-subtitle">
+              Nombre d'individus et stade phénologique
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="culture-action-field-block">
+
+          <label>
+            Nombre d'individus :
+          </label>
+
+          <span>
+            {{
+              actionDetails.individual_count ??
+              '-'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="culture-action-field-block">
+
+          <label>
+            Stade phénologique :
+          </label>
+
+          <span>
+            {{
+              actionDetails
+                .phenological_stage_label ||
+              '-'
+            }}
+          </span>
+
+        </div>
+
+      </ng-container>
+
+
+      <ng-container *ngIf="isTreatment">
+
+        <div class="culture-action-detail-section-header">
+
+          <div class="culture-action-detail-section-icon">
+            <mat-icon>healing</mat-icon>
+          </div>
+
+          <div class="culture-action-detail-section-text">
+
+            <span class="culture-action-detail-section-title">
+              Paramètres du traitement
+            </span>
+
+            <span class="culture-action-detail-section-subtitle">
+              Stade physiologique, traitement et réussite
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="culture-action-field-block culture-action-field-block--physiological-stage"
+        >
+
+          <label>
+            Phase de développement physiologique :
+          </label>
+
+          <span>
+            {{
+              actionDetails
+                .physiological_stage_label ||
+              '-'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="culture-action-field-block">
+
+          <label>
+            Maladie ou carence :
+          </label>
+
+          <span>
+            {{
+              actionDetails
+                .disease_or_deficiency ||
+              '-'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="culture-action-field-block">
+
+          <label>
+            Type :
+          </label>
+
+          <span>
+            {{
+              actionDetails.type ||
+              '-'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="culture-action-field-block">
+
+          <label>
+            Réussite :
+          </label>
+
+          <span>
+            {{
+              formatSuccess(
+                actionDetails.success
+              )
+            }}
+          </span>
+
+        </div>
+
+      </ng-container>
+
+
+      <ng-container *ngIf="isSampling">
+
+        <div class="culture-action-detail-section-header">
+
+          <div class="culture-action-detail-section-icon">
+            <mat-icon>content_cut</mat-icon>
+          </div>
+
+          <div class="culture-action-detail-section-text">
+
+            <span class="culture-action-detail-section-title">
+              Paramètres du prélèvement
+            </span>
+
+            <span class="culture-action-detail-section-subtitle">
+              Quantité prélevée
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="culture-action-field-block">
+
+          <label>
+            Quantité :
+          </label>
+
+          <span>
+            {{
+              actionDetails.quantity ??
+              '-'
+            }}
+          </span>
+
+        </div>
+
+      </ng-container>
 
 
       <div class="culture-action-detail-section-header">
@@ -405,7 +603,11 @@
           </span>
 
           <span class="culture-action-detail-section-subtitle">
-            Personne ayant effectué l'action et remarques générales
+            {{
+              isTreatment
+                ? "Personne ayant effectué l'action"
+                : "Personne ayant effectué l'action et remarques générales"
+            }}
           </span>
 
         </div>
@@ -421,7 +623,7 @@
 
         <span>
           {{
-            transplantation.actor_label ||
+            actionDetails.actor_label ||
             '-'
           }}
         </span>
@@ -429,7 +631,10 @@
       </div>
 
 
-      <div class="culture-action-field-block">
+      <div
+        class="culture-action-field-block"
+        *ngIf="!isTreatment"
+      >
 
         <label>
           Remarques :
@@ -437,7 +642,7 @@
 
         <span>
           {{
-            transplantation.remarks ||
+            actionDetails.remarks ||
             '-'
           }}
         </span>
