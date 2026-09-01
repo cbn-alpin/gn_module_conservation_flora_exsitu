@@ -1,10 +1,12 @@
 <mat-card class="culture-action-form-card">
-  <mat-card-header class="culture-action-dialog-header">
+  <mat-card-header
+    class="action-dialog-header action-centered-header"
+  >
 
     <button
       mat-raised-button
       type="button"
-      class="culture-action-form-back-button"
+      class="action-form-back-button"
       [disabled]="isSubmitting"
       (click)="onCancel()"
     >
@@ -16,39 +18,77 @@
     </button>
 
 
-    <mat-card-title>
-      {{
-        dialogData?.edit
-          ? 'Modifier une action de culture'
-          : 'Ajouter une action de culture'
-      }}
-    </mat-card-title>
+    <div
+      class="action-title-wrapper action-centered-title"
+    >
+
+      <mat-card-title>
+        {{
+          dialogData?.edit
+            ? 'Modifier une action de culture'
+            : 'Ajouter une action de culture'
+        }}
+      </mat-card-title>
+
+    </div>
 
   </mat-card-header>
 
   <mat-card-content>
-    <div class="culture-associated-banner">
-      <div class="culture-associated-banner-icon"><mat-icon>link</mat-icon></div>
-      <div class="culture-associated-banner-text">
-        <span>Culture associée</span>
-        <strong>{{ dialogData?.codeCulture || dialogData?.idCulture || '-' }}</strong>
+    <div class="sowing-associated-banner">
+
+      <div class="sowing-associated-banner-icon">
+        <mat-icon>
+          link
+        </mat-icon>
       </div>
+
+      <div class="sowing-associated-banner-content">
+
+        <span class="sowing-associated-banner-label">
+          Culture associée
+        </span>
+
+        <strong class="sowing-associated-banner-value">
+          {{
+            dialogData?.codeCulture ||
+            dialogData?.idCulture ||
+            '-'
+          }}
+        </strong>
+
+      </div>
+
     </div>
 
     <form
       [formGroup]="cultureActionForm"
-      class="culture-action-form"
+      class="semis-form culture-action-form"
       (ngSubmit)="onSubmit()"
     >
-      <div class="section-header">
-        <div class="section-icon"><mat-icon>assignment</mat-icon></div>
-        <div>
-          <strong>Identification de l'action</strong>
-          <span>Type d'action et date de réalisation</span>
+      <div class="action-section-header">
+
+        <div class="action-section-icon">
+          <mat-icon>
+            assignment
+          </mat-icon>
         </div>
+
+        <div class="action-section-text">
+
+          <strong class="action-section-title">
+            Identification de l'action
+          </strong>
+
+          <span class="action-section-subtitle">
+            Type d'action et date de réalisation
+          </span>
+
+        </div>
+
       </div>
 
-            <div
+      <div
         class="form-group full-width"
         *ngIf="!dialogData?.edit"
       >
@@ -57,7 +97,7 @@
           appearance="outline"
           class="
             full-width
-            culture-action-type-required
+            action-type-required
           "
           [hideRequiredMarker]="false"
         >
@@ -114,12 +154,10 @@
 
           <mat-form-field
             appearance="outline"
-            class="half-width"
+            class="full-width"
           >
 
-            <mat-label>
-              Date de début
-            </mat-label>
+            <mat-label>Date de début</mat-label>
 
             <input
               matInput
@@ -153,15 +191,17 @@
 
           </mat-form-field>
 
+        </div>
+
+
+        <div class="form-row">
 
           <mat-form-field
             appearance="outline"
-            class="half-width"
+            class="full-width"
           >
 
-            <mat-label>
-              Date de fin
-            </mat-label>
+            <mat-label>Date de fin</mat-label>
 
             <input
               matInput
@@ -193,12 +233,26 @@
         La date de fin doit être postérieure ou égale à la date de début.
       </div>
 
-      <div class="section-header">
-        <div class="section-icon"><mat-icon>swap_horiz</mat-icon></div>
-        <div>
-          <strong>Paramètres de transplantation</strong>
-          <span>Type, quantités et conditionnement de l'intervention</span>
+      <div class="action-section-header">
+
+        <div class="action-section-icon">
+          <mat-icon>
+            swap_horiz
+          </mat-icon>
         </div>
+
+        <div class="action-section-text">
+
+          <strong class="action-section-title">
+            Paramètres de transplantation
+          </strong>
+
+          <span class="action-section-subtitle">
+            Type, quantités et conditionnement de l'intervention
+          </span>
+
+        </div>
+
       </div>
 
       <div class="form-row">
@@ -337,12 +391,26 @@
         <strong>{{ substratePercentageTotal }} %</strong>
       </div>
 
-      <div class="section-header">
-        <div class="section-icon"><mat-icon>place</mat-icon></div>
-        <div>
-          <strong>Développement et localisation</strong>
-          <span>Stade physiologique et emplacement de la Culture</span>
+      <div class="action-section-header">
+
+        <div class="action-section-icon">
+          <mat-icon>
+            place
+          </mat-icon>
         </div>
+
+        <div class="action-section-text">
+
+          <strong class="action-section-title">
+            Développement et localisation
+          </strong>
+
+          <span class="action-section-subtitle">
+            Stade physiologique et emplacement de la Culture
+          </span>
+
+        </div>
+
       </div>
 
       <div class="form-row">
@@ -383,12 +451,26 @@
         </mat-form-field>
       </div>
 
-      <div class="section-header">
-        <div class="section-icon"><mat-icon>person</mat-icon></div>
-        <div>
-          <strong>Suivi et informations complémentaires</strong>
-          <span>Personne ayant effectué l'action et remarques générales</span>
+      <div class="action-section-header">
+
+        <div class="action-section-icon">
+          <mat-icon>
+            person
+          </mat-icon>
         </div>
+
+        <div class="action-section-text">
+
+          <strong class="action-section-title">
+            Suivi et informations complémentaires
+          </strong>
+
+          <span class="action-section-subtitle">
+            Personne ayant effectué l'action et remarques générales
+          </span>
+
+        </div>
+
       </div>
 
       <div class="form-row follow-up-row">
