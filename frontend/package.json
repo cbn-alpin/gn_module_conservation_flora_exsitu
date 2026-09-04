@@ -1,6 +1,6 @@
 {
   "name": "gn_module_conservation_flora_exsitu",
-  "version": "1.0.0",
+  "version": "0.4.0",
   "description": "Outil de gestion des récoltes de graines (ex-situ et in-situ), de leur stockage, des tests de germination, des semis et mise en culture.",
   "author": "Ahmadou Bassirou DIALLO",
   "license": "ISC",
