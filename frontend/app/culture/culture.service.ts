@@ -204,6 +204,16 @@ export class CultureService {
       );
   }
 
+  getCultureMaterialHarvest(
+    idAction: number
+  ): Observable<any> {
+
+    return this.dataService
+      .getActionWithLabels(
+        idAction
+      );
+  }
+
   updateCultureSampling(
     idAction: number,
     data: any

@@ -22,6 +22,11 @@ export class ExsituFormService{
     public materialTypeCode: string | null = null;
     public materialHasTaxon: boolean = false;
 
+    public materialCreationFromCulture: {
+      idCulture: number;
+      codeCulturalBank: string;
+    } | null = null;
+
     public get idMaterial(): number {
       return this._idMaterial;
     }
@@ -125,6 +130,30 @@ export class ExsituFormService{
             }
           }
         });
+    }
+
+    setMaterialCreationFromCulture(
+      idCulture: number,
+      codeCulturalBank: string
+    ): void {
+
+      this.materialCreationFromCulture = {
+        idCulture,
+        codeCulturalBank
+      };
+    }
+
+    consumeMaterialCreationFromCulture(): {
+      idCulture: number;
+      codeCulturalBank: string;
+    } | null {
+
+      const context =
+        this.materialCreationFromCulture;
+
+      this.materialCreationFromCulture = null;
+
+      return context;
     }
 
     setCultureSourceFromMaterial(): void {

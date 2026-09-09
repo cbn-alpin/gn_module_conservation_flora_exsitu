@@ -65,7 +65,11 @@
           </span>
 
           <span class="culture-action-detail-section-subtitle">
-            Type d'action et date de réalisation
+            {{
+              isMaterialHarvest
+                ? "Type d'action"
+                : "Type d'action et date de réalisation"
+            }}
           </span>
 
         </div>
@@ -79,14 +83,31 @@
           Type d'action :
         </label>
 
-        <span>
-          {{ actionTypeLabel }}
+        <span
+          [class.culture-action-material-type-value]="isMaterialHarvest"
+        >
+          <strong>
+            {{ actionTypeLabel }}
+          </strong>
+
+          <small *ngIf="isMaterialHarvest">
+            {{
+              actionDetails.code_material_recolte ||
+              '-'
+            }}
+          </small>
         </span>
 
       </div>
 
 
-      <div class="culture-action-field-block">
+
+
+
+      <div
+        class="culture-action-field-block"
+        *ngIf="!isMaterialHarvest"
+      >
 
         <label>
           Date de début :
@@ -106,7 +127,10 @@
       </div>
 
 
-      <div class="culture-action-field-block">
+      <div
+        class="culture-action-field-block"
+        *ngIf="!isMaterialHarvest"
+      >
 
         <label>
           Date de fin :
@@ -124,6 +148,24 @@
         </span>
 
       </div>
+
+            <div
+        class="culture-action-field-block culture-action-material-detail-block"
+        *ngIf="isMaterialHarvest"
+      >
+
+        <button
+          mat-raised-button
+          type="button"
+          class="culture-action-material-detail-button"
+          (click)="goToMaterialDetails()"
+        >
+          <mat-icon>open_in_new</mat-icon>
+          Voir le détail du matériel récolté
+        </button>
+
+      </div>
+
 
 
       <ng-container *ngIf="isTransplantation">
@@ -590,7 +632,10 @@
       </ng-container>
 
 
-      <div class="culture-action-detail-section-header">
+      <div
+        class="culture-action-detail-section-header"
+        *ngIf="!isMaterialHarvest"
+      >
 
         <div class="culture-action-detail-section-icon">
           <mat-icon>person</mat-icon>
@@ -615,7 +660,10 @@
       </div>
 
 
-      <div class="culture-action-field-block">
+      <div
+        class="culture-action-field-block"
+        *ngIf="!isMaterialHarvest"
+      >
 
         <label>
           Effectué par :
@@ -633,7 +681,7 @@
 
       <div
         class="culture-action-field-block"
-        *ngIf="!isTreatment"
+        *ngIf="!isTreatment && !isMaterialHarvest"
       >
 
         <label>

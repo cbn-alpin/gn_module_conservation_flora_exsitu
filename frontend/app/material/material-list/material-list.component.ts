@@ -155,6 +155,9 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
 
         });
 
+
+      this.openMaterialCreationFromCultureIfNeeded();
+
     }
 
 
@@ -1230,12 +1233,37 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
       };
     }
     
-    addModalMaterial(): void {
+    private openMaterialCreationFromCultureIfNeeded(): void {
+
+      const context =
+        this.exsituFormService
+          .consumeMaterialCreationFromCulture();
+
+      if (!context) {
+        return;
+      }
+
+
+      this.exsituFormService.mode = 'add';
+
+      this.materialFormService
+        .occurrence
+        .next(null);
+
+
+      setTimeout(() => {
+        this.addModalMaterial(context);
+      });
+    }
+
+
+    addModalMaterial(dialogData: any = null): void {
       const dialogRef = this.dialog.open(MaterialModalComponent, {
         width: '900px',
         height: '90vh',
         disableClose: true,
-        autoFocus: false
+        autoFocus: false,
+        data: dialogData || {}
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {

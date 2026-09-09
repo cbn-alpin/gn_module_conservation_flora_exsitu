@@ -62,6 +62,26 @@ def upgrade():
         schema="pr_conservation_flora_exsitu",
     )
 
+    op.add_column(
+        "t_material",
+        sa.Column(
+            "id_action",
+            sa.Integer(),
+            nullable=True,
+        ),
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    op.create_foreign_key(
+        "fk_t_material_id_action_t_action",
+        "t_material",
+        "t_action",
+        ["id_action"],
+        ["id_action"],
+        source_schema="pr_conservation_flora_exsitu",
+        referent_schema="pr_conservation_flora_exsitu",
+    )
+
     op.execute(
         """
         UPDATE ref_nomenclatures.t_nomenclatures
@@ -241,6 +261,13 @@ def upgrade():
                         'Prélèvement',
                         'Action de prélèvement réalisée dans le cadre du suivi d’une Culture',
                         '.010'
+                    ),
+                    (
+                        'matrec',
+                        'materielRecolte',
+                        'Matériel récolté',
+                        'Création d’un matériel récolté provenant d’une Culture',
+                        '.011'
                     )
             ) AS v(
                 cd_nomenclature,
@@ -1640,6 +1667,36 @@ def downgrade():
     # Create temporary indexes for deleting nomenclatures with performance
     created_temp_indexes = create_missing_nomenclature_indexes()
 
+    material_inspector = sa.inspect(op.get_bind())
+
+    material_foreign_keys = material_inspector.get_foreign_keys(
+        "t_material",
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    if any(
+        foreign_key.get("name") == "fk_t_material_id_action_t_action"
+        for foreign_key in material_foreign_keys
+    ):
+        op.drop_constraint(
+            "fk_t_material_id_action_t_action",
+            "t_material",
+            schema="pr_conservation_flora_exsitu",
+            type_="foreignkey",
+        )
+
+    material_columns = material_inspector.get_columns(
+        "t_material",
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    if any(column.get("name") == "id_action" for column in material_columns):
+        op.drop_column(
+            "t_material",
+            "id_action",
+            schema="pr_conservation_flora_exsitu",
+        )
+
     # Suppression des actions de prélèvement de Culture
     op.execute(
         """
@@ -1853,7 +1910,8 @@ def downgrade():
             'transp',
             'obs',
             'tracult',
-            'prel'
+            'prel',
+            'matrec'
         );
     """
     )

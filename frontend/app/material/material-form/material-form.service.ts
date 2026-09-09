@@ -49,7 +49,12 @@ export class MaterialFormService {
         id_phenology_1: null,
         id_phenology_2: null,
         remarks: null,
-        code_cultural_bank: null,
+        code_cultural_bank: [
+  {
+    value: null,
+    disabled: true
+  }
+],
         sample_foot_count: null,
         is_soil_sampling: false,
         has_hybridation_risk: false,

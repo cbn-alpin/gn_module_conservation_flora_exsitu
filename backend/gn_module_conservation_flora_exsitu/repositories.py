@@ -361,16 +361,87 @@ class HarvestMaterialRepository:
             if existing_material:
                 return False, "Ce code matériel existe déjà."
 
+            id_culture_source = data.pop(
+                "id_culture_source",
+                None
+            )
+
+            # Ces deux champs ne doivent jamais être imposés
+            # manuellement depuis le formulaire Matériel récolté.
+            data.pop("id_action", None)
+            data.pop("code_cultural_bank", None)
+
             code_parent = data.pop("code_parent", None)
-            # code_cultural_bank = data.pop("code_cultural_bank", None)
 
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_material_parent"] = parent.id_material if parent else None
 
-            # if code_cultural_bank:
-            #     bank = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
-            #     data["code_cultural_bank"] = bank.id_material if bank else None
+            if id_culture_source not in (None, ""):
+                culture = TCulture.query.get(
+                    id_culture_source
+                )
+
+                if not culture:
+                    return False, "Culture source non trouvée."
+
+                CultureRepository.require_initial_transplantation(
+                    culture.id_culture
+                )
+
+                source_material = TMaterial.query.get(
+                    culture.id_material
+                )
+
+                if not source_material:
+                    return False, (
+                        "Le matériel récolté associé à la Culture "
+                        "est introuvable."
+                    )
+
+                if (
+                    source_material.id_harvest
+                    != data.get("id_harvest")
+                ):
+                    return False, (
+                        "La Culture et le nouveau matériel récolté "
+                        "doivent appartenir à la même récolte."
+                    )
+
+                id_action_type = db.session.execute(
+                    text("""
+                        SELECT n.id_nomenclature
+                        FROM ref_nomenclatures.t_nomenclatures n
+                        JOIN ref_nomenclatures.bib_nomenclatures_types t
+                            ON t.id_type = n.id_type
+                        WHERE t.mnemonique = 'CFE_ACTION_TYPE'
+                        AND n.cd_nomenclature = 'matrec'
+                    """)
+                ).scalar()
+
+                if not id_action_type:
+                    return False, (
+                        "Le type d'action Matériel récolté "
+                        "est introuvable."
+                    )
+
+                action = TAction(
+                    id_culture=culture.id_culture,
+                    id_sowing=None,
+                    id_test=None,
+                    date_start=datetime.utcnow(),
+                    date_end=None,
+                    id_actor=None,
+                    id_action_type=id_action_type,
+                    meta_create_by=data.get(
+                        "meta_create_by"
+                    )
+                )
+
+                db.session.add(action)
+                db.session.flush()
+
+                data["id_action"] = action.id_action
 
             additional_data = data.pop("additional_data", None)
                      
@@ -382,6 +453,10 @@ class HarvestMaterialRepository:
             db.session.add(material)
             db.session.commit()
             return True, material
+
+        except ValueError as e:
+            db.session.rollback()
+            return False, str(e)
 
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -398,14 +473,16 @@ class HarvestMaterialRepository:
                 if existing_material and existing_material.id_material != id_material:
                     return False
 
+            # La relation avec une action Culture et le numéro de banque
+            # culturale sont gérés uniquement par le backend.
+            data.pop("id_action", None)
+            data.pop("id_culture_source", None)
+            data.pop("code_cultural_bank", None)
+
             code_parent = data.pop("code_parent", None)
-            # code_cultural_bank = data.pop("code_cultural_bank", None)
             if code_parent:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_material_parent"] = parent.id_material if parent else None
-            # if code_cultural_bank:
-            #     parent = TMaterial.query.filter_by(code_material=code_cultural_bank).first()
-            #     data["code_cultural_bank"] = parent.id_material if parent else None
 
             for key, value in data.items():
                 if hasattr(material, key):
@@ -425,8 +502,21 @@ class HarvestMaterialRepository:
             if not material:
                 return False
 
+            linked_action = (
+                TAction.query.get(material.id_action)
+                if material.id_action
+                else None
+            )
+
             db.session.query(CorMaterialTaxon).filter_by(id_material=id_material).delete()
+
             db.session.delete(material)
+
+            db.session.flush()
+
+            if linked_action:
+                db.session.delete(linked_action)
+
             db.session.commit()
             return True
 
@@ -1991,6 +2081,12 @@ class ActionRepository:
                 ),
                 Actor.prenom_role.label(
                     "prenom_actor"
+                ),
+                TMaterial.id_material.label(
+                    "id_material_recolte"
+                ),
+                TMaterial.code_material.label(
+                    "code_material_recolte"
                 )
             )
             .outerjoin(
@@ -2013,6 +2109,11 @@ class ActionRepository:
                 TAction.id_actor ==
                 Actor.id_role
             )
+            .outerjoin(
+                TMaterial,
+                TMaterial.id_action ==
+                TAction.id_action
+            )
             .filter(
                 TAction.id_culture ==
                 id_culture
@@ -2030,15 +2131,23 @@ class ActionRepository:
                     row.id_action,
 
                 "date_start": (
-                    row.date_start.isoformat()
-                    if row.date_start
-                    else None
+                    None
+                    if row.code_action_type == "matrec"
+                    else (
+                        row.date_start.isoformat()
+                        if row.date_start
+                        else None
+                    )
                 ),
 
                 "date_end": (
-                    row.date_end.isoformat()
-                    if row.date_end
-                    else None
+                    None
+                    if row.code_action_type == "matrec"
+                    else (
+                        row.date_end.isoformat()
+                        if row.date_end
+                        else None
+                    )
                 ),
 
                 "meta_create_date": (
@@ -2050,8 +2159,21 @@ class ActionRepository:
                 "code_action_type":
                     row.code_action_type,
 
-                "label_action_type":
-                    row.label_action_type,
+                "label_action_type": (
+                    f"{row.label_action_type} - "
+                    f"{row.code_material_recolte}"
+                    if (
+                        row.code_action_type == "matrec"
+                        and row.code_material_recolte
+                    )
+                    else row.label_action_type
+                ),
+
+                "id_material_recolte":
+                    row.id_material_recolte,
+
+                "code_material_recolte":
+                    row.code_material_recolte,
 
                 "transplantation_type_label": (
                     row.transplantation_type_label_fr
@@ -2066,9 +2188,13 @@ class ActionRepository:
                 ),
 
                 "label_actor": (
-                    f"{row.prenom_actor or ''} "
-                    f"{row.nom_actor or ''}"
-                ).strip()
+                    None
+                    if row.code_action_type == "matrec"
+                    else (
+                        f"{row.prenom_actor or ''} "
+                        f"{row.nom_actor or ''}"
+                    ).strip()
+                )
             }
             for row in results
         ]
@@ -2148,6 +2274,58 @@ class ActionRepository:
         data["label_actor"] = actor_label or None
 
         code = code_action
+
+        if code == "matrec":
+            material = (
+                TMaterial.query
+                .filter_by(id_action=id_action)
+                .first()
+            )
+
+            culture = (
+                TCulture.query.get(action.id_culture)
+                if action.id_culture
+                else None
+            )
+
+            source_material = (
+                TMaterial.query.get(culture.id_material)
+                if culture
+                else None
+            )
+
+            data["date_start"] = None
+            data["date_end"] = None
+            data["label_actor"] = None
+
+            data["id_material_recolte"] = (
+                material.id_material
+                if material
+                else None
+            )
+
+            data["code_material_recolte"] = (
+                material.code_material
+                if material
+                else None
+            )
+
+            data["label_action_type"] = (
+                f"{label_action_type} - {material.code_material}"
+                if material
+                else label_action_type
+            )
+
+            data["code_cultural_bank"] = (
+                f"{source_material.code_material} - "
+                f"{culture.code_culture}"
+                if source_material and culture
+                else None
+            )
+
+            data["replicates"] = []
+
+            return data
 
         # ✅ 1. Si action = synth, récupérer SEULEMENT le réplicat synth de cette action
         if code == 'synth':

@@ -781,22 +781,44 @@ def get_materials(id_harvest):
             harvest_material_code = nomenclature_material.cd_nomenclature if nomenclature_material else None
 
             code_parent_material = None
-            # code_cultural_bank_material = None
+            code_cultural_bank_material = None
 
             if material.id_material_parent:
                 parent_material = TMaterial.query.get(material.id_material_parent)
                 code_parent_material = parent_material.code_material if parent_material else None
 
-            # if material.code_cultural_bank:
-            #     cultural_bank_material = TMaterial.query.get(material.code_cultural_bank)
-            #     code_cultural_bank_material = cultural_bank_material.code_material if cultural_bank_material else None
+            if material.id_action:
+                culture_context = (
+                    db.session.query(TCulture)
+                    .join(
+                        TAction,
+                        TAction.id_culture ==
+                        TCulture.id_culture
+                    )
+                    .filter(
+                        TAction.id_action ==
+                        material.id_action
+                    )
+                    .first()
+                )
+
+                if culture_context:
+                    source_material = TMaterial.query.get(
+                        culture_context.id_material
+                    )
+
+                    if source_material:
+                        code_cultural_bank_material = (
+                            f"{source_material.code_material} - "
+                            f"{culture_context.code_culture}"
+                        )
 
             material_dict = material.to_dic()
             material_dict["taxons"] = taxon_list
             material_dict["harvest_material_label"] = harvest_material_label
             material_dict["harvest_material_code"] = harvest_material_code
             material_dict["code_parent"] = code_parent_material
-            # material_dict["code_cultural_bank"] = code_cultural_bank_material
+            material_dict["code_cultural_bank"] = code_cultural_bank_material
 
             material_dict["has_seed_description"] = material.has_seed_description
             material_dict["has_storage"] = material.has_storage
@@ -3239,6 +3261,117 @@ def delete_actio(id_action):
         action = db.session.query(TAction).get(id_action)
         if not action:
             return {"message": "Action non trouvée"}, 404
+
+        linked_material = (
+            TMaterial.query
+            .filter_by(id_action=id_action)
+            .first()
+        )
+
+        if linked_material:
+            id_material = linked_material.id_material
+
+            has_seed_description = (
+                TMaterielSeed.query
+                .filter_by(id_material=id_material)
+                .first()
+                is not None
+            )
+
+            storage_count = (
+                TStorage.query
+                .filter_by(id_material=id_material)
+                .count()
+            )
+
+            germination_test_count = (
+                db.session.query(TTest)
+                .join(
+                    TNomenclatures,
+                    TTest.id_test_type ==
+                    TNomenclatures.id_nomenclature
+                )
+                .filter(
+                    TTest.id_material == id_material,
+                    TNomenclatures.cd_nomenclature == "ger"
+                )
+                .count()
+            )
+
+            viability_test_count = (
+                db.session.query(TTest)
+                .join(
+                    TNomenclatures,
+                    TTest.id_test_type ==
+                    TNomenclatures.id_nomenclature
+                )
+                .filter(
+                    TTest.id_material == id_material,
+                    TNomenclatures.cd_nomenclature == "via"
+                )
+                .count()
+            )
+
+            sowing_count = (
+                TSowing.query
+                .filter_by(id_material=id_material)
+                .count()
+            )
+
+            culture_count = (
+                TCulture.query
+                .filter_by(id_material=id_material)
+                .count()
+            )
+
+            if (
+                has_seed_description
+                or storage_count > 0
+                or germination_test_count > 0
+                or viability_test_count > 0
+                or sowing_count > 0
+                or culture_count > 0
+            ):
+                return {
+                    "error": "Suppression impossible",
+                    "message": (
+                        "Le matériel récolté lié à cette action "
+                        "contient des données liées."
+                    ),
+                    "id_material": id_material,
+                    "code_material":
+                        linked_material.code_material,
+                    "has_seed_description":
+                        has_seed_description,
+                    "storage_count":
+                        storage_count,
+                    "germination_test_count":
+                        germination_test_count,
+                    "viability_test_count":
+                        viability_test_count,
+                    "sowing_count":
+                        sowing_count,
+                    "culture_count":
+                        culture_count
+                }, 409
+
+            deleted = (
+                HarvestMaterialRepository()
+                .delete(id_material)
+            )
+
+            if not deleted:
+                return {
+                    "message":
+                        "Matériel récolté non trouvé"
+                }, 404
+
+            return {
+                "message": (
+                    "Action et matériel récolté "
+                    "supprimés avec succès"
+                )
+            }, 200
 
         if action.id_culture:
             initial_action = (

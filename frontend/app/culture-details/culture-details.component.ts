@@ -1076,12 +1076,71 @@ export class CultureDetailsComponent
       .afterClosed()
       .subscribe(result => {
 
+        if (
+          result?.openMaterialFromCulture
+        ) {
+          this.openMaterialCreationFromCulture();
+          return;
+        }
+
+
         if (result) {
           this.loadCultureActions();
         }
 
       });
   }
+
+
+  private openMaterialCreationFromCulture(): void {
+
+    const idHarvest =
+      Number(
+        this.exsituFormService.idHarvest
+      );
+
+    const sourceMaterialCode =
+      String(
+        this.culture?.code_material || ''
+      ).trim();
+
+    const cultureCode =
+      String(
+        this.culture?.code_culture || ''
+      ).trim();
+
+
+    if (
+      !idHarvest ||
+      !this.idCulture ||
+      !sourceMaterialCode ||
+      !cultureCode
+    ) {
+      this.toast.translateToaster(
+        'error',
+        'Impossible d’ouvrir la création du matériel récolté.'
+      );
+
+      return;
+    }
+
+
+    this.exsituFormService
+      .setMaterialCreationFromCulture(
+        this.idCulture,
+        `${sourceMaterialCode} - ${cultureCode}`
+      );
+
+    this.exsituFormService.currentTab =
+      'materials';
+
+    this.router.navigate([
+      '/conservation_flora_exsitu/form/harvest',
+      idHarvest,
+      'material-form'
+    ]);
+  }
+
 
   onEditCultureAction(
     action: any
@@ -1337,7 +1396,8 @@ export class CultureDetailsComponent
         'transp',
         'obs',
         'tracult',
-        'prel'
+        'prel',
+        'matrec'
       ].includes(actionCode)
     ) {
       return;
@@ -1363,7 +1423,8 @@ export class CultureDetailsComponent
           'transp',
           'obs',
           'tracult',
-          'prel'
+          'prel',
+          'matrec'
         ].includes(
           String(
             action?.code_action_type ||
@@ -1774,6 +1835,25 @@ export class CultureDetailsComponent
                   } ${actionLabel} à cette culture.`
                 );
 
+
+                return;
+              }
+
+              if (
+                err?.status === 409 &&
+                err?.error?.id_material
+              ) {
+
+                const materialCode =
+                  err?.error?.code_material ||
+                  '';
+
+                this.toast.translateToaster(
+                  'warning',
+                  `Suppression impossible : le matériel récolté ${
+                    this.toBoldText(materialCode)
+                  } lié à cette action contient des données liées.`
+                );
 
                 return;
               }

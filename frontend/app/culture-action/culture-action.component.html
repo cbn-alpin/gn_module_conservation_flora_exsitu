@@ -150,7 +150,8 @@
         *ngIf="
           cultureActionForm
             .get('id_action_type')
-            ?.value
+            ?.value &&
+          showCultureActionDates
         "
       >
 

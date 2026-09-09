@@ -39,7 +39,8 @@ export class MaterialModalComponent implements OnInit {
         private constants: ConstantsService,
         public cfg: ConfigService,
         private dialogService: DialogService,
-        private _commonService: CommonService
+        private _commonService: CommonService,
+        @Inject(MAT_DIALOG_DATA) public dialogData: any
     ){
 
     }
@@ -54,6 +55,23 @@ export class MaterialModalComponent implements OnInit {
 
         this.hasSeedDescription =
           !!currentOccurrence?.has_seed_description;
+
+
+        if (
+          !currentOccurrence?.id_material &&
+          this.dialogData?.idCulture &&
+          this.dialogData?.codeCulturalBank
+        ) {
+          this.materialForm
+            .get('code_cultural_bank')
+            ?.setValue(
+              this.dialogData.codeCulturalBank,
+              {
+                emitEvent: false
+              }
+            );
+        }
+
 
         if (currentOccurrence?.id_material) {
           this.api
@@ -460,6 +478,18 @@ export class MaterialModalComponent implements OnInit {
 
         if(this.codeMaterialControl){
           finalForm.code_parent = this.codeMaterialControl.value;
+        }
+
+        if (
+          !this.materialFormService
+            .occurrence
+            .getValue()?.id_material &&
+          this.dialogData?.idCulture
+        ) {
+          finalForm.id_culture_source =
+            Number(
+              this.dialogData.idCulture
+            );
         }
         
         if(finalForm.taxons)

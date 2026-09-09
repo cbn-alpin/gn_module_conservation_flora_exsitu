@@ -174,6 +174,13 @@ class TMaterial(db.Model):
             ondelete="NULL"
         ),
     )
+    id_action = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "pr_conservation_flora_exsitu.t_action.id_action"
+        ),
+        nullable=True,
+    )
     id_material_type = db.Column(
         db.Integer,
         db.ForeignKey(
@@ -262,6 +269,7 @@ class TMaterial(db.Model):
             "code_material": self.code_material,
             "id_material_type": self.id_material_type,
             "id_harvest": self.id_harvest,
+            "id_action": self.id_action,
             "sample_foot_count": self.sample_foot_count,
             "id_foot_counting_class": self.id_foot_counting_class,
             "id_method_sample": self.id_method_sample,

@@ -109,6 +109,7 @@ export class CultureActionComponent implements OnInit {
       .subscribe(() => {
         if (!this.dialogData?.edit) {
           this.resetSpecificActionFields();
+          this.handleMaterialHarvestActionSelection();
         }
       });
 
@@ -189,6 +190,56 @@ export class CultureActionComponent implements OnInit {
       this.getSelectedCultureActionCode() ===
       'prel'
     );
+  }
+
+
+  get showCultureActionDates(): boolean {
+    return (
+      this.getSelectedCultureActionCode() !==
+      'matrec'
+    );
+  }
+
+
+  private handleMaterialHarvestActionSelection(): void {
+
+    if (
+      this.getSelectedCultureActionCode() !==
+      'matrec'
+    ) {
+      return;
+    }
+
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'local_florist',
+        variant: 'culture-save',
+        entityLabel: 'l’action de culture',
+        entityCode: 'Matériel récolté',
+        disableClose: false
+      })
+      .subscribe(yes => {
+
+        if (!yes) {
+          this.cultureActionForm
+            .get('id_action_type')
+            ?.setValue(
+              null,
+              {
+                emitEvent: false
+              }
+            );
+
+          return;
+        }
+
+
+        this.dialogRef.close({
+          openMaterialFromCulture: true
+        });
+      });
   }
 
 
@@ -1626,7 +1677,8 @@ export class CultureActionComponent implements OnInit {
                 'transp',
                 'obs',
                 'tracult',
-                'prel'
+                'prel',
+                'matrec'
               ];
 
 

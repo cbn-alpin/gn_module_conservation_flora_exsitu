@@ -15,7 +15,17 @@ import {
   Observable
 } from 'rxjs';
 
+import {
+  Router
+} from '@angular/router';
 
+import {
+  ExsituFormService
+} from '../form/shared/exsitu-form.service';
+
+import {
+  ConfigService
+} from '../services/config.service';
 
 
 
@@ -53,7 +63,13 @@ export class CultureActionDetailsComponent
 
   constructor(
     private cultureService:
-      CultureService
+      CultureService,
+    private router:
+      Router,
+    private exsituFormService:
+      ExsituFormService,
+    private cfg:
+      ConfigService
   ) {}
 
 
@@ -104,6 +120,9 @@ export class CultureActionDetailsComponent
       case 'prel':
         return 'Prélèvement';
 
+      case 'matrec':
+        return 'Matériel récolté';
+
       default:
         return '-';
     }
@@ -138,6 +157,14 @@ export class CultureActionDetailsComponent
     return (
       this.normalizedActionTypeCode ===
       'prel'
+    );
+  }
+
+
+  get isMaterialHarvest(): boolean {
+    return (
+      this.normalizedActionTypeCode ===
+      'matrec'
     );
   }
 
@@ -217,6 +244,48 @@ export class CultureActionDetailsComponent
   }
 
 
+  goToMaterialDetails(): void {
+
+    const idMaterial =
+      Number(
+        this.actionDetails
+          ?.id_material_recolte
+      );
+
+    const urlSegments =
+      this.router.url.split('/');
+
+    const harvestIndex =
+      urlSegments.indexOf('harvest') + 1;
+
+    const idHarvest =
+      harvestIndex > 0 &&
+      harvestIndex < urlSegments.length
+        ? Number(urlSegments[harvestIndex])
+        : 0;
+
+
+    if (
+      !idMaterial ||
+      !idHarvest
+    ) {
+      return;
+    }
+
+
+    this.exsituFormService
+      .setIdMaterial(idMaterial);
+
+    this.exsituFormService.currentTab =
+      'material-details';
+
+
+    this.router.navigate([
+      `${this.cfg.getModuleUrl()}/form/harvest/${idHarvest}/material/${idMaterial}/material-details`
+    ]);
+  }
+
+
   private loadDetails(
     idAction: number
   ): void {
@@ -261,6 +330,14 @@ export class CultureActionDetailsComponent
         actionRequest =
           this.cultureService
             .getCultureSampling(
+              idAction
+            );
+        break;
+
+      case 'matrec':
+        actionRequest =
+          this.cultureService
+            .getCultureMaterialHarvest(
               idAction
             );
         break;
