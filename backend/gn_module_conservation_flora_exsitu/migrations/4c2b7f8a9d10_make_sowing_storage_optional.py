@@ -566,7 +566,9 @@ def upgrade():
     )
 
     with importlib.resources.open_text(
-        "gn_module_conservation_flora_exsitu.migrations.data", "nomenclatures.csv", encoding="UTF-8"
+        "gn_module_conservation_flora_exsitu.migrations.data",
+        "nomenclatures.csv",
+        encoding="UTF-8",
     ) as csvfile:
         phenological_stages = [
             row
@@ -1410,7 +1412,10 @@ def upgrade():
         sa.Column("additional_data", JSONB(), nullable=True),
         sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
+            "meta_create_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("now()"),
         ),
         sa.Column("meta_update_by", sa.Integer(), nullable=True),
         sa.Column("meta_update_date", sa.DateTime(), nullable=True),
@@ -1422,27 +1427,31 @@ def upgrade():
         ),
         sa.ForeignKeyConstraint(
             ["id_material"],
-            ["pr_conservation_flora_exsitu." "t_material.id_material"],
+            ["pr_conservation_flora_exsitu.t_material.id_material"],
             name="fk_t_culture_id_material",
         ),
         sa.ForeignKeyConstraint(
             ["id_sowing"],
-            ["pr_conservation_flora_exsitu." "t_sowing.id_sowing"],
+            ["pr_conservation_flora_exsitu.t_sowing.id_sowing"],
             name="fk_t_culture_id_sowing",
         ),
         sa.ForeignKeyConstraint(
             ["id_test"],
-            ["pr_conservation_flora_exsitu." "t_test.id_test"],
+            ["pr_conservation_flora_exsitu.t_test.id_test"],
             name="fk_t_culture_id_test",
         ),
         sa.ForeignKeyConstraint(
             ["id_actor"], ["utilisateurs.t_roles.id_role"], name="fk_t_culture_id_actor"
         ),
         sa.ForeignKeyConstraint(
-            ["meta_create_by"], ["utilisateurs.t_roles.id_role"], name="fk_t_culture_meta_create_by"
+            ["meta_create_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name="fk_t_culture_meta_create_by",
         ),
         sa.ForeignKeyConstraint(
-            ["meta_update_by"], ["utilisateurs.t_roles.id_role"], name="fk_t_culture_meta_update_by"
+            ["meta_update_by"],
+            ["utilisateurs.t_roles.id_role"],
+            name="fk_t_culture_meta_update_by",
         ),
         schema="pr_conservation_flora_exsitu",
     )
@@ -1476,7 +1485,10 @@ def upgrade():
     op.create_table(
         "t_culture_action_transplantation",
         sa.Column(
-            "id_culture_action_transplantation", sa.Integer(), autoincrement=True, nullable=False
+            "id_culture_action_transplantation",
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False,
         ),
         sa.Column("id_action", sa.Integer(), nullable=False),
         sa.Column("id_type", sa.Integer(), nullable=True),
@@ -1490,47 +1502,53 @@ def upgrade():
         sa.Column("remarks", sa.Text(), nullable=True),
         sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
+            "meta_create_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("now()"),
         ),
         sa.Column("meta_update_by", sa.Integer(), nullable=True),
         sa.Column("meta_update_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint(
-            "id_culture_action_transplantation", name="pk_t_culture_action_transplantation"
+            "id_culture_action_transplantation",
+            name="pk_t_culture_action_transplantation",
         ),
-        sa.UniqueConstraint("id_action", name="uq_t_culture_action_transplantation_id_action"),
+        sa.UniqueConstraint(
+            "id_action", name="uq_t_culture_action_transplantation_id_action"
+        ),
         sa.ForeignKeyConstraint(
             ["id_action"],
-            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            ["pr_conservation_flora_exsitu.t_action.id_action"],
             name="fk_t_culture_action_transplantation_id_action",
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["id_type"],
-            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
+            ["ref_nomenclatures.t_nomenclatures.id_nomenclature"],
             name="fk_t_culture_action_transplantation_id_type",
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["id_physiological_development_stage"],
-            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
-            name=("fk_culture_transplantation_" "physiological_stage"),
+            ["ref_nomenclatures.t_nomenclatures.id_nomenclature"],
+            name=("fk_culture_transplantation_physiological_stage"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["id_main_location"],
-            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
-            name=("fk_t_culture_action_transplantation_" "id_main_location"),
+            ["ref_nomenclatures.t_nomenclatures.id_nomenclature"],
+            name=("fk_t_culture_action_transplantation_id_main_location"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["meta_create_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_transplantation_" "meta_create_by"),
+            name=("fk_t_culture_action_transplantation_meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
             ["meta_update_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_transplantation_" "meta_update_by"),
+            name=("fk_t_culture_action_transplantation_meta_update_by"),
             ondelete="SET NULL",
         ),
         schema="pr_conservation_flora_exsitu",
@@ -1540,7 +1558,10 @@ def upgrade():
     op.create_table(
         "t_culture_action_observation",
         sa.Column(
-            "id_culture_action_observation", sa.Integer(), autoincrement=True, nullable=False
+            "id_culture_action_observation",
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False,
         ),
         sa.Column("id_action", sa.Integer(), nullable=False),
         sa.Column("individual_count", sa.Integer(), nullable=True),
@@ -1548,35 +1569,40 @@ def upgrade():
         sa.Column("remarks", sa.Text(), nullable=True),
         sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
+            "meta_create_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("now()"),
         ),
         sa.Column("meta_update_by", sa.Integer(), nullable=True),
         sa.Column("meta_update_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint(
             "id_culture_action_observation", name="pk_t_culture_action_observation"
         ),
-        sa.UniqueConstraint("id_action", name="uq_t_culture_action_observation_id_action"),
+        sa.UniqueConstraint(
+            "id_action", name="uq_t_culture_action_observation_id_action"
+        ),
         sa.ForeignKeyConstraint(
             ["id_action"],
-            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            ["pr_conservation_flora_exsitu.t_action.id_action"],
             name="fk_t_culture_action_observation_id_action",
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["id_phenological_stage"],
-            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
-            name=("fk_t_culture_action_observation_" "id_phenological_stage"),
+            ["ref_nomenclatures.t_nomenclatures.id_nomenclature"],
+            name=("fk_t_culture_action_observation_id_phenological_stage"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["meta_create_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_observation_" "meta_create_by"),
+            name=("fk_t_culture_action_observation_meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
             ["meta_update_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_observation_" "meta_update_by"),
+            name=("fk_t_culture_action_observation_meta_update_by"),
             ondelete="SET NULL",
         ),
         schema="pr_conservation_flora_exsitu",
@@ -1585,7 +1611,12 @@ def upgrade():
     # Table spécifique aux actions de traitement de Culture
     op.create_table(
         "t_culture_action_treatment",
-        sa.Column("id_culture_action_treatment", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column(
+            "id_culture_action_treatment",
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False,
+        ),
         sa.Column("id_action", sa.Integer(), nullable=False),
         sa.Column("id_physiological_development_stage", sa.Integer(), nullable=True),
         sa.Column("disease_or_deficiency", sa.String(length=50), nullable=True),
@@ -1593,35 +1624,40 @@ def upgrade():
         sa.Column("success", sa.Boolean(), nullable=True),
         sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
+            "meta_create_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("now()"),
         ),
         sa.Column("meta_update_by", sa.Integer(), nullable=True),
         sa.Column("meta_update_date", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint(
             "id_culture_action_treatment", name="pk_t_culture_action_treatment"
         ),
-        sa.UniqueConstraint("id_action", name="uq_t_culture_action_treatment_id_action"),
+        sa.UniqueConstraint(
+            "id_action", name="uq_t_culture_action_treatment_id_action"
+        ),
         sa.ForeignKeyConstraint(
             ["id_action"],
-            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            ["pr_conservation_flora_exsitu.t_action.id_action"],
             name="fk_t_culture_action_treatment_id_action",
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["id_physiological_development_stage"],
-            ["ref_nomenclatures." "t_nomenclatures.id_nomenclature"],
-            name=("fk_t_culture_action_treatment_" "physiological_stage"),
+            ["ref_nomenclatures.t_nomenclatures.id_nomenclature"],
+            name=("fk_t_culture_action_treatment_physiological_stage"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["meta_create_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_treatment_" "meta_create_by"),
+            name=("fk_t_culture_action_treatment_meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
             ["meta_update_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_treatment_" "meta_update_by"),
+            name=("fk_t_culture_action_treatment_meta_update_by"),
             ondelete="SET NULL",
         ),
         schema="pr_conservation_flora_exsitu",
@@ -1630,33 +1666,43 @@ def upgrade():
     # Table spécifique aux actions de prélèvement de Culture
     op.create_table(
         "t_culture_action_sampling",
-        sa.Column("id_culture_action_sampling", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column(
+            "id_culture_action_sampling",
+            sa.Integer(),
+            autoincrement=True,
+            nullable=False,
+        ),
         sa.Column("id_action", sa.Integer(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=True),
         sa.Column("remarks", sa.Text(), nullable=True),
         sa.Column("meta_create_by", sa.Integer(), nullable=False),
         sa.Column(
-            "meta_create_date", sa.DateTime(), nullable=False, server_default=sa.text("now()")
+            "meta_create_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("now()"),
         ),
         sa.Column("meta_update_by", sa.Integer(), nullable=True),
         sa.Column("meta_update_date", sa.DateTime(), nullable=True),
-        sa.PrimaryKeyConstraint("id_culture_action_sampling", name="pk_t_culture_action_sampling"),
+        sa.PrimaryKeyConstraint(
+            "id_culture_action_sampling", name="pk_t_culture_action_sampling"
+        ),
         sa.UniqueConstraint("id_action", name="uq_t_culture_action_sampling_id_action"),
         sa.ForeignKeyConstraint(
             ["id_action"],
-            ["pr_conservation_flora_exsitu." "t_action.id_action"],
+            ["pr_conservation_flora_exsitu.t_action.id_action"],
             name="fk_t_culture_action_sampling_id_action",
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["meta_create_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_sampling_" "meta_create_by"),
+            name=("fk_t_culture_action_sampling_meta_create_by"),
         ),
         sa.ForeignKeyConstraint(
             ["meta_update_by"],
             ["utilisateurs.t_roles.id_role"],
-            name=("fk_t_culture_action_sampling_" "meta_update_by"),
+            name=("fk_t_culture_action_sampling_meta_update_by"),
             ondelete="SET NULL",
         ),
         schema="pr_conservation_flora_exsitu",
@@ -2276,7 +2322,9 @@ def create_missing_nomenclature_indexes():
     result = op.get_bind().execute(operation).fetchall()
 
     created_indexes = []
-    print(f"Creating of {len(result)} temporary nomenclature indexes to accelerate the deletion...")
+    print(
+        f"Creating of {len(result)} temporary nomenclature indexes to accelerate the deletion..."
+    )
     for row in result:
         schema_name = row.schema_name
         table_name = row.table_name
@@ -2304,7 +2352,9 @@ def delete_nomenclature_indexes(indexes_to_deleted):
     print(f"Deleting of {len(indexes_to_deleted)} temporary nomenclature indexes...")
     for schema_name, index_name in indexes_to_deleted:
         try:
-            op.get_bind().execute(text(f"DROP INDEX IF EXISTS {schema_name}.{index_name};"))
+            op.get_bind().execute(
+                text(f"DROP INDEX IF EXISTS {schema_name}.{index_name};")
+            )
         except Exception as e:
             print(f"Error while deleting index {schema_name}.{index_name}: {e}")
 
