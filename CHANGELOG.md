@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-10
+
+### Added
+- Added suggestions for VS Code extensions and default settings for the Ruff extension.
+
+### Fixed
+- Correction of the sowing migration downgrade by adding the removal of rows where id_actor or id_storage is null.
+
+### Changed
+- Replace Black by Ruff and add rules in `pyproject.toml`.
+- Apply code formating and import sorting to all backend files with Ruff.
+
 ## [1.0.0] - 2026-09-10
 
 ### Added
