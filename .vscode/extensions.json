@@ -1,0 +1,9 @@
+{
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "editorconfig.editorconfig",
+    "charliermarsh.ruff"
+  ]
+}
