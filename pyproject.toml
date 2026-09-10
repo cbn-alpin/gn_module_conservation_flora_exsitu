@@ -4,14 +4,14 @@ description = "GeoNature module for conservation flora exsitu."
 readme = "README.md"
 requires-python = ">=3.11"
 keywords = ["conservation", "flora", "exsitu"]
-license = {file = "LICENSE"}
+license = { file = "LICENSE.txt" }
 maintainers = [
-    {name = "Conservatoire Botanique National Alpin", email = "geonature@cbn-alpin.fr"},
+    { name = "Conservatoire Botanique National Alpin", email = "geonature@cbn-alpin.fr" },
 ]
 authors = [
-    {name = "Ahmadou Bassirou DIALLO", email = "ab.diallo@cbn-alpin.fr"},
-    {name = "Cendrine HOARAU", email = "c.hoarau@cbn-alpin.fr"},
-    {name = "Jean-Pascal MILCENT", email = "jp.milcent@cbn-alpin.fr"},
+    { name = "Ahmadou Bassirou DIALLO", email = "ab.diallo@cbn-alpin.fr" },
+    { name = "Cendrine HOARAU", email = "c.hoarau@cbn-alpin.fr" },
+    { name = "Jean-Pascal MILCENT", email = "jp.milcent@cbn-alpin.fr" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -25,10 +25,7 @@ urls.homepage = "https://github.com/cbn-alpin/gn_module_conservation_flora_exsit
 urls.documentation = "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu"
 urls.repository = "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu"
 dynamic = ["version"]
-dependencies = [
-    "geonature>=2.14.2",
-    
-]
+dependencies = ["geonature>=2.14.2"]
 
 [project.optional-dependencies]
 dev = [
@@ -46,11 +43,11 @@ alembic_branch = "gn_module_conservation_flora_exsitu:MODULE_DB_BRANCH"
 
 [build-system]
 # Minimum requirements for the build system to execute.
-requires = ["setuptools>=60.0.0", "wheel"]  # PEP 508 specifications.
+requires = ["setuptools>=60.0.0", "wheel"] # PEP 508 specifications.
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
-version = {file = "VERSION"}
+version = { file = "VERSION" }
 
 [tool.setuptools.packages.find]
 where = ["backend"]
@@ -62,9 +59,7 @@ namespaces = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-testpaths = [
-    "backend",
-]
+testpaths = ["backend"]
 
 [tool.distutils.bdist_wheel]
 universal = true
