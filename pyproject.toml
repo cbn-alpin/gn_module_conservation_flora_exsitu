@@ -29,7 +29,7 @@ dependencies = ["geonature>=2.14.2"]
 
 [project.optional-dependencies]
 dev = [
-    "black",
+    "ruff",
     # Manually install gn_conservation_backend_shared with `pip install -e <path-to-gn-conservation-backend-shared>` if not installed in venv
 ]
 
@@ -64,5 +64,34 @@ testpaths = ["backend"]
 [tool.distutils.bdist_wheel]
 universal = true
 
-[tool.black]
+[tool.ruff]
+# Maximum allowed line length
 line-length = 100
+# Target Python version
+target-version = "py39"
+
+[tool.ruff.lint]
+# E et W : pycodestyle (PEP8)
+# F : Pyflakes
+# I : iSort
+# B: flake8-bugbear (potential bugs)
+# C90: flake8-mccabe (complexity)
+# PL: Pylint (wide range of checks)
+# PT: flake8-pytest-style (pytest best practices)
+# SIM: flake8-simplify (simplification suggestions)
+# T20: flake8-print (disallows `print` statements)
+# RUF: Ruff-specific rules (fast and useful)
+select = ["E", "W", "F", "I", "B", "C90", "PL", "PT", "SIM", "T20", "RUF"]
+ignore = [
+    "D100", # missing-module-docstring
+    "D101", # missing-class-docstring
+    "D102", # missing-function-or-method-docstring"
+    "D107", # missing-docstring-in-init
+]
+
+[tool.ruff.format]
+# Format code like Black
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
