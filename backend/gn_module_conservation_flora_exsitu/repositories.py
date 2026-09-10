@@ -1,58 +1,55 @@
-from urllib import request
-from geonature.utils.env import db
-from sqlalchemy.exc import SQLAlchemyError
-from pypnusershub.db.models import User
-from datetime import datetime, date
-from dateutil.parser import isoparse
-from shapely.geometry import shape
-from geoalchemy2.shape import from_shape
-from pypn_habref_api.models import Habref
-from pypnnomenclature.models import TNomenclatures
-from sqlalchemy.orm import aliased
-from flask import jsonify
-from ref_geo.models import LAreas, BibAreasTypes
-from apptax.taxonomie.models import Taxref
-from sqlalchemy import func, cast, Integer
 import json
-from sqlalchemy import and_
-from sqlalchemy.sql import text
+from datetime import datetime
 from functools import cached_property
-from sqlalchemy import Boolean
+from urllib import request
 
+from apptax.taxonomie.models import Taxref
+from dateutil.parser import isoparse
+from geoalchemy2.shape import from_shape
+from geonature.utils.env import db
+from pypnnomenclature.models import TNomenclatures
+from pypnusershub.db.models import User
+from ref_geo.models import LAreas
+from shapely.geometry import shape
+from sqlalchemy import Integer, and_, cast, func
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import aliased
+from sqlalchemy.sql import text
 
-from .models import(
-    TAction,
-    TActionReplicate,
-    THarvest,
-    TMaterial,
+from .models import (
     CorHarvestObserver,
     CorMaterialTaxon,
+    TAction,
+    TActionReplicate,
+    TCulture,
+    TCultureActionObservation,
+    TCultureActionSampling,
+    TCultureActionTransplantation,
+    TCultureActionTreatment,
+    THarvest,
+    TMaterial,
     TMaterielSeed,
     TSowing,
     TStorage,
     TTest,
-    TCulture,
-    TCultureActionTransplantation,
-    TCultureActionObservation,
-    TCultureActionTreatment,
-    TCultureActionSampling
 )
 
 
 class HarvestRepository:
     date_fmt = "%Y-%m-%d"
     date_time_fmt = "%Y-%m-%d %H:%M:%S"
+
     def _convert_geojson_to_ewkt(self, geojson):
         if not geojson:
             return None
-        
+
         try:
             geometry = shape(geojson)
             ewkt = from_shape(geometry, srid=2154)
             return ewkt
         except Exception as e:
             raise ValueError(f"Erreur de conversion GeoJSON -> EWKT : {e}")
-    
+
     @cached_property
     def commune_id(self):
         return db.session.execute(text("SELECT ref_geo.get_id_area_type('COM')")).scalar()
@@ -61,33 +58,32 @@ class HarvestRepository:
     def departement_id(self):
         return db.session.execute(text("SELECT ref_geo.get_id_area_type('DEP')")).scalar()
 
-
     def create(self, data):
         try:
             if data.get("date_end") == "":
                 data["date_end"] = data["date_start"]
-            
-            if data.get('geom'):
+
+            if data.get("geom"):
                 # Convertir le GeoJSON en chaîne JSON valide
-                geom_json = json.dumps(data['geom'])
+                geom_json = json.dumps(data["geom"])
                 # Conversion en géométrie avec ST_GeomFromGeoJSON
                 geom = func.ST_GeomFromGeoJSON(geom_json)
                 # Si la géométrie est en WGS84 (SRID 4326), la transformer en Lambert-93 (SRID 2154)
                 geom_transformed = func.ST_Transform(geom, 2154)
-                data['geom'] = geom_transformed
-            
-            if data["id_area_type"] and not data.get('geom'):
+                data["geom"] = geom_transformed
+
+            if data["id_area_type"] and not data.get("geom"):
                 commune_id = self.commune_id
                 departement_id = self.departement_id
                 if data["id_area_type"] == commune_id:  # Commune
                     data["id_area"] = data.get("id_area_muni", [None])[0]
                 elif data["id_area_type"] == departement_id:  # Département
                     data["id_area"] = data.get("id_area_dept", [None])[0]
-    
+
                 if data["id_area"]:
                     area = LAreas.query.get(data["id_area"])
 
-                    if area and area.centroid :
+                    if area and area.centroid:
                         data["geom"] = area.centroid
 
             data.pop("id_area_muni", None)
@@ -95,7 +91,7 @@ class HarvestRepository:
 
             observers_ids = data.pop("observers", [])
             additional_data = data.pop("additional_data", None)
-                     
+
             if additional_data:
                 harvest = THarvest(**data, additional_data=additional_data)
             else:
@@ -106,13 +102,13 @@ class HarvestRepository:
 
             if observers_ids:
                 observers = User.query.filter(User.id_role.in_(observers_ids)).all()
-                
+
                 for i, observer in enumerate(observers):
-                    is_main = (i == 0)
+                    is_main = i == 0
                     association = CorHarvestObserver(
-                        id_observer=observer.id_role, 
+                        id_observer=observer.id_role,
                         id_harvest=harvest.id_harvest,
-                        is_main_observer=is_main
+                        is_main_observer=is_main,
                     )
                     db.session.add(association)
 
@@ -121,7 +117,7 @@ class HarvestRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-    
+
     def update(self, id_harvest, data):
         try:
             data.pop("id_harvest", None)
@@ -132,15 +128,15 @@ class HarvestRepository:
             if not data.get("meta_update_date"):
                 data["meta_update_date"] = datetime.utcnow()
 
-            if data.get('geom'):
-                geom_json = json.dumps(data['geom'])
+            if data.get("geom"):
+                geom_json = json.dumps(data["geom"])
                 geom = func.ST_GeomFromGeoJSON(geom_json)
                 geom_transformed = func.ST_Transform(geom, 2154)
-                data['geom'] = geom_transformed
+                data["geom"] = geom_transformed
                 harvest.id_area = None
                 harvest.id_area_type = None
 
-            if data["id_area_type"] and not data.get('geom'):
+            if data["id_area_type"] and not data.get("geom"):
                 commune_id = self.commune_id
                 departement_id = self.departement_id
                 if data["id_area_type"] == commune_id:
@@ -159,7 +155,7 @@ class HarvestRepository:
             additional_data = data.pop("additional_data", None)
             if additional_data:
                 harvest.additional_data = additional_data
-    
+
             observers_ids = data.pop("observers", [])
 
             for key, value in data.items():
@@ -168,15 +164,17 @@ class HarvestRepository:
             db.session.commit()
 
             if observers_ids:
-                CorHarvestObserver.query.filter(CorHarvestObserver.id_harvest == harvest.id_harvest).delete()
+                CorHarvestObserver.query.filter(
+                    CorHarvestObserver.id_harvest == harvest.id_harvest
+                ).delete()
 
                 observers = User.query.filter(User.id_role.in_(observers_ids)).all()
                 for i, observer in enumerate(observers):
-                    is_main = (i == 0)
+                    is_main = i == 0
                     association = CorHarvestObserver(
-                        id_observer=observer.id_role, 
+                        id_observer=observer.id_role,
                         id_harvest=harvest.id_harvest,
-                        is_main_observer=is_main
+                        is_main_observer=is_main,
                     )
                     db.session.add(association)
 
@@ -188,44 +186,66 @@ class HarvestRepository:
             db.session.rollback()
             raise e
 
-
-    def build_harvest_geometry_query(self, 
-                            cd_nom_list, 
-                            cd_hab_list, 
-                            date_start, 
-                            date_end, 
-                            observers, 
-                            municipalites, 
-                            departements, 
-                            id_harvest_type, 
-                            code_material,
-                        ):
+    def build_harvest_geometry_query(
+        self,
+        cd_nom_list,
+        cd_hab_list,
+        date_start,
+        date_end,
+        observers,
+        municipalites,
+        departements,
+        id_harvest_type,
+        code_material,
+    ):
         l_areas_dept = aliased(LAreas)
         l_areas_commune = aliased(LAreas)
         Taxref_valid = aliased(Taxref)
         commune_id = self.commune_id
         departement_id = self.departement_id
 
-        query = db.session.query(
-            THarvest.id_harvest,
-            func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326)).label("geom"),
-        ).outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest) \
-        .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
-        .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
-        .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
-        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == departement_id)) \
-        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == commune_id)) \
-        .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
-        .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
-        .group_by(
-            THarvest.id_harvest, THarvest.geom
+        query = (
+            db.session.query(
+                THarvest.id_harvest,
+                func.ST_AsGeoJSON(func.ST_Transform(THarvest.geom, 4326)).label("geom"),
+            )
+            .outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
+            .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material)
+            .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
+            .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom)
+            .outerjoin(
+                l_areas_dept,
+                and_(
+                    THarvest.id_area == l_areas_dept.id_area,
+                    l_areas_dept.id_type == departement_id,
+                ),
+            )
+            .outerjoin(
+                l_areas_commune,
+                and_(
+                    THarvest.id_area == l_areas_commune.id_area,
+                    l_areas_commune.id_type == commune_id,
+                ),
+            )
+            .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest)
+            .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)
+            .group_by(THarvest.id_harvest, THarvest.geom)
         )
 
-
         if cd_nom_list:
-            cd_ref_list = db.session.query(Taxref.cd_ref).filter(Taxref.cd_nom.in_(cd_nom_list)).distinct().all()
+            cd_ref_list = (
+                db.session.query(Taxref.cd_ref)
+                .filter(Taxref.cd_nom.in_(cd_nom_list))
+                .distinct()
+                .all()
+            )
             cd_ref_list = [cd_ref[0] for cd_ref in cd_ref_list]
-            cd_nom_list = db.session.query(Taxref.cd_nom).filter(Taxref.cd_ref.in_(cd_ref_list)).distinct().all()
+            cd_nom_list = (
+                db.session.query(Taxref.cd_nom)
+                .filter(Taxref.cd_ref.in_(cd_ref_list))
+                .distinct()
+                .all()
+            )
             cd_nom_list = [cd_nom[0] for cd_nom in cd_nom_list]
             query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
 
@@ -255,60 +275,84 @@ class HarvestRepository:
 
         return query
 
-    
-    def build_harvest_query(self, 
-                            cd_nom_list, 
-                            cd_hab_list, 
-                            date_start, 
-                            date_end, 
-                            observers, 
-                            municipalites, 
-                            departements, 
-                            id_harvest_type, 
-                            code_material,
-                        ):
+    def build_harvest_query(
+        self,
+        cd_nom_list,
+        cd_hab_list,
+        date_start,
+        date_end,
+        observers,
+        municipalites,
+        departements,
+        id_harvest_type,
+        code_material,
+    ):
         l_areas_dept = aliased(LAreas)
         l_areas_commune = aliased(LAreas)
         Taxref_valid = aliased(Taxref)
         commune_id = self.commune_id
         departement_id = self.departement_id
 
-        query = db.session.query(
-            THarvest.id_harvest,
-            THarvest.date_start,
-            TMaterial.code_material,
-            func.string_agg(Taxref_valid.lb_nom, ', ').label('taxons'),
-            l_areas_dept.area_name.label('departement_name'),
-            l_areas_dept.area_code.label('departement_code'),
-            l_areas_commune.area_name.label('commune'),
-            func.json_agg(
-                func.json_build_object(
-                    "prenom_role", User.prenom_role,
-                    "nom_role", User.nom_role
-                )
-            ).label("observateurs")
-        ).outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest) \
-        .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material) \
-        .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom) \
-        .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom) \
-        .outerjoin(l_areas_dept, and_(THarvest.id_area == l_areas_dept.id_area, l_areas_dept.id_type == departement_id)) \
-        .outerjoin(l_areas_commune, and_(THarvest.id_area == l_areas_commune.id_area, l_areas_commune.id_type == commune_id)) \
-        .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest) \
-        .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)\
-        .group_by(
-            THarvest.id_harvest,
-            TMaterial.id_material,
-            THarvest.date_start,
-            TMaterial.code_material,
-            l_areas_dept.area_name,
-            l_areas_dept.area_code,
-            l_areas_commune.area_name,
+        query = (
+            db.session.query(
+                THarvest.id_harvest,
+                THarvest.date_start,
+                TMaterial.code_material,
+                func.string_agg(Taxref_valid.lb_nom, ", ").label("taxons"),
+                l_areas_dept.area_name.label("departement_name"),
+                l_areas_dept.area_code.label("departement_code"),
+                l_areas_commune.area_name.label("commune"),
+                func.json_agg(
+                    func.json_build_object(
+                        "prenom_role", User.prenom_role, "nom_role", User.nom_role
+                    )
+                ).label("observateurs"),
+            )
+            .outerjoin(TMaterial, THarvest.id_harvest == TMaterial.id_harvest)
+            .outerjoin(CorMaterialTaxon, TMaterial.id_material == CorMaterialTaxon.id_material)
+            .outerjoin(Taxref, CorMaterialTaxon.cd_nom == Taxref.cd_nom)
+            .outerjoin(Taxref_valid, Taxref.cd_ref == Taxref_valid.cd_nom)
+            .outerjoin(
+                l_areas_dept,
+                and_(
+                    THarvest.id_area == l_areas_dept.id_area,
+                    l_areas_dept.id_type == departement_id,
+                ),
+            )
+            .outerjoin(
+                l_areas_commune,
+                and_(
+                    THarvest.id_area == l_areas_commune.id_area,
+                    l_areas_commune.id_type == commune_id,
+                ),
+            )
+            .outerjoin(CorHarvestObserver, THarvest.id_harvest == CorHarvestObserver.id_harvest)
+            .outerjoin(User, CorHarvestObserver.id_observer == User.id_role)
+            .group_by(
+                THarvest.id_harvest,
+                TMaterial.id_material,
+                THarvest.date_start,
+                TMaterial.code_material,
+                l_areas_dept.area_name,
+                l_areas_dept.area_code,
+                l_areas_commune.area_name,
+            )
         )
 
         if cd_nom_list:
-            cd_ref_list = db.session.query(Taxref.cd_ref).filter(Taxref.cd_nom.in_(cd_nom_list)).distinct().all()
+            cd_ref_list = (
+                db.session.query(Taxref.cd_ref)
+                .filter(Taxref.cd_nom.in_(cd_nom_list))
+                .distinct()
+                .all()
+            )
             cd_ref_list = [cd_ref[0] for cd_ref in cd_ref_list]
-            cd_nom_list = db.session.query(Taxref.cd_nom).filter(Taxref.cd_ref.in_(cd_ref_list)).distinct().all()
+            cd_nom_list = (
+                db.session.query(Taxref.cd_nom)
+                .filter(Taxref.cd_ref.in_(cd_ref_list))
+                .distinct()
+                .all()
+            )
             cd_nom_list = [cd_nom[0] for cd_nom in cd_nom_list]
             query = query.filter(CorMaterialTaxon.cd_nom.in_(cd_nom_list))
 
@@ -337,13 +381,13 @@ class HarvestRepository:
             query = query.filter(TMaterial.code_material.ilike(f"%{code_material}%"))
 
         return query
-    
+
     def delete(self, harvest):
         try:
-            db.session.delete(harvest) 
+            db.session.delete(harvest)
             db.session.commit()
         except SQLAlchemyError as e:
-            db.session.rollback()  
+            db.session.rollback()
             raise e
 
 
@@ -351,7 +395,7 @@ class HarvestMaterialRepository:
     def get_one(self, id_material):
         material = TMaterial.query.get(id_material)
         return material
-    
+
     def create(self, data):
         try:
             existing_material = TMaterial.query.filter_by(
@@ -361,10 +405,7 @@ class HarvestMaterialRepository:
             if existing_material:
                 return False, "Ce code matériel existe déjà."
 
-            id_culture_source = data.pop(
-                "id_culture_source",
-                None
-            )
+            id_culture_source = data.pop("id_culture_source", None)
 
             # Ces deux champs ne doivent jamais être imposés
             # manuellement depuis le formulaire Matériel récolté.
@@ -378,31 +419,19 @@ class HarvestMaterialRepository:
                 data["id_material_parent"] = parent.id_material if parent else None
 
             if id_culture_source not in (None, ""):
-                culture = TCulture.query.get(
-                    id_culture_source
-                )
+                culture = TCulture.query.get(id_culture_source)
 
                 if not culture:
                     return False, "Culture source non trouvée."
 
-                CultureRepository.require_initial_transplantation(
-                    culture.id_culture
-                )
+                CultureRepository.require_initial_transplantation(culture.id_culture)
 
-                source_material = TMaterial.query.get(
-                    culture.id_material
-                )
+                source_material = TMaterial.query.get(culture.id_material)
 
                 if not source_material:
-                    return False, (
-                        "Le matériel récolté associé à la Culture "
-                        "est introuvable."
-                    )
+                    return False, ("Le matériel récolté associé à la Culture est introuvable.")
 
-                if (
-                    source_material.id_harvest
-                    != data.get("id_harvest")
-                ):
+                if source_material.id_harvest != data.get("id_harvest"):
                     return False, (
                         "La Culture et le nouveau matériel récolté "
                         "doivent appartenir à la même récolte."
@@ -420,10 +449,7 @@ class HarvestMaterialRepository:
                 ).scalar()
 
                 if not id_action_type:
-                    return False, (
-                        "Le type d'action Matériel récolté "
-                        "est introuvable."
-                    )
+                    return False, ("Le type d'action Matériel récolté est introuvable.")
 
                 action = TAction(
                     id_culture=culture.id_culture,
@@ -433,9 +459,7 @@ class HarvestMaterialRepository:
                     date_end=None,
                     id_actor=None,
                     id_action_type=id_action_type,
-                    meta_create_by=data.get(
-                        "meta_create_by"
-                    )
+                    meta_create_by=data.get("meta_create_by"),
                 )
 
                 db.session.add(action)
@@ -444,12 +468,12 @@ class HarvestMaterialRepository:
                 data["id_action"] = action.id_action
 
             additional_data = data.pop("additional_data", None)
-                     
+
             if additional_data:
                 material = TMaterial(**data, additional_data=additional_data)
             else:
                 material = TMaterial(**data)
-            
+
             db.session.add(material)
             db.session.commit()
             return True, material
@@ -469,7 +493,9 @@ class HarvestMaterialRepository:
                 return None
 
             if "code_material" in data:
-                existing_material = TMaterial.query.filter_by(code_material=data["code_material"]).first()
+                existing_material = TMaterial.query.filter_by(
+                    code_material=data["code_material"]
+                ).first()
                 if existing_material and existing_material.id_material != id_material:
                     return False
 
@@ -495,18 +521,13 @@ class HarvestMaterialRepository:
             db.session.rollback()
             raise e
 
-
     def delete(self, id_material):
         try:
             material = self.get_one(id_material)
             if not material:
                 return False
 
-            linked_action = (
-                TAction.query.get(material.id_action)
-                if material.id_action
-                else None
-            )
+            linked_action = TAction.query.get(material.id_action) if material.id_action else None
 
             db.session.query(CorMaterialTaxon).filter_by(id_material=id_material).delete()
 
@@ -523,26 +544,26 @@ class HarvestMaterialRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-    
+
 
 class TMaterielSeedRepository:
     def create(self, data):
         try:
             additional_data = data.pop("additional_data", None)
-                     
+
             if additional_data:
                 seed = TMaterielSeed(**data, additional_data=additional_data)
             else:
                 seed = TMaterielSeed(**data)
-            
+
             db.session.add(seed)
             db.session.commit()
-            return seed 
+            return seed
 
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-    
+
     def update(self, id_seed, data):
         seed = TMaterielSeed.query.get(id_seed)
         if not seed:
@@ -559,7 +580,7 @@ class TMaterielSeedRepository:
             db.session.rollback()
             raise e
 
-         
+
 class StorageRepository:
     def create(self, data):
         try:
@@ -579,31 +600,41 @@ class StorageRepository:
 
             # Vérifie qu'un stockage initial existe si l'action n'est pas un "stockage initial"
             if id_storage_action != id_action_initial_storage:
-                initial_storage = db.session.query(TStorage).filter_by(
-                    id_material=id_material,
-                    id_place=id_place,
-                    id_storage_action=id_action_initial_storage
-                ).first()
+                initial_storage = (
+                    db.session.query(TStorage)
+                    .filter_by(
+                        id_material=id_material,
+                        id_place=id_place,
+                        id_storage_action=id_action_initial_storage,
+                    )
+                    .first()
+                )
 
                 if not initial_storage:
-                    raise ValueError("Un stockage initial est requis avant d'effectuer cette action.")
-                
+                    raise ValueError(
+                        "Un stockage initial est requis avant d'effectuer cette action."
+                    )
+
                 id_dry_type = data.get("id_destock")
                 dry_type_total = self.get_id_nomenclature("CFE_DESTOCK", "total")
 
-                if id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest") and id_dry_type == dry_type_total:
+                if (
+                    id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")
+                    and id_dry_type == dry_type_total
+                ):
                     quantity = self.get_current_quantity(id_material, id_place)
                     data["quantity"] = quantity
 
                 # Vérifie la quantité pour les actions qui en consomment
                 action_codes_needing_quantity = ["depl", "dest"]
                 id_actions_need_quantity = [
-                    self.get_id_nomenclature("CFE_STORAGE_ACTION", c) for c in action_codes_needing_quantity
+                    self.get_id_nomenclature("CFE_STORAGE_ACTION", c)
+                    for c in action_codes_needing_quantity
                 ]
 
                 if id_storage_action in id_actions_need_quantity:
                     current_quantity = self.get_current_quantity(id_material, id_place)
-    
+
                     if quantity > current_quantity:
                         raise ValueError(
                             f"Quantité demandée ({quantity}) supérieure au stock disponible ({current_quantity})."
@@ -631,7 +662,7 @@ class StorageRepository:
     def get_id_nomenclature(self, type_code, code_nomenclature):
         return db.session.execute(
             text("SELECT ref_nomenclatures.get_id_nomenclature(:mytype, :mycdnomenclature)"),
-            {"mytype": type_code, "mycdnomenclature": code_nomenclature}
+            {"mytype": type_code, "mycdnomenclature": code_nomenclature},
         ).scalar()
 
     def get_current_quantity(self, id_material, id_place):
@@ -641,25 +672,30 @@ class StorageRepository:
         id_action_deplacement = self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl")
 
         # Somme des quantités entrées
-        initial_storage = db.session.query(
-            db.func.sum(TStorage.quantity)
-        ).filter_by(
-            id_material=id_material,
-            id_place=id_place,
-            id_storage_action=id_action_initial_storage
-        ).scalar() or 0
+        initial_storage = (
+            db.session.query(db.func.sum(TStorage.quantity))
+            .filter_by(
+                id_material=id_material,
+                id_place=id_place,
+                id_storage_action=id_action_initial_storage,
+            )
+            .scalar()
+            or 0
+        )
 
         # Quantités outputs : déstockages + déplacements
-        exits = db.session.query(
-            db.func.sum(TStorage.quantity)
-        ).filter(
-            TStorage.id_material == id_material,
-            TStorage.id_place == id_place,
-            TStorage.id_storage_action.in_([id_action_destock, id_action_deplacement])
-        ).scalar() or 0
+        exits = (
+            db.session.query(db.func.sum(TStorage.quantity))
+            .filter(
+                TStorage.id_material == id_material,
+                TStorage.id_place == id_place,
+                TStorage.id_storage_action.in_([id_action_destock, id_action_deplacement]),
+            )
+            .scalar()
+            or 0
+        )
 
         return initial_storage - exits
-    
 
     def has_initial_stockage(self, id_material: int, code_place: str) -> bool:
         id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
@@ -670,34 +706,40 @@ class StorageRepository:
                 and_(
                     TStorage.id_material == id_material,
                     TStorage.id_place == id_place,
-                    TStorage.id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti")
+                    TStorage.id_storage_action
+                    == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti"),
                 )
             )
         ).scalar()
-    
 
     def get_current_quantities(self, id_material: int) -> dict:
         """Retourne un dict {id_place: current_quantity}"""
-        initial_storage = db.session.query(
-            TStorage.id_place,
-            func.sum(TStorage.quantity).label("quantity")
-        ).filter(
-            TStorage.id_material == id_material,
-            TStorage.id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti"),
-            TStorage.quantity != None
-        ).group_by(TStorage.id_place).all()
+        initial_storage = (
+            db.session.query(TStorage.id_place, func.sum(TStorage.quantity).label("quantity"))
+            .filter(
+                TStorage.id_material == id_material,
+                TStorage.id_storage_action == self.get_id_nomenclature("CFE_STORAGE_ACTION", "sti"),
+                TStorage.quantity != None,
+            )
+            .group_by(TStorage.id_place)
+            .all()
+        )
 
-        outputs = db.session.query(
-            TStorage.id_place,
-            func.sum(TStorage.quantity).label("quantity")
-        ).filter(
-            TStorage.id_material == id_material,
-            TStorage.id_storage_action.in_([
-                self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl"),
-                self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest")
-            ]),
-            TStorage.quantity != None
-        ).group_by(TStorage.id_place).all()
+        outputs = (
+            db.session.query(TStorage.id_place, func.sum(TStorage.quantity).label("quantity"))
+            .filter(
+                TStorage.id_material == id_material,
+                TStorage.id_storage_action.in_(
+                    [
+                        self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl"),
+                        self.get_id_nomenclature("CFE_STORAGE_ACTION", "dest"),
+                    ]
+                ),
+                TStorage.quantity != None,
+            )
+            .group_by(TStorage.id_place)
+            .all()
+        )
 
         result = {}
         # Ajout des quantités initiales
@@ -712,25 +754,30 @@ class StorageRepository:
         # Nettoyage des quantités <= 0
         # result = {k: v for k, v in result.items() if v > 0}
         return result
-    
+
     def get_place_code_mapping(self) -> dict:
         """Retourne un mapping des codes de lieu vers leurs IDs (ex: 'cf' -> 12)"""
-        id_type_nomenclature = db.session.execute(text("SELECT ref_nomenclatures.get_id_nomenclature_type('CFE_PLACE')")).scalar()
-        rows = db.session.query(
-            TNomenclatures.cd_nomenclature,
-            TNomenclatures.id_nomenclature
-        ).filter(
-            TNomenclatures.id_type == id_type_nomenclature,
-            TNomenclatures.cd_nomenclature.in_(["cf", "sds", "sdps", "cong"])
-        ).all()
+        id_type_nomenclature = db.session.execute(
+            text("SELECT ref_nomenclatures.get_id_nomenclature_type('CFE_PLACE')")
+        ).scalar()
+        rows = (
+            db.session.query(TNomenclatures.cd_nomenclature, TNomenclatures.id_nomenclature)
+            .filter(
+                TNomenclatures.id_type == id_type_nomenclature,
+                TNomenclatures.cd_nomenclature.in_(["cf", "sds", "sdps", "cong"]),
+            )
+            .all()
+        )
 
         return {row.cd_nomenclature: row.id_nomenclature for row in rows}
-    
-    def get_actions_by_place(self, id_material: int, code_place: str, page: int = 1, limit: int = 10):
+
+    def get_actions_by_place(
+        self, id_material: int, code_place: str, page: int = 1, limit: int = 10
+    ):
         id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
         if not id_place:
             raise ValueError("Lieu inconnu")
-        
+
         ActionType = aliased(TNomenclatures)
         Destination = aliased(TNomenclatures)
         Actor = aliased(User)
@@ -763,32 +810,42 @@ class StorageRepository:
         id_depl = self.get_id_nomenclature("CFE_STORAGE_ACTION", "depl")  # déplacement
 
         # Récupérer le total_count du TMaterielSeed (s'il existe)
-        seed_data = db.session.query(TMaterielSeed.total_count).filter_by(id_material=id_material).one_or_none()
+        seed_data = (
+            db.session.query(TMaterielSeed.total_count)
+            .filter_by(id_material=id_material)
+            .one_or_none()
+        )
 
         # Déterminer initial_storage
         if seed_data and seed_data.total_count and seed_data.total_count > 0:
             initial_storage = seed_data.total_count
         else:
-            initial_storage = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
+            initial_storage = (
+                db.session.query(func.coalesce(func.sum(TStorage.quantity), 0))
                 .filter(
                     TStorage.id_material == id_material,
-                    TStorage.id_storage_action == id_sti
-                ).scalar()
+                    TStorage.id_storage_action == id_sti,
+                )
+                .scalar()
+            )
 
         # Calcul du total des quantités sorties (déstockage + déplacement)
-        quantity_output = db.session.query(func.coalesce(func.sum(TStorage.quantity), 0)) \
+        quantity_output = (
+            db.session.query(func.coalesce(func.sum(TStorage.quantity), 0))
             .filter(
                 TStorage.id_material == id_material,
-                TStorage.id_storage_action.in_([id_dest, id_depl])
-            ).scalar()
+                TStorage.id_storage_action.in_([id_dest, id_depl]),
+            )
+            .scalar()
+        )
 
         current_quantity = initial_storage - quantity_output
 
         return {
             "initial_storage": initial_storage,
-            "current_quantity": current_quantity
+            "current_quantity": current_quantity,
         }
-    
+
     def update(self, id_storage, data):
         try:
             action = TStorage.query.get(id_storage)
@@ -805,7 +862,7 @@ class StorageRepository:
 
             if data.get("quantity"):
                 self.verify_quantity(action, data["quantity"])
-            
+
             for key, value in data.items():
                 if hasattr(action, key):
                     setattr(action, key, value)
@@ -818,7 +875,7 @@ class StorageRepository:
         except Exception as e:
             db.session.rollback()
             raise e
-        
+
     def verify_quantity(self, action, new_quantity):
         id_material = action.id_material
         id_place = action.id_place
@@ -834,13 +891,14 @@ class StorageRepository:
         if id_storage_action in id_actions_need_quantity:
             if action.quantity:
                 current_quantity += action.quantity
-            
+
             if new_quantity > current_quantity:
-                raise ValueError(f"Quantité demandée ({new_quantity}) supérieure au stock disponible ({current_quantity}).")
+                raise ValueError(
+                    f"Quantité demandée ({new_quantity}) supérieure au stock disponible ({current_quantity})."
+                )
 
 
 class SowingRepository:
-
     def get_all_by_material(self, id_material: int):
         try:
             return TSowing.query.filter_by(id_material=id_material).all()
@@ -868,7 +926,7 @@ class SowingRepository:
                 container={"value": container} if isinstance(container, str) else container,
                 substrate={"value": substrate} if isinstance(substrate, str) else substrate,
                 additional_data=additional_data or {},
-                meta_create_date=datetime.utcnow()
+                meta_create_date=datetime.utcnow(),
             )
 
             db.session.add(sowing)
@@ -909,28 +967,17 @@ class SowingRepository:
         try:
             sowing = TSowing.query.get(id_sowing)
             if not sowing:
-                return {
-                    "deleted": False,
-                    "not_found": True,
-                    "action_count": 0
-                }
+                return {"deleted": False, "not_found": True, "action_count": 0}
 
             action_count = TAction.query.filter_by(id_sowing=id_sowing).count()
 
             if action_count > 0:
-                return {
-                    "deleted": False,
-                    "blocked": True,
-                    "action_count": action_count
-                }
+                return {"deleted": False, "blocked": True, "action_count": action_count}
 
             db.session.delete(sowing)
             db.session.commit()
 
-            return {
-                "deleted": True,
-                "action_count": 0
-            }
+            return {"deleted": True, "action_count": 0}
 
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -954,14 +1001,21 @@ class SowingRepository:
                     Substrate.label_default.label("label_substrate"),
                     Actor.nom_role.label("nom_actor"),
                     Actor.prenom_role.label("prenom_actor"),
-                    Material.code_material.label("code_material")
+                    Material.code_material.label("code_material"),
                 )
                 .outerjoin(Location, TSowing.id_location == Location.id_nomenclature)
-                .outerjoin(WateringMethod, TSowing.id_watering_method == WateringMethod.id_nomenclature)
-                .outerjoin(SowingMethod, TSowing.id_sowing_method == SowingMethod.id_nomenclature)
+                .outerjoin(
+                    WateringMethod,
+                    TSowing.id_watering_method == WateringMethod.id_nomenclature,
+                )
+                .outerjoin(
+                    SowingMethod,
+                    TSowing.id_sowing_method == SowingMethod.id_nomenclature,
+                )
                 .outerjoin(
                     Substrate,
-                    cast(TSowing.substrate["id_nomenclature"].astext, Integer) == Substrate.id_nomenclature
+                    cast(TSowing.substrate["id_nomenclature"].astext, Integer)
+                    == Substrate.id_nomenclature,
                 )
                 .outerjoin(Actor, TSowing.id_actor == Actor.id_role)
                 .outerjoin(Material, TSowing.id_material == Material.id_material)
@@ -982,7 +1036,7 @@ class SowingRepository:
                     "nom_actor": nom_actor,
                     "prenom_actor": prenom_actor,
                     "code_material": code_material,
-                    "emergence_rate_action": emergence_rates_by_sowing.get(sowing.id_sowing)
+                    "emergence_rate_action": emergence_rates_by_sowing.get(sowing.id_sowing),
                 }
                 for sowing, label_location, label_watering, label_sowing, label_substrate, nom_actor, prenom_actor, code_material in results
             ]
@@ -991,15 +1045,13 @@ class SowingRepository:
             db.session.rollback()
             raise e
 
-    
-        
     def list_by_material(self, id_material: int):
         try:
             return TSowing.query.filter_by(id_material=id_material).all()
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-        
+
     def get_average_emergence_rate_by_sowing(self, id_material: int):
         rows = (
             db.session.query(
@@ -1009,7 +1061,7 @@ class SowingRepository:
                 TActionReplicate.code,
                 TActionReplicate.count_germinated,
                 TActionReplicate.count_dead,
-                TActionReplicate.count_viable
+                TActionReplicate.count_viable,
             )
             .join(TSowing, TAction.id_sowing == TSowing.id_sowing)
             .join(TActionReplicate, TActionReplicate.id_action == TAction.id_action)
@@ -1017,13 +1069,9 @@ class SowingRepository:
                 TSowing.id_material == id_material,
                 TAction.id_sowing.isnot(None),
                 TActionReplicate.code.isnot(None),
-                TActionReplicate.code != "synth"
+                TActionReplicate.code != "synth",
             )
-            .order_by(
-                TAction.id_sowing,
-                TAction.id_action,
-                TActionReplicate.code
-            )
+            .order_by(TAction.id_sowing, TAction.id_action, TActionReplicate.code)
             .all()
         )
 
@@ -1045,11 +1093,7 @@ class SowingRepository:
 
             for rows_by_code in rows_by_date.values():
                 for code, row in rows_by_code.items():
-                    totals_by_code.setdefault(code, {
-                        "germinated": 0,
-                        "dead": 0,
-                        "viable": 0
-                    })
+                    totals_by_code.setdefault(code, {"germinated": 0, "dead": 0, "viable": 0})
 
                     totals_by_code[code]["germinated"] += row.count_germinated or 0
                     totals_by_code[code]["dead"] += row.count_dead or 0
@@ -1070,8 +1114,8 @@ class SowingRepository:
 
         return result
 
-class CultureRepository:
 
+class CultureRepository:
     @staticmethod
     def _parse_datetime(value, field_name: str, required: bool = False):
         if value in (None, ""):
@@ -1085,42 +1129,31 @@ class CultureRepository:
         try:
             return isoparse(value)
         except (TypeError, ValueError) as exc:
-            raise ValueError(
-                f"Le champ {field_name} doit contenir une date valide"
-            ) from exc
+            raise ValueError(f"Le champ {field_name} doit contenir une date valide") from exc
 
     @staticmethod
     def _validate_source(id_material: int, id_sowing=None, id_test=None):
         if id_sowing and id_test:
             raise ValueError(
-                "Une culture ne peut pas être liée à la fois "
-                "à un semis et à un test de germination"
+                "Une culture ne peut pas être liée à la fois à un semis et à un test de germination"
             )
 
         if id_sowing:
-            sowing = TSowing.query.filter_by(
-                id_sowing=id_sowing,
-                id_material=id_material
-            ).first()
+            sowing = TSowing.query.filter_by(id_sowing=id_sowing, id_material=id_material).first()
 
             if not sowing:
                 raise ValueError(
-                    "Le semis sélectionné n'existe pas "
-                    "ou n'appartient pas à ce matériel"
+                    "Le semis sélectionné n'existe pas ou n'appartient pas à ce matériel"
                 )
 
         if id_test:
             test = (
                 db.session.query(TTest)
-                .join(
-                    TNomenclatures,
-                    TTest.id_test_type ==
-                    TNomenclatures.id_nomenclature
-                )
+                .join(TNomenclatures, TTest.id_test_type == TNomenclatures.id_nomenclature)
                 .filter(
                     TTest.id_test == id_test,
                     TTest.id_material == id_material,
-                    TNomenclatures.cd_nomenclature == 'ger'
+                    TNomenclatures.cd_nomenclature == "ger",
                 )
                 .first()
             )
@@ -1134,28 +1167,18 @@ class CultureRepository:
 
     @staticmethod
     def _validate_code(code_culture, id_culture=None):
-        code_culture = str(
-            code_culture or ""
-        ).strip()
+        code_culture = str(code_culture or "").strip()
 
         if not code_culture:
-            raise ValueError(
-                "Le numéro de culture est obligatoire"
-            )
+            raise ValueError("Le numéro de culture est obligatoire")
 
-        query = TCulture.query.filter(
-            TCulture.code_culture == code_culture
-        )
+        query = TCulture.query.filter(TCulture.code_culture == code_culture)
 
         if id_culture is not None:
-            query = query.filter(
-                TCulture.id_culture != id_culture
-            )
+            query = query.filter(TCulture.id_culture != id_culture)
 
         if query.first():
-            raise ValueError(
-                "Ce numéro de culture est déjà utilisé"
-            )
+            raise ValueError("Ce numéro de culture est déjà utilisé")
 
         return code_culture
 
@@ -1163,54 +1186,30 @@ class CultureRepository:
     def get_initial_action(id_culture: int):
         return (
             db.session.query(TAction)
-            .filter(
-                TAction.id_culture == id_culture
-            )
-            .order_by(
-                TAction.meta_create_date.asc(),
-                TAction.id_action.asc()
-            )
+            .filter(TAction.id_culture == id_culture)
+            .order_by(TAction.meta_create_date.asc(), TAction.id_action.asc())
             .first()
         )
 
     @staticmethod
-    def has_initial_transplantation(
-        id_culture: int
-    ) -> bool:
-        initial_action = (
-            CultureRepository
-            .get_initial_action(id_culture)
-        )
+    def has_initial_transplantation(id_culture: int) -> bool:
+        initial_action = CultureRepository.get_initial_action(id_culture)
 
         if not initial_action:
             return False
 
         return (
-            db.session.query(
-                TCultureActionTransplantation
-            )
-            .filter(
-                TCultureActionTransplantation.id_action ==
-                initial_action.id_action
-            )
+            db.session.query(TCultureActionTransplantation)
+            .filter(TCultureActionTransplantation.id_action == initial_action.id_action)
             .first()
             is not None
         )
 
     @staticmethod
-    def require_initial_transplantation(
-        id_culture: int
-    ) -> None:
-        if not (
-            CultureRepository
-            .has_initial_transplantation(
-                id_culture
-            )
-        ):
+    def require_initial_transplantation(id_culture: int) -> None:
+        if not (CultureRepository.has_initial_transplantation(id_culture)):
             raise ValueError(
-                "La première action d'une culture "
-                "doit obligatoirement être "
-                "une transplantation."
+                "La première action d'une culture doit obligatoirement être une transplantation."
             )
 
     def create(self, id_material: int, data: dict):
@@ -1222,39 +1221,23 @@ class CultureRepository:
             payload.pop("meta_create_date", None)
             payload.pop("meta_update_by", None)
             payload.pop("meta_update_date", None)
-            code_culture = self._validate_code(
-                payload.pop("code_culture", None)
-            )
+            code_culture = self._validate_code(payload.pop("code_culture", None))
 
             date_start = self._parse_datetime(
-                payload.pop("date_start", None),
-                "date_start",
-                required=True
+                payload.pop("date_start", None), "date_start", required=True
             )
 
-            date_end = self._parse_datetime(
-                payload.pop("date_end", None),
-                "date_end"
-            )
+            date_end = self._parse_datetime(payload.pop("date_end", None), "date_end")
 
             if date_end and date_end < date_start:
-                raise ValueError(
-                    "La date de fin doit être supérieure "
-                    "ou égale à la date de début"
-                )
+                raise ValueError("La date de fin doit être supérieure ou égale à la date de début")
 
             id_sowing = payload.get("id_sowing")
             id_test = payload.get("id_test")
 
-            self._validate_source(
-                id_material,
-                id_sowing,
-                id_test
-            )
+            self._validate_source(id_material, id_sowing, id_test)
 
-            additional_data = (
-                payload.pop("additional_data", None) or {}
-            )
+            additional_data = payload.pop("additional_data", None) or {}
 
             culture = TCulture(
                 **payload,
@@ -1263,7 +1246,7 @@ class CultureRepository:
                 date_start=date_start,
                 date_end=date_end,
                 additional_data=additional_data,
-                meta_create_date=datetime.utcnow()
+                meta_create_date=datetime.utcnow(),
             )
 
             db.session.add(culture)
@@ -1289,65 +1272,23 @@ class CultureRepository:
         result = (
             db.session.query(
                 TCulture,
-
-                Actor.nom_role.label(
-                    "actor_last_name"
-                ),
-                Actor.prenom_role.label(
-                    "actor_first_name"
-                ),
-
-                Creator.nom_role.label(
-                    "creator_last_name"
-                ),
-                Creator.prenom_role.label(
-                    "creator_first_name"
-                ),
-
-                Updater.nom_role.label(
-                    "updater_last_name"
-                ),
-                Updater.prenom_role.label(
-                    "updater_first_name"
-                ),
-
-                Material.code_material.label(
-                    "code_material"
-                ),
-                Sowing.code.label(
-                    "code_sowing"
-                ),
-                Test.code.label(
-                    "code_test"
-                )
+                Actor.nom_role.label("actor_last_name"),
+                Actor.prenom_role.label("actor_first_name"),
+                Creator.nom_role.label("creator_last_name"),
+                Creator.prenom_role.label("creator_first_name"),
+                Updater.nom_role.label("updater_last_name"),
+                Updater.prenom_role.label("updater_first_name"),
+                Material.code_material.label("code_material"),
+                Sowing.code.label("code_sowing"),
+                Test.code.label("code_test"),
             )
-            .outerjoin(
-                Actor,
-                TCulture.id_actor == Actor.id_role
-            )
-            .outerjoin(
-                Creator,
-                TCulture.meta_create_by == Creator.id_role
-            )
-            .outerjoin(
-                Updater,
-                TCulture.meta_update_by == Updater.id_role
-            )
-            .outerjoin(
-                Material,
-                TCulture.id_material == Material.id_material
-            )
-            .outerjoin(
-                Sowing,
-                TCulture.id_sowing == Sowing.id_sowing
-            )
-            .outerjoin(
-                Test,
-                TCulture.id_test == Test.id_test
-            )
-            .filter(
-                TCulture.id_culture == id_culture
-            )
+            .outerjoin(Actor, TCulture.id_actor == Actor.id_role)
+            .outerjoin(Creator, TCulture.meta_create_by == Creator.id_role)
+            .outerjoin(Updater, TCulture.meta_update_by == Updater.id_role)
+            .outerjoin(Material, TCulture.id_material == Material.id_material)
+            .outerjoin(Sowing, TCulture.id_sowing == Sowing.id_sowing)
+            .outerjoin(Test, TCulture.id_test == Test.id_test)
+            .filter(TCulture.id_culture == id_culture)
             .first()
         )
 
@@ -1364,68 +1305,46 @@ class CultureRepository:
             updater_first_name,
             code_material,
             code_sowing,
-            code_test
+            code_test,
         ) = result
 
         data = culture.to_dic()
 
-        data.update({
-            "actor_label": (
-                f"{actor_first_name or ''} "
-                f"{actor_last_name or ''}"
-            ).strip() or None,
-
-            "created_by_label": (
-                f"{creator_first_name or ''} "
-                f"{creator_last_name or ''}"
-            ).strip() or None,
-
-            "updated_by_label": (
-                f"{updater_first_name or ''} "
-                f"{updater_last_name or ''}"
-            ).strip() or None,
-
-            "code_material": code_material,
-            "code_sowing": code_sowing,
-            "code_test": code_test,
-
-            "source_type": (
-                "sowing"
-                if culture.id_sowing
-                else "test"
-                if culture.id_test
-                else None
-            ),
-
-            "source_code": code_sowing or code_test
-        })
+        data.update(
+            {
+                "actor_label": (f"{actor_first_name or ''} {actor_last_name or ''}").strip()
+                or None,
+                "created_by_label": (
+                    f"{creator_first_name or ''} {creator_last_name or ''}"
+                ).strip()
+                or None,
+                "updated_by_label": (
+                    f"{updater_first_name or ''} {updater_last_name or ''}"
+                ).strip()
+                or None,
+                "code_material": code_material,
+                "code_sowing": code_sowing,
+                "code_test": code_test,
+                "source_type": (
+                    "sowing" if culture.id_sowing else "test" if culture.id_test else None
+                ),
+                "source_code": code_sowing or code_test,
+            }
+        )
 
         return data
 
     def get_all_by_material(self, id_material: int):
         culture_ids = (
-            db.session.query(
-                TCulture.id_culture
-            )
-            .filter(
-                TCulture.id_material == id_material
-            )
-            .order_by(
-                TCulture.date_start.desc(),
-                TCulture.id_culture.desc()
-            )
+            db.session.query(TCulture.id_culture)
+            .filter(TCulture.id_material == id_material)
+            .order_by(TCulture.date_start.desc(), TCulture.id_culture.desc())
             .all()
         )
 
-        return [
-            self.get_with_labels_by_id(id_culture)
-            for (id_culture,) in culture_ids
-        ]
+        return [self.get_with_labels_by_id(id_culture) for (id_culture,) in culture_ids]
 
-    def get_direct_by_material(
-        self,
-        id_material: int
-    ):
+    def get_direct_by_material(self, id_material: int):
         """
         Cultures créées directement depuis
         le matériel récolté.
@@ -1436,32 +1355,19 @@ class CultureRepository:
         """
 
         culture_ids = (
-            db.session.query(
-                TCulture.id_culture
-            )
+            db.session.query(TCulture.id_culture)
             .filter(
                 TCulture.id_material == id_material,
                 TCulture.id_sowing.is_(None),
-                TCulture.id_test.is_(None)
+                TCulture.id_test.is_(None),
             )
-            .order_by(
-                TCulture.date_start.desc(),
-                TCulture.id_culture.desc()
-            )
+            .order_by(TCulture.date_start.desc(), TCulture.id_culture.desc())
             .all()
         )
 
-        return [
-            self.get_with_labels_by_id(id_culture)
-            for (id_culture,) in culture_ids
-        ]
+        return [self.get_with_labels_by_id(id_culture) for (id_culture,) in culture_ids]
 
-
-    def get_all_by_sowing(
-        self,
-        id_material: int,
-        id_sowing: int
-    ):
+    def get_all_by_sowing(self, id_material: int, id_sowing: int):
         """
         Cultures associées à un Semis précis.
 
@@ -1470,38 +1376,22 @@ class CultureRepository:
         id_test = NULL
         """
 
-        self._validate_source(
-            id_material,
-            id_sowing=id_sowing,
-            id_test=None
-        )
+        self._validate_source(id_material, id_sowing=id_sowing, id_test=None)
 
         culture_ids = (
-            db.session.query(
-                TCulture.id_culture
-            )
+            db.session.query(TCulture.id_culture)
             .filter(
                 TCulture.id_material == id_material,
                 TCulture.id_sowing == id_sowing,
-                TCulture.id_test.is_(None)
+                TCulture.id_test.is_(None),
             )
-            .order_by(
-                TCulture.date_start.desc(),
-                TCulture.id_culture.desc()
-            )
+            .order_by(TCulture.date_start.desc(), TCulture.id_culture.desc())
             .all()
         )
 
-        return [
-            self.get_with_labels_by_id(id_culture)
-            for (id_culture,) in culture_ids
-        ]
+        return [self.get_with_labels_by_id(id_culture) for (id_culture,) in culture_ids]
 
-    def get_all_by_test(
-        self,
-        id_material: int,
-        id_test: int
-    ):
+    def get_all_by_test(self, id_material: int, id_test: int):
         """
         Cultures associées à un Test
         de germination précis.
@@ -1511,43 +1401,25 @@ class CultureRepository:
         id_test = test courant
         """
 
-        self._validate_source(
-            id_material,
-            id_sowing=None,
-            id_test=id_test
-        )
+        self._validate_source(id_material, id_sowing=None, id_test=id_test)
 
         culture_ids = (
-            db.session.query(
-                TCulture.id_culture
-            )
+            db.session.query(TCulture.id_culture)
             .filter(
                 TCulture.id_material == id_material,
                 TCulture.id_sowing.is_(None),
-                TCulture.id_test == id_test
+                TCulture.id_test == id_test,
             )
-            .order_by(
-                TCulture.date_start.desc(),
-                TCulture.id_culture.desc()
-            )
+            .order_by(TCulture.date_start.desc(), TCulture.id_culture.desc())
             .all()
         )
 
-        return [
-            self.get_with_labels_by_id(id_culture)
-            for (id_culture,) in culture_ids
-        ]
+        return [self.get_with_labels_by_id(id_culture) for (id_culture,) in culture_ids]
 
-    def update(
-        self,
-        id_material: int,
-        id_culture: int,
-        data: dict
-    ):
+    def update(self, id_material: int, id_culture: int, data: dict):
         try:
             culture = TCulture.query.filter_by(
-                id_culture=id_culture,
-                id_material=id_material
+                id_culture=id_culture, id_material=id_material
             ).first()
 
             if not culture:
@@ -1560,80 +1432,45 @@ class CultureRepository:
                 "id_material",
                 "meta_create_by",
                 "meta_create_date",
-                "meta_update_date"
+                "meta_update_date",
             ):
                 payload.pop(protected_field, None)
 
             code_culture = self._validate_code(
-                payload.pop(
-                    "code_culture",
-                    culture.code_culture
-                ),
-                id_culture=id_culture
+                payload.pop("code_culture", culture.code_culture), id_culture=id_culture
             )
 
             date_start = self._parse_datetime(
-                payload.pop(
-                    "date_start",
-                    culture.date_start
-                ),
+                payload.pop("date_start", culture.date_start),
                 "date_start",
-                required=True
+                required=True,
             )
 
             if "date_end" in payload:
-                date_end = self._parse_datetime(
-                    payload.pop("date_end"),
-                    "date_end"
-                )
+                date_end = self._parse_datetime(payload.pop("date_end"), "date_end")
             else:
                 date_end = culture.date_end
 
             if date_end and date_end < date_start:
-                raise ValueError(
-                    "La date de fin doit être supérieure "
-                    "ou égale à la date de début"
-                )
+                raise ValueError("La date de fin doit être supérieure ou égale à la date de début")
 
-            id_sowing = payload.get(
-                "id_sowing",
-                culture.id_sowing
-            )
+            id_sowing = payload.get("id_sowing", culture.id_sowing)
 
-            id_test = payload.get(
-                "id_test",
-                culture.id_test
-            )
+            id_test = payload.get("id_test", culture.id_test)
 
-            self._validate_source(
-                id_material,
-                id_sowing,
-                id_test
-            )
+            self._validate_source(id_material, id_sowing, id_test)
 
-            initial_action = (
-                self.get_initial_action(
-                    id_culture
-                )
-            )
+            initial_action = self.get_initial_action(id_culture)
 
             if initial_action:
                 initial_transplantation = (
-                    db.session.query(
-                        TCultureActionTransplantation
-                    )
-                    .filter(
-                        TCultureActionTransplantation.id_action ==
-                        initial_action.id_action
-                    )
+                    db.session.query(TCultureActionTransplantation)
+                    .filter(TCultureActionTransplantation.id_action == initial_action.id_action)
                     .first()
                 )
 
                 if initial_transplantation:
-                    if (
-                        initial_action.date_end
-                        and initial_action.date_end < date_start
-                    ):
+                    if initial_action.date_end and initial_action.date_end < date_start:
                         raise ValueError(
                             "La date de début de la culture "
                             "ne peut pas être postérieure "
@@ -1641,19 +1478,11 @@ class CultureRepository:
                             "transplantation initiale."
                         )
 
-                    initial_action.date_start = (
-                        date_start
-                    )
+                    initial_action.date_start = date_start
 
-                    initial_action.meta_update_by = (
-                        payload.get(
-                            "meta_update_by"
-                        )
-                    )
+                    initial_action.meta_update_by = payload.get("meta_update_by")
 
-                    initial_action.meta_update_date = (
-                        datetime.utcnow()
-                    )
+                    initial_action.meta_update_date = datetime.utcnow()
 
             culture.code_culture = code_culture
             culture.date_start = date_start
@@ -1662,9 +1491,7 @@ class CultureRepository:
             culture.id_test = id_test
 
             if "additional_data" in payload:
-                culture.additional_data = (
-                    payload.pop("additional_data") or {}
-                )
+                culture.additional_data = payload.pop("additional_data") or {}
 
             for key, value in payload.items():
                 if hasattr(culture, key):
@@ -1680,15 +1507,10 @@ class CultureRepository:
             db.session.rollback()
             raise
 
-    def delete(
-        self,
-        id_material: int,
-        id_culture: int
-    ):
+    def delete(self, id_material: int, id_culture: int):
         try:
             culture = TCulture.query.filter_by(
-                id_culture=id_culture,
-                id_material=id_material
+                id_culture=id_culture, id_material=id_material
             ).first()
 
             if not culture:
@@ -1702,6 +1524,7 @@ class CultureRepository:
         except SQLAlchemyError:
             db.session.rollback()
             raise
+
 
 class TestRepository:
     def create(self, data):
@@ -1733,14 +1556,16 @@ class TestRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
+
     def get_test_by_id(self, id_test):
         test = TTest.query.get(id_test)
         return test
+
     def get_test_by_mnemonique(self, mnemonique):
         test = TTest.query.get(mnemonique)
         return test
-    
-    def get_test_with_labels_by_id(self,id_test: int):
+
+    def get_test_with_labels_by_id(self, id_test: int):
         TestType = aliased(TNomenclatures)
         Substrate = aliased(TNomenclatures)
         Support = aliased(TNomenclatures)
@@ -1749,7 +1574,6 @@ class TestRepository:
         Material = aliased(TMaterial)
         Storage = aliased(TStorage)
         Place = aliased(TNomenclatures)
-
 
         query = (
             db.session.query(
@@ -1764,7 +1588,6 @@ class TestRepository:
                 Material.code_material.label("material_label"),
                 Place.label_default.label("place_label"),
                 Storage.quantity.label("storage_quantity"),
-
             )
             .outerjoin(TestType, TTest.id_test_type == TestType.id_nomenclature)
             .outerjoin(Substrate, TTest.id_substrate == Substrate.id_nomenclature)
@@ -1774,7 +1597,6 @@ class TestRepository:
             .outerjoin(Material, TTest.id_material == Material.id_material)
             .outerjoin(Storage, TTest.id_storage == Storage.id_storage)
             .outerjoin(Place, Storage.id_place == Place.id_nomenclature)
-
             .filter(TTest.id_test == id_test)
             .first()
         )
@@ -1793,10 +1615,7 @@ class TestRepository:
             prenom_creator,
             material_label,
             place_label,
-
-            storage_quantity
-
-
+            storage_quantity,
         ) = query
 
         data = test.to_dic()
@@ -1804,15 +1623,16 @@ class TestRepository:
         data["substrate_label"] = substrate_label
         data["support_label"] = support_label
         data["actor_label"] = f"{prenom_actor} {nom_actor}".strip() if nom_actor else None
-        data["created_by_label"] = f"{prenom_creator} {nom_creator}".strip() if nom_creator else None
+        data["created_by_label"] = (
+            f"{prenom_creator} {nom_creator}".strip() if nom_creator else None
+        )
         data["material_label"] = material_label
         data["storage_label"] = (
             f"{place_label} – {storage_quantity} graines"
-            if place_label and storage_quantity is not None else None
+            if place_label and storage_quantity is not None
+            else None
         )
         return data
-    
-
 
     def get_test_by_cd_nomenclature(self, cd_nomenclature: str):
         return (
@@ -1821,6 +1641,7 @@ class TestRepository:
             .filter(TNomenclatures.cd_nomenclature == cd_nomenclature)
             .first()
         )
+
     def update(self, id_test, data):
         test = TTest.query.get(id_test)
         if not test:
@@ -1840,8 +1661,8 @@ class TestRepository:
                 setattr(test, key, value)
 
         db.session.commit()
-        return test   
-    
+        return test
+
     def update_pre_treatment(id_test):
         body = request.get_json()
         value = body.get("pre_treatment")
@@ -1853,7 +1674,7 @@ class TestRepository:
         test.additional_data["pre_treatment"] = value
         db.session.commit()
         return {"success": True}
-    
+
     def get_tests_by_material(id_material: int):
         ActionType = aliased(TNomenclatures)
         Liquid = aliased(TNomenclatures)
@@ -1862,10 +1683,12 @@ class TestRepository:
             db.session.query(
                 TAction.id_test.label("id_test"),
                 Liquid.label_default.label("treatment_label"),
-                db.func.row_number().over(
+                db.func.row_number()
+                .over(
                     partition_by=TAction.id_test,
-                    order_by=TAction.meta_create_date.desc()
-                ).label("row_num")
+                    order_by=TAction.meta_create_date.desc(),
+                )
+                .label("row_num"),
             )
             .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
             .outerjoin(Liquid, TAction.id_liquid_treatment == Liquid.id_nomenclature)
@@ -1877,15 +1700,15 @@ class TestRepository:
             db.session.query(
                 TTest,
                 TMaterial.code_material.label("code_material"),
-                subquery_treatment.c.treatment_label
+                subquery_treatment.c.treatment_label,
             )
             .join(TMaterial, TMaterial.id_material == TTest.id_material)
             .outerjoin(
                 subquery_treatment,
                 db.and_(
                     TTest.id_test == subquery_treatment.c.id_test,
-                    subquery_treatment.c.row_num == 1  
-                )
+                    subquery_treatment.c.row_num == 1,
+                ),
             )
             .filter(TTest.id_material == id_material)
         )
@@ -1901,14 +1724,8 @@ class TestRepository:
 
         return results
 
-            
-
-
-
-
 
 class ActionRepository:
-   
     def create(self, data):
         try:
             # Extraire le code parent s’il existe
@@ -1931,7 +1748,7 @@ class ActionRepository:
             action_code = action_type.cd_nomenclature if action_type else None
 
             # 📌 Réplicats individuels (svr)
-            if action_code == 'svr' and isinstance(replicates, dict):
+            if action_code == "svr" and isinstance(replicates, dict):
                 for i in range(len(replicates.get("germes", []))):
                     rep = TActionReplicate(
                         id_action=action.id_action,
@@ -1943,16 +1760,15 @@ class ActionRepository:
                         total_count_germinated=None,
                         total_count_dead=None,
                         total_count_viable=None,
-                        total_count_transplanted=None
+                        total_count_transplanted=None,
                     )
                     db.session.add(rep)
 
-
             # 📌 Synthèse de suivi (synth)
-            elif action_code == 'synth' and isinstance(replicates, dict):
+            elif action_code == "synth" and isinstance(replicates, dict):
                 rep = TActionReplicate(
                     id_action=action.id_action,
-                    code='synth',
+                    code="synth",
                     count_germinated=None,
                     count_dead=None,
                     count_viable=None,
@@ -1960,7 +1776,7 @@ class ActionRepository:
                     total_count_germinated=replicates.get("total_count_germinated"),
                     total_count_dead=replicates.get("total_count_dead"),
                     total_count_viable=replicates.get("total_count_viable"),
-                    total_count_transplanted=None
+                    total_count_transplanted=None,
                 )
                 db.session.add(rep)
 
@@ -1970,7 +1786,6 @@ class ActionRepository:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
-
 
     def get_nomenclature_details_by_id(self, id_nomenclature: int):
         n = (
@@ -1987,14 +1802,13 @@ class ActionRepository:
             "cd_nomenclature": n.cd_nomenclature,
             "mnemonique": n.mnemonique,
             "id_type": n.id_type,
-            "label_default": n.label_default
+            "label_default": n.label_default,
         }
-    
+
     def get_actions_by_id_test(self, id_test: int):
         ActionType = aliased(TNomenclatures)
         ScarificationType = aliased(TNomenclatures)
         Actor = aliased(User)
-        
 
         query = (
             db.session.query(
@@ -2005,10 +1819,13 @@ class ActionRepository:
                 ActionType.label_default.label("label_action_type"),
                 ScarificationType.label_default.label("label_scarification_type"),
                 Actor.nom_role.label("nom_actor"),
-                Actor.prenom_role.label("prenom_actor")
+                Actor.prenom_role.label("prenom_actor"),
             )
             .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
-            .outerjoin(ScarificationType, TAction.id_scarification_type == ScarificationType.id_nomenclature)
+            .outerjoin(
+                ScarificationType,
+                TAction.id_scarification_type == ScarificationType.id_nomenclature,
+            )
             .outerjoin(Actor, TAction.id_actor == Actor.id_role)
             .filter(TAction.id_test == id_test)
             .order_by(TAction.meta_create_date.desc())
@@ -2021,42 +1838,26 @@ class ActionRepository:
                 "id_action": row.id_action,
                 "date_start": row.date_start.isoformat() if row.date_start else None,
                 "date_end": row.date_end.isoformat() if row.date_end else None,
-                "meta_create_date": row.meta_create_date.isoformat() if row.meta_create_date else None,
+                "meta_create_date": row.meta_create_date.isoformat()
+                if row.meta_create_date
+                else None,
                 "label_action_type": row.label_action_type,
                 "label_scarification_type": row.label_scarification_type,
-                "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip()
+                "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip(),
             }
             for row in results
         ]
 
-    def get_actions_by_id_culture(
-        self,
-        id_culture: int
-    ):
-        ActionType = aliased(
-            TNomenclatures
-        )
+    def get_actions_by_id_culture(self, id_culture: int):
+        ActionType = aliased(TNomenclatures)
 
-        TransplantationType = aliased(
-            TNomenclatures
-        )
+        TransplantationType = aliased(TNomenclatures)
 
-        Actor = aliased(
-            User
-        )
+        Actor = aliased(User)
 
-        initial_action = (
-            CultureRepository
-            .get_initial_action(
-                id_culture
-            )
-        )
+        initial_action = CultureRepository.get_initial_action(id_culture)
 
-        initial_action_id = (
-            initial_action.id_action
-            if initial_action
-            else None
-        )
+        initial_action_id = initial_action.id_action if initial_action else None
 
         results = (
             db.session.query(
@@ -2064,141 +1865,70 @@ class ActionRepository:
                 TAction.date_start,
                 TAction.date_end,
                 TAction.meta_create_date,
-                ActionType.cd_nomenclature.label(
-                    "code_action_type"
-                ),
-                ActionType.label_default.label(
-                    "label_action_type"
-                ),
-                TransplantationType.label_fr.label(
-                    "transplantation_type_label_fr"
-                ),
-                TransplantationType.label_default.label(
-                    "transplantation_type_label_default"
-                ),
-                Actor.nom_role.label(
-                    "nom_actor"
-                ),
-                Actor.prenom_role.label(
-                    "prenom_actor"
-                ),
-                TMaterial.id_material.label(
-                    "id_material_recolte"
-                ),
-                TMaterial.code_material.label(
-                    "code_material_recolte"
-                )
+                ActionType.cd_nomenclature.label("code_action_type"),
+                ActionType.label_default.label("label_action_type"),
+                TransplantationType.label_fr.label("transplantation_type_label_fr"),
+                TransplantationType.label_default.label("transplantation_type_label_default"),
+                Actor.nom_role.label("nom_actor"),
+                Actor.prenom_role.label("prenom_actor"),
+                TMaterial.id_material.label("id_material_recolte"),
+                TMaterial.code_material.label("code_material_recolte"),
             )
-            .outerjoin(
-                ActionType,
-                TAction.id_action_type ==
-                ActionType.id_nomenclature
-            )
+            .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
             .outerjoin(
                 TCultureActionTransplantation,
-                TCultureActionTransplantation.id_action ==
-                TAction.id_action
+                TCultureActionTransplantation.id_action == TAction.id_action,
             )
             .outerjoin(
                 TransplantationType,
-                TransplantationType.id_nomenclature ==
-                TCultureActionTransplantation.id_type
+                TransplantationType.id_nomenclature == TCultureActionTransplantation.id_type,
             )
-            .outerjoin(
-                Actor,
-                TAction.id_actor ==
-                Actor.id_role
-            )
-            .outerjoin(
-                TMaterial,
-                TMaterial.id_action ==
-                TAction.id_action
-            )
-            .filter(
-                TAction.id_culture ==
-                id_culture
-            )
-            .order_by(
-                TAction.date_start.desc(),
-                TAction.id_action.desc()
-            )
+            .outerjoin(Actor, TAction.id_actor == Actor.id_role)
+            .outerjoin(TMaterial, TMaterial.id_action == TAction.id_action)
+            .filter(TAction.id_culture == id_culture)
+            .order_by(TAction.date_start.desc(), TAction.id_action.desc())
             .all()
         )
 
         return [
             {
-                "id_action":
-                    row.id_action,
-
+                "id_action": row.id_action,
                 "date_start": (
                     None
                     if row.code_action_type == "matrec"
-                    else (
-                        row.date_start.isoformat()
-                        if row.date_start
-                        else None
-                    )
+                    else (row.date_start.isoformat() if row.date_start else None)
                 ),
-
                 "date_end": (
                     None
                     if row.code_action_type == "matrec"
-                    else (
-                        row.date_end.isoformat()
-                        if row.date_end
-                        else None
-                    )
+                    else (row.date_end.isoformat() if row.date_end else None)
                 ),
-
                 "meta_create_date": (
-                    row.meta_create_date.isoformat()
-                    if row.meta_create_date
-                    else None
+                    row.meta_create_date.isoformat() if row.meta_create_date else None
                 ),
-
-                "code_action_type":
-                    row.code_action_type,
-
+                "code_action_type": row.code_action_type,
                 "label_action_type": (
-                    f"{row.label_action_type} - "
-                    f"{row.code_material_recolte}"
-                    if (
-                        row.code_action_type == "matrec"
-                        and row.code_material_recolte
-                    )
+                    f"{row.label_action_type} - {row.code_material_recolte}"
+                    if (row.code_action_type == "matrec" and row.code_material_recolte)
                     else row.label_action_type
                 ),
-
-                "id_material_recolte":
-                    row.id_material_recolte,
-
-                "code_material_recolte":
-                    row.code_material_recolte,
-
+                "id_material_recolte": row.id_material_recolte,
+                "code_material_recolte": row.code_material_recolte,
                 "transplantation_type_label": (
-                    row.transplantation_type_label_fr
-                    or row.transplantation_type_label_default
+                    row.transplantation_type_label_fr or row.transplantation_type_label_default
                 ),
-
                 "is_initial_culture_action": (
-                    row.id_action ==
-                    initial_action_id
-                    and row.code_action_type ==
-                    "transp"
+                    row.id_action == initial_action_id and row.code_action_type == "transp"
                 ),
-
                 "label_actor": (
                     None
                     if row.code_action_type == "matrec"
-                    else (
-                        f"{row.prenom_actor or ''} "
-                        f"{row.nom_actor or ''}"
-                    ).strip()
-                )
+                    else (f"{row.prenom_actor or ''} {row.nom_actor or ''}").strip()
+                ),
             }
             for row in results
         ]
-    
+
     def get_action_with_labels_by_id(self, id_action: int):
         ActionType = aliased(TNomenclatures)
         Scarification = aliased(TNomenclatures)
@@ -2225,17 +1955,32 @@ class ActionRepository:
                 SterilizationLiquid.label_default.label("label_sterilization_liquid"),
                 SterilizationProduct.label_default.label("label_sterilization_product"),
                 LiquidTreatment.label_default.label("label_liquid_treatment"),
-                Actor.prenom_role.label("prenom_actor")
+                Actor.prenom_role.label("prenom_actor"),
             )
             .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
-            .outerjoin(Scarification, TAction.id_scarification_type == Scarification.id_nomenclature)
-            .outerjoin(ScarificationMec, TAction.id_scarification_mecanique == ScarificationMec.id_nomenclature)
+            .outerjoin(
+                Scarification,
+                TAction.id_scarification_type == Scarification.id_nomenclature,
+            )
+            .outerjoin(
+                ScarificationMec,
+                TAction.id_scarification_mecanique == ScarificationMec.id_nomenclature,
+            )
             .outerjoin(Tool, TAction.id_tool == Tool.id_nomenclature)
             .outerjoin(WaterType, TAction.id_water_type == WaterType.id_nomenclature)
             .outerjoin(Chemical, TAction.id_chemical_liquid == Chemical.id_nomenclature)
-            .outerjoin(SterilizationLiquid, TAction.id_sterilization_liquid == SterilizationLiquid.id_nomenclature)
-            .outerjoin(SterilizationProduct, TAction.id_sterilization_product == SterilizationProduct.id_nomenclature)
-            .outerjoin(LiquidTreatment, TAction.id_liquid_treatment == LiquidTreatment.id_nomenclature)
+            .outerjoin(
+                SterilizationLiquid,
+                TAction.id_sterilization_liquid == SterilizationLiquid.id_nomenclature,
+            )
+            .outerjoin(
+                SterilizationProduct,
+                TAction.id_sterilization_product == SterilizationProduct.id_nomenclature,
+            )
+            .outerjoin(
+                LiquidTreatment,
+                TAction.id_liquid_treatment == LiquidTreatment.id_nomenclature,
+            )
             .outerjoin(Actor, TAction.id_actor == Actor.id_role)
             .filter(TAction.id_action == id_action)
             .first()
@@ -2276,49 +2021,26 @@ class ActionRepository:
         code = code_action
 
         if code == "matrec":
-            material = (
-                TMaterial.query
-                .filter_by(id_action=id_action)
-                .first()
-            )
+            material = TMaterial.query.filter_by(id_action=id_action).first()
 
-            culture = (
-                TCulture.query.get(action.id_culture)
-                if action.id_culture
-                else None
-            )
+            culture = TCulture.query.get(action.id_culture) if action.id_culture else None
 
-            source_material = (
-                TMaterial.query.get(culture.id_material)
-                if culture
-                else None
-            )
+            source_material = TMaterial.query.get(culture.id_material) if culture else None
 
             data["date_start"] = None
             data["date_end"] = None
             data["label_actor"] = None
 
-            data["id_material_recolte"] = (
-                material.id_material
-                if material
-                else None
-            )
+            data["id_material_recolte"] = material.id_material if material else None
 
-            data["code_material_recolte"] = (
-                material.code_material
-                if material
-                else None
-            )
+            data["code_material_recolte"] = material.code_material if material else None
 
             data["label_action_type"] = (
-                f"{label_action_type} - {material.code_material}"
-                if material
-                else label_action_type
+                f"{label_action_type} - {material.code_material}" if material else label_action_type
             )
 
             data["code_cultural_bank"] = (
-                f"{source_material.code_material} - "
-                f"{culture.code_culture}"
+                f"{source_material.code_material} - {culture.code_culture}"
                 if source_material and culture
                 else None
             )
@@ -2328,12 +2050,12 @@ class ActionRepository:
             return data
 
         # ✅ 1. Si action = synth, récupérer SEULEMENT le réplicat synth de cette action
-        if code == 'synth':
+        if code == "synth":
             synth_replicate = (
                 db.session.query(TActionReplicate)
                 .filter(
                     TActionReplicate.id_action == id_action,
-                    TActionReplicate.code == 'synth'
+                    TActionReplicate.code == "synth",
                 )
                 .first()
             )
@@ -2400,7 +2122,6 @@ class ActionRepository:
             .all()
         )
         return [r.to_dict() for r in replicates]
-    
 
     def get_thermo_photo_by_test(self, id_test: int):
         action = (
@@ -2410,7 +2131,7 @@ class ActionRepository:
                 TAction.temperature_light.isnot(None),
                 TAction.temperature_shadow.isnot(None),
                 TAction.hour_count_light.isnot(None),
-                TAction.hour_count_shadow.isnot(None)
+                TAction.hour_count_shadow.isnot(None),
             )
             .order_by(TAction.meta_create_date.desc())  # ou date_start si besoin
             .first()
@@ -2423,22 +2144,19 @@ class ActionRepository:
             "temperature_light": action.temperature_light,
             "temperature_shadow": action.temperature_shadow,
             "hour_count_light": action.hour_count_light,
-            "hour_count_shadow": action.hour_count_shadow
+            "hour_count_shadow": action.hour_count_shadow,
         }
+
     def get_replicate_dates_by_test(self, id_test: int):
         ActionType = aliased(TNomenclatures)
 
         results = (
             db.session.query(TAction.date_start)
             .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
-            .filter(
-                TAction.id_test == id_test,
-                ActionType.cd_nomenclature == "svr"
-            )
+            .filter(TAction.id_test == id_test, ActionType.cd_nomenclature == "svr")
             .all()
         )
         return [r.date_start.isoformat() for r in results if r.date_start]
-
 
     def get_tests_by_material(id_material: int):
         ActionType = aliased(TNomenclatures)
@@ -2448,10 +2166,12 @@ class ActionRepository:
             db.session.query(
                 TAction.id_test.label("id_test"),
                 Liquid.label_default.label("treatment_label"),
-                db.func.row_number().over(
+                db.func.row_number()
+                .over(
                     partition_by=TAction.id_test,
-                    order_by=TAction.meta_create_date.desc()
-                ).label("row_num")
+                    order_by=TAction.meta_create_date.desc(),
+                )
+                .label("row_num"),
             )
             .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
             .outerjoin(Liquid, TAction.id_liquid_treatment == Liquid.id_nomenclature)
@@ -2460,18 +2180,14 @@ class ActionRepository:
         )
 
         query = (
-            db.session.query(
-                TTest,
-                TMaterial.code_material,
-                subquery_treatment.c.treatment_label
-            )
+            db.session.query(TTest, TMaterial.code_material, subquery_treatment.c.treatment_label)
             .join(TMaterial, TMaterial.id_material == TTest.id_material)
             .outerjoin(
                 subquery_treatment,
                 db.and_(
                     TTest.id_test == subquery_treatment.c.id_test,
-                    subquery_treatment.c.row_num == 1
-                )
+                    subquery_treatment.c.row_num == 1,
+                ),
             )
             .filter(TTest.id_material == id_material)
         )
@@ -2485,7 +2201,6 @@ class ActionRepository:
             results.append(test_dict)
 
         return results
-    
 
     def get_treatment_by_test(self, id_test: int):
         ActionType = aliased(TNomenclatures)
@@ -2495,14 +2210,14 @@ class ActionRepository:
             db.session.query(
                 TAction.id_action,
                 TAction.meta_create_date,
-                Liquid.label_default.label("treatment_label")
+                Liquid.label_default.label("treatment_label"),
             )
             .join(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
             .outerjoin(Liquid, TAction.id_liquid_treatment == Liquid.id_nomenclature)
             .filter(
                 TAction.id_test == id_test,
-                ActionType.cd_nomenclature == 'tra',
-                TAction.id_liquid_treatment.isnot(None)
+                ActionType.cd_nomenclature == "tra",
+                TAction.id_liquid_treatment.isnot(None),
             )
             .order_by(TAction.meta_create_date.desc())
             .first()
@@ -2511,11 +2226,8 @@ class ActionRepository:
         if not query:
             return None
 
-        return {
-            "id_action": query.id_action,
-            "treatment_label": query.treatment_label
-        }
-    
+        return {"id_action": query.id_action, "treatment_label": query.treatment_label}
+
     def update(self, id_action: int, data: dict):
         action = TAction.query.get(id_action)
         if not action:
@@ -2543,7 +2255,7 @@ class ActionRepository:
                         total_count_germinated=None,
                         total_count_dead=None,
                         total_count_viable=None,
-                        total_count_transplanted=None
+                        total_count_transplanted=None,
                     )
                     db.session.add(rep)
 
@@ -2561,7 +2273,7 @@ class ActionRepository:
                     total_count_germinated=replicates.get("total_count_germinated"),
                     total_count_dead=replicates.get("total_count_dead"),
                     total_count_viable=replicates.get("total_count_viable"),
-                    total_count_transplanted=None
+                    total_count_transplanted=None,
                 )
                 db.session.add(rep)
 
@@ -2577,12 +2289,10 @@ class ActionRepository:
 
         db.session.commit()
         return action
-        
+
     def get_replicate_data_for_edit(self, id_action: int):
         replicates = (
-            db.session.query(TActionReplicate)
-            .filter(TActionReplicate.id_action == id_action)
-            .all()
+            db.session.query(TActionReplicate).filter(TActionReplicate.id_action == id_action).all()
         )
 
         if not replicates:
@@ -2597,7 +2307,7 @@ class ActionRepository:
                         "count_germes": rep.count_germinated,
                         "count_mortes": rep.count_dead,
                         "count_non_germes": rep.count_viable,
-                        "last_replicate": rep.last_replicate
+                        "last_replicate": rep.last_replicate,
                     }
                     for rep in replicates
                 ]
@@ -2608,11 +2318,11 @@ class ActionRepository:
             data = {
                 "total_count_germinated": rep.total_count_germinated,
                 "total_count_dead": rep.total_count_dead,
-                "total_count_viable": rep.total_count_viable
+                "total_count_viable": rep.total_count_viable,
             }
 
         return data
-    
+
     def get_actions_by_id_sowing(self, id_sowing: int):
         ActionType = aliased(TNomenclatures)
         ScarificationType = aliased(TNomenclatures)
@@ -2627,10 +2337,13 @@ class ActionRepository:
                 ActionType.label_default.label("label_action_type"),
                 ScarificationType.label_default.label("label_scarification_type"),
                 Actor.nom_role.label("nom_actor"),
-                Actor.prenom_role.label("prenom_actor")
+                Actor.prenom_role.label("prenom_actor"),
             )
             .outerjoin(ActionType, TAction.id_action_type == ActionType.id_nomenclature)
-            .outerjoin(ScarificationType, TAction.id_scarification_type == ScarificationType.id_nomenclature)
+            .outerjoin(
+                ScarificationType,
+                TAction.id_scarification_type == ScarificationType.id_nomenclature,
+            )
             .outerjoin(Actor, TAction.id_actor == Actor.id_role)
             .filter(TAction.id_sowing == id_sowing)
             .order_by(TAction.meta_create_date.desc())
@@ -2643,19 +2356,20 @@ class ActionRepository:
                 "id_action": row.id_action,
                 "date_start": row.date_start.isoformat() if row.date_start else None,
                 "date_end": row.date_end.isoformat() if row.date_end else None,
-                "meta_create_date": row.meta_create_date.isoformat() if row.meta_create_date else None,
+                "meta_create_date": row.meta_create_date.isoformat()
+                if row.meta_create_date
+                else None,
                 "label_action_type": row.label_action_type,
                 "label_scarification_type": row.label_scarification_type,
-                "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip()
+                "label_actor": f"{row.prenom_actor or ''} {row.nom_actor or ''}".strip(),
             }
             for row in results
         ]
 
+
 class CultureActionTransplantationRepository:
     @staticmethod
-    def _get_transplantation_type_code(
-        id_type
-    ):
+    def _get_transplantation_type_code(id_type):
         if not id_type:
             return None
 
@@ -2668,9 +2382,7 @@ class CultureActionTransplantationRepository:
                 WHERE t.mnemonique = 'CFE_TRANSPLANTATION_TYPE'
                 AND n.id_nomenclature = :id_type
             """),
-            {
-                "id_type": id_type
-            }
+            {"id_type": id_type},
         ).scalar()
 
     def create_with_action(
@@ -2678,19 +2390,13 @@ class CultureActionTransplantationRepository:
         id_culture: int,
         action_data: dict,
         transplantation_data: dict,
-        meta_create_by: int
+        meta_create_by: int,
     ):
         try:
-            culture = (
-                TCulture.query.get(
-                    id_culture
-                )
-            )
+            culture = TCulture.query.get(id_culture)
 
             if not culture:
-                raise ValueError(
-                    "Culture non trouvée."
-                )
+                raise ValueError("Culture non trouvée.")
 
             id_action_type = db.session.execute(
                 text("""
@@ -2704,36 +2410,17 @@ class CultureActionTransplantationRepository:
             ).scalar()
 
             if not id_action_type:
-                raise ValueError(
-                    "Le type d'action Transplantation est introuvable."
-                )
+                raise ValueError("Le type d'action Transplantation est introuvable.")
 
-            initial_action = (
-                CultureRepository
-                .get_initial_action(
-                    id_culture
-                )
-            )
+            initial_action = CultureRepository.get_initial_action(id_culture)
 
-            is_initial_action = (
-                initial_action is None
-            )
+            is_initial_action = initial_action is None
 
-            specific_data = dict(
-                transplantation_data or {}
-            )
+            specific_data = dict(transplantation_data or {})
 
-            id_type = (
-                specific_data.get(
-                    "id_type"
-                )
-            )
+            id_type = specific_data.get("id_type")
 
-            transplantation_type_code = (
-                self._get_transplantation_type_code(
-                    id_type
-                )
-            )
+            transplantation_type_code = self._get_transplantation_type_code(id_type)
 
             if is_initial_action:
                 if not transplantation_type_code:
@@ -2743,79 +2430,43 @@ class CultureActionTransplantationRepository:
                         "première action de culture."
                     )
 
-                if (
-                    culture.id_sowing is not None
-                    or culture.id_test is not None
-                ):
-                    allowed_codes = {
-                        "repiq"
-                    }
+                if culture.id_sowing is not None or culture.id_test is not None:
+                    allowed_codes = {"repiq"}
                 else:
-                    allowed_codes = {
-                        "remp",
-                        "plant"
-                    }
+                    allowed_codes = {"remp", "plant"}
 
-                if (
-                    transplantation_type_code
-                    not in allowed_codes
-                ):
+                if transplantation_type_code not in allowed_codes:
                     raise ValueError(
                         "Le type de transplantation "
                         "sélectionné n'est pas autorisé "
                         "pour la transplantation initiale."
                     )
 
-                date_start = (
-                    culture.date_start
-                )
+                date_start = culture.date_start
 
             else:
-                if (
-                    transplantation_type_code ==
-                    "repiq"
-                ):
+                if transplantation_type_code == "repiq":
                     raise ValueError(
                         "Le repiquage est réservé "
                         "à la première action "
                         "de transplantation de la culture."
                     )
 
-                date_start = action_data.get(
-                    "date_start"
-                )
+                date_start = action_data.get("date_start")
 
-            date_end = action_data.get(
-                "date_end"
-            )
+            date_end = action_data.get("date_end")
 
             if isinstance(date_start, str):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+                date_start = isoparse(date_start) if date_start.strip() else None
 
             if isinstance(date_end, str):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
             action = TAction(
                 id_culture=id_culture,
@@ -2823,67 +2474,42 @@ class CultureActionTransplantationRepository:
                 id_test=None,
                 date_start=date_start,
                 date_end=date_end,
-                id_actor=action_data.get(
-                    "id_actor"
-                ),
+                id_actor=action_data.get("id_actor"),
                 id_action_type=id_action_type,
-                meta_create_by=meta_create_by
+                meta_create_by=meta_create_by,
             )
 
             db.session.add(action)
             db.session.flush()
 
-            specific_data.pop(
-                "id_action",
-                None
+            specific_data.pop("id_action", None)
+
+            specific_data.pop("meta_create_by", None)
+
+            transplantation = TCultureActionTransplantation(
+                id_action=action.id_action,
+                meta_create_by=meta_create_by,
+                **specific_data,
             )
 
-            specific_data.pop(
-                "meta_create_by",
-                None
-            )
-
-            transplantation = (
-                TCultureActionTransplantation(
-                    id_action=action.id_action,
-                    meta_create_by=meta_create_by,
-                    **specific_data
-                )
-            )
-
-            db.session.add(
-                transplantation
-            )
+            db.session.add(transplantation)
 
             db.session.commit()
 
             return {
                 "action": action.to_dic(),
-                "transplantation":
-                    transplantation.to_dic()
+                "transplantation": transplantation.to_dic(),
             }
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
-    def create(
-        self,
-        data: dict
-    ):
-        try:
-            transplantation = (
-                TCultureActionTransplantation(
-                    **data
-                )
-            )
 
-            db.session.add(
-                transplantation
-            )
+    def create(self, data: dict):
+        try:
+            transplantation = TCultureActionTransplantation(**data)
+
+            db.session.add(transplantation)
 
             db.session.commit()
 
@@ -2893,26 +2519,14 @@ class CultureActionTransplantationRepository:
             db.session.rollback()
             raise error
 
+    def get_by_action(self, id_action: int):
+        TransplantationType = aliased(TNomenclatures)
 
-    def get_by_action(
-        self,
-        id_action: int
-    ):
-        TransplantationType = aliased(
-            TNomenclatures
-        )
+        PhysiologicalStage = aliased(TNomenclatures)
 
-        PhysiologicalStage = aliased(
-            TNomenclatures
-        )
+        MainLocation = aliased(TNomenclatures)
 
-        MainLocation = aliased(
-            TNomenclatures
-        )
-
-        Actor = aliased(
-            User
-        )
+        Actor = aliased(User)
 
         row = (
             db.session.query(
@@ -2920,66 +2534,31 @@ class CultureActionTransplantationRepository:
                 TAction.date_start,
                 TAction.date_end,
                 TAction.id_actor,
-
-                TransplantationType.label_fr.label(
-                    "transplantation_type_label_fr"
-                ),
-                TransplantationType.label_default.label(
-                    "transplantation_type_label_default"
-                ),
-
-                PhysiologicalStage.label_fr.label(
-                    "physiological_stage_label_fr"
-                ),
-                PhysiologicalStage.label_default.label(
-                    "physiological_stage_label_default"
-                ),
-
-                MainLocation.label_fr.label(
-                    "main_location_label_fr"
-                ),
-                MainLocation.label_default.label(
-                    "main_location_label_default"
-                ),
-
-                Actor.prenom_role.label(
-                    "actor_first_name"
-                ),
-                Actor.nom_role.label(
-                    "actor_last_name"
-                )
+                TransplantationType.label_fr.label("transplantation_type_label_fr"),
+                TransplantationType.label_default.label("transplantation_type_label_default"),
+                PhysiologicalStage.label_fr.label("physiological_stage_label_fr"),
+                PhysiologicalStage.label_default.label("physiological_stage_label_default"),
+                MainLocation.label_fr.label("main_location_label_fr"),
+                MainLocation.label_default.label("main_location_label_default"),
+                Actor.prenom_role.label("actor_first_name"),
+                Actor.nom_role.label("actor_last_name"),
             )
-            .join(
-                TAction,
-                TAction.id_action ==
-                TCultureActionTransplantation.id_action
-            )
+            .join(TAction, TAction.id_action == TCultureActionTransplantation.id_action)
             .outerjoin(
                 TransplantationType,
-                TransplantationType.id_nomenclature ==
-                TCultureActionTransplantation.id_type
+                TransplantationType.id_nomenclature == TCultureActionTransplantation.id_type,
             )
             .outerjoin(
                 PhysiologicalStage,
-                PhysiologicalStage.id_nomenclature ==
-                TCultureActionTransplantation
-                .id_physiological_development_stage
+                PhysiologicalStage.id_nomenclature
+                == TCultureActionTransplantation.id_physiological_development_stage,
             )
             .outerjoin(
                 MainLocation,
-                MainLocation.id_nomenclature ==
-                TCultureActionTransplantation
-                .id_main_location
+                MainLocation.id_nomenclature == TCultureActionTransplantation.id_main_location,
             )
-            .outerjoin(
-                Actor,
-                Actor.id_role ==
-                TAction.id_actor
-            )
-            .filter(
-                TCultureActionTransplantation.id_action ==
-                id_action
-            )
+            .outerjoin(Actor, Actor.id_role == TAction.id_actor)
+            .filter(TCultureActionTransplantation.id_action == id_action)
             .first()
         )
 
@@ -2989,125 +2568,66 @@ class CultureActionTransplantationRepository:
         transplantation = row[0]
         result = transplantation.to_dic()
 
-        result.update({
-            "date_start": (
-                row.date_start.isoformat()
-                if row.date_start
-                else None
-            ),
-
-            "date_end": (
-                row.date_end.isoformat()
-                if row.date_end
-                else None
-            ),
-
-            "id_actor": row.id_actor,
-
-            "actor_label": (
-                f"{row.actor_first_name or ''} "
-                f"{row.actor_last_name or ''}"
-            ).strip() or None,
-
-            "transplantation_type_label": (
-                row.transplantation_type_label_fr
-                or row.transplantation_type_label_default
-            ),
-
-            "physiological_stage_label": (
-                row.physiological_stage_label_fr
-                or row.physiological_stage_label_default
-            ),
-
-            "main_location_label": (
-                row.main_location_label_fr
-                or row.main_location_label_default
-            )
-        })
+        result.update(
+            {
+                "date_start": (row.date_start.isoformat() if row.date_start else None),
+                "date_end": (row.date_end.isoformat() if row.date_end else None),
+                "id_actor": row.id_actor,
+                "actor_label": (f"{row.actor_first_name or ''} {row.actor_last_name or ''}").strip()
+                or None,
+                "transplantation_type_label": (
+                    row.transplantation_type_label_fr or row.transplantation_type_label_default
+                ),
+                "physiological_stage_label": (
+                    row.physiological_stage_label_fr or row.physiological_stage_label_default
+                ),
+                "main_location_label": (
+                    row.main_location_label_fr or row.main_location_label_default
+                ),
+            }
+        )
 
         return result
-
 
     def update_with_action(
         self,
         id_action: int,
         action_data: dict,
         transplantation_data: dict,
-        meta_update_by: int
+        meta_update_by: int,
     ):
         try:
             action = (
                 db.session.query(TAction)
-                .filter(
-                    TAction.id_action ==
-                    id_action,
-                    TAction.id_culture.isnot(None)
-                )
+                .filter(TAction.id_action == id_action, TAction.id_culture.isnot(None))
                 .first()
             )
 
             transplantation = (
-                db.session.query(
-                    TCultureActionTransplantation
-                )
-                .filter(
-                    TCultureActionTransplantation
-                    .id_action ==
-                    id_action
-                )
+                db.session.query(TCultureActionTransplantation)
+                .filter(TCultureActionTransplantation.id_action == id_action)
                 .first()
             )
 
-            if (
-                not action
-                or not transplantation
-            ):
+            if not action or not transplantation:
                 return None
 
-            culture = (
-                TCulture.query.get(
-                    action.id_culture
-                )
-            )
+            culture = TCulture.query.get(action.id_culture)
 
             if not culture:
-                raise ValueError(
-                    "Culture non trouvée."
-                )
+                raise ValueError("Culture non trouvée.")
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            transplantation_data = dict(
-                transplantation_data or {}
-            )
+            transplantation_data = dict(transplantation_data or {})
 
-            initial_action = (
-                CultureRepository
-                .get_initial_action(
-                    action.id_culture
-                )
-            )
+            initial_action = CultureRepository.get_initial_action(action.id_culture)
 
-            is_initial_action = (
-                initial_action is not None
-                and initial_action.id_action ==
-                id_action
-            )
+            is_initial_action = initial_action is not None and initial_action.id_action == id_action
 
-            selected_id_type = (
-                transplantation_data.get(
-                    "id_type",
-                    transplantation.id_type
-                )
-            )
+            selected_id_type = transplantation_data.get("id_type", transplantation.id_type)
 
-            transplantation_type_code = (
-                self._get_transplantation_type_code(
-                    selected_id_type
-                )
-            )
+            transplantation_type_code = self._get_transplantation_type_code(selected_id_type)
 
             if is_initial_action:
                 if not transplantation_type_code:
@@ -3117,97 +2637,51 @@ class CultureActionTransplantationRepository:
                         "transplantation initiale."
                     )
 
-                if (
-                    culture.id_sowing is not None
-                    or culture.id_test is not None
-                ):
-                    allowed_codes = {
-                        "repiq"
-                    }
+                if culture.id_sowing is not None or culture.id_test is not None:
+                    allowed_codes = {"repiq"}
                 else:
-                    allowed_codes = {
-                        "remp",
-                        "plant"
-                    }
+                    allowed_codes = {"remp", "plant"}
 
-                if (
-                    transplantation_type_code
-                    not in allowed_codes
-                ):
+                if transplantation_type_code not in allowed_codes:
                     raise ValueError(
                         "Le type de transplantation "
                         "sélectionné n'est pas autorisé "
                         "pour la transplantation initiale."
                     )
 
-                date_start = (
-                    culture.date_start
-                )
+                date_start = culture.date_start
 
             else:
-                if (
-                    transplantation_type_code ==
-                    "repiq"
-                ):
+                if transplantation_type_code == "repiq":
                     raise ValueError(
-                        "Le repiquage est réservé "
-                        "à la transplantation initiale "
-                        "de la culture."
+                        "Le repiquage est réservé à la transplantation initiale de la culture."
                     )
 
-                date_start = action_data.get(
-                    "date_start",
-                    action.date_start
-                )
+                date_start = action_data.get("date_start", action.date_start)
 
-            date_end = action_data.get(
-                "date_end",
-                action.date_end
-            )
+            date_end = action_data.get("date_end", action.date_end)
 
             if isinstance(date_start, str):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+                date_start = isoparse(date_start) if date_start.strip() else None
 
             if isinstance(date_end, str):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
             action.date_start = date_start
             action.date_end = date_end
 
             if "id_actor" in action_data:
-                action.id_actor = (
-                    action_data.get("id_actor")
-                )
+                action.id_actor = action_data.get("id_actor")
 
-            action.meta_update_by = (
-                meta_update_by
-            )
+            action.meta_update_by = meta_update_by
 
-            action.meta_update_date = (
-                datetime.utcnow()
-            )
+            action.meta_update_date = datetime.utcnow()
 
             editable_fields = (
                 "id_type",
@@ -3218,41 +2692,22 @@ class CultureActionTransplantationRepository:
                 "id_physiological_development_stage",
                 "id_main_location",
                 "precise_location",
-                "remarks"
+                "remarks",
             )
 
             for field_name in editable_fields:
-                if (
-                    field_name
-                    in transplantation_data
-                ):
-                    setattr(
-                        transplantation,
-                        field_name,
-                        transplantation_data[
-                            field_name
-                        ]
-                    )
+                if field_name in transplantation_data:
+                    setattr(transplantation, field_name, transplantation_data[field_name])
 
-            transplantation.meta_update_by = (
-                meta_update_by
-            )
+            transplantation.meta_update_by = meta_update_by
 
-            transplantation.meta_update_date = (
-                datetime.utcnow()
-            )
+            transplantation.meta_update_date = datetime.utcnow()
 
             db.session.commit()
 
-            return self.get_by_action(
-                id_action
-            )
+            return self.get_by_action(id_action)
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
@@ -3263,12 +2718,10 @@ class CultureActionObservationRepository:
         id_culture: int,
         action_data: dict,
         observation_data: dict,
-        meta_create_by: int
+        meta_create_by: int,
     ):
         try:
-            CultureRepository.require_initial_transplantation(
-                id_culture
-            )
+            CultureRepository.require_initial_transplantation(id_culture)
 
             id_action_type = db.session.execute(
                 text("""
@@ -3282,49 +2735,25 @@ class CultureActionObservationRepository:
             ).scalar()
 
             if not id_action_type:
-                raise ValueError(
-                    "Le type d'action Observation est introuvable."
-                )
+                raise ValueError("Le type d'action Observation est introuvable.")
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            date_start = action_data.get(
-                "date_start"
-            )
+            date_start = action_data.get("date_start")
 
-            date_end = action_data.get(
-                "date_end"
-            )
+            date_end = action_data.get("date_end")
 
             if isinstance(date_start, str):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+                date_start = isoparse(date_start) if date_start.strip() else None
 
             if isinstance(date_end, str):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
             action = TAction(
                 id_culture=id_culture,
@@ -3332,19 +2761,15 @@ class CultureActionObservationRepository:
                 id_test=None,
                 date_start=date_start,
                 date_end=date_end,
-                id_actor=action_data.get(
-                    "id_actor"
-                ),
+                id_actor=action_data.get("id_actor"),
                 id_action_type=id_action_type,
-                meta_create_by=meta_create_by
+                meta_create_by=meta_create_by,
             )
 
             db.session.add(action)
             db.session.flush()
 
-            specific_data = dict(
-                observation_data or {}
-            )
+            specific_data = dict(observation_data or {})
 
             for protected_field in (
                 "id_culture_action_observation",
@@ -3352,53 +2777,30 @@ class CultureActionObservationRepository:
                 "meta_create_by",
                 "meta_create_date",
                 "meta_update_by",
-                "meta_update_date"
+                "meta_update_date",
             ):
-                specific_data.pop(
-                    protected_field,
-                    None
-                )
+                specific_data.pop(protected_field, None)
 
-            observation = (
-                TCultureActionObservation(
-                    id_action=action.id_action,
-                    meta_create_by=meta_create_by,
-                    **specific_data
-                )
+            observation = TCultureActionObservation(
+                id_action=action.id_action,
+                meta_create_by=meta_create_by,
+                **specific_data,
             )
 
-            db.session.add(
-                observation
-            )
+            db.session.add(observation)
 
             db.session.commit()
 
-            return {
-                "action": action.to_dic(),
-                "observation":
-                    observation.to_dic()
-            }
+            return {"action": action.to_dic(), "observation": observation.to_dic()}
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
+    def get_by_action(self, id_action: int):
+        PhenologicalStage = aliased(TNomenclatures)
 
-    def get_by_action(
-        self,
-        id_action: int
-    ):
-        PhenologicalStage = aliased(
-            TNomenclatures
-        )
-
-        Actor = aliased(
-            User
-        )
+        Actor = aliased(User)
 
         row = (
             db.session.query(
@@ -3406,41 +2808,19 @@ class CultureActionObservationRepository:
                 TAction.date_start,
                 TAction.date_end,
                 TAction.id_actor,
-
-                PhenologicalStage.label_fr.label(
-                    "phenological_stage_label_fr"
-                ),
-                PhenologicalStage.label_default.label(
-                    "phenological_stage_label_default"
-                ),
-
-                Actor.prenom_role.label(
-                    "actor_first_name"
-                ),
-                Actor.nom_role.label(
-                    "actor_last_name"
-                )
+                PhenologicalStage.label_fr.label("phenological_stage_label_fr"),
+                PhenologicalStage.label_default.label("phenological_stage_label_default"),
+                Actor.prenom_role.label("actor_first_name"),
+                Actor.nom_role.label("actor_last_name"),
             )
-            .join(
-                TAction,
-                TAction.id_action ==
-                TCultureActionObservation.id_action
-            )
+            .join(TAction, TAction.id_action == TCultureActionObservation.id_action)
             .outerjoin(
                 PhenologicalStage,
-                PhenologicalStage.id_nomenclature ==
-                TCultureActionObservation
-                .id_phenological_stage
+                PhenologicalStage.id_nomenclature
+                == TCultureActionObservation.id_phenological_stage,
             )
-            .outerjoin(
-                Actor,
-                Actor.id_role ==
-                TAction.id_actor
-            )
-            .filter(
-                TCultureActionObservation.id_action ==
-                id_action
-            )
+            .outerjoin(Actor, Actor.id_role == TAction.id_actor)
+            .filter(TCultureActionObservation.id_action == id_action)
             .first()
         )
 
@@ -3449,194 +2829,92 @@ class CultureActionObservationRepository:
 
         observation = row[0]
 
-        result = (
-            observation.to_dic()
+        result = observation.to_dic()
+
+        result.update(
+            {
+                "date_start": (row.date_start.isoformat() if row.date_start else None),
+                "date_end": (row.date_end.isoformat() if row.date_end else None),
+                "id_actor": row.id_actor,
+                "actor_label": (f"{row.actor_first_name or ''} {row.actor_last_name or ''}").strip()
+                or None,
+                "phenological_stage_label": (
+                    row.phenological_stage_label_fr or row.phenological_stage_label_default
+                ),
+            }
         )
 
-        result.update({
-            "date_start": (
-                row.date_start.isoformat()
-                if row.date_start
-                else None
-            ),
-
-            "date_end": (
-                row.date_end.isoformat()
-                if row.date_end
-                else None
-            ),
-
-            "id_actor":
-                row.id_actor,
-
-            "actor_label": (
-                f"{row.actor_first_name or ''} "
-                f"{row.actor_last_name or ''}"
-            ).strip() or None,
-
-            "phenological_stage_label": (
-                row.phenological_stage_label_fr
-                or
-                row.phenological_stage_label_default
-            )
-        })
-
         return result
-
 
     def update_with_action(
         self,
         id_action: int,
         action_data: dict,
         observation_data: dict,
-        meta_update_by: int
+        meta_update_by: int,
     ):
         try:
             action = (
-                db.session.query(
-                    TAction
-                )
-                .filter(
-                    TAction.id_action ==
-                    id_action,
-                    TAction.id_culture.isnot(
-                        None
-                    )
-                )
+                db.session.query(TAction)
+                .filter(TAction.id_action == id_action, TAction.id_culture.isnot(None))
                 .first()
             )
 
             observation = (
-                db.session.query(
-                    TCultureActionObservation
-                )
-                .filter(
-                    TCultureActionObservation
-                    .id_action ==
-                    id_action
-                )
+                db.session.query(TCultureActionObservation)
+                .filter(TCultureActionObservation.id_action == id_action)
                 .first()
             )
 
-            if (
-                not action
-                or not observation
-            ):
+            if not action or not observation:
                 return None
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            observation_data = dict(
-                observation_data or {}
-            )
+            observation_data = dict(observation_data or {})
 
-            date_start = action_data.get(
-                "date_start",
-                action.date_start
-            )
+            date_start = action_data.get("date_start", action.date_start)
 
-            date_end = action_data.get(
-                "date_end",
-                action.date_end
-            )
+            date_end = action_data.get("date_end", action.date_end)
 
-            if isinstance(
-                date_start,
-                str
-            ):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+            if isinstance(date_start, str):
+                date_start = isoparse(date_start) if date_start.strip() else None
 
-            if isinstance(
-                date_end,
-                str
-            ):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+            if isinstance(date_end, str):
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
-            action.date_start = (
-                date_start
-            )
+            action.date_start = date_start
 
-            action.date_end = (
-                date_end
-            )
+            action.date_end = date_end
 
             if "id_actor" in action_data:
-                action.id_actor = (
-                    action_data.get(
-                        "id_actor"
-                    )
-                )
+                action.id_actor = action_data.get("id_actor")
 
-            action.meta_update_by = (
-                meta_update_by
-            )
+            action.meta_update_by = meta_update_by
 
-            action.meta_update_date = (
-                datetime.utcnow()
-            )
+            action.meta_update_date = datetime.utcnow()
 
-            editable_fields = (
-                "individual_count",
-                "id_phenological_stage",
-                "remarks"
-            )
+            editable_fields = ("individual_count", "id_phenological_stage", "remarks")
 
             for field_name in editable_fields:
-                if (
-                    field_name
-                    in observation_data
-                ):
-                    setattr(
-                        observation,
-                        field_name,
-                        observation_data[
-                            field_name
-                        ]
-                    )
+                if field_name in observation_data:
+                    setattr(observation, field_name, observation_data[field_name])
 
-            observation.meta_update_by = (
-                meta_update_by
-            )
+            observation.meta_update_by = meta_update_by
 
-            observation.meta_update_date = (
-                datetime.utcnow()
-            )
+            observation.meta_update_date = datetime.utcnow()
 
             db.session.commit()
 
-            return self.get_by_action(
-                id_action
-            )
+            return self.get_by_action(id_action)
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
@@ -3647,12 +2925,10 @@ class CultureActionTreatmentRepository:
         id_culture: int,
         action_data: dict,
         treatment_data: dict,
-        meta_create_by: int
+        meta_create_by: int,
     ):
         try:
-            CultureRepository.require_initial_transplantation(
-                id_culture
-            )
+            CultureRepository.require_initial_transplantation(id_culture)
 
             id_action_type = db.session.execute(
                 text("""
@@ -3666,55 +2942,25 @@ class CultureActionTreatmentRepository:
             ).scalar()
 
             if not id_action_type:
-                raise ValueError(
-                    "Le type d'action Traitement Culture est introuvable."
-                )
+                raise ValueError("Le type d'action Traitement Culture est introuvable.")
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            date_start = action_data.get(
-                "date_start"
-            )
+            date_start = action_data.get("date_start")
 
-            date_end = action_data.get(
-                "date_end"
-            )
+            date_end = action_data.get("date_end")
 
-            if isinstance(
-                date_start,
-                str
-            ):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+            if isinstance(date_start, str):
+                date_start = isoparse(date_start) if date_start.strip() else None
 
-            if isinstance(
-                date_end,
-                str
-            ):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+            if isinstance(date_end, str):
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
             action = TAction(
                 id_culture=id_culture,
@@ -3722,22 +2968,16 @@ class CultureActionTreatmentRepository:
                 id_test=None,
                 date_start=date_start,
                 date_end=date_end,
-                id_actor=action_data.get(
-                    "id_actor"
-                ),
+                id_actor=action_data.get("id_actor"),
                 id_action_type=id_action_type,
-                meta_create_by=meta_create_by
+                meta_create_by=meta_create_by,
             )
 
-            db.session.add(
-                action
-            )
+            db.session.add(action)
 
             db.session.flush()
 
-            specific_data = dict(
-                treatment_data or {}
-            )
+            specific_data = dict(treatment_data or {})
 
             for protected_field in (
                 "id_culture_action_treatment",
@@ -3745,53 +2985,30 @@ class CultureActionTreatmentRepository:
                 "meta_create_by",
                 "meta_create_date",
                 "meta_update_by",
-                "meta_update_date"
+                "meta_update_date",
             ):
-                specific_data.pop(
-                    protected_field,
-                    None
-                )
+                specific_data.pop(protected_field, None)
 
-            treatment = (
-                TCultureActionTreatment(
-                    id_action=action.id_action,
-                    meta_create_by=meta_create_by,
-                    **specific_data
-                )
+            treatment = TCultureActionTreatment(
+                id_action=action.id_action,
+                meta_create_by=meta_create_by,
+                **specific_data,
             )
 
-            db.session.add(
-                treatment
-            )
+            db.session.add(treatment)
 
             db.session.commit()
 
-            return {
-                "action": action.to_dic(),
-                "treatment":
-                    treatment.to_dic()
-            }
+            return {"action": action.to_dic(), "treatment": treatment.to_dic()}
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
+    def get_by_action(self, id_action: int):
+        PhysiologicalStage = aliased(TNomenclatures)
 
-    def get_by_action(
-        self,
-        id_action: int
-    ):
-        PhysiologicalStage = aliased(
-            TNomenclatures
-        )
-
-        Actor = aliased(
-            User
-        )
+        Actor = aliased(User)
 
         row = (
             db.session.query(
@@ -3799,41 +3016,19 @@ class CultureActionTreatmentRepository:
                 TAction.date_start,
                 TAction.date_end,
                 TAction.id_actor,
-
-                PhysiologicalStage.label_fr.label(
-                    "physiological_stage_label_fr"
-                ),
-                PhysiologicalStage.label_default.label(
-                    "physiological_stage_label_default"
-                ),
-
-                Actor.prenom_role.label(
-                    "actor_first_name"
-                ),
-                Actor.nom_role.label(
-                    "actor_last_name"
-                )
+                PhysiologicalStage.label_fr.label("physiological_stage_label_fr"),
+                PhysiologicalStage.label_default.label("physiological_stage_label_default"),
+                Actor.prenom_role.label("actor_first_name"),
+                Actor.nom_role.label("actor_last_name"),
             )
-            .join(
-                TAction,
-                TAction.id_action ==
-                TCultureActionTreatment.id_action
-            )
+            .join(TAction, TAction.id_action == TCultureActionTreatment.id_action)
             .outerjoin(
                 PhysiologicalStage,
-                PhysiologicalStage.id_nomenclature ==
-                TCultureActionTreatment
-                .id_physiological_development_stage
+                PhysiologicalStage.id_nomenclature
+                == TCultureActionTreatment.id_physiological_development_stage,
             )
-            .outerjoin(
-                Actor,
-                Actor.id_role ==
-                TAction.id_actor
-            )
-            .filter(
-                TCultureActionTreatment.id_action ==
-                id_action
-            )
+            .outerjoin(Actor, Actor.id_role == TAction.id_actor)
+            .filter(TCultureActionTreatment.id_action == id_action)
             .first()
         )
 
@@ -3842,195 +3037,97 @@ class CultureActionTreatmentRepository:
 
         treatment = row[0]
 
-        result = (
-            treatment.to_dic()
+        result = treatment.to_dic()
+
+        result.update(
+            {
+                "date_start": (row.date_start.isoformat() if row.date_start else None),
+                "date_end": (row.date_end.isoformat() if row.date_end else None),
+                "id_actor": row.id_actor,
+                "actor_label": (f"{row.actor_first_name or ''} {row.actor_last_name or ''}").strip()
+                or None,
+                "physiological_stage_label": (
+                    row.physiological_stage_label_fr or row.physiological_stage_label_default
+                ),
+            }
         )
 
-        result.update({
-            "date_start": (
-                row.date_start.isoformat()
-                if row.date_start
-                else None
-            ),
-
-            "date_end": (
-                row.date_end.isoformat()
-                if row.date_end
-                else None
-            ),
-
-            "id_actor":
-                row.id_actor,
-
-            "actor_label": (
-                f"{row.actor_first_name or ''} "
-                f"{row.actor_last_name or ''}"
-            ).strip() or None,
-
-            "physiological_stage_label": (
-                row.physiological_stage_label_fr
-                or
-                row.physiological_stage_label_default
-            )
-        })
-
         return result
-
 
     def update_with_action(
         self,
         id_action: int,
         action_data: dict,
         treatment_data: dict,
-        meta_update_by: int
+        meta_update_by: int,
     ):
         try:
             action = (
-                db.session.query(
-                    TAction
-                )
-                .filter(
-                    TAction.id_action ==
-                    id_action,
-                    TAction.id_culture.isnot(
-                        None
-                    )
-                )
+                db.session.query(TAction)
+                .filter(TAction.id_action == id_action, TAction.id_culture.isnot(None))
                 .first()
             )
 
             treatment = (
-                db.session.query(
-                    TCultureActionTreatment
-                )
-                .filter(
-                    TCultureActionTreatment
-                    .id_action ==
-                    id_action
-                )
+                db.session.query(TCultureActionTreatment)
+                .filter(TCultureActionTreatment.id_action == id_action)
                 .first()
             )
 
-            if (
-                not action
-                or not treatment
-            ):
+            if not action or not treatment:
                 return None
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            treatment_data = dict(
-                treatment_data or {}
-            )
+            treatment_data = dict(treatment_data or {})
 
-            date_start = action_data.get(
-                "date_start",
-                action.date_start
-            )
+            date_start = action_data.get("date_start", action.date_start)
 
-            date_end = action_data.get(
-                "date_end",
-                action.date_end
-            )
+            date_end = action_data.get("date_end", action.date_end)
 
-            if isinstance(
-                date_start,
-                str
-            ):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+            if isinstance(date_start, str):
+                date_start = isoparse(date_start) if date_start.strip() else None
 
-            if isinstance(
-                date_end,
-                str
-            ):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+            if isinstance(date_end, str):
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
-            action.date_start = (
-                date_start
-            )
+            action.date_start = date_start
 
-            action.date_end = (
-                date_end
-            )
+            action.date_end = date_end
 
             if "id_actor" in action_data:
-                action.id_actor = (
-                    action_data.get(
-                        "id_actor"
-                    )
-                )
+                action.id_actor = action_data.get("id_actor")
 
-            action.meta_update_by = (
-                meta_update_by
-            )
+            action.meta_update_by = meta_update_by
 
-            action.meta_update_date = (
-                datetime.utcnow()
-            )
+            action.meta_update_date = datetime.utcnow()
 
             editable_fields = (
                 "id_physiological_development_stage",
                 "disease_or_deficiency",
                 "type",
-                "success"
+                "success",
             )
 
             for field_name in editable_fields:
-                if (
-                    field_name
-                    in treatment_data
-                ):
-                    setattr(
-                        treatment,
-                        field_name,
-                        treatment_data[
-                            field_name
-                        ]
-                    )
+                if field_name in treatment_data:
+                    setattr(treatment, field_name, treatment_data[field_name])
 
-            treatment.meta_update_by = (
-                meta_update_by
-            )
+            treatment.meta_update_by = meta_update_by
 
-            treatment.meta_update_date = (
-                datetime.utcnow()
-            )
+            treatment.meta_update_date = datetime.utcnow()
 
             db.session.commit()
 
-            return self.get_by_action(
-                id_action
-            )
+            return self.get_by_action(id_action)
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
@@ -4041,12 +3138,10 @@ class CultureActionSamplingRepository:
         id_culture: int,
         action_data: dict,
         sampling_data: dict,
-        meta_create_by: int
+        meta_create_by: int,
     ):
         try:
-            CultureRepository.require_initial_transplantation(
-                id_culture
-            )
+            CultureRepository.require_initial_transplantation(id_culture)
 
             id_action_type = db.session.execute(
                 text("""
@@ -4060,55 +3155,25 @@ class CultureActionSamplingRepository:
             ).scalar()
 
             if not id_action_type:
-                raise ValueError(
-                    "Le type d'action Prélèvement est introuvable."
-                )
+                raise ValueError("Le type d'action Prélèvement est introuvable.")
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            date_start = action_data.get(
-                "date_start"
-            )
+            date_start = action_data.get("date_start")
 
-            date_end = action_data.get(
-                "date_end"
-            )
+            date_end = action_data.get("date_end")
 
-            if isinstance(
-                date_start,
-                str
-            ):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+            if isinstance(date_start, str):
+                date_start = isoparse(date_start) if date_start.strip() else None
 
-            if isinstance(
-                date_end,
-                str
-            ):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+            if isinstance(date_end, str):
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
             action = TAction(
                 id_culture=id_culture,
@@ -4116,22 +3181,16 @@ class CultureActionSamplingRepository:
                 id_test=None,
                 date_start=date_start,
                 date_end=date_end,
-                id_actor=action_data.get(
-                    "id_actor"
-                ),
+                id_actor=action_data.get("id_actor"),
                 id_action_type=id_action_type,
-                meta_create_by=meta_create_by
+                meta_create_by=meta_create_by,
             )
 
-            db.session.add(
-                action
-            )
+            db.session.add(action)
 
             db.session.flush()
 
-            specific_data = dict(
-                sampling_data or {}
-            )
+            specific_data = dict(sampling_data or {})
 
             for protected_field in (
                 "id_culture_action_sampling",
@@ -4139,49 +3198,28 @@ class CultureActionSamplingRepository:
                 "meta_create_by",
                 "meta_create_date",
                 "meta_update_by",
-                "meta_update_date"
+                "meta_update_date",
             ):
-                specific_data.pop(
-                    protected_field,
-                    None
-                )
+                specific_data.pop(protected_field, None)
 
-            sampling = (
-                TCultureActionSampling(
-                    id_action=action.id_action,
-                    meta_create_by=meta_create_by,
-                    **specific_data
-                )
+            sampling = TCultureActionSampling(
+                id_action=action.id_action,
+                meta_create_by=meta_create_by,
+                **specific_data,
             )
 
-            db.session.add(
-                sampling
-            )
+            db.session.add(sampling)
 
             db.session.commit()
 
-            return {
-                "action": action.to_dic(),
-                "sampling":
-                    sampling.to_dic()
-            }
+            return {"action": action.to_dic(), "sampling": sampling.to_dic()}
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
-
-    def get_by_action(
-        self,
-        id_action: int
-    ):
-        Actor = aliased(
-            User
-        )
+    def get_by_action(self, id_action: int):
+        Actor = aliased(User)
 
         row = (
             db.session.query(
@@ -4189,28 +3227,12 @@ class CultureActionSamplingRepository:
                 TAction.date_start,
                 TAction.date_end,
                 TAction.id_actor,
-
-                Actor.prenom_role.label(
-                    "actor_first_name"
-                ),
-                Actor.nom_role.label(
-                    "actor_last_name"
-                )
+                Actor.prenom_role.label("actor_first_name"),
+                Actor.nom_role.label("actor_last_name"),
             )
-            .join(
-                TAction,
-                TAction.id_action ==
-                TCultureActionSampling.id_action
-            )
-            .outerjoin(
-                Actor,
-                Actor.id_role ==
-                TAction.id_actor
-            )
-            .filter(
-                TCultureActionSampling.id_action ==
-                id_action
-            )
+            .join(TAction, TAction.id_action == TCultureActionSampling.id_action)
+            .outerjoin(Actor, Actor.id_role == TAction.id_actor)
+            .filter(TCultureActionSampling.id_action == id_action)
             .first()
         )
 
@@ -4219,187 +3241,89 @@ class CultureActionSamplingRepository:
 
         sampling = row[0]
 
-        result = (
-            sampling.to_dic()
+        result = sampling.to_dic()
+
+        result.update(
+            {
+                "date_start": (row.date_start.isoformat() if row.date_start else None),
+                "date_end": (row.date_end.isoformat() if row.date_end else None),
+                "id_actor": row.id_actor,
+                "actor_label": (f"{row.actor_first_name or ''} {row.actor_last_name or ''}").strip()
+                or None,
+            }
         )
 
-        result.update({
-            "date_start": (
-                row.date_start.isoformat()
-                if row.date_start
-                else None
-            ),
-
-            "date_end": (
-                row.date_end.isoformat()
-                if row.date_end
-                else None
-            ),
-
-            "id_actor":
-                row.id_actor,
-
-            "actor_label": (
-                f"{row.actor_first_name or ''} "
-                f"{row.actor_last_name or ''}"
-            ).strip() or None
-        })
-
         return result
-
 
     def update_with_action(
         self,
         id_action: int,
         action_data: dict,
         sampling_data: dict,
-        meta_update_by: int
+        meta_update_by: int,
     ):
         try:
             action = (
-                db.session.query(
-                    TAction
-                )
-                .filter(
-                    TAction.id_action ==
-                    id_action,
-                    TAction.id_culture.isnot(
-                        None
-                    )
-                )
+                db.session.query(TAction)
+                .filter(TAction.id_action == id_action, TAction.id_culture.isnot(None))
                 .first()
             )
 
             sampling = (
-                db.session.query(
-                    TCultureActionSampling
-                )
-                .filter(
-                    TCultureActionSampling
-                    .id_action ==
-                    id_action
-                )
+                db.session.query(TCultureActionSampling)
+                .filter(TCultureActionSampling.id_action == id_action)
                 .first()
             )
 
-            if (
-                not action
-                or not sampling
-            ):
+            if not action or not sampling:
                 return None
 
-            action_data = dict(
-                action_data or {}
-            )
+            action_data = dict(action_data or {})
 
-            sampling_data = dict(
-                sampling_data or {}
-            )
+            sampling_data = dict(sampling_data or {})
 
-            date_start = action_data.get(
-                "date_start",
-                action.date_start
-            )
+            date_start = action_data.get("date_start", action.date_start)
 
-            date_end = action_data.get(
-                "date_end",
-                action.date_end
-            )
+            date_end = action_data.get("date_end", action.date_end)
 
-            if isinstance(
-                date_start,
-                str
-            ):
-                date_start = (
-                    isoparse(date_start)
-                    if date_start.strip()
-                    else None
-                )
+            if isinstance(date_start, str):
+                date_start = isoparse(date_start) if date_start.strip() else None
 
-            if isinstance(
-                date_end,
-                str
-            ):
-                date_end = (
-                    isoparse(date_end)
-                    if date_end.strip()
-                    else None
-                )
+            if isinstance(date_end, str):
+                date_end = isoparse(date_end) if date_end.strip() else None
 
             if not date_start:
-                raise ValueError(
-                    "La date de début est obligatoire."
-                )
+                raise ValueError("La date de début est obligatoire.")
 
-            if (
-                date_end
-                and date_end < date_start
-            ):
-                raise ValueError(
-                    "La date de fin ne peut pas "
-                    "précéder la date de début."
-                )
+            if date_end and date_end < date_start:
+                raise ValueError("La date de fin ne peut pas précéder la date de début.")
 
-            action.date_start = (
-                date_start
-            )
+            action.date_start = date_start
 
-            action.date_end = (
-                date_end
-            )
+            action.date_end = date_end
 
             if "id_actor" in action_data:
-                action.id_actor = (
-                    action_data.get(
-                        "id_actor"
-                    )
-                )
+                action.id_actor = action_data.get("id_actor")
 
-            action.meta_update_by = (
-                meta_update_by
-            )
+            action.meta_update_by = meta_update_by
 
-            action.meta_update_date = (
-                datetime.utcnow()
-            )
+            action.meta_update_date = datetime.utcnow()
 
-            editable_fields = (
-                "quantity",
-                "remarks"
-            )
+            editable_fields = ("quantity", "remarks")
 
             for field_name in editable_fields:
-                if (
-                    field_name
-                    in sampling_data
-                ):
-                    setattr(
-                        sampling,
-                        field_name,
-                        sampling_data[
-                            field_name
-                        ]
-                    )
+                if field_name in sampling_data:
+                    setattr(sampling, field_name, sampling_data[field_name])
 
-            sampling.meta_update_by = (
-                meta_update_by
-            )
+            sampling.meta_update_by = meta_update_by
 
-            sampling.meta_update_date = (
-                datetime.utcnow()
-            )
+            sampling.meta_update_date = datetime.utcnow()
 
             db.session.commit()
 
-            return self.get_by_action(
-                id_action
-            )
+            return self.get_by_action(id_action)
 
-        except (
-            SQLAlchemyError,
-            ValueError
-        ) as error:
-
+        except (SQLAlchemyError, ValueError) as error:
             db.session.rollback()
             raise error
 
@@ -4443,7 +3367,7 @@ class ActionReplicateRepository:
                         total_count_dead=None,
                         total_count_viable=None,
                         total_count_transplanted=None,
-                        last_replicate=True if last_replicate and i == len(germes) - 1 else False
+                        last_replicate=True if last_replicate and i == len(germes) - 1 else False,
                     )
                     db.session.add(rep)
 
@@ -4460,7 +3384,7 @@ class ActionReplicateRepository:
                     total_count_dead=replicates.get("total_count_dead"),
                     total_count_viable=replicates.get("total_count_viable"),
                     total_count_transplanted=None,
-                    last_replicate=None  
+                    last_replicate=None,
                 )
                 db.session.add(rep)
 
@@ -4477,15 +3401,13 @@ class ActionReplicateRepository:
             return {
                 "action": action.to_dict(),
                 "replicates": [r.to_dict() for r in replicates_rows],
-                "message": "Action créée"
+                "message": "Action créée",
             }
-
 
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
 
-     
     def update(self, id_action: int, data: dict):
         action = TAction.query.get(id_action)
         if not action:
@@ -4529,7 +3451,7 @@ class ActionReplicateRepository:
                     total_count_dead=None,
                     total_count_viable=None,
                     total_count_transplanted=None,
-                    last_replicate=True if last_replicate and i == len(germes) - 1 else False
+                    last_replicate=True if last_replicate and i == len(germes) - 1 else False,
                 )
                 db.session.add(rep)
 
@@ -4546,10 +3468,9 @@ class ActionReplicateRepository:
                 total_count_dead=replicates.get("total_count_dead"),
                 total_count_viable=replicates.get("total_count_viable"),
                 total_count_transplanted=None,
-                last_replicate=None
+                last_replicate=None,
             )
             db.session.add(rep)
 
         db.session.commit()
         return action.to_dict()
-

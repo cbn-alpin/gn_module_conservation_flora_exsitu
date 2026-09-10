@@ -6,13 +6,14 @@ Create Date: 2025-01-06 23:07:42.754140
 """
 
 import importlib
-from gn_module_conservation_flora_exsitu import MODULE_DB_BRANCH, MODULE_CODE
 from csv import DictReader
-from alembic import op
-import sqlalchemy as sa
-from utils_flask_sqla.migrations.utils import logger
-from sqlalchemy.sql import text
 
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy.sql import text
+from utils_flask_sqla.migrations.utils import logger
+
+from gn_module_conservation_flora_exsitu import MODULE_CODE, MODULE_DB_BRANCH
 
 # revision identifiers, used by Alembic.
 revision = "774793661884"
@@ -22,7 +23,14 @@ depends_on = "f06cc80cc8ba"  # GN 2.14.2
 
 
 def copy_from_csv(
-    f, schema, table, dest_cols="", source_cols=None, header=True, encoding=None, delimiter=None
+    f,
+    schema,
+    table,
+    dest_cols="",
+    source_cols=None,
+    header=True,
+    encoding=None,
+    delimiter=None,
 ):
     if dest_cols:
         dest_cols = " (" + ", ".join(dest_cols) + ")"
@@ -33,7 +41,9 @@ def copy_from_csv(
         dest_cols = ""
         field_names = get_csv_field_names(f, encoding=encoding, delimiter=delimiter)
         op.create_table(
-            table, *[sa.Column(c, sa.String) for c in map(str.lower, field_names)], schema=schema
+            table,
+            *[sa.Column(c, sa.String) for c in map(str.lower, field_names)],
+            schema=schema,
         )
 
     options = ["FORMAT CSV"]
@@ -341,7 +351,11 @@ def delete_table_location(schema_name, table_name, uuid_field_name):
     )
     op.get_bind().execute(
         operation,
-        {"schema_name": schema_name, "table_name": table_name, "uuid_field_name": uuid_field_name},
+        {
+            "schema_name": schema_name,
+            "table_name": table_name,
+            "uuid_field_name": uuid_field_name,
+        },
     )
 
 
@@ -361,5 +375,9 @@ def delete_medias_for_table_location(schema_name, table_name, uuid_field_name):
     )
     op.get_bind().execute(
         operation,
-        {"schema_name": schema_name, "table_name": table_name, "uuid_field_name": uuid_field_name},
+        {
+            "schema_name": schema_name,
+            "table_name": table_name,
+            "uuid_field_name": uuid_field_name,
+        },
     )

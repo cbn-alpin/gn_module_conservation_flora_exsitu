@@ -9,8 +9,8 @@ Create Date: 2026-04-18 15:00:00
 import importlib.resources
 from csv import DictReader
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import text
 
@@ -1513,9 +1513,7 @@ def upgrade():
             "id_culture_action_transplantation",
             name="pk_t_culture_action_transplantation",
         ),
-        sa.UniqueConstraint(
-            "id_action", name="uq_t_culture_action_transplantation_id_action"
-        ),
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_transplantation_id_action"),
         sa.ForeignKeyConstraint(
             ["id_action"],
             ["pr_conservation_flora_exsitu.t_action.id_action"],
@@ -1579,9 +1577,7 @@ def upgrade():
         sa.PrimaryKeyConstraint(
             "id_culture_action_observation", name="pk_t_culture_action_observation"
         ),
-        sa.UniqueConstraint(
-            "id_action", name="uq_t_culture_action_observation_id_action"
-        ),
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_observation_id_action"),
         sa.ForeignKeyConstraint(
             ["id_action"],
             ["pr_conservation_flora_exsitu.t_action.id_action"],
@@ -1634,9 +1630,7 @@ def upgrade():
         sa.PrimaryKeyConstraint(
             "id_culture_action_treatment", name="pk_t_culture_action_treatment"
         ),
-        sa.UniqueConstraint(
-            "id_action", name="uq_t_culture_action_treatment_id_action"
-        ),
+        sa.UniqueConstraint("id_action", name="uq_t_culture_action_treatment_id_action"),
         sa.ForeignKeyConstraint(
             ["id_action"],
             ["pr_conservation_flora_exsitu.t_action.id_action"],
@@ -1684,9 +1678,7 @@ def upgrade():
         ),
         sa.Column("meta_update_by", sa.Integer(), nullable=True),
         sa.Column("meta_update_date", sa.DateTime(), nullable=True),
-        sa.PrimaryKeyConstraint(
-            "id_culture_action_sampling", name="pk_t_culture_action_sampling"
-        ),
+        sa.PrimaryKeyConstraint("id_culture_action_sampling", name="pk_t_culture_action_sampling"),
         sa.UniqueConstraint("id_action", name="uq_t_culture_action_sampling_id_action"),
         sa.ForeignKeyConstraint(
             ["id_action"],
@@ -2322,9 +2314,7 @@ def create_missing_nomenclature_indexes():
     result = op.get_bind().execute(operation).fetchall()
 
     created_indexes = []
-    print(
-        f"Creating of {len(result)} temporary nomenclature indexes to accelerate the deletion..."
-    )
+    print(f"Creating of {len(result)} temporary nomenclature indexes to accelerate the deletion...")
     for row in result:
         schema_name = row.schema_name
         table_name = row.table_name
@@ -2352,9 +2342,7 @@ def delete_nomenclature_indexes(indexes_to_deleted):
     print(f"Deleting of {len(indexes_to_deleted)} temporary nomenclature indexes...")
     for schema_name, index_name in indexes_to_deleted:
         try:
-            op.get_bind().execute(
-                text(f"DROP INDEX IF EXISTS {schema_name}.{index_name};")
-            )
+            op.get_bind().execute(text(f"DROP INDEX IF EXISTS {schema_name}.{index_name};"))
         except Exception as e:
             print(f"Error while deleting index {schema_name}.{index_name}: {e}")
 

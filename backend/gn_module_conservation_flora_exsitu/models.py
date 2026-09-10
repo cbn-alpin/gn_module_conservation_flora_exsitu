@@ -1,48 +1,34 @@
-from geonature.utils.env import db
+from datetime import datetime
+
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID, JSONB
 from geoalchemy2 import Geometry
+from geonature.utils.env import db
+from pypnusershub.db.models import User
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from utils_flask_sqla.serializers import serializable
 from utils_flask_sqla_geo.serializers import geoserializable
-from ref_geo.models import LAreas
-from pypnusershub.db.models import User
-from datetime import datetime
-from pypnnomenclature.models import TNomenclatures
 
 
 @serializable
 @geoserializable
 class THarvest(db.Model):
-    __tablename__ = 't_harvest'
+    __tablename__ = "t_harvest"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_harvest = db.Column(
-        db.Integer,
-        primary_key=True,
-        unique=True
-    )
-    id_dataset = db.Column(
-        db.Integer,
-        nullable=False
-    )
+    id_harvest = db.Column(db.Integer, primary_key=True, unique=True)
+    id_dataset = db.Column(db.Integer, nullable=False)
     cd_hab = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_habitats.habref.cd_hab",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_habitats.habref.cd_hab", ondelete="NULL"),
     )
     id_harvest_type = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     date_start = db.Column(
         db.DateTime,
-        nullable = False,
-        server_default = sa.func.now(),
+        nullable=False,
+        server_default=sa.func.now(),
     )
     date_end = db.Column(db.DateTime)
     place_remarks = db.Column(db.Text)
@@ -50,41 +36,25 @@ class THarvest(db.Model):
     geom = db.Column(Geometry("GEOMETRY", 2154))
     id_area_type = db.Column(
         db.Integer,
-        db.ForeignKey(
-           "ref_geo.bib_areas_types.id_type",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_geo.bib_areas_types.id_type", ondelete="NULL"),
     )
     id_area = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_geo.l_areas.id_area",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_geo.l_areas.id_area", ondelete="NULL"),
     )
-    id_geographical_precision  = db.Column(
+    id_geographical_precision = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
-    precision = db.Column(
-        db.Integer
-    )
+    precision = db.Column(db.Integer)
     surface = db.Column(db.Integer)
     altitude = db.Column(db.Integer)
     id_exposition = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
-    slope = db.Column(
-        db.Integer
-    )
+    slope = db.Column(db.Integer)
     additional_data = db.Column(JSONB)
     meta_create_by = db.Column(
         db.Integer,
@@ -113,38 +83,38 @@ class THarvest(db.Model):
     # Relation avec les observateurs (t_roles via la table de correspondance CorObserverHarvest)
     observers = db.relationship(
         User,  # Utilisation directe de t_role existant
-        secondary='pr_conservation_flora_exsitu.cor_harvest_observer',
-        backref=db.backref('harvests', lazy='select'),
-        lazy='select'
+        secondary="pr_conservation_flora_exsitu.cor_harvest_observer",
+        backref=db.backref("harvests", lazy="select"),
+        lazy="select",
     )
-    materials = db.relationship('TMaterial', backref='harvest')
+    materials = db.relationship("TMaterial", backref="harvest")
 
     def to_dic(self):
         return {
             "id_harvest": self.id_harvest,
             "date_start": self.date_start,
-            "date_end": self.date_end
+            "date_end": self.date_end,
         }
+
 
 @serializable
 class CorHarvestObserver(db.Model):
-    __tablename__ = 'cor_harvest_observer'
+    __tablename__ = "cor_harvest_observer"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
     id_observer = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role"),
-        primary_key=True
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), primary_key=True
     )
     id_harvest = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_harvest.id_harvest"),
-        primary_key=True
+        primary_key=True,
     )
     is_main_observer = db.Column(db.Boolean, default=False)
 
+
 @serializable
 class TMaterial(db.Model):
-    __tablename__ = 't_material'
+    __tablename__ = "t_material"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
     id_material = db.Column(
         db.Integer,
@@ -162,69 +132,43 @@ class TMaterial(db.Model):
     )
     id_material_parent = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_material.id_material",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="NULL"),
     )
     id_harvest = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_harvest.id_harvest",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("pr_conservation_flora_exsitu.t_harvest.id_harvest", ondelete="NULL"),
     )
     id_action = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_action.id_action"
-        ),
+        db.ForeignKey("pr_conservation_flora_exsitu.t_action.id_action"),
         nullable=True,
     )
     id_material_type = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     id_foot_counting_class = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     id_method_sample = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     id_phenology_1 = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     id_phenology_2 = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     remarks = db.Column(db.Text)
     code_cultural_bank = db.Column(
         db.Integer,
     )
     sample_foot_count = db.Column(db.Integer)
-    is_soil_sampling = db.Column(
-        db.Boolean,
-        default=False
-    )
+    is_soil_sampling = db.Column(db.Boolean, default=False)
     has_hybridation_risk = db.Column(db.Boolean)
     additional_data = db.Column(JSONB)
     meta_create_by = db.Column(
@@ -252,8 +196,8 @@ class TMaterial(db.Model):
         onupdate=sa.func.now(),
     )
 
-    seeds = db.relationship('TMaterielSeed', uselist=False, backref='material')
-    storages = db.relationship('TStorage', backref='material')
+    seeds = db.relationship("TMaterielSeed", uselist=False, backref="material")
+    storages = db.relationship("TStorage", backref="material")
 
     @property
     def has_seed_description(self):
@@ -279,39 +223,37 @@ class TMaterial(db.Model):
             "id_phenology_1": self.id_phenology_1,
             "id_phenology_2": self.id_phenology_2,
             "has_hybridation_risk": self.has_hybridation_risk,
-            "additional_data": self.additional_data
+            "additional_data": self.additional_data,
         }
 
 
 @serializable
 class CorMaterialTaxon(db.Model):
-    __tablename__ = 'cor_material_taxon'
+    __tablename__ = "cor_material_taxon"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_material  = db.Column(
+    id_material = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material"),
-        primary_key=True
+        primary_key=True,
     )
-    cd_nom  = db.Column(
+    cd_nom = db.Column(
         db.Integer,
         db.ForeignKey(
             "taxonomie.taxref.cd_nom",
             ondelete="NULL",
         ),
-        primary_key=True
+        primary_key=True,
     )
+
 
 @serializable
 class TMaterielSeed(db.Model):
-    __tablename__ = 't_material_seed'
+    __tablename__ = "t_material_seed"
     __table_args__ = (
-        sa.UniqueConstraint('id_material'),
-        {"schema": "pr_conservation_flora_exsitu"}
+        sa.UniqueConstraint("id_material"),
+        {"schema": "pr_conservation_flora_exsitu"},
     )
-    id_seed = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_seed = db.Column(db.Integer, primary_key=True)
     unique_id_seed = db.Column(
         UUID(as_uuid=True),
         server_default=sa.text("uuid_generate_v4()"),
@@ -322,7 +264,7 @@ class TMaterielSeed(db.Model):
             "pr_conservation_flora_exsitu.t_material.id_material",
         ),
         nullable=False,
-        unique=True
+        unique=True,
     )
     length = db.Column(db.Numeric)
     width = db.Column(db.Numeric)
@@ -330,10 +272,7 @@ class TMaterielSeed(db.Model):
     total_count = db.Column(db.Integer)
     id_material_quality = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     total_mass = db.Column(db.Numeric)
     sample_count = db.Column(db.Numeric)
@@ -387,31 +326,25 @@ class TMaterielSeed(db.Model):
 
 @serializable
 class TStorage(db.Model):
-    __tablename__ = 't_storage'
+    __tablename__ = "t_storage"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
-    id_storage = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_storage = db.Column(db.Integer, primary_key=True)
     id_material = db.Column(
         db.Integer,
         db.ForeignKey(
             "pr_conservation_flora_exsitu.t_material.id_material",
         ),
-        nullable=False
+        nullable=False,
     )
     id_place = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     date_start = db.Column(
         db.DateTime,
-        nullable = False,
-        server_default = sa.func.now(),
+        nullable=False,
+        server_default=sa.func.now(),
     )
     date_end = db.Column(db.DateTime)
     id_actor = db.Column(
@@ -423,53 +356,35 @@ class TStorage(db.Model):
     )
     id_storage_action = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     quantity = db.Column(db.Integer)
     id_destock = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     id_destination = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     id_humidity_level = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     humidity_rate = db.Column(db.Numeric)
     id_humidity_device = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     id_dry_type = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="NULL"
-        ),
-        nullable=False
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
+        nullable=False,
     )
     destination_precision = db.Column(db.Text)
     remarks = db.Column(db.Text)
@@ -523,26 +438,23 @@ class TStorage(db.Model):
 
 @serializable
 class TTest(db.Model):
-    __tablename__ = 't_test'
+    __tablename__ = "t_test"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
 
     id_test = db.Column(db.Integer, primary_key=True, unique=True)
     id_test_parent = db.Column(
-      db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_material.id_material",
-            ondelete="NULL"
-        ),
+        db.Integer,
+        db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="NULL"),
     )
     id_material = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="NULL"),
-        nullable=False
+        nullable=False,
     )
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL"),
-        nullable=True
+        nullable=True,
     )
     id_storage = db.Column(
         db.Integer,
@@ -557,38 +469,36 @@ class TTest(db.Model):
     replicate_count = db.Column(db.Integer, default=1)
     id_support = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     id_substrate = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="NULL"),
     )
     remarks = db.Column(db.Text)
     additional_data = db.Column(JSONB)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
     )
     meta_create_date = db.Column(
         db.DateTime,
-        #nullable=False,
+        # nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
     meta_update_by = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="NULL")
     )
     meta_update_date = db.Column(db.DateTime, onupdate=sa.func.now())
-    germination_rate = db.Column(db.Float) 
+    germination_rate = db.Column(db.Float)
     germination_delay = db.Column(db.Integer)
     germination_period = db.Column(db.Integer)
- 
 
     photo_thermo_regime = db.Column(db.String(100))
     last_test = db.Column(db.Boolean, default=False)
     pre_treatment = db.Column(db.Boolean, default=False)
+
     def to_dic(self):
         return {
             "id_test": self.id_test,
@@ -604,8 +514,12 @@ class TTest(db.Model):
             "id_substrate": self.id_substrate,
             "additional_data": self.additional_data,
             "meta_create_by": self.meta_create_by,
-            "meta_create_date": self.meta_create_date.isoformat() if self.meta_create_date else None,
-            "meta_update_date": self.meta_update_date.isoformat() if self.meta_update_date else None,
+            "meta_create_date": self.meta_create_date.isoformat()
+            if self.meta_create_date
+            else None,
+            "meta_update_date": self.meta_update_date.isoformat()
+            if self.meta_update_date
+            else None,
             "id_storage": self.id_storage,
             "germination_rate": self.germination_rate,
             "germination_delay": self.germination_delay,
@@ -613,66 +527,51 @@ class TTest(db.Model):
             "photo_thermo_regime": self.photo_thermo_regime,
             "last_test": self.last_test,
             "pre_treatment": self.pre_treatment,
-
-
         }
-    
+
 
 @serializable
 class TSowing(db.Model):
-    __tablename__ = 't_sowing'
+    __tablename__ = "t_sowing"
     __table_args__ = (
-        db.UniqueConstraint(
-            "code",
-            name="uq_t_sowing_code"
-    ),
+        db.UniqueConstraint("code", name="uq_t_sowing_code"),
         db.CheckConstraint(
             "end_date IS NULL OR end_date > start_date",
-            name="ck_t_sowing_end_date_after_start_date"
+            name="ck_t_sowing_end_date_after_start_date",
         ),
-        db.CheckConstraint(
-            "depth IS NULL OR depth > 0",
-            name="ck_t_sowing_depth_positive"
-        ),
+        db.CheckConstraint("depth IS NULL OR depth > 0", name="ck_t_sowing_depth_positive"),
         db.CheckConstraint(
             "initial_count IS NULL OR initial_count > 0",
-            name="ck_t_sowing_initial_count_positive"
+            name="ck_t_sowing_initial_count_positive",
         ),
         db.CheckConstraint(
             "replicate_count IS NULL OR replicate_count > 0",
-            name="ck_t_sowing_replicate_count_positive"
+            name="ck_t_sowing_replicate_count_positive",
         ),
-        {"schema": "pr_conservation_flora_exsitu"}
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
-    id_sowing = db.Column(
-        db.Integer, 
-        primary_key=True, 
-        unique=True
-        )
+    id_sowing = db.Column(db.Integer, primary_key=True, unique=True)
 
     id_material = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material", ondelete="SET NULL"),
-        nullable=False
+        nullable=False,
     )
     id_test = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="SET NULL")
+        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="SET NULL"),
     )
     id_storage = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_storage.id_storage", ondelete="SET NULL"),
-        nullable=True # SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
+        nullable=True,  # SLIM ERROR : id_storage ne doit plus être obligatoire pour t_sowing
     )
-    code = db.Column(
-        db.String(50), 
-        nullable=False
-        )
+    code = db.Column(db.String(50), nullable=False)
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
-        nullable=True
+        nullable=True,
     )
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime)
@@ -682,17 +581,17 @@ class TSowing(db.Model):
 
     id_location = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     specification_location = db.Column(db.String(100))
 
     id_watering_method = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     id_sowing_method = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
 
     depth = db.Column(db.Integer)
@@ -702,18 +601,16 @@ class TSowing(db.Model):
     additional_data = db.Column(JSONB)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
     )
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
     meta_update_by = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
     )
     meta_update_date = db.Column(db.DateTime, onupdate=sa.func.now())
 
@@ -722,7 +619,7 @@ class TSowing(db.Model):
             "id_sowing": self.id_sowing,
             "id_material": self.id_material,
             "id_storage": self.id_storage,
-            "id_test":self.id_test,
+            "id_test": self.id_test,
             "code": self.code,
             "id_actor": self.id_actor,
             "start_date": self.start_date.isoformat() if self.start_date else None,
@@ -738,10 +635,7 @@ class TSowing(db.Model):
             "replicate_count": self.replicate_count,
             "remarks": self.remarks,
             "additional_data": self.additional_data,
-
-
         }
-
 
 
 @serializable
@@ -749,109 +643,62 @@ class TCulture(db.Model):
     __tablename__ = "t_culture"
 
     __table_args__ = (
-        db.UniqueConstraint(
-            "code_culture",
-            name="uq_t_culture_code_culture"
-        ),
+        db.UniqueConstraint("code_culture", name="uq_t_culture_code_culture"),
         db.CheckConstraint(
             "date_end IS NULL OR date_end >= date_start",
-            name="ck_t_culture_end_date_after_start_date"
+            name="ck_t_culture_end_date_after_start_date",
         ),
-        {
-            "schema": "pr_conservation_flora_exsitu"
-        }
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
-    id_culture = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_culture = db.Column(db.Integer, primary_key=True)
 
-    code_culture = db.Column(
-        db.String(50),
-        nullable=False
-    )
+    code_culture = db.Column(db.String(50), nullable=False)
 
     id_material = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_material.id_material"
-        ),
-        nullable=False
+        db.ForeignKey("pr_conservation_flora_exsitu.t_material.id_material"),
+        nullable=False,
     )
 
     id_sowing = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_sowing.id_sowing"
-        ),
-        nullable=True
+        db.ForeignKey("pr_conservation_flora_exsitu.t_sowing.id_sowing"),
+        nullable=True,
     )
 
     id_test = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_test.id_test"
-        ),
-        nullable=True
+        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test"),
+        nullable=True,
     )
 
-    id_actor = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=True
-    )
+    id_actor = db.Column(db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=True)
 
-    date_start = db.Column(
-        db.DateTime,
-        nullable=False
-    )
+    date_start = db.Column(db.DateTime, nullable=False)
 
-    date_end = db.Column(
-        db.DateTime,
-        nullable=True
-    )
+    date_end = db.Column(db.DateTime, nullable=True)
 
-    remarks = db.Column(
-        db.Text,
-        nullable=True
-    )
+    remarks = db.Column(db.Text, nullable=True)
 
-    additional_data = db.Column(
-        JSONB,
-        nullable=True
-    )
+    additional_data = db.Column(JSONB, nullable=True)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=False
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=False
     )
 
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
 
     meta_update_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=True
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=True
     )
 
-    meta_update_date = db.Column(
-        db.DateTime,
-        nullable=True,
-        onupdate=sa.func.now()
-    )
+    meta_update_date = db.Column(db.DateTime, nullable=True, onupdate=sa.func.now())
 
     @property
     def is_active(self):
@@ -865,63 +712,47 @@ class TCulture(db.Model):
             "id_sowing": self.id_sowing,
             "id_test": self.id_test,
             "id_actor": self.id_actor,
-            "date_start": (
-                self.date_start.isoformat()
-                if self.date_start
-                else None
-            ),
-            "date_end": (
-                self.date_end.isoformat()
-                if self.date_end
-                else None
-            ),
+            "date_start": (self.date_start.isoformat() if self.date_start else None),
+            "date_end": (self.date_end.isoformat() if self.date_end else None),
             "remarks": self.remarks,
             "additional_data": self.additional_data,
             "meta_create_by": self.meta_create_by,
             "meta_create_date": (
-                self.meta_create_date.isoformat()
-                if self.meta_create_date
-                else None
+                self.meta_create_date.isoformat() if self.meta_create_date else None
             ),
             "meta_update_by": self.meta_update_by,
             "meta_update_date": (
-                self.meta_update_date.isoformat()
-                if self.meta_update_date
-                else None
+                self.meta_update_date.isoformat() if self.meta_update_date else None
             ),
-            "is_active": self.is_active
+            "is_active": self.is_active,
         }
-
 
 
 @serializable
 class TAction(db.Model):
-    __tablename__ = 't_action'
+    __tablename__ = "t_action"
     __table_args__ = (
         db.CheckConstraint(
             "date_end IS NULL OR date_end >= date_start",
-            name="ck_t_action_end_date_after_start_date"
+            name="ck_t_action_end_date_after_start_date",
         ),
-        {"schema": "pr_conservation_flora_exsitu"}
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
     id_action = db.Column(db.Integer, primary_key=True, unique=True)
 
     id_test = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="SET NULL")
+        db.ForeignKey("pr_conservation_flora_exsitu.t_test.id_test", ondelete="SET NULL"),
     )
     id_sowing = db.Column(
         db.Integer,
-        db.ForeignKey("pr_conservation_flora_exsitu.t_sowing.id_sowing", ondelete="SET NULL")
+        db.ForeignKey("pr_conservation_flora_exsitu.t_sowing.id_sowing", ondelete="SET NULL"),
     )
     id_culture = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_culture.id_culture",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("pr_conservation_flora_exsitu.t_culture.id_culture", ondelete="SET NULL"),
+        nullable=True,
     )
     date_start = db.Column(db.DateTime, nullable=False)
     date_end = db.Column(db.DateTime)
@@ -929,16 +760,16 @@ class TAction(db.Model):
     id_actor = db.Column(
         db.Integer,
         db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
-        nullable=True
+        nullable=True,
     )
     id_action_type = db.Column(
         db.Integer,
         db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
-        nullable=False
+        nullable=False,
     )
     id_scarification_type = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     temperature_light = db.Column(db.Integer)
     temperature_shadow = db.Column(db.Integer)
@@ -946,12 +777,12 @@ class TAction(db.Model):
     hour_count_shadow = db.Column(db.Integer)
     id_water_type = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     duration_water = db.Column(db.Integer)
     id_chemical_liquid = db.Column(
         db.Integer,
-        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     duration_chemical_liquid = db.Column(db.Integer)
     concentration_chemical_liquid = db.Column(db.Integer)
@@ -960,41 +791,38 @@ class TAction(db.Model):
     id_scarification_mecanique = db.Column(
         db.Integer,
         db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
-        )
+    )
     id_tool = db.Column(
-    db.Integer,
-    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     id_sterilization_product = db.Column(
-    db.Integer,
-    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     id_sterilization_liquid = db.Column(
-    db.Integer,
-    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
     id_liquid_treatment = db.Column(
-    db.Integer,
-    db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL")
+        db.Integer,
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
     )
-    
-
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
     )
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
     meta_update_by = db.Column(
-        db.Integer,
-        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL")
     )
     meta_update_date = db.Column(db.DateTime, onupdate=sa.func.now())
+
     def to_dic(self):
         return {
             "id_action": self.id_action,
@@ -1022,257 +850,160 @@ class TAction(db.Model):
             "id_sterilization_liquid": self.id_sterilization_liquid,
             "id_liquid_treatment": self.id_liquid_treatment,
             "additional_data": self.additional_data,
-
-
         }
+
+
 @serializable
 class TCultureActionTransplantation(db.Model):
     __tablename__ = "t_culture_action_transplantation"
 
     __table_args__ = (
-        db.UniqueConstraint(
-            "id_action",
-            name="uq_t_culture_action_transplantation_id_action"
-        ),
-        {
-            "schema": "pr_conservation_flora_exsitu"
-        }
+        db.UniqueConstraint("id_action", name="uq_t_culture_action_transplantation_id_action"),
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
-    id_culture_action_transplantation = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_culture_action_transplantation = db.Column(db.Integer, primary_key=True)
 
     id_action = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_action.id_action",
-            ondelete="CASCADE"
-        ),
-        nullable=False
+        db.ForeignKey("pr_conservation_flora_exsitu.t_action.id_action", ondelete="CASCADE"),
+        nullable=False,
     )
 
     id_type = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    intervention_quantity = db.Column(
-        db.Integer,
-        nullable=True
-    )
+    intervention_quantity = db.Column(db.Integer, nullable=True)
 
-    in_progress_quantity = db.Column(
-        db.Integer,
-        nullable=True
-    )
+    in_progress_quantity = db.Column(db.Integer, nullable=True)
 
-    packaging = db.Column(
-        db.String(100),
-        nullable=True
-    )
+    packaging = db.Column(db.String(100), nullable=True)
 
-    substrat = db.Column(
-        JSONB,
-        nullable=True
-    )
+    substrat = db.Column(JSONB, nullable=True)
 
     id_physiological_development_stage = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        nullable=True,
     )
 
     id_main_location = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    precise_location = db.Column(
-        db.String(100),
-        nullable=True
-    )
+    precise_location = db.Column(db.String(100), nullable=True)
 
-    remarks = db.Column(
-        db.Text,
-        nullable=True
-    )
+    remarks = db.Column(db.Text, nullable=True)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=False
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=False
     )
 
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
 
     meta_update_by = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    meta_update_date = db.Column(
-        db.DateTime,
-        nullable=True,
-        onupdate=sa.func.now()
-    )
+    meta_update_date = db.Column(db.DateTime, nullable=True, onupdate=sa.func.now())
 
     def to_dic(self):
         return {
-            "id_culture_action_transplantation":
-                self.id_culture_action_transplantation,
+            "id_culture_action_transplantation": self.id_culture_action_transplantation,
             "id_action": self.id_action,
             "id_type": self.id_type,
-            "intervention_quantity":
-                self.intervention_quantity,
-            "in_progress_quantity":
-                self.in_progress_quantity,
+            "intervention_quantity": self.intervention_quantity,
+            "in_progress_quantity": self.in_progress_quantity,
             "packaging": self.packaging,
             "substrat": self.substrat,
-            "id_physiological_development_stage":
-                self.id_physiological_development_stage,
-            "id_main_location":
-                self.id_main_location,
-            "precise_location":
-                self.precise_location,
+            "id_physiological_development_stage": self.id_physiological_development_stage,
+            "id_main_location": self.id_main_location,
+            "precise_location": self.precise_location,
             "remarks": self.remarks,
-            "meta_create_by":
-                self.meta_create_by,
+            "meta_create_by": self.meta_create_by,
             "meta_create_date": (
-                self.meta_create_date.isoformat()
-                if self.meta_create_date
-                else None
+                self.meta_create_date.isoformat() if self.meta_create_date else None
             ),
-            "meta_update_by":
-                self.meta_update_by,
+            "meta_update_by": self.meta_update_by,
             "meta_update_date": (
-                self.meta_update_date.isoformat()
-                if self.meta_update_date
-                else None
-            )
+                self.meta_update_date.isoformat() if self.meta_update_date else None
+            ),
         }
+
 
 @serializable
 class TCultureActionObservation(db.Model):
     __tablename__ = "t_culture_action_observation"
 
     __table_args__ = (
-        db.UniqueConstraint(
-            "id_action",
-            name="uq_t_culture_action_observation_id_action"
-        ),
-        {
-            "schema": "pr_conservation_flora_exsitu"
-        }
+        db.UniqueConstraint("id_action", name="uq_t_culture_action_observation_id_action"),
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
-    id_culture_action_observation = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_culture_action_observation = db.Column(db.Integer, primary_key=True)
 
     id_action = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_action.id_action",
-            ondelete="CASCADE"
-        ),
-        nullable=False
+        db.ForeignKey("pr_conservation_flora_exsitu.t_action.id_action", ondelete="CASCADE"),
+        nullable=False,
     )
 
-    individual_count = db.Column(
-        db.Integer,
-        nullable=True
-    )
+    individual_count = db.Column(db.Integer, nullable=True)
 
     id_phenological_stage = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    remarks = db.Column(
-        db.Text,
-        nullable=True
-    )
+    remarks = db.Column(db.Text, nullable=True)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=False
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=False
     )
 
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
 
     meta_update_by = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    meta_update_date = db.Column(
-        db.DateTime,
-        nullable=True,
-        onupdate=sa.func.now()
-    )
+    meta_update_date = db.Column(db.DateTime, nullable=True, onupdate=sa.func.now())
 
     def to_dic(self):
         return {
-            "id_culture_action_observation":
-                self.id_culture_action_observation,
+            "id_culture_action_observation": self.id_culture_action_observation,
             "id_action": self.id_action,
             "individual_count": self.individual_count,
-            "id_phenological_stage":
-                self.id_phenological_stage,
+            "id_phenological_stage": self.id_phenological_stage,
             "remarks": self.remarks,
             "meta_create_by": self.meta_create_by,
             "meta_create_date": (
-                self.meta_create_date.isoformat()
-                if self.meta_create_date
-                else None
+                self.meta_create_date.isoformat() if self.meta_create_date else None
             ),
             "meta_update_by": self.meta_update_by,
             "meta_update_date": (
-                self.meta_update_date.isoformat()
-                if self.meta_update_date
-                else None
-            )
+                self.meta_update_date.isoformat() if self.meta_update_date else None
+            ),
         }
 
 
@@ -1281,106 +1012,65 @@ class TCultureActionTreatment(db.Model):
     __tablename__ = "t_culture_action_treatment"
 
     __table_args__ = (
-        db.UniqueConstraint(
-            "id_action",
-            name="uq_t_culture_action_treatment_id_action"
-        ),
-        {
-            "schema": "pr_conservation_flora_exsitu"
-        }
+        db.UniqueConstraint("id_action", name="uq_t_culture_action_treatment_id_action"),
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
-    id_culture_action_treatment = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_culture_action_treatment = db.Column(db.Integer, primary_key=True)
 
     id_action = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_action.id_action",
-            ondelete="CASCADE"
-        ),
-        nullable=False
+        db.ForeignKey("pr_conservation_flora_exsitu.t_action.id_action", ondelete="CASCADE"),
+        nullable=False,
     )
 
     id_physiological_development_stage = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "ref_nomenclatures.t_nomenclatures.id_nomenclature",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("ref_nomenclatures.t_nomenclatures.id_nomenclature", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    disease_or_deficiency = db.Column(
-        db.String(50),
-        nullable=True
-    )
+    disease_or_deficiency = db.Column(db.String(50), nullable=True)
 
-    type = db.Column(
-        db.String(50),
-        nullable=True
-    )
+    type = db.Column(db.String(50), nullable=True)
 
-    success = db.Column(
-        db.Boolean,
-        nullable=True
-    )
+    success = db.Column(db.Boolean, nullable=True)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=False
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=False
     )
 
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
 
     meta_update_by = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    meta_update_date = db.Column(
-        db.DateTime,
-        nullable=True,
-        onupdate=sa.func.now()
-    )
+    meta_update_date = db.Column(db.DateTime, nullable=True, onupdate=sa.func.now())
 
     def to_dic(self):
         return {
-            "id_culture_action_treatment":
-                self.id_culture_action_treatment,
+            "id_culture_action_treatment": self.id_culture_action_treatment,
             "id_action": self.id_action,
-            "id_physiological_development_stage":
-                self.id_physiological_development_stage,
-            "disease_or_deficiency":
-                self.disease_or_deficiency,
+            "id_physiological_development_stage": self.id_physiological_development_stage,
+            "disease_or_deficiency": self.disease_or_deficiency,
             "type": self.type,
             "success": self.success,
             "meta_create_by": self.meta_create_by,
             "meta_create_date": (
-                self.meta_create_date.isoformat()
-                if self.meta_create_date
-                else None
+                self.meta_create_date.isoformat() if self.meta_create_date else None
             ),
             "meta_update_by": self.meta_update_by,
             "meta_update_date": (
-                self.meta_update_date.isoformat()
-                if self.meta_update_date
-                else None
-            )
+                self.meta_update_date.isoformat() if self.meta_update_date else None
+            ),
         }
 
 
@@ -1389,101 +1079,68 @@ class TCultureActionSampling(db.Model):
     __tablename__ = "t_culture_action_sampling"
 
     __table_args__ = (
-        db.UniqueConstraint(
-            "id_action",
-            name="uq_t_culture_action_sampling_id_action"
-        ),
-        {
-            "schema": "pr_conservation_flora_exsitu"
-        }
+        db.UniqueConstraint("id_action", name="uq_t_culture_action_sampling_id_action"),
+        {"schema": "pr_conservation_flora_exsitu"},
     )
 
-    id_culture_action_sampling = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id_culture_action_sampling = db.Column(db.Integer, primary_key=True)
 
     id_action = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "pr_conservation_flora_exsitu.t_action.id_action",
-            ondelete="CASCADE"
-        ),
-        nullable=False
+        db.ForeignKey("pr_conservation_flora_exsitu.t_action.id_action", ondelete="CASCADE"),
+        nullable=False,
     )
 
-    quantity = db.Column(
-        db.Integer,
-        nullable=True
-    )
+    quantity = db.Column(db.Integer, nullable=True)
 
-    remarks = db.Column(
-        db.Text,
-        nullable=True
-    )
+    remarks = db.Column(db.Text, nullable=True)
 
     meta_create_by = db.Column(
-        db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role"
-        ),
-        nullable=False
+        db.Integer, db.ForeignKey("utilisateurs.t_roles.id_role"), nullable=False
     )
 
     meta_create_date = db.Column(
         db.DateTime,
         nullable=False,
         default=datetime.utcnow,
-        server_default=sa.func.now()
+        server_default=sa.func.now(),
     )
 
     meta_update_by = db.Column(
         db.Integer,
-        db.ForeignKey(
-            "utilisateurs.t_roles.id_role",
-            ondelete="SET NULL"
-        ),
-        nullable=True
+        db.ForeignKey("utilisateurs.t_roles.id_role", ondelete="SET NULL"),
+        nullable=True,
     )
 
-    meta_update_date = db.Column(
-        db.DateTime,
-        nullable=True,
-        onupdate=sa.func.now()
-    )
+    meta_update_date = db.Column(db.DateTime, nullable=True, onupdate=sa.func.now())
 
     def to_dic(self):
         return {
-            "id_culture_action_sampling":
-                self.id_culture_action_sampling,
+            "id_culture_action_sampling": self.id_culture_action_sampling,
             "id_action": self.id_action,
             "quantity": self.quantity,
             "remarks": self.remarks,
             "meta_create_by": self.meta_create_by,
             "meta_create_date": (
-                self.meta_create_date.isoformat()
-                if self.meta_create_date
-                else None
+                self.meta_create_date.isoformat() if self.meta_create_date else None
             ),
             "meta_update_by": self.meta_update_by,
             "meta_update_date": (
-                self.meta_update_date.isoformat()
-                if self.meta_update_date
-                else None
-            )
+                self.meta_update_date.isoformat() if self.meta_update_date else None
+            ),
         }
 
 
 @serializable
 class TActionReplicate(db.Model):
-    __tablename__ = 't_action_replicate'
+    __tablename__ = "t_action_replicate"
     __table_args__ = {"schema": "pr_conservation_flora_exsitu"}
 
     id_action_replicate = db.Column(db.Integer, primary_key=True, unique=True)
     id_action = db.Column(
         db.Integer,
         db.ForeignKey("pr_conservation_flora_exsitu.t_action.id_action", ondelete="CASCADE"),
-        nullable=False
+        nullable=False,
     )
     code = db.Column(db.String(10))
     count_viable = db.Column(db.Integer)
@@ -1511,4 +1168,3 @@ class TActionReplicate(db.Model):
             "total_count_dead": self.total_count_dead,
             "last_replicate": self.last_replicate,
         }
-    
