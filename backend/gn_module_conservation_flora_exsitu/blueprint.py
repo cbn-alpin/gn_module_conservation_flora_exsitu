@@ -3461,10 +3461,8 @@ def update_pre_treatment(id_test):
 
 @blueprint.route("/materials/<int:id_material>/tests", methods=["GET"])
 def get_tests_by_material_route(id_material):
-    results = get_tests_by_material(id_material)
-    return jsonify(results)  
-
-
+    results = TestRepository.get_tests_by_material(id_material)
+    return jsonify(results)
 
 
 @blueprint.route("/tests/<int:id_test>/replicate-dates", methods=["GET"])
