@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added suggestions for VS Code extensions and default settings for the Ruff extension.
 
-### Fixed
+### Fixed
 - Correction of the sowing migration downgrade by adding the removal of rows where id_actor or id_storage is null.
 
 ### Changed
