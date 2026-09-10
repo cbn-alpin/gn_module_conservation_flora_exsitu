@@ -1802,6 +1802,28 @@ def downgrade():
         schema="pr_conservation_flora_exsitu",
     )
 
+    # TODO : try replacing this deletion with an update of id_actor and id_storage.
+    # When this migration will be merged with the initial migrations, these deletions
+    # should be removed.
+    op.execute(
+        """
+        DELETE FROM pr_conservation_flora_exsitu.t_sowing 
+        WHERE id_actor IS NULL OR id_storage IS NULL;
+    """
+    )
+    op.execute(
+        """
+        DELETE FROM pr_conservation_flora_exsitu.t_action 
+        WHERE id_actor IS NULL;
+    """
+    )
+    op.execute(
+        """
+        DELETE FROM pr_conservation_flora_exsitu.t_test 
+        WHERE id_actor IS NULL;
+    """
+    )
+
     op.alter_column(
         "t_sowing",
         "id_actor",
