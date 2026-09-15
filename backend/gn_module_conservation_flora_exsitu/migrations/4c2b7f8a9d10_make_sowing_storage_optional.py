@@ -1341,6 +1341,40 @@ def upgrade():
 
     op.execute(
         """
+        INSERT INTO ref_nomenclatures.t_nomenclatures (
+            id_type,
+            cd_nomenclature,
+            mnemonique,
+            label_default,
+            definition_default,
+            label_fr,
+            definition_fr,
+            source,
+            hierarchy
+        )
+        SELECT
+            id_type,
+            'aut',
+            'autre',
+            'Autre',
+            'Autre substrat utilisé pour le test',
+            'Autre',
+            'Autre substrat utilisé pour le test',
+            'conservation_flora_exsitu',
+            '.005'
+        FROM ref_nomenclatures.bib_nomenclatures_types
+        WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM ref_nomenclatures.t_nomenclatures n
+            WHERE n.id_type = ref_nomenclatures.bib_nomenclatures_types.id_type
+            AND n.cd_nomenclature = 'aut'
+        );
+    """
+    )
+
+    op.execute(
+        """
         UPDATE ref_nomenclatures.t_nomenclatures
         SET hierarchy = '.001'
         WHERE id_type = (
@@ -1773,6 +1807,23 @@ def downgrade():
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.
         t_culture_action_transplantation;
+    """
+    )
+
+    op.execute(
+        """
+        DELETE FROM ref_nomenclatures.t_nomenclatures AS n
+        WHERE n.id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_TEST_SUBSTRATE'
+        )
+        AND n.cd_nomenclature = 'aut'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM pr_conservation_flora_exsitu.t_test AS t
+            WHERE t.id_substrate = n.id_nomenclature
+        );
     """
     )
 

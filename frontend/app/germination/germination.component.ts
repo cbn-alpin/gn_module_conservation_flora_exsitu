@@ -68,7 +68,8 @@ export class GerminationComponent implements OnInit {
     'Papier filtre',
     'Sable',
     'Terreau',
-    'Tourbe'
+    'Tourbe',
+    'Autre'
   ];
 
   codeTest = new FormControl();
