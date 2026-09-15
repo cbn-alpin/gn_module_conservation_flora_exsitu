@@ -182,7 +182,7 @@ CFE_DRY_TYPE;lyo;lyophilisation;Lyophilisation;Semences lyophilisées la lyophil
 CFE_HUMIDITY_LEVEL;sec;sec;Sec;Sec;Sec;Sec;conservation_flora_exsitu;.001
 CFE_HUMIDITY_LEVEL;mh;moyennementHumide;Moyennement humide;Moyennement humide;Moyennement humide;Moyennement humide;conservation_flora_exsitu;.002
 CFE_HUMIDITY_LEVEL;hum;humide;Humide;Humide;Humide;Humide;conservation_flora_exsitu;.003
-CFE_HUMIDITY_DEVICE;test;test;test;test;test;test;conservation_flora_exsitu;.001
+CFE_HUMIDITY_DEVICE;awm;awMetre;AW-mètre;Appareil de mesure de l’activité de l’eau;AW-mètre;Appareil de mesure de l’activité de l’eau;conservation_flora_exsitu;.001
 CFE_DESTOCK;part;partiel;Partiel;Partiel;Partiel;Partiel;conservation_flora_exsitu;.001
 CFE_DESTOCK;total;total;Total;Total;Total;Total;conservation_flora_exsitu;.002
 CFE_DESTINATION;tdg;testDeGermination;Test de germination;Test de germination;Test de germination;Test de germination;conservation_flora_exsitu;.001

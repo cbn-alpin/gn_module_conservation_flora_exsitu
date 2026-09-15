@@ -202,6 +202,26 @@ def upgrade():
     """
     )
 
+    # Appareil de mesure d’activité de l’eau
+    op.execute(
+        """
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            cd_nomenclature = 'awm',
+            mnemonique = 'awMetre',
+            label_default = 'AW-mètre',
+            definition_default = 'Appareil de mesure de l’activité de l’eau',
+            label_fr = 'AW-mètre',
+            definition_fr = 'Appareil de mesure de l’activité de l’eau'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_HUMIDITY_DEVICE'
+        )
+        AND cd_nomenclature = 'test';
+    """
+    )
+
     # Type d'action réservé aux actions de Culture
     op.execute(
         """
@@ -1807,6 +1827,25 @@ def downgrade():
         DROP TABLE IF EXISTS
         pr_conservation_flora_exsitu.
         t_culture_action_transplantation;
+    """
+    )
+
+    op.execute(
+        """
+        UPDATE ref_nomenclatures.t_nomenclatures
+        SET
+            cd_nomenclature = 'test',
+            mnemonique = 'test',
+            label_default = 'test',
+            definition_default = 'test',
+            label_fr = 'test',
+            definition_fr = 'test'
+        WHERE id_type = (
+            SELECT id_type
+            FROM ref_nomenclatures.bib_nomenclatures_types
+            WHERE mnemonique = 'CFE_HUMIDITY_DEVICE'
+        )
+        AND cd_nomenclature = 'awm';
     """
     )
 
