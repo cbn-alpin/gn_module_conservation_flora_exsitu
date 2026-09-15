@@ -415,7 +415,11 @@
             </span>
 
             <strong class="stock-detail-value">
-              {{ storageAction?.humidity_rate ?? '-' }}
+              {{
+                storageAction?.humidity_rate != null
+                  ? storageAction.humidity_rate + ' Aw'
+                  : '-'
+              }}
             </strong>
 
           </div>

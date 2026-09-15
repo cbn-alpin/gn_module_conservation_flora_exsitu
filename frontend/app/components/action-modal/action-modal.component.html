@@ -296,11 +296,20 @@
   <div class="row row-0 mr-3 mt-2">
     <div class="col-6 padding-sm">
         <label>Mesure de l'humidité précise</label>
-        <input
-          class="form-control"
-          type="number"
-          [formControl]="actionForm.controls.humidity_rate"
-        />
+
+        <div class="input-group">
+          <input
+            class="form-control"
+            type="number"
+            [formControl]="actionForm.controls.humidity_rate"
+          />
+
+          <div class="input-group-append">
+            <span class="input-group-text">
+              Aw
+            </span>
+          </div>
+        </div>
     </div>
   </div>
 
