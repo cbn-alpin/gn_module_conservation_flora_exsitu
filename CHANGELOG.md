@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.0.2] - 2026-09-15
+
+### Changed
+- Add new value "_AW-meter_" to _Humidity Device_ nomenclatture.
+- Display "_Aw_" humidity unit to "_Precise humidity measurement_" field
+- Add new value "_Other_" to _Subsrate Test_ nomenclature.
+- Make optional the "_Substrate Test_" field for viability tests but keep it required for germination tests.
+- In storage action make observer optional.
+
 ## [1.0.1] - 2026-09-10
 
 ### Added
