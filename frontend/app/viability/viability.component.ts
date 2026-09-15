@@ -81,7 +81,7 @@ export class ViabilityComponent implements OnInit {
       // id_test_type: [''],
       seed_initial_count: [null, Validators.required],                         
       replicate_count: [1, Validators.required],                       
-      id_substrate: [null, Validators.required],
+      id_substrate: [null],
       id_support: [null, Validators.required],
       remarks: [''],
       additional_data: this.fb.group({}),
