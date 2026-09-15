@@ -209,7 +209,7 @@ export class ActionModalComponent implements OnInit {
             code_place: [this.data.data.placeCode || null, Validators.required],
             date_start: [null, Validators.required],
             date_end: [null, Validators.required],
-            id_actor: [[], Validators.required],
+            id_actor: [[]],
             id_storage_action: [null, Validators.required],
             quantity : null,
             id_destock: null,
@@ -558,7 +558,12 @@ Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
     finalForm.date_start = this.dateParser.format(finalForm.date_start);
     finalForm.date_end = this.dateParser.format(finalForm.date_end);
 
-    finalForm['id_actor'] = finalForm['id_actor'][0].id_role;
+    const selectedActors = finalForm['id_actor'];
+
+finalForm['id_actor'] =
+  Array.isArray(selectedActors) && selectedActors.length > 0
+    ? selectedActors[0]?.id_role ?? null
+    : null;
 
     return finalForm;
   }

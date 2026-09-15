@@ -353,6 +353,7 @@ class TStorage(db.Model):
             "utilisateurs.t_roles.id_role",
             ondelete="NULL",
         ),
+        nullable=True,
     )
     id_storage_action = db.Column(
         db.Integer,

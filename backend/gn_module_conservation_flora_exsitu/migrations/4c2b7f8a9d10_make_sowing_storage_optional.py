@@ -62,6 +62,14 @@ def upgrade():
         schema="pr_conservation_flora_exsitu",
     )
 
+    op.alter_column(
+        "t_storage",
+        "id_actor",
+        existing_type=sa.Integer(),
+        nullable=True,
+        schema="pr_conservation_flora_exsitu",
+    )
+
     op.add_column(
         "t_material",
         sa.Column(
@@ -1873,6 +1881,21 @@ def downgrade():
     op.alter_column(
         "t_sowing",
         "id_storage",
+        existing_type=sa.Integer(),
+        nullable=False,
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    op.execute(
+        """
+        DELETE FROM pr_conservation_flora_exsitu.t_storage
+        WHERE id_actor IS NULL;
+    """
+    )
+
+    op.alter_column(
+        "t_storage",
+        "id_actor",
         existing_type=sa.Integer(),
         nullable=False,
         schema="pr_conservation_flora_exsitu",
