@@ -9,10 +9,14 @@ export interface ConfirmDialogData {
 
         /*
          * =====================================================
-         * HISTORIQUE - CONFIRMATION DE SORTIE
+         * HISTORIQUE - CONFIRMATIONS
+         *
+         * historique-exit  : quitter Historique
+         * historique-reset : réinitialiser la vue Historique
          * =====================================================
          */
         | 'historique-exit'
+        | 'historique-reset'
 
         | 'semis'
         | 'semis-reset'

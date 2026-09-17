@@ -58,6 +58,17 @@ export class HistoriqueComponent {
   private exitDialogOpen = false;
 
 
+  /*
+   * =========================================================
+   * HISTORIQUE - DIALOGUE DE RÉINITIALISATION
+   *
+   * Empêche l'ouverture de plusieurs confirmations
+   * de réinitialisation en même temps.
+   * =========================================================
+   */
+  private resetDialogOpen = false;
+
+
   constructor(
     private dialogRef: MatDialogRef<HistoriqueComponent>,
     private dialogService: DialogService,
@@ -187,12 +198,57 @@ export class HistoriqueComponent {
   }
 
 
+  /*
+   * =========================================================
+   * HISTORIQUE - RÉINITIALISATION DE LA CONSULTATION
+   *
+   * Le bouton Réinitialiser ramène toujours l'utilisateur
+   * vers la rubrique depuis laquelle Historique a été ouvert.
+   *
+   * Exemples :
+   *
+   * Matériel récolté -> Historique -> Semence -> Réinitialiser
+   * => retour sur Matériel récolté.
+   *
+   * Culture -> Historique -> Stockage -> Réinitialiser
+   * => retour sur Culture.
+   * =========================================================
+   */
   public onReset(): void {
-    /*
-     * HISTORIQUE
-     * La logique de réinitialisation sera ajoutée
-     * lorsque les champs de la fiche seront créés.
-     */
+
+    if (this.resetDialogOpen) {
+      return;
+    }
+
+    this.resetDialogOpen = true;
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'history',
+        variant: 'historique-reset',
+        entityLabel: "la consultation de l'Historique",
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        this.resetDialogOpen = false;
+
+        if (!yes) {
+          return;
+        }
+
+        /*
+         * HISTORIQUE
+         * Retour à la rubrique d'origine de la fiche.
+         */
+        this.selectedFilter =
+          this.data && this.data.initialFilter
+            ? this.data.initialFilter
+            : 'all';
+
+      });
+
   }
 
 

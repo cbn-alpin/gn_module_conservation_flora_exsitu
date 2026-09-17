@@ -10,6 +10,7 @@
 
     [class.historique-confirm-dialog]="
         dialogData?.variant === 'historique-exit'
+        || dialogData?.variant === 'historique-reset'
     "
 
     [class.semis-confirm-dialog]="
@@ -67,6 +68,7 @@
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'harvest-save'
         || dialogData?.variant === 'historique-exit'
+        || dialogData?.variant === 'historique-reset'
         || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
@@ -91,7 +93,8 @@
     "
 
     [class.workflow-reset-dialog]="
-        dialogData?.variant === 'culture-reset'
+        dialogData?.variant === 'historique-reset'
+        || dialogData?.variant === 'culture-reset'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'germination-reset'
         || dialogData?.variant === 'stock-reset'
@@ -254,9 +257,18 @@
             ?
         </p>
 
+        <!-- ===================================================
+             HISTORIQUE - CONFIRMATION DE RÉINITIALISATION
+
+             Réinitialiser Historique ramène l'utilisateur
+             à la rubrique depuis laquelle la fiche a été
+             initialement ouverte.
+             =================================================== -->
+
         <p
             *ngIf="
-                dialogData?.variant === 'culture-reset'
+                dialogData?.variant === 'historique-reset'
+                || dialogData?.variant === 'culture-reset'
                 || dialogData?.variant === 'viability-reset'
                 || dialogData?.variant === 'germination-reset'
                 || dialogData?.variant === 'stock-reset'
