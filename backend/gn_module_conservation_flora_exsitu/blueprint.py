@@ -60,6 +60,13 @@ from .repositories import (
     StorageRepository,
     TestRepository,
     TMaterielSeedRepository,
+
+    # =====================================================
+    # HISTORIQUE - OUTILS COMMUNS
+    # =====================================================
+    history_actor_label,
+    history_add_event,
+    history_test_entity_type,
 )
 
 blueprint = Blueprint("conservation_flora_exsitu", __name__)
@@ -841,16 +848,674 @@ def get_material_history(id_harvest):
         .all()
     )
 
+    # =========================================================
+    # HISTORIQUE - NUMÉRO ACTUEL DES MATÉRIELS
+    #
+    # Les anciens événements conservent leur ancien numéro
+    # dans entity_code.
+    #
+    # Pour l'affichage, on récupère en parallèle le numéro
+    # actuellement présent dans t_material.
+    # =========================================================
+
+    current_material_codes = {
+        id_material: code_material
+        for id_material, code_material in (
+            db.session.query(
+                TMaterial.id_material,
+                TMaterial.code_material,
+            )
+            .filter(
+                TMaterial.id_harvest == id_harvest
+            )
+            .all()
+        )
+    }
+
+
+    # =========================================================
+    # HISTORIQUE - DERNIER NUMÉRO CONNU
+    #
+    # Si l'élément a été supprimé de t_material, son dernier
+    # numéro reste récupérable depuis son événement Historique
+    # le plus récent.
+    #
+    # events est déjà trié du plus récent au plus ancien.
+    # =========================================================
+
+    latest_known_codes = {}
+
+    for event in events:
+
+        if event.entity_id not in latest_known_codes:
+            latest_known_codes[
+                event.entity_id
+            ] = event.entity_code
+
+
+    history_events = []
+
+    for event in events:
+
+        current_entity_code = (
+            current_material_codes.get(
+                event.entity_id
+            )
+        )
+
+        if current_entity_code is None:
+            current_entity_code = (
+                latest_known_codes.get(
+                    event.entity_id,
+                    event.entity_code,
+                )
+            )
+
+
+        history_events.append(
+            event.to_dic(
+                current_entity_code=
+                    current_entity_code
+            )
+        )
+
+
     return {
-        "events": [
-            event.to_dic()
-            for event in events
-        ]
+        "events": history_events
     }, 200
 
 
 # =========================================================
 # FIN HISTORIQUE - MATÉRIELS RÉCOLTÉS
+# =========================================================
+
+
+# =========================================================
+# HISTORIQUE - RATTRAPAGE DES DONNÉES EXISTANTES
+# =========================================================
+
+
+def _history_add_existing_event(
+    *,
+    id_harvest,
+    entity_type,
+    entity_id,
+    entity_code,
+    event_type,
+    event_date,
+    id_actor,
+    id_material,
+):
+
+    if not event_date:
+        return False
+
+
+    exists_event = (
+        THistory.query
+        .filter(
+            THistory.id_harvest
+            == id_harvest,
+
+            THistory.entity_type
+            == entity_type,
+
+            THistory.entity_id
+            == entity_id,
+
+            THistory.event_type
+            == event_type,
+
+            THistory.event_date
+            == event_date,
+        )
+        .first()
+    )
+
+
+    if exists_event:
+        return False
+
+
+    db.session.add(
+        THistory(
+            entity_type=entity_type,
+            entity_id=entity_id,
+
+            entity_code=(
+                str(entity_code)
+                if entity_code is not None
+                else None
+            ),
+
+            event_type=event_type,
+            event_date=event_date,
+
+            id_actor=id_actor,
+
+            actor_label=history_actor_label(
+                id_actor
+            ),
+
+            id_harvest=id_harvest,
+            id_material=id_material,
+        )
+    )
+
+
+    return True
+
+
+def _history_backfill_existing_entities(
+    id_harvest,
+):
+
+    changed = False
+
+
+    # =====================================================
+    # MATÉRIEL RÉCOLTÉ
+    # =====================================================
+
+    materials = (
+        TMaterial.query
+        .filter(
+            TMaterial.id_harvest
+            == id_harvest
+        )
+        .all()
+    )
+
+
+    for material in materials:
+
+        changed = (
+            _history_add_existing_event(
+                id_harvest=id_harvest,
+                entity_type="material",
+                entity_id=material.id_material,
+                entity_code=material.code_material,
+                event_type="creation",
+                event_date=material.meta_create_date,
+                id_actor=material.meta_create_by,
+                id_material=material.id_material,
+            )
+            or changed
+        )
+
+
+        changed = (
+            _history_add_existing_event(
+                id_harvest=id_harvest,
+                entity_type="material",
+                entity_id=material.id_material,
+                entity_code=material.code_material,
+                event_type="modification",
+                event_date=material.meta_update_date,
+                id_actor=material.meta_update_by,
+                id_material=material.id_material,
+            )
+            or changed
+        )
+
+
+    # =====================================================
+    # SEMENCE / STOCKAGE / SEMIS / CULTURE
+    # =====================================================
+
+    entity_specs = [
+
+        (
+            "seed",
+            TMaterielSeed,
+            "id_seed",
+            None,
+        ),
+
+        (
+            "storage",
+            TStorage,
+            "id_storage",
+            None,
+        ),
+
+        (
+            "sowing",
+            TSowing,
+            "id_sowing",
+            "code",
+        ),
+
+        (
+            "culture",
+            TCulture,
+            "id_culture",
+            "code_culture",
+        ),
+
+    ]
+
+
+    for (
+        entity_type,
+        model,
+        id_attribute,
+        code_attribute,
+    ) in entity_specs:
+
+        entities = (
+            db.session.query(model)
+            .join(
+                TMaterial,
+                model.id_material
+                == TMaterial.id_material,
+            )
+            .filter(
+                TMaterial.id_harvest
+                == id_harvest
+            )
+            .all()
+        )
+
+
+        for entity in entities:
+
+            entity_id = getattr(
+                entity,
+                id_attribute,
+            )
+
+
+            entity_code = (
+                getattr(
+                    entity,
+                    code_attribute,
+                )
+                if code_attribute
+                else entity_id
+            )
+
+
+            changed = (
+                _history_add_existing_event(
+                    id_harvest=id_harvest,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                    entity_code=entity_code,
+                    event_type="creation",
+                    event_date=entity.meta_create_date,
+                    id_actor=entity.meta_create_by,
+                    id_material=entity.id_material,
+                )
+                or changed
+            )
+
+
+            changed = (
+                _history_add_existing_event(
+                    id_harvest=id_harvest,
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                    entity_code=entity_code,
+                    event_type="modification",
+                    event_date=entity.meta_update_date,
+                    id_actor=entity.meta_update_by,
+                    id_material=entity.id_material,
+                )
+                or changed
+            )
+
+
+    # =====================================================
+    # GERMINATION / VIABILITÉ
+    # =====================================================
+
+    tests = (
+        db.session.query(TTest)
+        .join(
+            TMaterial,
+            TTest.id_material
+            == TMaterial.id_material,
+        )
+        .filter(
+            TMaterial.id_harvest
+            == id_harvest
+        )
+        .all()
+    )
+
+
+    for test in tests:
+
+        entity_type = (
+            history_test_entity_type(
+                test.id_test_type
+            )
+        )
+
+
+        if not entity_type:
+            continue
+
+
+        entity_code = (
+            test.code
+            or test.id_test
+        )
+
+
+        changed = (
+            _history_add_existing_event(
+                id_harvest=id_harvest,
+                entity_type=entity_type,
+                entity_id=test.id_test,
+                entity_code=entity_code,
+                event_type="creation",
+                event_date=test.meta_create_date,
+                id_actor=test.meta_create_by,
+                id_material=test.id_material,
+            )
+            or changed
+        )
+
+
+        changed = (
+            _history_add_existing_event(
+                id_harvest=id_harvest,
+                entity_type=entity_type,
+                entity_id=test.id_test,
+                entity_code=entity_code,
+                event_type="modification",
+                event_date=test.meta_update_date,
+                id_actor=test.meta_update_by,
+                id_material=test.id_material,
+            )
+            or changed
+        )
+
+
+    if changed:
+
+        db.session.commit()
+
+
+# =========================================================
+# HISTORIQUE - NUMÉRO ACTUEL
+# =========================================================
+
+
+def _history_current_entity_code(
+    event,
+):
+
+    if event.entity_type == "material":
+
+        entity = db.session.get(
+            TMaterial,
+            event.entity_id,
+        )
+
+        return (
+            entity.code_material
+            if entity
+            else None
+        )
+
+
+    if event.entity_type == "seed":
+
+        entity = db.session.get(
+            TMaterielSeed,
+            event.entity_id,
+        )
+
+        return (
+            str(entity.id_seed)
+            if entity
+            else None
+        )
+
+
+    if event.entity_type == "storage":
+
+        entity = db.session.get(
+            TStorage,
+            event.entity_id,
+        )
+
+        return (
+            str(entity.id_storage)
+            if entity
+            else None
+        )
+
+
+    if event.entity_type in (
+        "germination",
+        "viability",
+    ):
+
+        entity = db.session.get(
+            TTest,
+            event.entity_id,
+        )
+
+        if not entity:
+            return None
+
+        return (
+            entity.code
+            or str(entity.id_test)
+        )
+
+
+    if event.entity_type == "sowing":
+
+        entity = db.session.get(
+            TSowing,
+            event.entity_id,
+        )
+
+        return (
+            entity.code
+            if entity
+            else None
+        )
+
+
+    if event.entity_type == "culture":
+
+        entity = db.session.get(
+            TCulture,
+            event.entity_id,
+        )
+
+        return (
+            entity.code_culture
+            if entity
+            else None
+        )
+
+
+    return None
+
+
+# =========================================================
+# HISTORIQUE - ENDPOINT COMMUN
+# =========================================================
+
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/history/<string:entity_type>",
+    methods=["GET"],
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def get_history(
+    id_harvest,
+    entity_type,
+):
+
+    allowed_entity_types = {
+        "all",
+        "material",
+        "seed",
+        "storage",
+        "germination",
+        "sowing",
+        "viability",
+        "culture",
+    }
+
+
+    if entity_type not in allowed_entity_types:
+
+        return {
+            "error":
+                "Type d'historique non pris en charge."
+        }, 400
+
+
+    # Rattrapage automatique des anciennes fiches.
+    _history_backfill_existing_entities(
+        id_harvest
+    )
+
+
+    query = THistory.query.filter(
+        THistory.id_harvest
+        == id_harvest
+    )
+
+
+    if entity_type != "all":
+
+        query = query.filter(
+            THistory.entity_type
+            == entity_type
+        )
+
+
+    events = (
+        query
+        .order_by(
+            THistory.event_date.desc(),
+            THistory.id_history.desc(),
+        )
+        .all()
+    )
+
+
+    # Dernier numéro connu pour les éléments supprimés.
+    latest_known_codes = {}
+
+
+    for event in events:
+
+        key = (
+            event.entity_type,
+            event.entity_id,
+        )
+
+
+        if key not in latest_known_codes:
+
+            latest_known_codes[
+                key
+            ] = event.entity_code
+
+
+    result = []
+
+
+    for event in events:
+
+        current_code = (
+            _history_current_entity_code(
+                event
+            )
+        )
+
+
+        if current_code is None:
+
+            current_code = (
+                latest_known_codes.get(
+                    (
+                        event.entity_type,
+                        event.entity_id,
+                    ),
+                    event.entity_code,
+                )
+            )
+
+
+        event_data = event.to_dic(
+            current_entity_code=
+                current_code
+        )
+
+
+        # =====================================================
+        # HISTORIQUE - CONTEXTE DE NAVIGATION STOCKAGE
+        #
+        # La fiche Stockage nécessite également le code
+        # du lieu dans son URL :
+        #
+        # stock-details / idStorage / placeCode
+        # =====================================================
+
+        if event.entity_type == "storage":
+
+            storage = db.session.get(
+                TStorage,
+                event.entity_id,
+            )
+
+
+            place_code = None
+
+
+            if (
+                storage
+                and storage.id_place
+            ):
+
+                place_code = (
+                    db.session.query(
+                        TNomenclatures.cd_nomenclature
+                    )
+                    .filter(
+                        TNomenclatures.id_nomenclature
+                        == storage.id_place
+                    )
+                    .scalar()
+                )
+
+
+            event_data[
+                "detail_context"
+            ] = {
+                "place_code":
+                    place_code
+            }
+
+
+        result.append(
+            event_data
+        )
+
+
+    return {
+        "events": result
+    }, 200
+
+
+# =========================================================
+# FIN HISTORIQUE - ENDPOINT COMMUN
 # =========================================================
 
 
@@ -1806,7 +2471,23 @@ def delete_seed(id_seed):
                     current_app.logger.warning(f"Erreur suppression fichier: {e}")
             db.session.delete(media)
 
+
+        # =====================================================
+        # HISTORIQUE - SUPPRESSION SEMENCE
+        # =====================================================
+
+        history_add_event(
+            entity_type="seed",
+            entity_id=seed.id_seed,
+            entity_code=seed.id_seed,
+            event_type="suppression",
+            id_actor=g.current_user.id_role,
+            id_material=seed.id_material,
+        )
+
+
         db.session.delete(seed)
+
         db.session.commit()
 
         return {"message": "Semence et médias associés supprimés avec succès"}, 200
@@ -1900,9 +2581,22 @@ def get_action_context(id_material):
 @permissions.check_cruved_scope("U", module_code=MODULE_CODE)
 def update_action(id_material, id_storage):
     """Modification d'une action"""
+
     data = request.get_json()
 
-    material = TMaterial.query.get(id_material)
+
+    # =========================================================
+    # HISTORIQUE - UTILISATEUR MODIFICATION STOCKAGE
+    # =========================================================
+
+    data[
+        "meta_update_by"
+    ] = g.current_user.id_role
+
+
+    material = TMaterial.query.get(
+        id_material
+    )
     if not material:
         return jsonify({"error": "Matériel non trouvé"}), 404
 
@@ -2030,9 +2724,29 @@ def delete_action(id_material, id_storage):
                     }
                 ), 403
 
+        # =====================================================
+        # HISTORIQUE - SUPPRESSION STOCKAGE
+        # =====================================================
+
+        history_add_event(
+            entity_type="storage",
+            entity_id=action.id_storage,
+            entity_code=action.id_storage,
+            event_type="suppression",
+            id_actor=g.current_user.id_role,
+            id_material=action.id_material,
+        )
+
+
         db.session.delete(action)
+
         db.session.commit()
-        return jsonify({"message": "Action supprimée avec succès"}), 200
+
+
+        return jsonify({
+            "message":
+                "Action supprimée avec succès"
+        }), 200
 
     except Exception as e:
         db.session.rollback()
@@ -2108,8 +2822,13 @@ def list_sowings_by_material(id_material):
 @permissions.check_cruved_scope("D", module_code=MODULE_CODE)
 @json_resp
 def delete_sowing(id_material, id_sowing):
+
     repo = SowingRepository()
-    result = repo.delete(id_sowing)
+
+    result = repo.delete(
+        id_sowing,
+        id_actor=g.current_user.id_role,
+    )
 
     if result.get("not_found"):
         return {"error": "Semis non trouvé"}, 404
@@ -2130,10 +2849,25 @@ def delete_sowing(id_material, id_sowing):
 @permissions.check_cruved_scope("U", module_code=MODULE_CODE)
 @json_resp
 def update_sowing(id_material, id_sowing):
+
     repo = SowingRepository()
+
     data = request.get_json()
 
-    sowing = repo.update(id_sowing, data)
+
+    # =========================================================
+    # HISTORIQUE - UTILISATEUR MODIFICATION SEMIS
+    # =========================================================
+
+    data[
+        "meta_update_by"
+    ] = g.current_user.id_role
+
+
+    sowing = repo.update(
+        id_sowing,
+        data,
+    )
 
     if not sowing:
         return {"error": "Semis non trouvé"}, 404
@@ -2623,7 +3357,11 @@ def delete_culture(id_material, id_culture):
 
     repo = CultureRepository()
 
-    deleted = repo.delete(id_material, id_culture)
+    deleted = repo.delete(
+        id_material,
+        id_culture,
+        id_actor=g.current_user.id_role,
+    )
 
     if not deleted:
         return {"error": "Culture non trouvée"}, 404
@@ -2777,10 +3515,26 @@ def get_test_by_cd_nomenclature(code):
 
 @blueprint.route("/materials/<int:id_material>/tests/<int:id_test>", methods=["PUT"])
 @permissions.check_cruved_scope("U", module_code=MODULE_CODE)
-def update_test(id_material, id_test):
+def update_test(
+    id_material,
+    id_test,
+):
+
     data = request.get_json()
 
-    test = TTest.query.get(id_test)
+
+    # =========================================================
+    # HISTORIQUE - UTILISATEUR MODIFICATION TEST
+    # =========================================================
+
+    data[
+        "meta_update_by"
+    ] = g.current_user.id_role
+
+
+    test = TTest.query.get(
+        id_test
+    )
     if not test or test.id_material != id_material:
         return jsonify({"error": "Test non trouvé ou n’appartient pas à ce matériel"}), 404
 
@@ -2830,15 +3584,50 @@ def delete_test(id_material, id_test):
     action_count = db.session.query(TAction).filter_by(id_test=id_test).count()
 
     if action_count > 0:
+
         return jsonify(
             {
-                "error": "Suppression impossible",
-                "message": "Ce test contient des actions liées.",
-                "action_count": action_count,
+                "error":
+                    "Suppression impossible",
+
+                "message":
+                    "Ce test contient des actions liées.",
+
+                "action_count":
+                    action_count,
             }
         ), 409
 
+
+    entity_type = (
+        history_test_entity_type(
+            test.id_test_type
+        )
+    )
+
+
+    if entity_type:
+
+        # =====================================================
+        # HISTORIQUE - SUPPRESSION
+        # GERMINATION / VIABILITÉ
+        # =====================================================
+
+        history_add_event(
+            entity_type=entity_type,
+            entity_id=test.id_test,
+            entity_code=(
+                test.code
+                or test.id_test
+            ),
+            event_type="suppression",
+            id_actor=g.current_user.id_role,
+            id_material=test.id_material,
+        )
+
+
     db.session.delete(test)
+
     db.session.commit()
 
     return jsonify({"success": True}), 200

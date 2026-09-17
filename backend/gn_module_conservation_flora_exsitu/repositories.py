@@ -41,6 +41,116 @@ from .models import (
 )
 
 
+# =========================================================
+# HISTORIQUE - OUTILS COMMUNS
+#
+# Utilisés par toutes les rubriques Ex-situ afin
+# d'enregistrer les événements dans t_history.
+# =========================================================
+
+
+def history_actor_label(id_actor):
+
+    if not id_actor:
+        return "Non renseigné"
+
+    actor = db.session.get(
+        User,
+        id_actor,
+    )
+
+    if not actor:
+        return "Utilisateur inconnu"
+
+    label = " ".join(
+        [
+            actor.nom_role or "",
+            actor.prenom_role or "",
+        ]
+    ).strip()
+
+    return label or "Utilisateur inconnu"
+
+
+def history_test_entity_type(
+    id_test_type,
+):
+
+    if not id_test_type:
+        return None
+
+    code = (
+        db.session.query(
+            TNomenclatures.cd_nomenclature
+        )
+        .filter(
+            TNomenclatures.id_nomenclature
+            == id_test_type
+        )
+        .scalar()
+    )
+
+    if code == "ger":
+        return "germination"
+
+    if code == "via":
+        return "viability"
+
+    return None
+
+
+def history_add_event(
+    *,
+    entity_type,
+    entity_id,
+    entity_code,
+    event_type,
+    id_actor,
+    id_material,
+    event_date=None,
+    changes=None,
+):
+
+    material = (
+        TMaterial.query.get(id_material)
+        if id_material
+        else None
+    )
+
+    if not material:
+        return None
+
+    event = THistory(
+        entity_type=entity_type,
+        entity_id=entity_id,
+        entity_code=(
+            str(entity_code)
+            if entity_code is not None
+            else None
+        ),
+        event_type=event_type,
+        event_date=(
+            event_date or datetime.utcnow()
+        ),
+        id_actor=id_actor,
+        actor_label=history_actor_label(
+            id_actor
+        ),
+        id_harvest=material.id_harvest,
+        id_material=id_material,
+        changes=changes,
+    )
+
+    db.session.add(event)
+
+    return event
+
+
+# =========================================================
+# FIN HISTORIQUE - OUTILS COMMUNS
+# =========================================================
+
+
 class HarvestRepository:
     date_fmt = "%Y-%m-%d"
     date_time_fmt = "%Y-%m-%d %H:%M:%S"
@@ -592,9 +702,44 @@ class HarvestMaterialRepository:
             data["meta_update_date"] = event_date
 
 
+            # =================================================
+            # HISTORIQUE - ANCIEN NUMÉRO
+            #
+            # On mémorise le numéro AVANT la modification.
+            #
+            # L'id_material reste l'identité réelle et
+            # immuable de l'élément.
+            # =================================================
+
+            old_entity_code = material.code_material
+
+
             for key, value in data.items():
                 if hasattr(material, key):
                     setattr(material, key, value)
+
+
+            # =================================================
+            # HISTORIQUE - CHANGEMENT DE NUMÉRO
+            #
+            # Exemple :
+            #
+            # A -> AA
+            #
+            # Cette information est conservée dans changes
+            # sans modifier les anciens événements.
+            # =================================================
+
+            history_changes = None
+
+            if old_entity_code != material.code_material:
+
+                history_changes = {
+                    "entity_code": {
+                        "old": old_entity_code,
+                        "new": material.code_material,
+                    }
+                }
 
 
             # =================================================
@@ -618,6 +763,11 @@ class HarvestMaterialRepository:
                 ),
                 id_harvest=material.id_harvest,
                 id_material=material.id_material,
+
+                # =============================================
+                # HISTORIQUE - CHANGEMENTS DE L'ÉVÉNEMENT
+                # =============================================
+                changes=history_changes,
             )
 
             db.session.add(history_event)
@@ -717,37 +867,129 @@ class HarvestMaterialRepository:
 
 
 class TMaterielSeedRepository:
+
     def create(self, data):
+
         try:
-            additional_data = data.pop("additional_data", None)
+
+            additional_data = data.pop(
+                "additional_data",
+                None,
+            )
 
             if additional_data:
-                seed = TMaterielSeed(**data, additional_data=additional_data)
+
+                seed = TMaterielSeed(
+                    **data,
+                    additional_data=additional_data,
+                )
+
             else:
-                seed = TMaterielSeed(**data)
+
+                seed = TMaterielSeed(
+                    **data
+                )
+
 
             db.session.add(seed)
+
+
+            # =================================================
+            # HISTORIQUE - CRÉATION SEMENCE
+            # =================================================
+
+            event_date = datetime.utcnow()
+
+            seed.meta_create_date = event_date
+
+            db.session.flush()
+
+
+            history_add_event(
+                entity_type="seed",
+                entity_id=seed.id_seed,
+
+                # La Semence ne possède pas de champ code
+                # métier propre : son id devient son N°.
+                entity_code=seed.id_seed,
+
+                event_type="creation",
+                event_date=event_date,
+                id_actor=seed.meta_create_by,
+                id_material=seed.id_material,
+            )
+
+
             db.session.commit()
+
             return seed
 
+
         except SQLAlchemyError as e:
+
             db.session.rollback()
+
             raise e
 
-    def update(self, id_seed, data):
-        seed = TMaterielSeed.query.get(id_seed)
+
+    def update(
+        self,
+        id_seed,
+        data,
+    ):
+
+        seed = TMaterielSeed.query.get(
+            id_seed
+        )
+
         if not seed:
             return None
 
+
         try:
+
+            event_date = datetime.utcnow()
+
+            data[
+                "meta_update_date"
+            ] = event_date
+
+
             for key, value in data.items():
+
                 if hasattr(seed, key):
-                    setattr(seed, key, value)
+
+                    setattr(
+                        seed,
+                        key,
+                        value,
+                    )
+
+
+            # =================================================
+            # HISTORIQUE - MODIFICATION SEMENCE
+            # =================================================
+
+            history_add_event(
+                entity_type="seed",
+                entity_id=seed.id_seed,
+                entity_code=seed.id_seed,
+                event_type="modification",
+                event_date=event_date,
+                id_actor=seed.meta_update_by,
+                id_material=seed.id_material,
+            )
+
 
             db.session.commit()
+
             return seed
+
+
         except SQLAlchemyError as e:
+
             db.session.rollback()
+
             raise e
 
 
@@ -813,12 +1055,50 @@ class StorageRepository:
             additional_data = data.pop("additional_data", None)
 
             if additional_data:
-                action = TStorage(**data, additional_data=additional_data)
+
+                action = TStorage(
+                    **data,
+                    additional_data=additional_data,
+                )
+
             else:
-                action = TStorage(**data)
+
+                action = TStorage(
+                    **data
+                )
+
 
             db.session.add(action)
+
+
+            # =================================================
+            # HISTORIQUE - CRÉATION STOCKAGE
+            # =================================================
+
+            event_date = datetime.utcnow()
+
+            action.meta_create_date = event_date
+
+            db.session.flush()
+
+
+            history_add_event(
+                entity_type="storage",
+                entity_id=action.id_storage,
+
+                # Stockage ne possède pas non plus de code
+                # métier : id_storage sert de N°.
+                entity_code=action.id_storage,
+
+                event_type="creation",
+                event_date=event_date,
+                id_actor=action.meta_create_by,
+                id_material=action.id_material,
+            )
+
+
             db.session.commit()
+
             return action
 
         except SQLAlchemyError as e:
@@ -1016,28 +1296,91 @@ class StorageRepository:
             "current_quantity": current_quantity,
         }
 
-    def update(self, id_storage, data):
-        try:
-            action = TStorage.query.get(id_storage)
+    def update(
+        self,
+        id_storage,
+        data,
+    ):
 
-            code_place = data.pop("code_place", None)
+        try:
+
+            action = TStorage.query.get(
+                id_storage
+            )
+
+
+            event_date = datetime.utcnow()
+
+            data[
+                "meta_update_date"
+            ] = event_date
+
+
+            code_place = data.pop(
+                "code_place",
+                None,
+            )
+
             if code_place:
-                id_place = self.get_id_nomenclature("CFE_PLACE", code_place)
+
+                id_place = (
+                    self.get_id_nomenclature(
+                        "CFE_PLACE",
+                        code_place,
+                    )
+                )
+
                 if id_place:
                     action.id_place = id_place
 
-            additional_data = data.get("additional_data")
+
+            additional_data = data.get(
+                "additional_data"
+            )
+
             if additional_data:
-                action.additional_data = additional_data
+
+                action.additional_data = (
+                    additional_data
+                )
+
 
             if data.get("quantity"):
-                self.verify_quantity(action, data["quantity"])
+
+                self.verify_quantity(
+                    action,
+                    data["quantity"],
+                )
+
 
             for key, value in data.items():
+
                 if hasattr(action, key):
-                    setattr(action, key, value)
+
+                    setattr(
+                        action,
+                        key,
+                        value,
+                    )
+
+
+            # =================================================
+            # HISTORIQUE - MODIFICATION STOCKAGE
+            # =================================================
+
+            history_add_event(
+                entity_type="storage",
+                entity_id=action.id_storage,
+                entity_code=action.id_storage,
+                event_type="modification",
+                event_date=event_date,
+                id_actor=action.meta_update_by,
+                id_material=action.id_material,
+            )
+
 
             db.session.commit()
+
             return action
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -1100,6 +1443,25 @@ class SowingRepository:
             )
 
             db.session.add(sowing)
+
+            db.session.flush()
+
+
+            # =================================================
+            # HISTORIQUE - CRÉATION SEMIS
+            # =================================================
+
+            history_add_event(
+                entity_type="sowing",
+                entity_id=sowing.id_sowing,
+                entity_code=sowing.code,
+                event_type="creation",
+                event_date=sowing.meta_create_date,
+                id_actor=sowing.meta_create_by,
+                id_material=sowing.id_material,
+            )
+
+
             db.session.commit()
 
             return sowing
@@ -1110,11 +1472,28 @@ class SowingRepository:
 
     def update(self, id_sowing: int, data: dict):
         try:
-            sowing = TSowing.query.get(id_sowing)
-            if not sowing:
-                raise ValueError("Semis non trouvé")
+            sowing = TSowing.query.get(
+                id_sowing
+            )
 
-            container = data.pop("container", None)
+            if not sowing:
+
+                raise ValueError(
+                    "Semis non trouvé"
+                )
+
+
+            # =================================================
+            # HISTORIQUE - ANCIEN NUMÉRO DU SEMIS
+            # =================================================
+
+            old_entity_code = sowing.code
+
+
+            container = data.pop(
+                "container",
+                None,
+            )
             substrate = data.pop("substrate", None)
             additional_data = data.pop("additional_data", None)
 
@@ -1123,28 +1502,107 @@ class SowingRepository:
 
             sowing.container = {"value": container} if isinstance(container, str) else container
             sowing.substrate = {"value": substrate} if isinstance(substrate, str) else substrate
-            sowing.additional_data = additional_data or {}
-            sowing.meta_update_date = datetime.utcnow()
+            sowing.additional_data = (
+                additional_data or {}
+            )
+
+            sowing.meta_update_date = (
+                datetime.utcnow()
+            )
+
+
+            history_changes = None
+
+
+            if old_entity_code != sowing.code:
+
+                history_changes = {
+                    "entity_code": {
+                        "old": old_entity_code,
+                        "new": sowing.code,
+                    }
+                }
+
+
+            # =================================================
+            # HISTORIQUE - MODIFICATION SEMIS
+            # =================================================
+
+            history_add_event(
+                entity_type="sowing",
+                entity_id=sowing.id_sowing,
+                entity_code=sowing.code,
+                event_type="modification",
+                event_date=sowing.meta_update_date,
+                id_actor=sowing.meta_update_by,
+                id_material=sowing.id_material,
+                changes=history_changes,
+            )
+
 
             db.session.commit()
+
             return sowing
 
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
 
-    def delete(self, id_sowing: int):
-        try:
-            sowing = TSowing.query.get(id_sowing)
-            if not sowing:
-                return {"deleted": False, "not_found": True, "action_count": 0}
+    def delete(
+        self,
+        id_sowing: int,
+        id_actor=None,
+    ):
 
-            action_count = TAction.query.filter_by(id_sowing=id_sowing).count()
+        try:
+
+            sowing = TSowing.query.get(
+                id_sowing
+            )
+
+            if not sowing:
+
+                return {
+                    "deleted": False,
+                    "not_found": True,
+                    "action_count": 0,
+                }
+
+
+            action_count = (
+                TAction.query
+                .filter_by(
+                    id_sowing=id_sowing
+                )
+                .count()
+            )
+
 
             if action_count > 0:
-                return {"deleted": False, "blocked": True, "action_count": action_count}
+
+                return {
+                    "deleted": False,
+                    "blocked": True,
+                    "action_count": action_count,
+                }
+
+
+            # =================================================
+            # HISTORIQUE - SUPPRESSION SEMIS
+            # =================================================
+
+            history_add_event(
+                entity_type="sowing",
+                entity_id=sowing.id_sowing,
+                entity_code=sowing.code,
+                event_type="suppression",
+                id_actor=id_actor,
+                id_material=sowing.id_material,
+            )
+
 
             db.session.delete(sowing)
+
             db.session.commit()
 
             return {"deleted": True, "action_count": 0}
@@ -1420,6 +1878,25 @@ class CultureRepository:
             )
 
             db.session.add(culture)
+
+            db.session.flush()
+
+
+            # =================================================
+            # HISTORIQUE - CRÉATION CULTURE
+            # =================================================
+
+            history_add_event(
+                entity_type="culture",
+                entity_id=culture.id_culture,
+                entity_code=culture.code_culture,
+                event_type="creation",
+                event_date=culture.meta_create_date,
+                id_actor=culture.meta_create_by,
+                id_material=culture.id_material,
+            )
+
+
             db.session.commit()
 
             return culture
@@ -1595,6 +2072,16 @@ class CultureRepository:
             if not culture:
                 return None
 
+
+            # =================================================
+            # HISTORIQUE - ANCIEN NUMÉRO CULTURE
+            # =================================================
+
+            old_entity_code = (
+                culture.code_culture
+            )
+
+
             payload = dict(data or {})
 
             for protected_field in (
@@ -1667,7 +2154,42 @@ class CultureRepository:
                 if hasattr(culture, key):
                     setattr(culture, key, value)
 
-            culture.meta_update_date = datetime.utcnow()
+            culture.meta_update_date = (
+                datetime.utcnow()
+            )
+
+
+            history_changes = None
+
+
+            if (
+                old_entity_code
+                != culture.code_culture
+            ):
+
+                history_changes = {
+                    "entity_code": {
+                        "old": old_entity_code,
+                        "new": culture.code_culture,
+                    }
+                }
+
+
+            # =================================================
+            # HISTORIQUE - MODIFICATION CULTURE
+            # =================================================
+
+            history_add_event(
+                entity_type="culture",
+                entity_id=culture.id_culture,
+                entity_code=culture.code_culture,
+                event_type="modification",
+                event_date=culture.meta_update_date,
+                id_actor=culture.meta_update_by,
+                id_material=culture.id_material,
+                changes=history_changes,
+            )
+
 
             db.session.commit()
 
@@ -1677,17 +2199,43 @@ class CultureRepository:
             db.session.rollback()
             raise
 
-    def delete(self, id_material: int, id_culture: int):
+    def delete(
+        self,
+        id_material: int,
+        id_culture: int,
+        id_actor=None,
+    ):
+
         try:
+
             culture = TCulture.query.filter_by(
-                id_culture=id_culture, id_material=id_material
+                id_culture=id_culture,
+                id_material=id_material,
             ).first()
+
 
             if not culture:
                 return False
 
+
+            # =================================================
+            # HISTORIQUE - SUPPRESSION CULTURE
+            # =================================================
+
+            history_add_event(
+                entity_type="culture",
+                entity_id=culture.id_culture,
+                entity_code=culture.code_culture,
+                event_type="suppression",
+                id_actor=id_actor,
+                id_material=culture.id_material,
+            )
+
+
             db.session.delete(culture)
+
             db.session.commit()
+
 
             return True
 
@@ -1717,9 +2265,48 @@ class TestRepository:
 
                 test = TTest(**data)
 
-            # Ajouter à la session et commit
+            # Ajouter à la session
             db.session.add(test)
+
+
+            event_date = datetime.utcnow()
+
+            test.meta_create_date = event_date
+
+
+            db.session.flush()
+
+
+            entity_type = (
+                history_test_entity_type(
+                    test.id_test_type
+                )
+            )
+
+
+            # =================================================
+            # HISTORIQUE - CRÉATION
+            # GERMINATION / VIABILITÉ
+            # =================================================
+
+            if entity_type:
+
+                history_add_event(
+                    entity_type=entity_type,
+                    entity_id=test.id_test,
+                    entity_code=(
+                        test.code
+                        or test.id_test
+                    ),
+                    event_type="creation",
+                    event_date=event_date,
+                    id_actor=test.meta_create_by,
+                    id_material=test.id_material,
+                )
+
+
             db.session.commit()
+
 
             return True, test
 
@@ -1812,25 +2399,123 @@ class TestRepository:
             .first()
         )
 
-    def update(self, id_test, data):
-        test = TTest.query.get(id_test)
+    def update(
+        self,
+        id_test,
+        data,
+    ):
+
+        test = TTest.query.get(
+            id_test
+        )
+
+
         if not test:
-            raise ValueError("Test non trouvé")
 
-        code_parent = data.pop("code_parent", None)
+            raise ValueError(
+                "Test non trouvé"
+            )
+
+
+        # =====================================================
+        # HISTORIQUE - ANCIEN NUMÉRO DU TEST
+        # =====================================================
+
+        old_entity_code = test.code
+
+
+        code_parent = data.pop(
+            "code_parent",
+            None,
+        )
+
+
         if code_parent:
-            parent = TTest.query.filter_by(code=code_parent).first()
-            test.code_parent = parent.code if parent else None
 
-        additional_data = data.get("additional_data")
+            parent = TTest.query.filter_by(
+                code=code_parent
+            ).first()
+
+            test.code_parent = (
+                parent.code
+                if parent
+                else None
+            )
+
+
+        additional_data = data.get(
+            "additional_data"
+        )
+
+
         if additional_data:
-            test.additional_data = additional_data
+
+            test.additional_data = (
+                additional_data
+            )
+
 
         for key, value in data.items():
+
             if hasattr(test, key):
-                setattr(test, key, value)
+
+                setattr(
+                    test,
+                    key,
+                    value,
+                )
+
+
+        test.meta_update_date = (
+            datetime.utcnow()
+        )
+
+
+        history_changes = None
+
+
+        if old_entity_code != test.code:
+
+            history_changes = {
+                "entity_code": {
+                    "old": old_entity_code,
+                    "new": test.code,
+                }
+            }
+
+
+        entity_type = (
+            history_test_entity_type(
+                test.id_test_type
+            )
+        )
+
+
+        # =====================================================
+        # HISTORIQUE - MODIFICATION
+        # GERMINATION / VIABILITÉ
+        # =====================================================
+
+        if entity_type:
+
+            history_add_event(
+                entity_type=entity_type,
+                entity_id=test.id_test,
+                entity_code=(
+                    test.code
+                    or test.id_test
+                ),
+                event_type="modification",
+                event_date=test.meta_update_date,
+                id_actor=test.meta_update_by,
+                id_material=test.id_material,
+                changes=history_changes,
+            )
+
 
         db.session.commit()
+
+
         return test
 
     def update_pre_treatment(id_test):

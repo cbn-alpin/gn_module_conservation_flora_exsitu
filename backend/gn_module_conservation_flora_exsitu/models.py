@@ -307,12 +307,32 @@ class THistory(db.Model):
     )
 
 
-    def to_dic(self):
+    def to_dic(
+        self,
+        current_entity_code=None,
+    ):
         return {
             "id_history": self.id_history,
             "entity_type": self.entity_type,
             "entity_id": self.entity_id,
+
+            # =================================================
+            # HISTORIQUE - NUMÉROS
+            #
+            # entity_code :
+            # numéro réel au moment de l'événement.
+            #
+            # current_entity_code :
+            # numéro actuel de l'élément.
+            # =================================================
             "entity_code": self.entity_code,
+
+            "current_entity_code": (
+                current_entity_code
+                if current_entity_code is not None
+                else self.entity_code
+            ),
+
             "event_type": self.event_type,
 
             # =================================================
