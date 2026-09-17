@@ -27,6 +27,12 @@ from .models import (
     TCultureActionTransplantation,
     TCultureActionTreatment,
     THarvest,
+
+    # =========================================================
+    # HISTORIQUE - MODÈLE DES ÉVÉNEMENTS
+    # =========================================================
+    THistory,
+
     TMaterial,
     TMaterielSeed,
     TSowing,
@@ -392,6 +398,38 @@ class HarvestRepository:
 
 
 class HarvestMaterialRepository:
+
+    # =========================================================
+    # HISTORIQUE - NOM DE L'UTILISATEUR
+    #
+    # On conserve une copie du nom dans chaque événement
+    # Historique pour identifier l'observateur ayant réalisé
+    # la création ou la modification.
+    # =========================================================
+    @staticmethod
+    def _history_actor_label(id_actor):
+
+        if not id_actor:
+            return "Non renseigné"
+
+        actor = db.session.get(
+            User,
+            id_actor,
+        )
+
+        if not actor:
+            return "Utilisateur inconnu"
+
+        label = " ".join(
+            [
+                actor.nom_role or "",
+                actor.prenom_role or "",
+            ]
+        ).strip()
+
+        return label or "Utilisateur inconnu"
+
+
     def get_one(self, id_material):
         material = TMaterial.query.get(id_material)
         return material
@@ -474,8 +512,43 @@ class HarvestMaterialRepository:
             else:
                 material = TMaterial(**data)
 
+            # =================================================
+            # HISTORIQUE - CRÉATION DU MATÉRIEL RÉCOLTÉ
+            #
+            # flush() permet d'obtenir id_material avant
+            # le commit définitif.
+            # =================================================
+
+            event_date = datetime.utcnow()
+
+            material.meta_create_date = event_date
+
             db.session.add(material)
+            db.session.flush()
+
+
+            history_event = THistory(
+                entity_type="material",
+                entity_id=material.id_material,
+                entity_code=material.code_material,
+                event_type="creation",
+                event_date=event_date,
+                id_actor=material.meta_create_by,
+                actor_label=self._history_actor_label(
+                    material.meta_create_by
+                ),
+                id_harvest=material.id_harvest,
+                id_material=material.id_material,
+            )
+
+            db.session.add(history_event)
+
+            # =================================================
+            # FIN HISTORIQUE
+            # =================================================
+
             db.session.commit()
+
             return True, material
 
         except ValueError as e:
@@ -510,36 +583,133 @@ class HarvestMaterialRepository:
                 parent = TMaterial.query.filter_by(code_material=code_parent).first()
                 data["id_material_parent"] = parent.id_material if parent else None
 
+            # =================================================
+            # HISTORIQUE - DATE DE MODIFICATION
+            # =================================================
+
+            event_date = datetime.utcnow()
+
+            data["meta_update_date"] = event_date
+
+
             for key, value in data.items():
                 if hasattr(material, key):
                     setattr(material, key, value)
 
+
+            # =================================================
+            # HISTORIQUE - MODIFICATION DU MATÉRIEL RÉCOLTÉ
+            #
+            # Une nouvelle ligne est créée à CHAQUE
+            # modification.
+            #
+            # On ne remplace donc jamais l'événement précédent.
+            # =================================================
+
+            history_event = THistory(
+                entity_type="material",
+                entity_id=material.id_material,
+                entity_code=material.code_material,
+                event_type="modification",
+                event_date=event_date,
+                id_actor=material.meta_update_by,
+                actor_label=self._history_actor_label(
+                    material.meta_update_by
+                ),
+                id_harvest=material.id_harvest,
+                id_material=material.id_material,
+            )
+
+            db.session.add(history_event)
+
+            # =================================================
+            # FIN HISTORIQUE
+            # =================================================
+
             db.session.commit()
+
             return material
 
         except SQLAlchemyError as e:
             db.session.rollback()
             raise e
 
-    def delete(self, id_material):
+    def delete(
+        self,
+        id_material,
+        id_actor=None,
+    ):
         try:
             material = self.get_one(id_material)
+
             if not material:
                 return False
 
-            linked_action = TAction.query.get(material.id_action) if material.id_action else None
 
-            db.session.query(CorMaterialTaxon).filter_by(id_material=id_material).delete()
+            linked_action = (
+                TAction.query.get(material.id_action)
+                if material.id_action
+                else None
+            )
+
+
+            # =================================================
+            # HISTORIQUE - SUPPRESSION DU MATÉRIEL RÉCOLTÉ
+            #
+            # IMPORTANT :
+            # l'événement est créé AVANT de supprimer le
+            # matériel afin de conserver :
+            #
+            # - son numéro ;
+            # - la date de suppression ;
+            # - l'utilisateur ayant effectué la suppression ;
+            # - la récolte à laquelle il appartenait.
+            #
+            # La ligne Historique reste ensuite disponible
+            # même si TMaterial n'existe plus.
+            # =================================================
+
+            history_event = THistory(
+                entity_type="material",
+                entity_id=material.id_material,
+                entity_code=material.code_material,
+                event_type="suppression",
+                event_date=datetime.utcnow(),
+                id_actor=id_actor,
+                actor_label=self._history_actor_label(
+                    id_actor
+                ),
+                id_harvest=material.id_harvest,
+                id_material=material.id_material,
+            )
+
+            db.session.add(history_event)
+
+            # =================================================
+            # FIN HISTORIQUE - SUPPRESSION
+            # =================================================
+
+
+            db.session.query(
+                CorMaterialTaxon
+            ).filter_by(
+                id_material=id_material
+            ).delete()
+
 
             db.session.delete(material)
 
             db.session.flush()
 
+
             if linked_action:
                 db.session.delete(linked_action)
 
+
             db.session.commit()
+
             return True
+
 
         except SQLAlchemyError as e:
             db.session.rollback()

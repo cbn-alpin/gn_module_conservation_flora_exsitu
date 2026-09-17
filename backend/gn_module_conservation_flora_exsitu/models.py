@@ -227,6 +227,113 @@ class TMaterial(db.Model):
         }
 
 
+# =========================================================
+# HISTORIQUE - ÉVÉNEMENTS EX-SITU
+#
+# Table générique utilisée pour conserver chaque création
+# et chaque modification.
+#
+# Elle pourra ensuite recevoir :
+# material / seed / storage / germination /
+# sowing / viability / culture.
+# =========================================================
+
+@serializable
+class THistory(db.Model):
+    __tablename__ = "t_history"
+
+    __table_args__ = {
+        "schema": "pr_conservation_flora_exsitu"
+    }
+
+    id_history = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    entity_type = db.Column(
+        db.String(30),
+        nullable=False,
+    )
+
+    entity_id = db.Column(
+        db.Integer,
+        nullable=False,
+    )
+
+    entity_code = db.Column(
+        db.String(100),
+    )
+
+    event_type = db.Column(
+        db.String(30),
+        nullable=False,
+    )
+
+    event_date = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=sa.func.now(),
+    )
+
+    id_actor = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            "utilisateurs.t_roles.id_role",
+            ondelete="SET NULL",
+        ),
+        nullable=True,
+    )
+
+    actor_label = db.Column(
+        db.String(255),
+        nullable=True,
+    )
+
+    id_harvest = db.Column(
+        db.Integer,
+        nullable=True,
+    )
+
+    id_material = db.Column(
+        db.Integer,
+        nullable=True,
+    )
+
+    changes = db.Column(
+        JSONB,
+        nullable=True,
+    )
+
+
+    def to_dic(self):
+        return {
+            "id_history": self.id_history,
+            "entity_type": self.entity_type,
+            "entity_id": self.entity_id,
+            "entity_code": self.entity_code,
+            "event_type": self.event_type,
+
+            "event_date": (
+                self.event_date.isoformat()
+                if self.event_date
+                else None
+            ),
+
+            "id_actor": self.id_actor,
+            "observer": self.actor_label,
+            "id_harvest": self.id_harvest,
+            "id_material": self.id_material,
+            "changes": self.changes,
+        }
+
+
+# =========================================================
+# FIN HISTORIQUE
+# =========================================================
+
+
 @serializable
 class CorMaterialTaxon(db.Model):
     __tablename__ = "cor_material_taxon"

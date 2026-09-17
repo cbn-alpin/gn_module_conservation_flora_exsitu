@@ -22,6 +22,214 @@ depends_on = None
 
 
 def upgrade():
+
+    # =========================================================
+    # HISTORIQUE - TABLE GÉNÉRIQUE DES ÉVÉNEMENTS
+    #
+    # Cette table conservera les créations et modifications
+    # de toutes les parties Ex-situ.
+    #
+    # Pour l'instant, seul Matériel récolté est alimenté.
+    # =========================================================
+    op.create_table(
+        "t_history",
+
+        sa.Column(
+            "id_history",
+            sa.Integer(),
+            primary_key=True,
+            nullable=False,
+        ),
+
+        sa.Column(
+            "entity_type",
+            sa.String(length=30),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "entity_id",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "entity_code",
+            sa.String(length=100),
+            nullable=True,
+        ),
+
+        sa.Column(
+            "event_type",
+            sa.String(length=30),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "event_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+
+        sa.Column(
+            "id_actor",
+            sa.Integer(),
+            nullable=True,
+        ),
+
+        sa.Column(
+            "actor_label",
+            sa.String(length=255),
+            nullable=True,
+        ),
+
+        sa.Column(
+            "id_harvest",
+            sa.Integer(),
+            nullable=True,
+        ),
+
+        sa.Column(
+            "id_material",
+            sa.Integer(),
+            nullable=True,
+        ),
+
+        sa.Column(
+            "changes",
+            JSONB(),
+            nullable=True,
+        ),
+
+        sa.ForeignKeyConstraint(
+            ["id_actor"],
+            ["utilisateurs.t_roles.id_role"],
+            ondelete="SET NULL",
+            name="fk_t_history_id_actor",
+        ),
+
+        schema="pr_conservation_flora_exsitu",
+    )
+
+    op.create_index(
+        "ix_cfe_history_scope",
+        "t_history",
+        [
+            "id_harvest",
+            "entity_type",
+            "event_date",
+        ],
+        schema="pr_conservation_flora_exsitu",
+    )
+
+
+    # =========================================================
+    # HISTORIQUE - REPRISE DES MATÉRIELS DÉJÀ EXISTANTS
+    #
+    # Les créations existantes sont reprises depuis
+    # meta_create_date / meta_create_by.
+    #
+    # La dernière modification existante est également reprise.
+    # =========================================================
+
+    op.execute(
+        """
+        INSERT INTO pr_conservation_flora_exsitu.t_history (
+            entity_type,
+            entity_id,
+            entity_code,
+            event_type,
+            event_date,
+            id_actor,
+            actor_label,
+            id_harvest,
+            id_material
+        )
+        SELECT
+            'material',
+            m.id_material,
+            m.code_material,
+            'creation',
+            m.meta_create_date,
+            m.meta_create_by,
+            CASE
+                WHEN m.meta_create_by IS NULL
+                    THEN 'Non renseigné'
+                ELSE COALESCE(
+                    NULLIF(
+                        TRIM(
+                            CONCAT_WS(
+                                ' ',
+                                u.nom_role,
+                                u.prenom_role
+                            )
+                        ),
+                        ''
+                    ),
+                    'Utilisateur inconnu'
+                )
+            END,
+            m.id_harvest,
+            m.id_material
+        FROM pr_conservation_flora_exsitu.t_material AS m
+        LEFT JOIN utilisateurs.t_roles AS u
+            ON u.id_role = m.meta_create_by
+        WHERE m.meta_create_date IS NOT NULL;
+        """
+    )
+
+    op.execute(
+        """
+        INSERT INTO pr_conservation_flora_exsitu.t_history (
+            entity_type,
+            entity_id,
+            entity_code,
+            event_type,
+            event_date,
+            id_actor,
+            actor_label,
+            id_harvest,
+            id_material
+        )
+        SELECT
+            'material',
+            m.id_material,
+            m.code_material,
+            'modification',
+            m.meta_update_date,
+            m.meta_update_by,
+            CASE
+                WHEN m.meta_update_by IS NULL
+                    THEN 'Non renseigné'
+                ELSE COALESCE(
+                    NULLIF(
+                        TRIM(
+                            CONCAT_WS(
+                                ' ',
+                                u.nom_role,
+                                u.prenom_role
+                            )
+                        ),
+                        ''
+                    ),
+                    'Utilisateur inconnu'
+                )
+            END,
+            m.id_harvest,
+            m.id_material
+        FROM pr_conservation_flora_exsitu.t_material AS m
+        LEFT JOIN utilisateurs.t_roles AS u
+            ON u.id_role = m.meta_update_by
+        WHERE m.meta_update_date IS NOT NULL;
+        """
+    )
+
+    # =========================================================
+    # FIN HISTORIQUE
+    # =========================================================
+
+
     op.alter_column(
         "t_sowing",
         "id_storage",
@@ -1764,6 +1972,56 @@ def upgrade():
 
 
 def downgrade():
+
+    # =========================================================
+    # HISTORIQUE - SUPPRESSION DE LA TABLE D'HISTORIQUE
+    #
+    # IMPORTANT :
+    # La migration 4c2b7f8a9d10 peut avoir été appliquée
+    # auparavant dans une base où t_history n'existait pas
+    # encore.
+    #
+    # On vérifie donc l'existence réelle de la table avant
+    # d'essayer de supprimer son index et la table.
+    # =========================================================
+
+    history_inspector = sa.inspect(
+        op.get_bind()
+    )
+
+    history_schema = (
+        "pr_conservation_flora_exsitu"
+    )
+
+    if history_inspector.has_table(
+        "t_history",
+        schema=history_schema,
+    ):
+
+        history_indexes = {
+            index["name"]
+            for index in history_inspector.get_indexes(
+                "t_history",
+                schema=history_schema,
+            )
+        }
+
+        if "ix_cfe_history_scope" in history_indexes:
+            op.drop_index(
+                "ix_cfe_history_scope",
+                table_name="t_history",
+                schema=history_schema,
+            )
+
+        op.drop_table(
+            "t_history",
+            schema=history_schema,
+        )
+
+    # =========================================================
+    # FIN HISTORIQUE
+    # =========================================================
+
     # Create temporary indexes for deleting nomenclatures with performance
     created_temp_indexes = create_missing_nomenclature_indexes()
 

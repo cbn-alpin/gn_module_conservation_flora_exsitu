@@ -35,6 +35,12 @@ from .models import (
     TCulture,
     THarvest,
     TMaterial,
+
+    # =====================================================
+    # HISTORIQUE
+    # =====================================================
+    THistory,
+
     TMaterielSeed,
     TSowing,
     TStorage,
@@ -660,7 +666,19 @@ def delete_material(id_material):
         }, 409
 
     material_repo = HarvestMaterialRepository()
-    deleted = material_repo.delete(id_material)
+
+    # =========================================================
+    # HISTORIQUE - UTILISATEUR AYANT SUPPRIMÉ LE MATÉRIEL
+    # =========================================================
+
+    deleted = material_repo.delete(
+        id_material,
+        id_actor=g.current_user.id_role,
+    )
+
+    # =========================================================
+    # FIN HISTORIQUE
+    # =========================================================
 
     if not deleted:
         return {"error": "Matériel non trouvé."}, 404
@@ -792,6 +810,48 @@ def get_materials(id_harvest):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# =========================================================
+# HISTORIQUE - MATÉRIELS RÉCOLTÉS
+#
+# Retourne tous les événements Matériel récolté
+# de la récolte courante, du plus récent au plus ancien.
+# =========================================================
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/history/materials",
+    methods=["GET"],
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def get_material_history(id_harvest):
+
+    events = (
+        THistory.query
+        .filter(
+            THistory.id_harvest == id_harvest,
+            THistory.entity_type == "material",
+        )
+        .order_by(
+            THistory.event_date.desc(),
+            THistory.id_history.desc(),
+        )
+        .all()
+    )
+
+    return {
+        "events": [
+            event.to_dic()
+            for event in events
+        ]
+    }, 200
+
+
+# =========================================================
+# FIN HISTORIQUE - MATÉRIELS RÉCOLTÉS
+# =========================================================
 
 @blueprint.route("/materials/<int:id_material>", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
