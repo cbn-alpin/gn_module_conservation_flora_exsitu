@@ -180,11 +180,11 @@
    * =========================================================
    * HISTORIQUE - FILTRES SUR UNE SEULE LIGNE
    *
-   * Les colonnes n'ont volontairement pas toutes la même
-   * largeur :
-   * - les libellés courts prennent moins de place ;
-   * - "Test de germination" et "Test de viabilité"
-   *   disposent de davantage d'espace.
+   * Les colonnes conservent des largeurs adaptées
+   * aux différents libellés.
+   *
+   * L'espace entre les boutons est légèrement augmenté
+   * afin que chaque onglet reste visuellement indépendant.
    * =========================================================
    */
   grid-template-columns:
@@ -197,7 +197,7 @@
     1.30fr
     0.70fr;
 
-  gap: 6px;
+  gap: 9px;
 }
 
 
@@ -214,12 +214,12 @@
 
   width: 100%;
   min-width: 0;
-  min-height: 36px;
+  min-height: 38px;
 
   /*
    * HISTORIQUE
-   * Padding réduit afin que les 8 filtres tiennent
-   * proprement sur une seule ligne.
+   * Padding compact pour conserver les 8 filtres
+   * sur une seule ligne.
    */
   padding: 0 6px;
 
@@ -228,35 +228,29 @@
   font-size: 11px;
   font-weight: 700;
   line-height: 16px;
+  letter-spacing: 0.15px;
   text-align: center;
 
-  /*
-   * HISTORIQUE
-   * Empêche les libellés de passer sur une deuxième ligne.
-   */
   white-space: nowrap;
 
-  border-radius: 8px;
-
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.08);
-
   /*
    * HISTORIQUE
-   * L'agrandissement utilise transform: scale()
-   * au lieu d'augmenter la taille de police.
-   *
-   * Cela évite de déplacer les autres filtres
-   * lorsque la souris passe sur un bouton.
+   * Onglets légèrement plus arrondis pour obtenir
+   * un aspect plus moderne et mieux détaché.
    */
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.07);
+
   transform: scale(1);
   transform-origin: center;
 
   transition:
-    transform 0.15s ease,
-    font-weight 0.15s ease,
-    box-shadow 0.15s ease,
-    outline 0.15s ease;
+    transform 0.16s ease,
+    font-weight 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
 }
 
 
@@ -270,12 +264,21 @@
 .historique-filter-button:hover {
   /*
    * HISTORIQUE
-   * Grossissement visuel sans modifier la largeur
-   * occupée par le bouton dans la grille.
+   * Survol plus discret :
+   * - léger grossissement ;
+   * - texte renforcé ;
+   * - légère élévation.
+   *
+   * Le bouton reste clairement séparé de ses voisins.
    */
-  transform: scale(1.07);
+  transform: translateY(-1px) scale(1.035);
 
   font-weight: 800;
+
+  box-shadow:
+    0 4px 9px rgba(0, 0, 0, 0.13);
+
+  filter: brightness(1.02);
 
   z-index: 3;
 }
@@ -293,22 +296,46 @@
 
 .historique-filter-button.historique-filter-active {
   /*
-   * HISTORIQUE
-   * Le filtre validé reste légèrement agrandi,
-   * en gras et entouré en vert.
+   * =========================================================
+   * HISTORIQUE - ONGLET SÉLECTIONNÉ
+   *
+   * IMPORTANT :
+   * Le contour vert est maintenant dessiné À L'INTÉRIEUR
+   * du bouton avec inset.
+   *
+   * Il ne peut donc jamais toucher un bouton voisin.
+   * =========================================================
    */
-  transform: scale(1.04);
 
-  font-weight: 800;
+  transform: scale(1.02);
 
-  outline: 2px solid #43a047;
-  outline-offset: 2px;
+  font-size: 12px;
+  font-weight: 800 !important;
+  letter-spacing: 0.20px;
+
+  /*
+   * HISTORIQUE
+   * Aucun outline extérieur :
+   * la bande verte reste strictement dans le bouton.
+   */
+  outline: none;
 
   box-shadow:
-    0 0 0 1px rgba(67, 160, 71, 0.20),
-    0 3px 7px rgba(0, 0, 0, 0.16);
+    inset 0 0 0 2px #43a047,
+    0 3px 8px rgba(0, 0, 0, 0.14);
 
   z-index: 2;
+}
+
+
+/*
+ * HISTORIQUE
+ * Angular Material peut placer le texte dans un élément
+ * interne. On force donc également ce texte en gras.
+ */
+.historique-filter-button.historique-filter-active .mat-button-wrapper,
+.historique-filter-button.historique-filter-active .mdc-button__label {
+  font-weight: 800 !important;
 }
 
 
@@ -318,7 +345,18 @@
  * il grossit légèrement davantage.
  */
 .historique-filter-button.historique-filter-active:hover {
-  transform: scale(1.07);
+  /*
+   * HISTORIQUE
+   * Le filtre sélectionné reste identifiable même au survol.
+   * La bande verte reste toujours à l'intérieur du bouton.
+   */
+  transform: translateY(-1px) scale(1.035);
+
+  font-weight: 800 !important;
+
+  box-shadow:
+    inset 0 0 0 2px #43a047,
+    0 5px 10px rgba(0, 0, 0, 0.16);
 
   z-index: 3;
 }
