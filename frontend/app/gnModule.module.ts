@@ -101,6 +101,19 @@ import {
   HistoriqueTriggerDirective
 } from './historique/historique-trigger.directive';
 
+
+/* =========================================================
+   HISTORIQUE - SERVICE
+   ========================================================= */
+
+import {
+  HistoriqueService
+} from './historique/historique.service';
+
+/* =========================================================
+   FIN HISTORIQUE - SERVICE
+   ========================================================= */
+
 /* =========================================================
    FIN HISTORIQUE - COMPOSANT ET DIRECTIVE
    ========================================================= */
@@ -198,6 +211,15 @@ registerLocaleData(localeFr);
     HarvestMapService,
     ObserversService,
     DialogService,
+
+    /* =====================================================
+       HISTORIQUE
+       ===================================================== */
+    HistoriqueService,
+    /* =====================================================
+       FIN HISTORIQUE
+       ===================================================== */
+
     ConfigService,
     StockManagementService,
     SemisService,

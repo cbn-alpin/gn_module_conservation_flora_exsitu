@@ -8,6 +8,10 @@ import {
   HistoriqueService
 } from './historique.service';
 
+import {
+  ExsituFormService
+} from '../form/shared/exsitu-form.service';
+
 
 @Directive({
   selector: '[appHistoriqueTrigger]'
@@ -30,7 +34,14 @@ export class HistoriqueTriggerDirective {
 
 
   constructor(
-    private historiqueService: HistoriqueService
+    private historiqueService: HistoriqueService,
+
+    /*
+     * =====================================================
+     * HISTORIQUE - CONTEXTE DU WORKFLOW
+     * =====================================================
+     */
+    private exsituFormService: ExsituFormService
   ) {}
 
 
@@ -43,7 +54,14 @@ export class HistoriqueTriggerDirective {
      * mais avec leur propre rubrique sélectionnée.
      */
     this.historiqueService.openHistorique(
-      this.appHistoriqueTrigger || 'all'
+      this.appHistoriqueTrigger || 'all',
+
+      /*
+       * HISTORIQUE
+       * Récolte et matériel actuellement consultés.
+       */
+      this.exsituFormService.idHarvest,
+      this.exsituFormService.idMaterial
     );
 
   }

@@ -245,21 +245,209 @@
 
       <div class="historique-result-content">
 
-        <div class="historique-empty-state">
 
-          <div class="historique-empty-state-icon">
+        <!-- =================================================
+             HISTORIQUE - MATÉRIEL RÉCOLTÉ
+             ================================================= -->
+
+        <ng-container
+          *ngIf="
+            selectedFilter === 'material';
+            else defaultHistoriqueContent
+          "
+        >
+
+
+          <!-- CHARGEMENT -->
+
+          <div
+            *ngIf="materialHistoryLoading"
+            class="historique-history-message"
+          >
+            <mat-icon>hourglass_empty</mat-icon>
+
+            Chargement de l'historique...
+          </div>
+
+
+          <!-- ERREUR -->
+
+          <div
+            *ngIf="
+              !materialHistoryLoading &&
+              materialHistoryError
+            "
+            class="historique-history-message"
+          >
             <mat-icon>info</mat-icon>
+
+            Impossible de charger l'historique.
           </div>
 
-          <div class="historique-empty-state-text">
-            Les événements de l'historique apparaîtront ici.
+
+          <!-- AUCUN ÉVÉNEMENT -->
+
+          <div
+            *ngIf="
+              !materialHistoryLoading &&
+              !materialHistoryError &&
+              materialHistoryEvents.length === 0
+            "
+            class="historique-empty-state"
+          >
+
+            <div class="historique-empty-state-icon">
+              <mat-icon>info</mat-icon>
+            </div>
+
+            <div class="historique-empty-state-text">
+              Aucun événement Matériel récolté.
+            </div>
+
           </div>
 
-          <div class="historique-empty-state-subtext">
-            La chronologie sera affichée du plus récent au plus ancien.
+
+          <!-- ===============================================
+               HISTORIQUE - TIMELINE
+               =============================================== -->
+
+          <div
+            *ngIf="
+              !materialHistoryLoading &&
+              !materialHistoryError &&
+              materialHistoryEvents.length > 0
+            "
+            class="historique-timeline"
+          >
+
+            <div
+              *ngFor="
+                let event of materialHistoryEvents
+              "
+              class="historique-timeline-event"
+            >
+
+
+              <div
+                class="historique-timeline-marker"
+                [class.historique-timeline-marker-delete]="
+                  event.event_type === 'suppression'
+                "
+              >
+
+                <mat-icon>
+                  {{
+                    event.event_type === 'creation'
+                      ? 'add'
+                      : event.event_type === 'suppression'
+                        ? 'delete'
+                        : 'edit'
+                  }}
+                </mat-icon>
+
+              </div>
+
+
+              <div class="historique-timeline-card">
+
+
+                <div class="historique-event-header">
+
+                  <span class="historique-event-code">
+                    N° {{ event.entity_code }}
+                  </span>
+
+
+                  <span
+                    class="historique-event-type"
+                    [class.historique-event-type-delete]="
+                      event.event_type === 'suppression'
+                    "
+                  >
+                    {{
+                      event.event_type === 'creation'
+                        ? 'Création'
+                        : event.event_type === 'suppression'
+                          ? 'Suppression'
+                          : 'Modification'
+                    }}
+                  </span>
+
+                </div>
+
+
+                <div class="historique-event-metadata">
+
+                  <div>
+                    <mat-icon>schedule</mat-icon>
+
+                    <span>
+                      {{
+                        event.event_date
+                          | date:'dd/MM/yyyy à HH:mm'
+                      }}
+                    </span>
+                  </div>
+
+
+                  <div>
+                    <mat-icon>person</mat-icon>
+
+                    <span>
+                      <strong>Observateur :</strong>
+
+                      {{
+                        event.observer ||
+                        'Non renseigné'
+                      }}
+                    </span>
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </div>
+
           </div>
 
-        </div>
+          <!-- ===============================================
+               FIN HISTORIQUE - TIMELINE
+               =============================================== -->
+
+
+        </ng-container>
+
+
+        <!-- =================================================
+             AUTRES HISTORIQUES
+
+             On ne modifie PAS Historique Totale aujourd'hui.
+             Les autres rubriques gardent leur état actuel
+             tant que nous ne les avons pas développées.
+             ================================================= -->
+
+        <ng-template #defaultHistoriqueContent>
+
+          <div class="historique-empty-state">
+
+            <div class="historique-empty-state-icon">
+              <mat-icon>info</mat-icon>
+            </div>
+
+            <div class="historique-empty-state-text">
+              Les événements de l'historique apparaîtront ici.
+            </div>
+
+            <div class="historique-empty-state-subtext">
+              La chronologie sera affichée du plus récent au plus ancien.
+            </div>
+
+          </div>
+
+        </ng-template>
+
 
       </div>
 

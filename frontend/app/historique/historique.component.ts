@@ -1,7 +1,16 @@
 import {
   Component,
-  Inject
+  Inject,
+  OnInit
 } from '@angular/core';
+
+import {
+  HistoriqueService
+} from './historique.service';
+
+import {
+  HistoriqueEvent
+} from './historique.models';
 
 import {
   MAT_DIALOG_DATA,
@@ -34,7 +43,7 @@ import {
     DialogService
   ]
 })
-export class HistoriqueComponent {
+export class HistoriqueComponent implements OnInit {
 
   /*
    * =========================================================
@@ -45,6 +54,20 @@ export class HistoriqueComponent {
    * =========================================================
    */
   public selectedFilter: string;
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - MATÉRIELS RÉCOLTÉS
+   * =========================================================
+   */
+
+  public materialHistoryEvents:
+    HistoriqueEvent[] = [];
+
+  public materialHistoryLoading = false;
+
+  public materialHistoryError = false;
 
 
   /*
@@ -73,7 +96,10 @@ export class HistoriqueComponent {
     private dialogRef: MatDialogRef<HistoriqueComponent>,
     private dialogService: DialogService,
     private _commonService: CommonService,
-
+    /*
+     * HISTORIQUE - ACCÈS AUX ÉVÉNEMENTS
+     */
+    private historiqueService: HistoriqueService,
     /*
      * =========================================================
      * HISTORIQUE - RUBRIQUE D'OUVERTURE
@@ -84,7 +110,9 @@ export class HistoriqueComponent {
      */
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      initialFilter?: string
+      initialFilter?: string;
+      idHarvest?: number | null;
+      idMaterial?: number | null;
     }
   ) {
 
@@ -98,11 +126,115 @@ export class HistoriqueComponent {
 
   /*
    * =========================================================
+   * HISTORIQUE - CHARGEMENT INITIAL
+   *
+   * Si la fiche Historique est ouverte depuis
+   * Matériel récolté, l'historique Matériel est chargé
+   * immédiatement.
+   * =========================================================
+   */
+  public ngOnInit(): void {
+
+    if (this.selectedFilter === 'material') {
+      this.loadMaterialHistory();
+    }
+
+
+    /*
+     * =========================================================
+     * HISTORIQUE - CLIC EN DEHORS DE LA FICHE
+     *
+     * Comme pour le bouton Retour, un clic sur le fond
+     * extérieur de la fenêtre Historique ne ferme pas
+     * directement la fiche.
+     *
+     * Il déclenche la même confirmation de sortie :
+     *
+     * - Non : rester dans Historique
+     * - Oui : quitter Historique
+     * =========================================================
+     */
+    this.dialogRef
+      .backdropClick()
+      .subscribe(() => {
+
+        this.onBack();
+
+      });
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - CHARGEMENT MATÉRIEL RÉCOLTÉ
+   * =========================================================
+   */
+  private loadMaterialHistory(): void {
+
+    if (!this.data || !this.data.idHarvest) {
+
+      this.materialHistoryEvents = [];
+      this.materialHistoryError = true;
+
+      return;
+
+    }
+
+
+    this.materialHistoryLoading = true;
+    this.materialHistoryError = false;
+
+
+    this.historiqueService
+      .getMaterialHistory(
+        this.data.idHarvest
+      )
+      .subscribe({
+
+        next: (events) => {
+
+          this.materialHistoryEvents =
+            events || [];
+
+          this.materialHistoryLoading =
+            false;
+
+        },
+
+        error: () => {
+
+          this.materialHistoryEvents = [];
+          this.materialHistoryLoading = false;
+          this.materialHistoryError = true;
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * =========================================================
    * HISTORIQUE - SÉLECTION D'UN FILTRE
    * =========================================================
    */
   public selectHistoriqueFilter(filter: string): void {
+
     this.selectedFilter = filter;
+
+
+    /*
+     * HISTORIQUE - MATÉRIEL RÉCOLTÉ
+     *
+     * On recharge les événements lorsque la rubrique
+     * Matériel récolté est sélectionnée.
+     */
+    if (filter === 'material') {
+      this.loadMaterialHistory();
+    }
+
   }
 
 

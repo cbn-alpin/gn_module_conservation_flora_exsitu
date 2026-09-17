@@ -859,6 +859,251 @@
 
 
 /* =========================================================
+   HISTORIQUE - TIMELINE MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+.historique-timeline {
+  position: relative;
+
+  width: 100%;
+
+  /*
+   * =========================================================
+   * HISTORIQUE - UNE SEULE BARRE DE DÉFILEMENT
+   *
+   * La timeline ne possède plus sa propre hauteur maximale
+   * ni sa propre roulette.
+   *
+   * Elle grandit naturellement selon le nombre d'événements
+   * et c'est uniquement la fenêtre Historique complète
+   * qui gère le défilement vertical.
+   * =========================================================
+   */
+  max-height: none;
+
+  padding: 8px 12px 8px 34px;
+
+  box-sizing: border-box;
+
+  overflow-y: visible;
+}
+
+
+/*
+ * Ligne verticale de la timeline.
+ */
+.historique-timeline::before {
+  content: "";
+
+  position: absolute;
+
+  top: 10px;
+  bottom: 10px;
+  left: 18px;
+
+  width: 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #7a8f45 0%,
+      rgba(122, 143, 69, 0.25) 100%
+    );
+}
+
+
+.historique-timeline-event {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+
+  margin-bottom: 14px;
+}
+
+
+.historique-timeline-event:last-child {
+  margin-bottom: 0;
+}
+
+
+.historique-timeline-marker {
+  position: absolute;
+
+  left: -28px;
+  top: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #ffffff;
+
+  background-color: #7a8f45;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.15);
+
+  z-index: 2;
+}
+
+
+.historique-timeline-marker mat-icon {
+  width: 16px;
+  height: 16px;
+
+  margin: 0;
+
+  font-size: 16px;
+  line-height: 16px;
+}
+
+
+/* =========================================================
+   HISTORIQUE - ÉVÉNEMENT DE SUPPRESSION
+
+   La suppression est distinguée en rouge afin de la rendre
+   immédiatement identifiable dans la chronologie.
+   ========================================================= */
+
+.historique-timeline-marker-delete {
+  background-color: #d32f2f;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - ÉVÉNEMENT DE SUPPRESSION
+   ========================================================= */
+
+
+.historique-timeline-card {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid rgba(122, 143, 69, 0.35);
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 7px rgba(0, 0, 0, 0.06);
+}
+
+
+.historique-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 9px;
+}
+
+
+.historique-event-code {
+  color: #4e6026;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.historique-event-type {
+  padding: 4px 9px;
+
+  color: #667a32;
+
+  background-color: #f3f6ea;
+
+  border: 1px solid #7a8f45;
+  border-radius: 12px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   HISTORIQUE - BADGE SUPPRESSION
+   ========================================================= */
+
+.historique-event-type-delete {
+  color: #b71c1c;
+
+  background-color: #ffebee;
+
+  border-color: #d32f2f;
+}
+
+/* =========================================================
+   FIN HISTORIQUE - BADGE SUPPRESSION
+   ========================================================= */
+
+
+.historique-event-metadata {
+  display: flex;
+  align-items: center;
+
+  gap: 24px;
+
+  color: #646464;
+
+  font-size: 12px;
+}
+
+
+.historique-event-metadata > div {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+}
+
+
+.historique-event-metadata mat-icon {
+  width: 17px;
+  height: 17px;
+
+  color: #7a8f45;
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+
+.historique-history-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  width: 100%;
+  min-height: 120px;
+
+  color: #667a32;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - TIMELINE MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+
+/* =========================================================
    HISTORIQUE TOTALE
    Gris
    ========================================================= */

@@ -1,49 +1,101 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+
+import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
+  MatDialog
+} from '@angular/material/dialog';
+
+import {
+  Observable
+} from 'rxjs';
+
+import {
+  map
+} from 'rxjs/operators';
+
+import {
+  ConfigService
+} from '../services/config.service';
 
 import {
   HistoriqueComponent
 } from './historique.component';
 
+import {
+  HistoriqueEvent
+} from './historique.models';
 
-@Injectable({
-  providedIn: 'root'
-})
+
+@Injectable()
 export class HistoriqueService {
 
+  private moduleBaseUrl: string;
+
+
   constructor(
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private api: HttpClient,
+    private cfg: ConfigService
+  ) {
+
+    this.moduleBaseUrl =
+      this.cfg.getModuleBackendUrl();
+
+  }
 
 
   public openHistorique(
-    initialFilter: string = 'all'
+    initialFilter: string = 'all',
+    idHarvest: number | null = null,
+    idMaterial: number | null = null
   ): void {
 
     this.dialog.open(
       HistoriqueComponent,
       {
-        /*
-         * HISTORIQUE
-         * Même dimensions que la fiche
-         * "Ajouter une fiche de Matériel récolté".
-         */
         width: '900px',
         height: '90vh',
 
         disableClose: true,
         autoFocus: false,
 
-        /*
-         * =====================================================
-         * HISTORIQUE - RUBRIQUE À SÉLECTIONNER À L'OUVERTURE
-         * =====================================================
-         */
         data: {
-          initialFilter: initialFilter
+          initialFilter: initialFilter,
+          idHarvest: idHarvest,
+          idMaterial: idMaterial
         }
       }
     );
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - MATÉRIELS RÉCOLTÉS
+   * =========================================================
+   */
+  public getMaterialHistory(
+    idHarvest: number
+  ): Observable<HistoriqueEvent[]> {
+
+    return this.api
+      .get<{
+        events: HistoriqueEvent[]
+      }>(
+        `${this.moduleBaseUrl}/harvests/${idHarvest}/history/materials`
+      )
+      .pipe(
+        map(
+          response =>
+            response && response.events
+              ? response.events
+              : []
+        )
+      );
 
   }
 
