@@ -1,0 +1,285 @@
+:host {
+  display: block;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   HISTORIQUE - FICHE PRINCIPALE
+
+   Cette fiche est affichée dans un MatDialog.
+   Ne pas imposer height: 100% ni overflow: hidden ici :
+   cela masquerait le contenu de la fiche Historique.
+   ========================================================= */
+
+.historique-form-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  overflow: visible;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d5ddc1;
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 12px rgba(64, 80, 33, 0.10);
+}
+
+
+/* =========================================================
+   HISTORIQUE - EN-TÊTE
+   ========================================================= */
+
+.historique-form-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 58px;
+  padding: 8px 20px 0;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f3f6ea 0%,
+      #fafcf6 55%,
+      #ffffff 100%
+    );
+
+  border-bottom: 1px solid #d5ddc1;
+}
+
+
+.historique-form-back-button {
+  position: absolute;
+  top: calc(50% + 4px);
+  left: 20px;
+
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #ffffff !important;
+  font-weight: bold;
+
+  background-color: #d21919 !important;
+
+  z-index: 1;
+}
+
+
+.historique-form-back-button:hover {
+  background-color: #d21919 !important;
+}
+
+
+.historique-form-back-button mat-icon {
+  color: #ffffff !important;
+}
+
+
+.historique-title-wrapper {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+.historique-form-header mat-card-title {
+  display: block;
+
+  width: 100%;
+  margin: 0;
+
+  /*
+   * HISTORIQUE
+   * Même gris que les boutons Historique
+   * présents dans les listes.
+   */
+  color: #777777;
+
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
+
+/* =========================================================
+   HISTORIQUE - CONTENU
+   ========================================================= */
+
+.historique-form-content {
+  display: flex;
+  flex-direction: column;
+
+  /*
+   * HISTORIQUE
+   * Permet de conserver le même squelette vertical
+   * que la fiche "Ajouter une fiche de Matériel récolté"
+   * tout en gardant la zone centrale vide pour le moment.
+   */
+  min-height: calc(90vh - 58px);
+
+  padding: 0 20px 0 !important;
+
+  box-sizing: border-box;
+
+  background-color: #fbfcf7;
+}
+
+
+.historique-empty-content {
+  flex: 1 1 auto;
+
+  /*
+   * HISTORIQUE
+   * Zone réservée aux futurs champs de la fiche.
+   */
+  min-height: 250px;
+}
+
+
+/* =========================================================
+   HISTORIQUE - BOUTONS DU BAS
+   Même squelette que la fiche Matériel récolté
+   ========================================================= */
+
+.historique-form-actions {
+  position: sticky;
+  bottom: 10px;
+
+  z-index: 10;
+
+  width: calc(100% - 32px);
+
+  box-sizing: border-box;
+
+  margin-top: auto;
+  margin-right: 16px;
+  margin-bottom: 10px;
+  margin-left: 16px;
+
+  padding: 20px 28px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      #f7f9f0 100%
+    );
+
+  border: 1px solid #d5ddc1;
+  border-radius: 14px;
+
+  box-shadow:
+    0 -6px 18px rgba(122, 143, 69, 0.08),
+    0 8px 20px rgba(64, 80, 33, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+
+  backdrop-filter: blur(4px);
+}
+
+
+/* =========================================================
+   HISTORIQUE - BOUTONS RÉINITIALISER / ENREGISTRER
+
+   Reproduction du style utilisé dans la fiche
+   "Ajouter une fiche de Matériel récolté".
+
+   IMPORTANT :
+   - Réinitialiser utilise une icône de 20px.
+   - Enregistrer conserve la taille Material par défaut
+     de l'icône "save", exactement comme la fiche modèle.
+   - Aucune taille de texte spécifique n'est imposée afin
+     de conserver exactement la typographie du mat-button.
+   ========================================================= */
+
+.historique-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  width: 100%;
+}
+
+
+.historique-button-container button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-width: 165px;
+  height: 42px;
+  padding: 0 18px;
+}
+
+
+.historique-with-border {
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+}
+
+
+.historique-reset-button {
+  justify-self: center;
+
+  color: #ffffff;
+
+  background-color: #8e24aa;
+}
+
+
+.historique-reset-button:hover {
+  background-color: #6a1b9a;
+}
+
+
+.historique-reset-button mat-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.historique-save-button {
+  justify-self: end;
+
+  color: #ffffff;
+
+  background-color: #4caf50;
+}
+
+
+.historique-save-button:hover {
+  background-color: #388e3c;
+}
+
+/* =========================================================
+   FIN HISTORIQUE - BOUTONS RÉINITIALISER / ENREGISTRER
+   ========================================================= */
+
+
+/* =========================================================
+   FIN HISTORIQUE
+   ========================================================= */

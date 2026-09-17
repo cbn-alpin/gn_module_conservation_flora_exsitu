@@ -86,6 +86,26 @@ import {
   CultureActionDetailsComponent
 } from './culture-action-details/culture-action-details.component';
 
+
+/* =========================================================
+   HISTORIQUE - COMPOSANT ET DIRECTIVE
+   Déclarations nécessaires uniquement à la fonctionnalité
+   Historique.
+   ========================================================= */
+
+import {
+  HistoriqueComponent
+} from './historique/historique.component';
+
+import {
+  HistoriqueTriggerDirective
+} from './historique/historique-trigger.directive';
+
+/* =========================================================
+   FIN HISTORIQUE - COMPOSANT ET DIRECTIVE
+   ========================================================= */
+
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -153,6 +173,19 @@ registerLocaleData(localeFr);
     CultureDetailsComponent,
     CultureActionComponent,
     CultureActionDetailsComponent,
+
+
+    /* =====================================================
+       HISTORIQUE - DÉCLARATIONS
+       ===================================================== */
+
+    HistoriqueComponent,
+    HistoriqueTriggerDirective,
+
+    /* =====================================================
+       FIN HISTORIQUE - DÉCLARATIONS
+       ===================================================== */
+
   ],
   providers: [
     HarvestStoreService, 

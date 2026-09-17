@@ -1,0 +1,81 @@
+<mat-card class="historique-form-card">
+
+  <mat-card-header class="historique-form-header">
+
+    <button
+      mat-raised-button
+      type="button"
+      class="historique-form-back-button"
+      (click)="onBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
+
+    <div class="historique-title-wrapper">
+
+      <mat-card-title>
+        Fiche d'Historique
+      </mat-card-title>
+
+    </div>
+
+  </mat-card-header>
+
+
+  <mat-card-content
+    class="historique-form-content"
+  >
+
+    <!-- =====================================================
+         HISTORIQUE - CONTENU DE LA FICHE
+
+         Zone volontairement vide pour le moment.
+         Les futurs champs Historique seront ajoutés ici.
+         ===================================================== -->
+
+    <div class="historique-empty-content">
+    </div>
+
+    <!-- =====================================================
+         FIN HISTORIQUE - CONTENU DE LA FICHE
+         ===================================================== -->
+
+
+    <div class="historique-form-actions">
+
+      <div class="historique-button-container">
+
+        <button
+          mat-button
+          type="button"
+          class="historique-reset-button historique-with-border"
+          (click)="onReset()"
+        >
+          <mat-icon>autorenew</mat-icon>
+
+          Réinitialiser
+        </button>
+
+
+        <button
+          mat-button
+          type="button"
+          class="historique-save-button historique-with-border"
+          matTooltip="Enregistrer l'historique"
+          (click)="onSave()"
+        >
+          <mat-icon>save</mat-icon>
+
+          Enregistrer
+        </button>
+
+      </div>
+
+    </div>
+
+  </mat-card-content>
+
+</mat-card>
