@@ -5,6 +5,10 @@ import {
 } from '@angular/core';
 
 import {
+  Router
+} from '@angular/router';
+
+import {
   HistoriqueService
 } from './historique.service';
 
@@ -72,6 +76,28 @@ export class HistoriqueComponent implements OnInit {
 
   /*
    * =========================================================
+   * HISTORIQUE - FILTRES DE LA TIMELINE
+   *
+   * Ces filtres sont communs à toutes les rubriques :
+   *
+   * - numéro ;
+   * - date à partir de ;
+   * - date jusqu'à.
+   *
+   * Ils agissent uniquement sur les événements affichés
+   * et ne modifient aucune donnée en base.
+   * =========================================================
+   */
+
+  public historyNumberFilter = '';
+
+  public historyDateFromFilter = '';
+
+  public historyDateToFilter = '';
+
+
+  /*
+   * =========================================================
    * HISTORIQUE - DIALOGUE DE SORTIE
    *
    * Empêche l'ouverture de plusieurs fenêtres
@@ -106,6 +132,7 @@ export class HistoriqueComponent implements OnInit {
     private dialogRef: MatDialogRef<HistoriqueComponent>,
     private dialogService: DialogService,
     private _commonService: CommonService,
+    private router: Router,
     /*
      * HISTORIQUE - ACCÈS AUX ÉVÉNEMENTS
      */
@@ -145,9 +172,18 @@ export class HistoriqueComponent implements OnInit {
    */
   public ngOnInit(): void {
 
-    if (this.selectedFilter === 'material') {
-      this.loadMaterialHistory();
-    }
+    /*
+     * =========================================================
+     * HISTORIQUE - CHARGEMENT INITIAL
+     *
+     * Charge directement la rubrique depuis laquelle
+     * la fiche Historique a été ouverte :
+     *
+     * Tout / Matériel récolté / Semence / Stockage /
+     * Germination / Semis / Viabilité / Culture.
+     * =========================================================
+     */
+    this.loadHistory();
 
 
     /*
@@ -180,11 +216,15 @@ export class HistoriqueComponent implements OnInit {
    * HISTORIQUE - CHARGEMENT MATÉRIEL RÉCOLTÉ
    * =========================================================
    */
-  private loadMaterialHistory(): void {
+  private loadHistory(): void {
 
-    if (!this.data || !this.data.idHarvest) {
+    if (
+      !this.data ||
+      !this.data.idHarvest
+    ) {
 
       this.materialHistoryEvents = [];
+
       this.materialHistoryError = true;
 
       return;
@@ -193,34 +233,424 @@ export class HistoriqueComponent implements OnInit {
 
 
     this.materialHistoryLoading = true;
+
     this.materialHistoryError = false;
 
 
+    const requestedFilter =
+      this.selectedFilter || 'all';
+
+
     this.historiqueService
-      .getMaterialHistory(
-        this.data.idHarvest
+      .getHistory(
+        this.data.idHarvest,
+        requestedFilter
       )
       .subscribe({
 
         next: (events) => {
 
+          if (
+            requestedFilter
+            !== this.selectedFilter
+          ) {
+            return;
+          }
+
+
           this.materialHistoryEvents =
             events || [];
+
 
           this.materialHistoryLoading =
             false;
 
         },
 
+
         error: () => {
 
+          if (
+            requestedFilter
+            !== this.selectedFilter
+          ) {
+            return;
+          }
+
+
           this.materialHistoryEvents = [];
-          this.materialHistoryLoading = false;
-          this.materialHistoryError = true;
+
+          this.materialHistoryLoading =
+            false;
+
+          this.materialHistoryError =
+            true;
 
         }
 
       });
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - FILTRES DE LA TIMELINE
+   * =========================================================
+   */
+
+
+  public onHistoryNumberFilter(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    this.historyNumberFilter =
+      input && input.value
+        ? input.value.trim()
+        : '';
+
+  }
+
+
+  public onHistoryDateFromFilter(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    this.historyDateFromFilter =
+      input && input.value
+        ? input.value
+        : '';
+
+  }
+
+
+  public onHistoryDateToFilter(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    this.historyDateToFilter =
+      input && input.value
+        ? input.value
+        : '';
+
+  }
+
+
+  /*
+   * HISTORIQUE
+   * Indique si au moins un filtre est actif.
+   */
+  public get hasActiveHistoryFilters(): boolean {
+
+    return !!(
+      this.historyNumberFilter ||
+      this.historyDateFromFilter ||
+      this.historyDateToFilter
+    );
+
+  }
+
+
+  /*
+   * HISTORIQUE
+   * Réinitialise uniquement les filtres de recherche.
+   */
+  public resetHistoryFilters(): void {
+
+    this.historyNumberFilter = '';
+
+    this.historyDateFromFilter = '';
+
+    this.historyDateToFilter = '';
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - DATE LOCALE UTILISÉE POUR LE FILTRAGE
+   *
+   * event_date arrive depuis l'API en UTC.
+   *
+   * On utilise ici la date locale du navigateur afin que
+   * le filtre corresponde exactement à la date affichée
+   * à l'utilisateur dans la timeline.
+   * =========================================================
+   */
+  private getHistoryEventLocalDate(
+    eventDate: string
+  ): string {
+
+    if (!eventDate) {
+      return '';
+    }
+
+
+    const date =
+      new Date(eventDate);
+
+
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, '0');
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, '0');
+
+
+    return `${year}-${month}-${day}`;
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - FILTRAGE GÉNÉRIQUE DES ÉVÉNEMENTS
+   *
+   * Cette fonction pourra être réutilisée telle quelle pour :
+   *
+   * - Matériel récolté ;
+   * - Semence ;
+   * - Stockage ;
+   * - Test de germination ;
+   * - Semis ;
+   * - Test de viabilité ;
+   * - Culture ;
+   * - Tout.
+   *
+   * La recherche du numéro tient également compte des
+   * anciens numéros lorsqu'un élément a été renommé.
+   * =========================================================
+   */
+  public filterHistoryEvents(
+    events: HistoriqueEvent[]
+  ): HistoriqueEvent[] {
+
+    if (!events) {
+      return [];
+    }
+
+
+    const numberFilter =
+      this.historyNumberFilter
+        .toLowerCase();
+
+
+    return events.filter(
+      (event) => {
+
+        /*
+         * ===============================================
+         * FILTRE NUMÉRO
+         * ===============================================
+         */
+
+        if (numberFilter) {
+
+          const oldChangedCode =
+            event.changes &&
+            event.changes.entity_code
+              ? event.changes.entity_code.old
+              : null;
+
+
+          const newChangedCode =
+            event.changes &&
+            event.changes.entity_code
+              ? event.changes.entity_code.new
+              : null;
+
+
+          const searchableCodes = [
+            event.current_entity_code,
+            event.entity_code,
+            oldChangedCode,
+            newChangedCode
+          ]
+            .filter(
+              code =>
+                code !== null &&
+                code !== undefined
+            )
+            .map(
+              code =>
+                String(code).toLowerCase()
+            );
+
+
+          const numberMatches =
+            searchableCodes.some(
+              code =>
+                code.includes(
+                  numberFilter
+                )
+            );
+
+
+          if (!numberMatches) {
+            return false;
+          }
+
+        }
+
+
+        /*
+         * ===============================================
+         * FILTRES DE DATE
+         * ===============================================
+         */
+
+        const eventLocalDate =
+          this.getHistoryEventLocalDate(
+            event.event_date
+          );
+
+
+        if (
+          this.historyDateFromFilter &&
+          (
+            !eventLocalDate ||
+            eventLocalDate <
+              this.historyDateFromFilter
+          )
+        ) {
+          return false;
+        }
+
+
+        if (
+          this.historyDateToFilter &&
+          (
+            !eventLocalDate ||
+            eventLocalDate >
+              this.historyDateToFilter
+          )
+        ) {
+          return false;
+        }
+
+
+        return true;
+
+      }
+    );
+
+  }
+
+
+  /*
+   * HISTORIQUE - MATÉRIEL RÉCOLTÉ
+   *
+   * Liste réellement affichée dans la timeline.
+   */
+  public get filteredMaterialHistoryEvents():
+    HistoriqueEvent[] {
+
+    return this.filterHistoryEvents(
+      this.materialHistoryEvents
+    );
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - MESSAGE AUCUN ÉVÉNEMENT
+   *
+   * Le message s'adapte automatiquement à la rubrique
+   * actuellement sélectionnée.
+   * =========================================================
+   */
+  public getHistoriqueEmptyMessage(): string {
+
+    switch (this.selectedFilter) {
+
+      case 'material':
+        return 'Aucun événement Matériel récolté.';
+
+      case 'seed':
+        return 'Aucun événement Semence.';
+
+      case 'storage':
+        return 'Aucun événement Stockage.';
+
+      case 'germination':
+        return 'Aucun événement Test de germination.';
+
+      case 'sowing':
+        return 'Aucun événement Semis.';
+
+      case 'viability':
+        return 'Aucun événement Test de viabilité.';
+
+      case 'culture':
+        return 'Aucun événement Culture.';
+
+      case 'all':
+      default:
+        return "Aucun événement dans l'Historique total.";
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - PLACEHOLDER DYNAMIQUE DU NUMÉRO
+   * =========================================================
+   */
+  public getHistoryNumberFilterPlaceholder():
+    string {
+
+    switch (this.selectedFilter) {
+
+      case 'material':
+        return 'N° Matériel récolté';
+
+      case 'seed':
+        return 'N° Semence';
+
+      case 'storage':
+        return 'N° Stockage';
+
+      case 'germination':
+        return 'N° Test de germination';
+
+      case 'sowing':
+        return 'N° Semis';
+
+      case 'viability':
+        return 'N° Test de viabilité';
+
+      case 'culture':
+        return 'N° Culture';
+
+      case 'all':
+      default:
+        return "N° de l'élément";
+
+    }
 
   }
 
@@ -236,13 +666,70 @@ export class HistoriqueComponent implements OnInit {
 
 
     /*
-     * HISTORIQUE - MATÉRIEL RÉCOLTÉ
+     * =========================================================
+     * HISTORIQUE - FILTRES
      *
-     * On recharge les événements lorsque la rubrique
-     * Matériel récolté est sélectionnée.
+     * Lorsqu'on change de rubrique, on repart sur une vue
+     * complète afin qu'un ancien numéro ou une ancienne date
+     * ne masque pas involontairement les nouveaux événements.
+     * =========================================================
      */
-    if (filter === 'material') {
-      this.loadMaterialHistory();
+    this.resetHistoryFilters();
+
+
+    /*
+     * HISTORIQUE - TOUTES LES RUBRIQUES
+     */
+    this.loadHistory();
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - NOM DE LA CATÉGORIE DE L'ÉLÉMENT
+   *
+   * Permet d'afficher par exemple :
+   *
+   * Matériel récolté : N° ...
+   * Semence : N° ...
+   * Stockage : N° ...
+   * Test de germination : N° ...
+   * Semis : N° ...
+   * Test de viabilité : N° ...
+   * Culture : N° ...
+   * =========================================================
+   */
+  public getHistoriqueEntityLabel(
+    entityType: string
+  ): string {
+
+    switch (entityType) {
+
+      case 'material':
+        return 'Matériel récolté';
+
+      case 'seed':
+        return 'Semence';
+
+      case 'storage':
+        return 'Stockage';
+
+      case 'germination':
+        return 'Test de germination';
+
+      case 'sowing':
+        return 'Semis';
+
+      case 'viability':
+        return 'Test de viabilité';
+
+      case 'culture':
+        return 'Culture';
+
+      default:
+        return 'Élément';
+
     }
 
   }
@@ -525,14 +1012,10 @@ export class HistoriqueComponent implements OnInit {
 
 
               /*
-               * HISTORIQUE - MATÉRIEL RÉCOLTÉ
-               *
-               * Pour l'instant Matériel récolté est la seule
-               * timeline réellement développée.
+               * HISTORIQUE
+               * Recharge la rubrique courante.
                */
-              if (this.selectedFilter === 'material') {
-                this.loadMaterialHistory();
-              }
+              this.loadHistory();
 
 
               if (deletedEntities > 0) {
@@ -570,6 +1053,162 @@ export class HistoriqueComponent implements OnInit {
 
   }
 
+  public openHistoryDetail(
+    event: HistoriqueEvent
+  ): void {
+
+    if (
+      !event ||
+      event.event_type === 'suppression'
+    ) {
+      return;
+    }
+
+
+    const idHarvest =
+      event.id_harvest ||
+      this.data?.idHarvest ||
+      null;
+
+    const idMaterial =
+      event.entity_type === 'material'
+        ? event.entity_id
+        : (
+            event.id_material ||
+            this.data?.idMaterial ||
+            null
+          );
+
+
+    let route: any[] | null = null;
+
+
+    switch (event.entity_type) {
+
+      case 'material':
+        if (idHarvest && event.entity_id) {
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            event.entity_id,
+            'material-details'
+          ];
+        }
+        break;
+
+      case 'seed':
+        if (idHarvest && idMaterial && event.entity_id) {
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            idMaterial,
+            'seed-details',
+            event.entity_id
+          ];
+        }
+        break;
+
+      case 'storage': {
+
+        const placeCode =
+          event.detail_context
+            ? event.detail_context.place_code
+            : null;
+
+
+        if (
+          idHarvest &&
+          idMaterial &&
+          event.entity_id &&
+          placeCode
+        ) {
+
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            idMaterial,
+            'stock-details',
+            event.entity_id,
+            placeCode
+          ];
+
+        }
+
+        break;
+      }
+
+      case 'germination':
+        if (idHarvest && idMaterial && event.entity_id) {
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            idMaterial,
+            'germination-details',
+            event.entity_id
+          ];
+        }
+        break;
+
+      case 'sowing':
+        if (idHarvest && idMaterial && event.entity_id) {
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            idMaterial,
+            'semis-details',
+            event.entity_id
+          ];
+        }
+        break;
+
+      case 'viability':
+        if (idHarvest && idMaterial && event.entity_id) {
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            idMaterial,
+            'viability-details',
+            event.entity_id
+          ];
+        }
+        break;
+
+      case 'culture':
+        if (idHarvest && idMaterial && event.entity_id) {
+          route = [
+            '/conservation_flora_exsitu/form/harvest',
+            idHarvest,
+            'material',
+            idMaterial,
+            'culture-details',
+            event.entity_id
+          ];
+        }
+        break;
+
+    }
+
+
+    if (!route) {
+      this._commonService.translateToaster(
+        'error',
+        "Impossible d'ouvrir la fiche détail de cet élément"
+      );
+      return;
+    }
+
+
+    this.dialogRef.close();
+
+    this.router.navigate(route);
+
+  }
 
   /*
    * =========================================================
@@ -669,6 +1308,21 @@ export class HistoriqueComponent implements OnInit {
           this.data && this.data.initialFilter
             ? this.data.initialFilter
             : 'all';
+
+
+        /*
+         * HISTORIQUE
+         * Le bouton Réinitialiser remet également à zéro
+         * les filtres Numéro / À partir de / Jusqu'à.
+         */
+        this.resetHistoryFilters();
+
+
+        /*
+         * HISTORIQUE
+         * Recharge réellement la rubrique d'origine.
+         */
+        this.loadHistory();
 
       });
 

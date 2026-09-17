@@ -794,6 +794,333 @@
 
 
 /* =========================================================
+   HISTORIQUE - FILTRES DE LA TIMELINE
+   ========================================================= */
+
+.historique-search-filters {
+  margin: 0;
+
+  padding: 12px 18px 14px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      var(--history-soft) 100%
+    );
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, 0.07);
+}
+
+
+.historique-search-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 10px;
+}
+
+
+.historique-search-filters-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: var(--history-text);
+}
+
+
+.historique-search-filters-title > mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  color: var(--history-color);
+
+  background-color: #ffffff;
+
+  border: 1px solid var(--history-color);
+  border-radius: 50%;
+
+  font-size: 18px;
+  line-height: 30px;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+
+.historique-search-filters-title > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1px;
+}
+
+
+.historique-search-filters-label {
+  color: #555555;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+.historique-search-filters-context {
+  color: #8a8a8a;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.historique-search-filters-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  min-height: 30px;
+  padding: 0 10px;
+
+  color: #666666;
+
+  background-color: #ffffff;
+
+  border: 1px solid #cfcfcf;
+  border-radius: 7px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.historique-search-filters-reset mat-icon {
+  width: 16px;
+  height: 16px;
+
+  font-size: 16px;
+  line-height: 16px;
+}
+
+
+.historique-search-filters-reset:hover:not(:disabled) {
+  color: var(--history-color);
+
+  border-color: var(--history-color);
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+
+.historique-search-filters-reset:disabled {
+  opacity: 0.4;
+
+  cursor: default;
+}
+
+
+.historique-search-filters-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1.35fr)
+    minmax(175px, 1fr)
+    minmax(175px, 1fr);
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+
+.historique-search-filter-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  min-width: 0;
+}
+
+
+.historique-search-filter-label {
+  padding-left: 3px;
+
+  color: #666666;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.25px;
+}
+
+
+.historique-search-filter-control {
+  display: flex;
+  align-items: center;
+
+  min-height: 38px;
+
+  padding: 0 10px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d5d5d5;
+  border-radius: 8px;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.historique-search-filter-control:focus-within {
+  border-color: var(--history-color);
+
+  box-shadow:
+    0 0 0 2px
+    color-mix(
+      in srgb,
+      var(--history-color) 15%,
+      transparent
+    );
+}
+
+
+.historique-search-filter-control mat-icon {
+  flex: 0 0 auto;
+
+  width: 18px;
+  height: 18px;
+
+  margin-right: 7px;
+
+  color: var(--history-color);
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.historique-search-filter-control input {
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+
+  color: #454545;
+
+  background: transparent;
+
+  border: 0;
+  outline: 0;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.historique-search-filter-control input::placeholder {
+  color: #aaaaaa;
+
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   HISTORIQUE - AUCUN RÉSULTAT DE FILTRAGE
+   ========================================================= */
+
+.historique-filter-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  width: 100%;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  color: #666666;
+
+  text-align: center;
+}
+
+
+.historique-filter-empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  margin-bottom: 3px;
+
+  color: var(--history-color);
+
+  background-color: var(--history-soft);
+
+  border: 1px solid var(--history-color);
+  border-radius: 50%;
+}
+
+
+.historique-filter-empty-state-icon mat-icon {
+  width: 21px;
+  height: 21px;
+
+  font-size: 21px;
+  line-height: 21px;
+}
+
+
+.historique-filter-empty-state strong {
+  color: var(--history-text);
+
+  font-size: 13px;
+}
+
+
+.historique-filter-empty-state span {
+  color: #888888;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - FILTRES DE LA TIMELINE
+   ========================================================= */
+
+
+/* =========================================================
    HISTORIQUE - ZONE DE CONTENU
 
    Cette zone deviendra ensuite la timeline réelle.
@@ -968,15 +1295,20 @@
 
   top: 10px;
   bottom: 10px;
-  left: 18px;
+
+  /*
+   * HISTORIQUE
+   * Alignement exact avec le centre des marqueurs.
+   */
+  left: 20px;
 
   width: 2px;
 
   background:
     linear-gradient(
       180deg,
-      #7a8f45 0%,
-      rgba(122, 143, 69, 0.25) 100%
+      #8a8a8a 0%,
+      rgba(138, 138, 138, 0.35) 100%
     );
 }
 
@@ -989,6 +1321,88 @@
 
   margin-bottom: 14px;
 }
+
+
+/* =========================================================
+   HISTORIQUE - RUPTURE VISUELLE APRÈS UNE SUPPRESSION
+
+   La timeline générale reste grise.
+
+   Uniquement lorsqu'un événement correspond à une
+   suppression, la portion de ligne associée devient :
+
+   - rouge ;
+   - discontinue ;
+   - visuellement distincte du reste de l'Historique.
+
+   Cela permet de matérialiser clairement la fin de vie
+   de l'élément sans modifier la timeline des autres éléments.
+   ========================================================= */
+
+.historique-timeline-event-deleted::before {
+  content: "";
+
+  position: absolute;
+
+  /*
+   * HISTORIQUE - SUPPRESSION
+   *
+   * Le segment est parfaitement aligné avec le centre
+   * du marqueur Suppression et avec la ligne générale.
+   */
+  left: -16px;
+
+  /*
+   * On commence sous le rond rouge afin que le trait
+   * ne traverse jamais le marqueur.
+   */
+  top: 42px;
+
+  /*
+   * Le trait rejoint proprement l'événement suivant.
+   */
+  bottom: -28px;
+
+  width: 4px;
+
+  /*
+   * 1. le fond de la rubrique masque totalement
+   *    la ligne grise située derrière ;
+   *
+   * 2. au centre, on dessine une vraie ligne rouge
+   *    discontinue avec des tirets réguliers.
+   */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #d32f2f 0,
+      #d32f2f 7px,
+      transparent 7px,
+      transparent 13px
+    )
+    center / 2px 100%
+    no-repeat,
+    var(--history-soft);
+
+  z-index: 2;
+
+  pointer-events: none;
+}
+
+
+/*
+ * Le rond rouge Suppression reste au-dessus
+ * de la ligne discontinue.
+ */
+.historique-timeline-event-deleted
+.historique-timeline-marker {
+  z-index: 3;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - RUPTURE VISUELLE SUPPRESSION
+   ========================================================= */
 
 
 .historique-timeline-event:last-child {
@@ -1011,7 +1425,7 @@
 
   color: #ffffff;
 
-  background-color: #7a8f45;
+  background-color: #8a8a8a;
 
   border: 3px solid #ffffff;
   border-radius: 50%;
@@ -1035,19 +1449,29 @@
 
 
 /* =========================================================
-   HISTORIQUE - ÉVÉNEMENT DE SUPPRESSION
-
-   La suppression est distinguée en rouge afin de la rendre
-   immédiatement identifiable dans la chronologie.
+   HISTORIQUE - COULEURS DES ACTIONS
    ========================================================= */
 
-.historique-timeline-marker-delete {
-  background-color: #d32f2f;
+.historique-timeline-marker.historique-action-creation {
+  background-color: #43a047;
 }
 
 
+.historique-timeline-marker.historique-action-modification {
+  background-color: #1e88e5;
+}
+
+
+.historique-timeline-marker.historique-action-suppression {
+  background-color: #d32f2f;
+
+  box-shadow:
+    0 0 0 2px rgba(211, 47, 47, 0.12),
+    0 2px 7px rgba(211, 47, 47, 0.28);
+}
+
 /* =========================================================
-   FIN HISTORIQUE - ÉVÉNEMENT DE SUPPRESSION
+   FIN HISTORIQUE - COULEURS DES ACTIONS
    ========================================================= */
 
 
@@ -1060,12 +1484,13 @@
   min-height: 92px;
 
   /*
-   * HISTORIQUE
-   * Même espace réservé à gauche et à droite :
-   * le contenu central est donc réellement centré
-   * dans toute la carte.
+   * Gauche :
+   * logo de catégorie.
+   *
+   * Droite :
+   * bouton info + badge action.
    */
-  padding: 14px 120px;
+  padding: 14px 170px 14px 120px;
 
   box-sizing: border-box;
 
@@ -1074,11 +1499,6 @@
   border: 1px solid rgba(122, 143, 69, 0.35);
   border-radius: 10px;
 
-  /*
-   * HISTORIQUE - DEMI-LOSANGE
-   *
-   * Le décor du logo reste contenu dans la carte.
-   */
   overflow: hidden;
 
   box-shadow:
@@ -1178,8 +1598,14 @@
 
 
 /* =========================================================
-   MATÉRIEL RÉCOLTÉ
+   HISTORIQUE - COULEURS DU LOGO SELON LA CATÉGORIE
+
+   Le logo et le demi-losange représentent la catégorie.
+   Ils ne changent donc pas selon l'action réalisée.
    ========================================================= */
+
+
+/* MATÉRIEL RÉCOLTÉ */
 
 .historique-entity-logo-material {
   color: #667a32;
@@ -1192,9 +1618,7 @@
 }
 
 
-/* =========================================================
-   SEMENCE
-   ========================================================= */
+/* SEMENCE */
 
 .historique-entity-logo-seed {
   color: #a77b00;
@@ -1207,9 +1631,7 @@
 }
 
 
-/* =========================================================
-   STOCKAGE
-   ========================================================= */
+/* STOCKAGE */
 
 .historique-entity-logo-storage {
   color: #455a64;
@@ -1222,9 +1644,7 @@
 }
 
 
-/* =========================================================
-   TEST DE GERMINATION
-   ========================================================= */
+/* TEST DE GERMINATION */
 
 .historique-entity-logo-germination {
   color: #00695c;
@@ -1237,9 +1657,7 @@
 }
 
 
-/* =========================================================
-   SEMIS
-   ========================================================= */
+/* SEMIS */
 
 .historique-entity-logo-sowing {
   color: #2e7d32;
@@ -1252,9 +1670,7 @@
 }
 
 
-/* =========================================================
-   TEST DE VIABILITÉ
-   ========================================================= */
+/* TEST DE VIABILITÉ */
 
 .historique-entity-logo-viability {
   color: #c7620e;
@@ -1267,9 +1683,7 @@
 }
 
 
-/* =========================================================
-   CULTURE
-   ========================================================= */
+/* CULTURE */
 
 .historique-entity-logo-culture {
   color: #4e342e;
@@ -1281,6 +1695,10 @@
   --historique-logo-shape: #e2d7d2;
 }
 
+
+/* =========================================================
+   FIN HISTORIQUE - COULEURS DU LOGO SELON LA CATÉGORIE
+   ========================================================= */
 
 /* =========================================================
    CONTENU À DROITE DU LOGO
@@ -1318,13 +1736,76 @@
 
 
 .historique-event-code {
-  color: #4e6026;
+  color: #4f4f4f;
 
   font-size: 14px;
   font-weight: 800;
 
   text-align: center;
 }
+
+
+/* =========================================================
+   HISTORIQUE - NOM DE LA CATÉGORIE DE L'ÉLÉMENT
+   ========================================================= */
+
+.historique-event-entity-label {
+  font-weight: 800;
+}
+
+
+/* MATÉRIEL RÉCOLTÉ */
+
+.historique-event-entity-label-material {
+  color: #667a32;
+}
+
+
+/* SEMENCE */
+
+.historique-event-entity-label-seed {
+  color: #a77b00;
+}
+
+
+/* STOCKAGE */
+
+.historique-event-entity-label-storage {
+  color: #455a64;
+}
+
+
+/* TEST DE GERMINATION */
+
+.historique-event-entity-label-germination {
+  color: #00695c;
+}
+
+
+/* SEMIS */
+
+.historique-event-entity-label-sowing {
+  color: #2e7d32;
+}
+
+
+/* TEST DE VIABILITÉ */
+
+.historique-event-entity-label-viability {
+  color: #c7620e;
+}
+
+
+/* CULTURE */
+
+.historique-event-entity-label-culture {
+  color: #4e342e;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - NOM DE LA CATÉGORIE
+   ========================================================= */
 
 
 .historique-event-type {
@@ -1335,13 +1816,14 @@
 
   transform: translateY(-50%);
 
-  padding: 4px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  color: #667a32;
+  min-width: 88px;
+  padding: 4px 10px;
 
-  background-color: #f3f6ea;
-
-  border: 1px solid #7a8f45;
+  border: 1px solid;
   border-radius: 12px;
 
   font-size: 11px;
@@ -1352,10 +1834,93 @@
 
 
 /* =========================================================
-   HISTORIQUE - BADGE SUPPRESSION
+   HISTORIQUE - HISTORIQUE DU NUMÉRO
    ========================================================= */
 
-.historique-event-type-delete {
+.historique-event-code-history {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  width: 100%;
+
+  margin: -1px 0 7px;
+
+  font-size: 11px;
+  text-align: center;
+}
+
+
+.historique-event-code-history mat-icon {
+  width: 16px;
+  height: 16px;
+
+  font-size: 16px;
+  line-height: 16px;
+}
+
+
+/* Numéro réellement modifié pendant cet événement */
+
+.historique-event-code-change {
+  color: #1565c0;
+}
+
+
+.historique-event-code-change mat-icon {
+  color: #1e88e5;
+}
+
+
+/* Ancien numéro porté lors d'un événement précédent */
+
+.historique-event-code-old {
+  color: #757575;
+}
+
+
+.historique-event-code-old mat-icon {
+  color: #8a8a8a;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - HISTORIQUE DU NUMÉRO
+   ========================================================= */
+
+
+/* =========================================================
+   HISTORIQUE - BADGES SELON L'ACTION
+   ========================================================= */
+
+
+/* CRÉATION */
+
+.historique-event-type-creation {
+  color: #2e7d32;
+
+  background-color: #e8f5e9;
+
+  border-color: #43a047;
+}
+
+
+/* MODIFICATION */
+
+.historique-event-type-modification {
+  color: #1565c0;
+
+  background-color: #e3f2fd;
+
+  border-color: #1e88e5;
+}
+
+
+/* SUPPRESSION */
+
+.historique-event-type-suppression {
   color: #b71c1c;
 
   background-color: #ffebee;
@@ -1363,8 +1928,91 @@
   border-color: #d32f2f;
 }
 
+.historique-event-detail-button {
+  position: absolute;
+
+  top: 50%;
+  right: 108px;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 54px;
+  padding: 0;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  cursor: pointer;
+
+  z-index: 2;
+}
+
+
+.historique-event-detail-button::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f5f5f5 0%,
+      #e2e2e2 100%
+    );
+
+  border: 1px solid #cfcfcf;
+
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 70%,
+    50% 100%,
+    0 70%
+  );
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+
+.historique-event-detail-button mat-icon {
+  position: relative;
+
+  width: 18px;
+  height: 18px;
+
+  color: #757575;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+.historique-event-detail-button:hover::before {
+  background:
+    linear-gradient(
+      180deg,
+      #eeeeee 0%,
+      #d7d7d7 100%
+    );
+
+  border-color: #bdbdbd;
+}
+
+
+.historique-event-detail-button:hover mat-icon {
+  color: #616161;
+}
+
 /* =========================================================
-   FIN HISTORIQUE - BADGE SUPPRESSION
+   FIN HISTORIQUE - BADGES SELON L'ACTION
    ========================================================= */
 
 
@@ -1596,7 +2244,7 @@
 .historique-button-container {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
 
   width: 100%;
 }

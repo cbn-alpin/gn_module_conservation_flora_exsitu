@@ -275,6 +275,170 @@
 
 
       <!-- ===================================================
+           HISTORIQUE - FILTRES DE LA TIMELINE
+
+           Bloc commun à toutes les rubriques :
+           Tout, Matériel récolté, Semence, Stockage,
+           Germination, Semis, Viabilité et Culture.
+           =================================================== -->
+
+      <div class="historique-search-filters">
+
+
+        <div class="historique-search-filters-header">
+
+          <div class="historique-search-filters-title">
+
+            <mat-icon>
+              filter_list
+            </mat-icon>
+
+            <div>
+
+              <span class="historique-search-filters-label">
+                Filtres
+              </span>
+
+              <span class="historique-search-filters-context">
+                {{ getHistoriqueTitle() }}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="historique-search-filters-reset"
+            [disabled]="!hasActiveHistoryFilters"
+            (click)="resetHistoryFilters()"
+          >
+
+            <mat-icon>
+              close
+            </mat-icon>
+
+            Effacer
+
+          </button>
+
+        </div>
+
+
+        <div class="historique-search-filters-fields">
+
+
+          <!-- ===============================================
+               NUMÉRO
+               =============================================== -->
+
+          <label class="historique-search-filter-field">
+
+            <span class="historique-search-filter-label">
+              Numéro
+            </span>
+
+            <div class="historique-search-filter-control">
+
+              <mat-icon>
+                search
+              </mat-icon>
+
+              <input
+                type="text"
+                [value]="historyNumberFilter"
+                [placeholder]="
+                  getHistoryNumberFilterPlaceholder()
+                "
+                (input)="
+                  onHistoryNumberFilter($event)
+                "
+              />
+
+            </div>
+
+          </label>
+
+
+          <!-- ===============================================
+               À PARTIR DE
+               =============================================== -->
+
+          <label class="historique-search-filter-field">
+
+            <span class="historique-search-filter-label">
+              À partir de
+            </span>
+
+            <div
+              class="
+                historique-search-filter-control
+                historique-search-filter-date
+              "
+            >
+
+              <mat-icon>
+                event
+              </mat-icon>
+
+              <input
+                type="date"
+                [value]="historyDateFromFilter"
+                (input)="
+                  onHistoryDateFromFilter($event)
+                "
+              />
+
+            </div>
+
+          </label>
+
+
+          <!-- ===============================================
+               JUSQU'À
+               =============================================== -->
+
+          <label class="historique-search-filter-field">
+
+            <span class="historique-search-filter-label">
+              Jusqu'à
+            </span>
+
+            <div
+              class="
+                historique-search-filter-control
+                historique-search-filter-date
+              "
+            >
+
+              <mat-icon>
+                event_available
+              </mat-icon>
+
+              <input
+                type="date"
+                [value]="historyDateToFilter"
+                (input)="
+                  onHistoryDateToFilter($event)
+                "
+              />
+
+            </div>
+
+          </label>
+
+
+        </div>
+
+      </div>
+
+      <!-- ===================================================
+           FIN HISTORIQUE - FILTRES DE LA TIMELINE
+           =================================================== -->
+
+
+      <!-- ===================================================
            HISTORIQUE - FUTUR CONTENU
 
            Cette zone accueillera ensuite la chronologie
@@ -292,10 +456,7 @@
              ================================================= -->
 
         <ng-container
-          *ngIf="
-            selectedFilter === 'material';
-            else defaultHistoriqueContent
-          "
+          *ngIf="selectedFilter"
         >
 
 
@@ -342,8 +503,39 @@
             </div>
 
             <div class="historique-empty-state-text">
-              Aucun événement Matériel récolté.
+              {{ getHistoriqueEmptyMessage() }}
             </div>
+
+          </div>
+
+
+          <!-- ===============================================
+               HISTORIQUE - AUCUN RÉSULTAT APRÈS FILTRAGE
+               =============================================== -->
+
+          <div
+            *ngIf="
+              !materialHistoryLoading &&
+              !materialHistoryError &&
+              materialHistoryEvents.length > 0 &&
+              filteredMaterialHistoryEvents.length === 0
+            "
+            class="historique-filter-empty-state"
+          >
+
+            <div class="historique-filter-empty-state-icon">
+              <mat-icon>
+                search_off
+              </mat-icon>
+            </div>
+
+            <strong>
+              Aucun événement ne correspond aux filtres.
+            </strong>
+
+            <span>
+              Modifiez le numéro ou la période sélectionnée.
+            </span>
 
           </div>
 
@@ -356,24 +548,34 @@
             *ngIf="
               !materialHistoryLoading &&
               !materialHistoryError &&
-              materialHistoryEvents.length > 0
+              filteredMaterialHistoryEvents.length > 0
             "
             class="historique-timeline"
           >
 
             <div
               *ngFor="
-                let event of materialHistoryEvents
+                let event of filteredMaterialHistoryEvents
               "
               class="historique-timeline-event"
+              [class.historique-timeline-event-deleted]="
+                event.event_type === 'suppression'
+              "
             >
 
 
               <div
                 class="historique-timeline-marker"
-                [class.historique-timeline-marker-delete]="
-                  event.event_type === 'suppression'
-                "
+                [ngClass]="{
+                  'historique-action-creation':
+                    event.event_type === 'creation',
+
+                  'historique-action-modification':
+                    event.event_type === 'modification',
+
+                  'historique-action-suppression':
+                    event.event_type === 'suppression'
+                }"
               >
 
                 <mat-icon>
@@ -423,6 +625,18 @@
                 </div>
 
 
+                <button
+                  *ngIf="event.event_type !== 'suppression'"
+                  mat-icon-button
+                  type="button"
+                  class="historique-event-detail-button"
+                  matTooltip="Ouvrir la fiche détail"
+                  (click)="openHistoryDetail(event)"
+                >
+                  <mat-icon>info</mat-icon>
+                </button>
+
+
                 <!-- ==========================================
                      HISTORIQUE - CONTENU DE L'ÉVÉNEMENT
                      ========================================== -->
@@ -432,15 +646,43 @@
                   <div class="historique-event-header">
 
                     <span class="historique-event-code">
-                      N° {{ event.entity_code }}
+
+                      <span
+                        class="historique-event-entity-label"
+                        [ngClass]="
+                          'historique-event-entity-label-' +
+                          event.entity_type
+                        "
+                      >
+                        {{
+                          getHistoriqueEntityLabel(
+                            event.entity_type
+                          )
+                        }}
+                        :
+                      </span>
+
+                      N°
+                      {{
+                        event.current_entity_code ||
+                        event.entity_code
+                      }}
+
                     </span>
 
 
                     <span
                       class="historique-event-type"
-                      [class.historique-event-type-delete]="
-                        event.event_type === 'suppression'
-                      "
+                      [ngClass]="{
+                        'historique-event-type-creation':
+                          event.event_type === 'creation',
+
+                        'historique-event-type-modification':
+                          event.event_type === 'modification',
+
+                        'historique-event-type-suppression':
+                          event.event_type === 'suppression'
+                      }"
                     >
                       {{
                         event.event_type === 'creation'
@@ -449,6 +691,92 @@
                             ? 'Suppression'
                             : 'Modification'
                       }}
+                    </span>
+
+                  </div>
+
+
+                  <!-- ========================================
+                       HISTORIQUE - CHANGEMENT DE NUMÉRO
+
+                       Cas 1 :
+                       l'événement est précisément celui
+                       pendant lequel le numéro a été changé.
+
+                       Exemple :
+                       A -> AA
+                       ======================================== -->
+
+                  <div
+                    *ngIf="
+                      event.changes &&
+                      event.changes.entity_code
+                    "
+                    class="
+                      historique-event-code-history
+                      historique-event-code-change
+                    "
+                  >
+
+                    <mat-icon>
+                      swap_horiz
+                    </mat-icon>
+
+                    <span>
+                      <strong>Numéro modifié :</strong>
+
+                      N°
+                      {{
+                        event.changes.entity_code.old
+                      }}
+
+                      →
+
+                      N°
+                      {{
+                        event.changes.entity_code.new
+                      }}
+                    </span>
+
+                  </div>
+
+
+                  <!-- ========================================
+                       HISTORIQUE - ANCIEN NUMÉRO
+
+                       Pour un ancien événement antérieur
+                       au changement, on affiche le numéro
+                       porté par l'élément à cette époque.
+                       ======================================== -->
+
+                  <div
+                    *ngIf="
+                      (
+                        !event.changes ||
+                        !event.changes.entity_code
+                      )
+                      &&
+                      event.entity_code
+                      &&
+                      event.current_entity_code
+                      &&
+                      event.entity_code !==
+                        event.current_entity_code
+                    "
+                    class="
+                      historique-event-code-history
+                      historique-event-code-old
+                    "
+                  >
+
+                    <mat-icon>
+                      history
+                    </mat-icon>
+
+                    <span>
+                      <strong>Ancien numéro :</strong>
+
+                      N° {{ event.entity_code }}
                     </span>
 
                   </div>
@@ -517,11 +845,12 @@
             </div>
 
             <div class="historique-empty-state-text">
-              Les événements de l'historique apparaîtront ici.
+              {{ getHistoriqueEmptyMessage() }}
             </div>
 
             <div class="historique-empty-state-subtext">
-              La chronologie sera affichée du plus récent au plus ancien.
+              Aucun événement n'est actuellement disponible
+              pour cette rubrique.
             </div>
 
           </div>
@@ -563,19 +892,6 @@
           <mat-icon>autorenew</mat-icon>
 
           Réinitialiser
-        </button>
-
-
-        <button
-          mat-button
-          type="button"
-          class="historique-save-button historique-with-border"
-          matTooltip="Enregistrer l'historique"
-          (click)="onSave()"
-        >
-          <mat-icon>save</mat-icon>
-
-          Enregistrer
         </button>
 
       </div>

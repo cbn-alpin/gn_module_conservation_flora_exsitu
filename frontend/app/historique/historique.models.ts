@@ -15,7 +15,24 @@ export interface HistoriqueEvent {
 
   entity_id: number;
 
+  /*
+   * Numéro enregistré au moment de l'événement.
+   *
+   * Exemple :
+   * création = A
+   * modification = AA
+   */
   entity_code: string | null;
+
+
+  /*
+   * Numéro actuel de l'élément.
+   *
+   * C'est celui affiché comme numéro principal
+   * dans toutes les cartes de l'Historique.
+   */
+  current_entity_code: string | null;
+
 
   event_type:
     | 'creation'
@@ -34,4 +51,15 @@ export interface HistoriqueEvent {
   id_material: number | null;
 
   changes?: any;
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - CONTEXTE DE NAVIGATION
+   * =========================================================
+   */
+  detail_context?: {
+    place_code?: string | null;
+  };
+
 }

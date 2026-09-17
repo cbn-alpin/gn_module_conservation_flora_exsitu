@@ -75,18 +75,22 @@ export class HistoriqueService {
 
   /*
    * =========================================================
-   * HISTORIQUE - MATÉRIELS RÉCOLTÉS
+   * HISTORIQUE - CHARGEMENT GÉNÉRIQUE
+   *
+   * Tout / Matériel / Semence / Stockage /
+   * Germination / Semis / Viabilité / Culture.
    * =========================================================
    */
-  public getMaterialHistory(
-    idHarvest: number
+  public getHistory(
+    idHarvest: number,
+    entityType: string
   ): Observable<HistoriqueEvent[]> {
 
     return this.api
       .get<{
         events: HistoriqueEvent[]
       }>(
-        `${this.moduleBaseUrl}/harvests/${idHarvest}/history/materials`
+        `${this.moduleBaseUrl}/harvests/${idHarvest}/history/${entityType}`
       )
       .pipe(
         map(
