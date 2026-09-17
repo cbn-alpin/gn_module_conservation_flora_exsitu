@@ -725,6 +725,75 @@
 
 
 /* =========================================================
+   HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+   ========================================================= */
+
+.historique-cleanup-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 18px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+
+.historique-cleanup-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 38px;
+  padding: 0 16px;
+
+  color: #ffffff !important;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  background-color: #d32f2f !important;
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 2px 6px rgba(211, 47, 47, 0.22);
+}
+
+
+.historique-cleanup-button:hover:not([disabled]) {
+  background-color: #b71c1c !important;
+}
+
+
+.historique-cleanup-button mat-icon {
+  width: 19px;
+  height: 19px;
+
+  color: #ffffff !important;
+
+  font-size: 19px;
+  line-height: 19px;
+}
+
+
+.historique-cleanup-button[disabled] {
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+   ========================================================= */
+
+
+/* =========================================================
    HISTORIQUE - ZONE DE CONTENU
 
    Cette zone deviendra ensuite la timeline réelle.
@@ -983,9 +1052,20 @@
 
 
 .historique-timeline-card {
-  width: 100%;
+  position: relative;
 
-  padding: 12px 14px;
+  display: block;
+
+  width: 100%;
+  min-height: 92px;
+
+  /*
+   * HISTORIQUE
+   * Même espace réservé à gauche et à droite :
+   * le contenu central est donc réellement centré
+   * dans toute la carte.
+   */
+  padding: 14px 120px;
 
   box-sizing: border-box;
 
@@ -994,19 +1074,246 @@
   border: 1px solid rgba(122, 143, 69, 0.35);
   border-radius: 10px;
 
+  /*
+   * HISTORIQUE - DEMI-LOSANGE
+   *
+   * Le décor du logo reste contenu dans la carte.
+   */
+  overflow: hidden;
+
   box-shadow:
     0 2px 7px rgba(0, 0, 0, 0.06);
 }
 
 
+/* =========================================================
+   HISTORIQUE - LOGO DE LA CATÉGORIE
+   ========================================================= */
+
+.historique-entity-logo {
+  position: absolute;
+
+  top: 50%;
+  left: 14px;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48px;
+  height: 48px;
+
+  border-radius: 50%;
+
+  background-color: #f5f5f5;
+
+  border: 1px solid #d5d5d5;
+
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.10);
+
+  /*
+   * Le rond reste au-dessus du demi-losange.
+   */
+  z-index: 2;
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   HISTORIQUE - DEMI-LOSANGE DERRIÈRE LE LOGO
+
+   Le demi-losange part du bord gauche et se termine
+   en pointe derrière le logo de la catégorie.
+   ========================================================= */
+
+.historique-entity-logo::before {
+  content: '';
+
+  position: absolute;
+
+  top: 50%;
+  left: -15px;
+
+  width: 88px;
+  height: 72px;
+
+  transform: translateY(-50%);
+
+  background-color:
+    var(--historique-logo-shape, #eeeeee);
+
+  clip-path: polygon(
+    0 0,
+    58% 0,
+    100% 50%,
+    58% 100%,
+    0 100%
+  );
+
+  filter:
+    drop-shadow(
+      2px 0 3px rgba(0, 0, 0, 0.08)
+    );
+
+  z-index: -1;
+}
+
+
+.historique-entity-logo mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 26px;
+  height: 26px;
+
+  margin: 0;
+
+  font-size: 26px;
+  line-height: 26px;
+}
+
+
+/* =========================================================
+   MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+.historique-entity-logo-material {
+  color: #667a32;
+
+  background-color: #f3f6ea;
+
+  border-color: #d5ddc1;
+
+  --historique-logo-shape: #e3eacb;
+}
+
+
+/* =========================================================
+   SEMENCE
+   ========================================================= */
+
+.historique-entity-logo-seed {
+  color: #a77b00;
+
+  background-color: #fff6d8;
+
+  border-color: #ead58c;
+
+  --historique-logo-shape: #fff0b8;
+}
+
+
+/* =========================================================
+   STOCKAGE
+   ========================================================= */
+
+.historique-entity-logo-storage {
+  color: #455a64;
+
+  background-color: #eef3f5;
+
+  border-color: #c9d5da;
+
+  --historique-logo-shape: #dce7eb;
+}
+
+
+/* =========================================================
+   TEST DE GERMINATION
+   ========================================================= */
+
+.historique-entity-logo-germination {
+  color: #00695c;
+
+  background-color: #e7f5f3;
+
+  border-color: #b2dfdb;
+
+  --historique-logo-shape: #d3efeb;
+}
+
+
+/* =========================================================
+   SEMIS
+   ========================================================= */
+
+.historique-entity-logo-sowing {
+  color: #2e7d32;
+
+  background-color: #edf7ee;
+
+  border-color: #c8e6c9;
+
+  --historique-logo-shape: #dcefdc;
+}
+
+
+/* =========================================================
+   TEST DE VIABILITÉ
+   ========================================================= */
+
+.historique-entity-logo-viability {
+  color: #c7620e;
+
+  background-color: #fff2e6;
+
+  border-color: #f2c79f;
+
+  --historique-logo-shape: #fbe1ca;
+}
+
+
+/* =========================================================
+   CULTURE
+   ========================================================= */
+
+.historique-entity-logo-culture {
+  color: #4e342e;
+
+  background-color: #efebe9;
+
+  border-color: #d7ccc8;
+
+  --historique-logo-shape: #e2d7d2;
+}
+
+
+/* =========================================================
+   CONTENU À DROITE DU LOGO
+   ========================================================= */
+
+.historique-event-content {
+  width: 100%;
+
+  min-width: 0;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   HISTORIQUE - CONTENU CENTRÉ
+
+   Le numéro de l'élément est centré dans la carte.
+
+   Le badge Création / Modification / Suppression reste
+   complètement à droite sans décaler le numéro.
+   ========================================================= */
+
 .historique-event-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
-  gap: 12px;
+  width: 100%;
 
-  margin-bottom: 9px;
+  margin-bottom: 7px;
+
+  text-align: center;
 }
 
 
@@ -1015,10 +1322,19 @@
 
   font-size: 14px;
   font-weight: 800;
+
+  text-align: center;
 }
 
 
 .historique-event-type {
+  position: absolute;
+
+  top: 50%;
+  right: 14px;
+
+  transform: translateY(-50%);
+
   padding: 4px 9px;
 
   color: #667a32;
@@ -1030,6 +1346,8 @@
 
   font-size: 11px;
   font-weight: 700;
+
+  white-space: nowrap;
 }
 
 
@@ -1052,13 +1370,19 @@
 
 .historique-event-metadata {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 
-  gap: 24px;
+  gap: 4px;
+
+  width: 100%;
 
   color: #646464;
 
   font-size: 12px;
+
+  text-align: center;
 }
 
 

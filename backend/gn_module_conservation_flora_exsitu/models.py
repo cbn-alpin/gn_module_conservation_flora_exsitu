@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import sqlalchemy as sa
 from geoalchemy2 import Geometry
@@ -315,8 +315,21 @@ class THistory(db.Model):
             "entity_code": self.entity_code,
             "event_type": self.event_type,
 
+            # =================================================
+            # HISTORIQUE - DATE EN UTC
+            #
+            # Les dates Historique sont enregistrées en UTC.
+            # On indique explicitement le fuseau UTC dans l'API
+            # afin qu'Angular les convertisse automatiquement
+            # dans l'heure locale du navigateur.
+            #
+            # Exemple en France en heure d'été :
+            # 15:48 UTC -> 17:48
+            # =================================================
             "event_date": (
-                self.event_date.isoformat()
+                self.event_date.replace(
+                    tzinfo=timezone.utc
+                ).isoformat()
                 if self.event_date
                 else None
             ),

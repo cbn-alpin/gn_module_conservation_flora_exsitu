@@ -617,6 +617,60 @@
 }
 
 
+/* =========================================================
+   HISTORIQUE - CATÉGORIE COLORÉE DANS LA CONFIRMATION
+   ========================================================= */
+
+.historique-confirm-dialog .historique-context-highlight {
+    font-weight: 800;
+}
+
+
+.historique-confirm-dialog .historique-context-material {
+    color: #667a32;
+}
+
+
+.historique-confirm-dialog .historique-context-seed {
+    color: #a77b00;
+}
+
+
+.historique-confirm-dialog .historique-context-storage {
+    color: #455a64;
+}
+
+
+.historique-confirm-dialog .historique-context-germination {
+    color: #00695c;
+}
+
+
+.historique-confirm-dialog .historique-context-sowing {
+    color: #2e7d32;
+}
+
+
+.historique-confirm-dialog .historique-context-viability {
+    color: #c7620e;
+}
+
+
+.historique-confirm-dialog .historique-context-culture {
+    color: #4e342e;
+}
+
+
+.historique-confirm-dialog .historique-context-all {
+    color: #666666;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - CATÉGORIE COLORÉE
+   ========================================================= */
+
+
 .workflow-confirm-dialog .entity-code {
     color: #263238;
     font-weight: 800;

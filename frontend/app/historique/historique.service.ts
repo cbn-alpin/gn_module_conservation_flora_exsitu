@@ -99,4 +99,36 @@ export class HistoriqueService {
 
   }
 
+
+  /*
+   * =========================================================
+   * HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+   *
+   * Fonction commune à toutes les rubriques Historique.
+   * "all" nettoie toutes les catégories de la récolte.
+   * =========================================================
+   */
+  public cleanupDeletedHistory(
+    idHarvest: number,
+    entityType: string
+  ): Observable<number> {
+
+    return this.api
+      .delete<{
+        deleted_entities: number;
+        deleted_events: number;
+      }>(
+        `${this.moduleBaseUrl}/harvests/${idHarvest}/history/cleanup/${entityType}`
+      )
+      .pipe(
+        map(
+          response =>
+            response && response.deleted_entities
+              ? response.deleted_entities
+              : 0
+        )
+      );
+
+  }
+
 }

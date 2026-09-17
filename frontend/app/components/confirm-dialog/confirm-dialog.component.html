@@ -11,6 +11,7 @@
     [class.historique-confirm-dialog]="
         dialogData?.variant === 'historique-exit'
         || dialogData?.variant === 'historique-reset'
+        || dialogData?.variant === 'historique-cleanup'
     "
 
     [class.semis-confirm-dialog]="
@@ -69,6 +70,7 @@
         dialogData?.variant === 'harvest-save'
         || dialogData?.variant === 'historique-exit'
         || dialogData?.variant === 'historique-reset'
+        || dialogData?.variant === 'historique-cleanup'
         || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
@@ -219,6 +221,24 @@
                 {{ dialogData?.entityCode }}
             </strong>
             ?
+        </p>
+
+
+        <!-- ===================================================
+             HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+             =================================================== -->
+
+        <p *ngIf="dialogData?.variant === 'historique-cleanup'">
+            Êtes-vous certain de vouloir
+            <span class="danger-word">supprimer définitivement</span>
+            de {{ dialogData?.entityLabel }}
+            <span
+                class="historique-context-highlight"
+                [ngClass]="dialogData?.historyContextClass"
+            >
+                {{ dialogData?.historyContextLabel }}
+            </span>
+            tous les éléments qui n'existent plus ?
         </p>
 
 

@@ -234,6 +234,47 @@
 
 
       <!-- ===================================================
+           HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+
+           Bouton commun à :
+           Tout, Matériel récolté, Semence, Stockage,
+           Germination, Semis, Viabilité et Culture.
+           =================================================== -->
+
+      <div class="historique-cleanup-bar">
+
+        <button
+          mat-raised-button
+          type="button"
+          class="historique-cleanup-button"
+          [disabled]="historyCleanupLoading"
+          (click)="onCleanupDeletedHistory()"
+        >
+
+          <mat-icon>
+            {{
+              historyCleanupLoading
+                ? 'hourglass_empty'
+                : 'delete_sweep'
+            }}
+          </mat-icon>
+
+          {{
+            historyCleanupLoading
+              ? 'Nettoyage...'
+              : 'Vider les éléments supprimés'
+          }}
+
+        </button>
+
+      </div>
+
+      <!-- ===================================================
+           FIN HISTORIQUE - NETTOYAGE
+           =================================================== -->
+
+
+      <!-- ===================================================
            HISTORIQUE - FUTUR CONTENU
 
            Cette zone accueillera ensuite la chronologie
@@ -351,56 +392,95 @@
               <div class="historique-timeline-card">
 
 
-                <div class="historique-event-header">
+                <!-- ==========================================
+                     HISTORIQUE - LOGO DE LA CATÉGORIE
 
-                  <span class="historique-event-code">
-                    N° {{ event.entity_code }}
-                  </span>
+                     Le logo reste complètement à gauche
+                     et est centré verticalement dans la carte.
 
+                     Chaque catégorie possède :
+                     - son icône ;
+                     - sa couleur ;
+                     - son fond léger ;
+                     - son contour spécifique.
+                     ========================================== -->
 
-                  <span
-                    class="historique-event-type"
-                    [class.historique-event-type-delete]="
-                      event.event_type === 'suppression'
-                    "
-                  >
+                <div
+                  class="historique-entity-logo"
+                  [ngClass]="
+                    'historique-entity-logo-' + event.entity_type
+                  "
+                >
+
+                  <mat-icon>
                     {{
-                      event.event_type === 'creation'
-                        ? 'Création'
-                        : event.event_type === 'suppression'
-                          ? 'Suppression'
-                          : 'Modification'
+                      getHistoriqueEntityIcon(
+                        event.entity_type
+                      )
                     }}
-                  </span>
+                  </mat-icon>
 
                 </div>
 
 
-                <div class="historique-event-metadata">
+                <!-- ==========================================
+                     HISTORIQUE - CONTENU DE L'ÉVÉNEMENT
+                     ========================================== -->
 
-                  <div>
-                    <mat-icon>schedule</mat-icon>
+                <div class="historique-event-content">
 
-                    <span>
+                  <div class="historique-event-header">
+
+                    <span class="historique-event-code">
+                      N° {{ event.entity_code }}
+                    </span>
+
+
+                    <span
+                      class="historique-event-type"
+                      [class.historique-event-type-delete]="
+                        event.event_type === 'suppression'
+                      "
+                    >
                       {{
-                        event.event_date
-                          | date:'dd/MM/yyyy à HH:mm'
+                        event.event_type === 'creation'
+                          ? 'Création'
+                          : event.event_type === 'suppression'
+                            ? 'Suppression'
+                            : 'Modification'
                       }}
                     </span>
+
                   </div>
 
 
-                  <div>
-                    <mat-icon>person</mat-icon>
+                  <div class="historique-event-metadata">
 
-                    <span>
-                      <strong>Observateur :</strong>
+                    <div>
+                      <mat-icon>schedule</mat-icon>
 
-                      {{
-                        event.observer ||
-                        'Non renseigné'
-                      }}
-                    </span>
+                      <span>
+                        {{
+                          event.event_date
+                            | date:'dd/MM/yyyy à HH:mm'
+                        }}
+                      </span>
+                    </div>
+
+
+                    <div>
+                      <mat-icon>person</mat-icon>
+
+                      <span>
+                        <strong>Observateur :</strong>
+
+                        {{
+                          event.observer ||
+                          'Non renseigné'
+                        }}
+                      </span>
+                    </div>
+
                   </div>
 
                 </div>

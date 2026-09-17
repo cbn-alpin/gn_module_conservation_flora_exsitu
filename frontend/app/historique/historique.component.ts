@@ -92,6 +92,16 @@ export class HistoriqueComponent implements OnInit {
   private resetDialogOpen = false;
 
 
+  /*
+   * =========================================================
+   * HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+   * =========================================================
+   */
+  private cleanupDialogOpen = false;
+
+  public historyCleanupLoading = false;
+
+
   constructor(
     private dialogRef: MatDialogRef<HistoriqueComponent>,
     private dialogService: DialogService,
@@ -240,6 +250,49 @@ export class HistoriqueComponent implements OnInit {
 
   /*
    * =========================================================
+   * HISTORIQUE - ICÔNE DE LA CATÉGORIE
+   *
+   * On reprend les icônes déjà utilisées dans les fiches
+   * correspondantes du module Ex-situ.
+   * =========================================================
+   */
+  public getHistoriqueEntityIcon(
+    entityType: string
+  ): string {
+
+    switch (entityType) {
+
+      case 'material':
+        return 'spa';
+
+      case 'seed':
+        return 'description';
+
+      case 'storage':
+        return 'store';
+
+      case 'germination':
+        return 'wb_sunny';
+
+      case 'sowing':
+        return 'grain';
+
+      case 'viability':
+        return 'check_circle';
+
+      case 'culture':
+        return 'local_florist';
+
+      default:
+        return 'history';
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
    * HISTORIQUE - TITRE DU BLOC HISTORIQUE
    *
    * Le titre change automatiquement en fonction
@@ -276,6 +329,244 @@ export class HistoriqueComponent implements OnInit {
         return 'Historique Totale';
 
     }
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - LIBELLÉ DU NETTOYAGE
+   * =========================================================
+   */
+  public getCleanupHistoryLabel(): string {
+
+    switch (this.selectedFilter) {
+
+      case 'material':
+        return "l'Historique du";
+
+      case 'seed':
+        return "l'Historique de la";
+
+      case 'storage':
+        return "l'Historique du";
+
+      case 'germination':
+        return "l'Historique du";
+
+      case 'sowing':
+        return "l'Historique du";
+
+      case 'viability':
+        return "l'Historique du";
+
+      case 'culture':
+        return "l'Historique de la";
+
+      case 'all':
+      default:
+        return "l'Historique";
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - LIBELLÉ COLORÉ DE LA RUBRIQUE
+   * =========================================================
+   */
+  public getCleanupHistoryContextLabel(): string {
+
+    switch (this.selectedFilter) {
+
+      case 'material':
+        return 'Matériel récolté';
+
+      case 'seed':
+        return 'Semence';
+
+      case 'storage':
+        return 'Stockage';
+
+      case 'germination':
+        return 'Test de germination';
+
+      case 'sowing':
+        return 'Semis';
+
+      case 'viability':
+        return 'Test de viabilité';
+
+      case 'culture':
+        return 'Culture';
+
+      case 'all':
+      default:
+        return 'Total';
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - CLASSE COULEUR DE LA RUBRIQUE
+   * =========================================================
+   */
+  public getCleanupHistoryContextClass(): string {
+
+    switch (this.selectedFilter) {
+
+      case 'material':
+        return 'historique-context-material';
+
+      case 'seed':
+        return 'historique-context-seed';
+
+      case 'storage':
+        return 'historique-context-storage';
+
+      case 'germination':
+        return 'historique-context-germination';
+
+      case 'sowing':
+        return 'historique-context-sowing';
+
+      case 'viability':
+        return 'historique-context-viability';
+
+      case 'culture':
+        return 'historique-context-culture';
+
+      case 'all':
+      default:
+        return 'historique-context-all';
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+   *
+   * Le bouton fonctionne dans toutes les rubriques.
+   *
+   * Il ne supprime que les historiques des entités
+   * qui n'existent réellement plus en base.
+   * =========================================================
+   */
+  public onCleanupDeletedHistory(): void {
+
+    if (
+      this.cleanupDialogOpen ||
+      this.historyCleanupLoading
+    ) {
+      return;
+    }
+
+
+    const idHarvest =
+      this.data && this.data.idHarvest
+        ? this.data.idHarvest
+        : null;
+
+
+    if (!idHarvest) {
+
+      this._commonService.translateToaster(
+        'error',
+        "Impossible de nettoyer l'historique"
+      );
+
+      return;
+    }
+
+
+    this.cleanupDialogOpen = true;
+
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'delete_sweep',
+        variant: 'historique-cleanup',
+        entityLabel: this.getCleanupHistoryLabel(),
+        historyContextLabel: this.getCleanupHistoryContextLabel(),
+        historyContextClass: this.getCleanupHistoryContextClass(),
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        this.cleanupDialogOpen = false;
+
+        if (!yes) {
+          return;
+        }
+
+
+        this.historyCleanupLoading = true;
+
+
+        this.historiqueService
+          .cleanupDeletedHistory(
+            idHarvest,
+            this.selectedFilter || 'all'
+          )
+          .subscribe({
+
+            next: (deletedEntities) => {
+
+              this.historyCleanupLoading = false;
+
+
+              /*
+               * HISTORIQUE - MATÉRIEL RÉCOLTÉ
+               *
+               * Pour l'instant Matériel récolté est la seule
+               * timeline réellement développée.
+               */
+              if (this.selectedFilter === 'material') {
+                this.loadMaterialHistory();
+              }
+
+
+              if (deletedEntities > 0) {
+
+                this._commonService.translateToaster(
+                  'success',
+                  `${deletedEntities} élément(s) supprimé(s) de l'historique`
+                );
+
+              } else {
+
+                this._commonService.translateToaster(
+                  'info',
+                  "Aucun élément supprimé à nettoyer dans cet historique"
+                );
+
+              }
+
+            },
+
+            error: () => {
+
+              this.historyCleanupLoading = false;
+
+              this._commonService.translateToaster(
+                'error',
+                "Erreur lors du nettoyage de l'historique"
+              );
+
+            }
+
+          });
+
+      });
 
   }
 

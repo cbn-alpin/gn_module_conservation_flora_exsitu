@@ -17,6 +17,7 @@ export interface ConfirmDialogData {
          */
         | 'historique-exit'
         | 'historique-reset'
+        | 'historique-cleanup'
 
         | 'semis'
         | 'semis-reset'
@@ -57,4 +58,12 @@ export interface ConfirmDialogData {
     actionCancellation?: boolean;
     actionCancellationMode?: 'create' | 'edit';
     actionContextLabel?: string;
+
+    /*
+     * =====================================================
+     * HISTORIQUE - LIBELLÉ COLORÉ DANS LA CONFIRMATION
+     * =====================================================
+     */
+    historyContextLabel?: string;
+    historyContextClass?: string;
 }

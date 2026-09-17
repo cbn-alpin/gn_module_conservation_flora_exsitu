@@ -853,6 +853,169 @@ def get_material_history(id_harvest):
 # FIN HISTORIQUE - MATÉRIELS RÉCOLTÉS
 # =========================================================
 
+
+# =========================================================
+# HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+#
+# Supprime uniquement les événements appartenant à des
+# entités qui n'existent plus dans leur table métier.
+#
+# Le nettoyage est limité à la récolte courante et peut
+# cibler une catégorie précise ou toutes les catégories.
+# =========================================================
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/history/cleanup/<string:entity_type>",
+    methods=["DELETE"],
+)
+@permissions.check_cruved_scope(
+    "D",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def cleanup_deleted_history(id_harvest, entity_type):
+
+    allowed_entity_types = {
+        "all",
+        "material",
+        "seed",
+        "storage",
+        "germination",
+        "sowing",
+        "viability",
+        "culture",
+    }
+
+    if entity_type not in allowed_entity_types:
+        return {
+            "error": "Type d'historique non pris en charge."
+        }, 400
+
+
+    stale_condition = """
+        (
+            (
+                h.entity_type = 'material'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM pr_conservation_flora_exsitu.t_material AS m
+                    WHERE m.id_material = h.entity_id
+                )
+            )
+            OR
+            (
+                h.entity_type = 'seed'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM pr_conservation_flora_exsitu.t_material_seed AS s
+                    WHERE s.id_seed = h.entity_id
+                )
+            )
+            OR
+            (
+                h.entity_type = 'storage'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM pr_conservation_flora_exsitu.t_storage AS st
+                    WHERE st.id_storage = h.entity_id
+                )
+            )
+            OR
+            (
+                h.entity_type IN ('germination', 'viability')
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM pr_conservation_flora_exsitu.t_test AS t
+                    WHERE t.id_test = h.entity_id
+                )
+            )
+            OR
+            (
+                h.entity_type = 'sowing'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM pr_conservation_flora_exsitu.t_sowing AS so
+                    WHERE so.id_sowing = h.entity_id
+                )
+            )
+            OR
+            (
+                h.entity_type = 'culture'
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM pr_conservation_flora_exsitu.t_culture AS c
+                    WHERE c.id_culture = h.entity_id
+                )
+            )
+        )
+    """
+
+
+    parameters = {
+        "id_harvest": id_harvest,
+        "entity_type": entity_type,
+    }
+
+
+    try:
+
+        deleted_entities = db.session.execute(
+            text(
+                f"""
+                SELECT COUNT(*)
+                FROM (
+                    SELECT DISTINCT
+                        h.entity_type,
+                        h.entity_id
+                    FROM pr_conservation_flora_exsitu.t_history AS h
+                    WHERE h.id_harvest = :id_harvest
+                    AND (
+                        :entity_type = 'all'
+                        OR h.entity_type = :entity_type
+                    )
+                    AND {stale_condition}
+                ) AS stale_entities;
+                """
+            ),
+            parameters,
+        ).scalar() or 0
+
+
+        delete_result = db.session.execute(
+            text(
+                f"""
+                DELETE FROM pr_conservation_flora_exsitu.t_history AS h
+                WHERE h.id_harvest = :id_harvest
+                AND (
+                    :entity_type = 'all'
+                    OR h.entity_type = :entity_type
+                )
+                AND {stale_condition};
+                """
+            ),
+            parameters,
+        )
+
+
+        db.session.commit()
+
+
+        return {
+            "deleted_entities": int(deleted_entities),
+            "deleted_events": int(delete_result.rowcount or 0),
+        }, 200
+
+
+    except SQLAlchemyError:
+        db.session.rollback()
+        raise
+
+
+# =========================================================
+# FIN HISTORIQUE - NETTOYAGE DES ÉLÉMENTS SUPPRIMÉS
+# =========================================================
+
+
 @blueprint.route("/materials/<int:id_material>", methods=["GET"])
 @permissions.check_cruved_scope("C", module_code=MODULE_CODE)
 def get_material_code(id_material):
