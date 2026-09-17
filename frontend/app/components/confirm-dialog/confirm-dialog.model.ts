@@ -6,6 +6,14 @@ export interface ConfirmDialogData {
     icon?: string;
     variant?:
         | 'harvest-save'
+
+        /*
+         * =====================================================
+         * HISTORIQUE - CONFIRMATION DE SORTIE
+         * =====================================================
+         */
+        | 'historique-exit'
+
         | 'semis'
         | 'semis-reset'
         | 'semis-exit'

@@ -419,6 +419,26 @@
    RÉCOLTE / VIABILITÉ / GERMINATION / STOCKAGE / MATÉRIEL / SEMENCE
    ========================================================= */
 
+/* =========================================================
+   HISTORIQUE - COULEURS DE LA CONFIRMATION DE SORTIE
+
+   Gris identique à l'identité visuelle Historique.
+   Le rouge du mot "quitter" et du bouton Oui reste géré
+   par workflow-exit-dialog.
+   ========================================================= */
+
+.historique-confirm-dialog {
+    --dialog-accent: #777777;
+    --dialog-title: #5f5f5f;
+    --dialog-border: #d6d6d6;
+    --dialog-shadow: rgba(119, 119, 119, 0.14);
+}
+
+/* =========================================================
+   FIN HISTORIQUE - COULEURS DE CONFIRMATION
+   ========================================================= */
+
+
 .harvest-confirm-dialog {
     --dialog-accent: #1e88e5;
     --dialog-title: #0d4f8b;

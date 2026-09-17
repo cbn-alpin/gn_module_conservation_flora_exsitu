@@ -1,6 +1,7 @@
 import {
   Directive,
-  HostListener
+  HostListener,
+  Input
 } from '@angular/core';
 
 import {
@@ -13,6 +14,21 @@ import {
 })
 export class HistoriqueTriggerDirective {
 
+  /*
+   * =========================================================
+   * HISTORIQUE - FILTRE D'OUVERTURE
+   *
+   * Chaque bouton Historique indique la rubrique
+   * qui doit être sélectionnée à l'ouverture.
+   *
+   * Si aucune rubrique n'est fournie, "Tout"
+   * reste la valeur par défaut.
+   * =========================================================
+   */
+  @Input()
+  public appHistoriqueTrigger: string = 'all';
+
+
   constructor(
     private historiqueService: HistoriqueService
   ) {}
@@ -23,11 +39,12 @@ export class HistoriqueTriggerDirective {
 
     /*
      * HISTORIQUE
-     * Tous les boutons possédant
-     * appHistoriqueTrigger ouvrent exactement
-     * la même fiche Historique.
+     * Tous les boutons ouvrent la même fiche Historique,
+     * mais avec leur propre rubrique sélectionnée.
      */
-    this.historiqueService.openHistorique();
+    this.historiqueService.openHistorique(
+      this.appHistoriqueTrigger || 'all'
+    );
 
   }
 

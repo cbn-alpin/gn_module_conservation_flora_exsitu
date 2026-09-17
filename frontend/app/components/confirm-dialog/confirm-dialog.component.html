@@ -1,6 +1,16 @@
+<!-- =========================================================
+     HISTORIQUE
+     Ce composant commun prend également en charge
+     la confirmation de sortie de la fiche Historique.
+     ========================================================= -->
+
 <div
     class="confirm-dialog-shell"
     [class.harvest-confirm-dialog]="dialogData?.variant === 'harvest-save'"
+
+    [class.historique-confirm-dialog]="
+        dialogData?.variant === 'historique-exit'
+    "
 
     [class.semis-confirm-dialog]="
         dialogData?.variant === 'semis'
@@ -56,6 +66,7 @@
 
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'harvest-save'
+        || dialogData?.variant === 'historique-exit'
         || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
@@ -89,7 +100,8 @@
     "
 
     [class.workflow-exit-dialog]="
-        dialogData?.variant === 'culture-exit'
+        dialogData?.variant === 'historique-exit'
+        || dialogData?.variant === 'culture-exit'
         || dialogData?.variant === 'viability-exit'
         || dialogData?.variant === 'germination-exit'
         || dialogData?.variant === 'stock-exit'
@@ -173,10 +185,18 @@
             ?
         </p>
 
+        <!-- ===================================================
+             HISTORIQUE - CONFIRMATION DE SORTIE
+
+             historique-exit utilise le même affichage
+             de confirmation de sortie que les autres fiches.
+             =================================================== -->
+
         <p
             *ngIf="
                 (
-                    dialogData?.variant === 'culture-exit'
+                    dialogData?.variant === 'historique-exit'
+                    || dialogData?.variant === 'culture-exit'
                     || dialogData?.variant === 'viability-exit'
                     || dialogData?.variant === 'germination-exit'
                     || dialogData?.variant === 'stock-exit'

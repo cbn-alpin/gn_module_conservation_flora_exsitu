@@ -16,7 +16,9 @@ export class HistoriqueService {
   ) {}
 
 
-  public openHistorique(): void {
+  public openHistorique(
+    initialFilter: string = 'all'
+  ): void {
 
     this.dialog.open(
       HistoriqueComponent,
@@ -30,7 +32,16 @@ export class HistoriqueService {
         height: '90vh',
 
         disableClose: true,
-        autoFocus: false
+        autoFocus: false,
+
+        /*
+         * =====================================================
+         * HISTORIQUE - RUBRIQUE À SÉLECTIONNER À L'OUVERTURE
+         * =====================================================
+         */
+        data: {
+          initialFilter: initialFilter
+        }
       }
     );
 

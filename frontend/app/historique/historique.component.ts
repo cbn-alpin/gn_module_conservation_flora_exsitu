@@ -1,10 +1,38 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import {
+  Component,
+  Inject
+} from '@angular/core';
+
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef
+} from '@angular/material/dialog';
+
+import {
+  CommonService
+} from '@geonature_common/service/common.service';
+
+import {
+  DialogService
+} from '../components/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-historique',
   templateUrl: './historique.component.html',
-  styleUrls: ['./historique.component.scss']
+  styleUrls: ['./historique.component.scss'],
+
+  /*
+   * =========================================================
+   * HISTORIQUE - SERVICE DE CONFIRMATION
+   *
+   * DialogService est fourni directement à la fiche
+   * Historique afin qu'il soit disponible même lorsque
+   * Historique est ouvert depuis le service global MatDialog.
+   * =========================================================
+   */
+  providers: [
+    DialogService
+  ]
 })
 export class HistoriqueComponent {
 
@@ -16,12 +44,45 @@ export class HistoriqueComponent {
    * Une seule catégorie peut être sélectionnée à la fois.
    * =========================================================
    */
-  public selectedFilter: string = 'all';
+  public selectedFilter: string;
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - DIALOGUE DE SORTIE
+   *
+   * Empêche l'ouverture de plusieurs fenêtres
+   * de confirmation si Retour est cliqué plusieurs fois.
+   * =========================================================
+   */
+  private exitDialogOpen = false;
 
 
   constructor(
-    private dialogRef: MatDialogRef<HistoriqueComponent>
-  ) {}
+    private dialogRef: MatDialogRef<HistoriqueComponent>,
+    private dialogService: DialogService,
+    private _commonService: CommonService,
+
+    /*
+     * =========================================================
+     * HISTORIQUE - RUBRIQUE D'OUVERTURE
+     *
+     * La rubrique provient du bouton Historique
+     * depuis lequel la fiche a été ouverte.
+     * =========================================================
+     */
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      initialFilter?: string
+    }
+  ) {
+
+    this.selectedFilter =
+      data && data.initialFilter
+        ? data.initialFilter
+        : 'all';
+
+  }
 
 
   /*
@@ -76,8 +137,53 @@ export class HistoriqueComponent {
   }
 
 
+  /*
+   * =========================================================
+   * HISTORIQUE - CONFIRMATION DU BOUTON RETOUR
+   *
+   * Le fonctionnement reprend celui des autres fiches :
+   * - Non : rester dans Historique
+   * - Oui : quitter Historique et afficher un toast info
+   * =========================================================
+   */
   public onBack(): void {
-    this.dialogRef.close();
+
+    if (this.exitDialogOpen) {
+      return;
+    }
+
+    this.exitDialogOpen = true;
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'history',
+        variant: 'historique-exit',
+        entityLabel: "la fiche d'Historique",
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        this.exitDialogOpen = false;
+
+        if (!yes) {
+          return;
+        }
+
+        /*
+         * HISTORIQUE
+         * Message d'information affiché après
+         * la fermeture volontaire de la fiche.
+         */
+        this._commonService.translateToaster(
+          'info',
+          "Consultation de l'historique terminée"
+        );
+
+        this.dialogRef.close();
+
+      });
+
   }
 
 
