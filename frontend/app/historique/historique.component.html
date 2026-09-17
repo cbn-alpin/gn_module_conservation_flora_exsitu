@@ -181,6 +181,99 @@
          ===================================================== -->
 
 
+    <!-- =====================================================
+         HISTORIQUE - BLOC DYNAMIQUE
+
+         Un seul bloc Historique est affiché.
+
+         Son titre et sa couleur changent automatiquement
+         en fonction du filtre sélectionné dans la barre
+         supérieure.
+         ===================================================== -->
+
+    <div
+      class="historique-result-panel"
+      [ngClass]="'historique-result-' + selectedFilter"
+    >
+
+      <!-- ===================================================
+           HISTORIQUE - EN-TÊTE DU BLOC DYNAMIQUE
+           =================================================== -->
+
+      <div class="historique-result-title">
+
+        <div class="historique-result-title-icon">
+          <mat-icon>history</mat-icon>
+        </div>
+
+
+        <!-- ===================================================
+             HISTORIQUE - VUE ACTUELLEMENT SÉLECTIONNÉE
+
+             Permet d'identifier immédiatement la partie
+             de l'historique actuellement consultée.
+             =================================================== -->
+
+        <div class="historique-result-title-text">
+
+          <span class="historique-result-title-label">
+            Vue sélectionnée
+          </span>
+
+          <span class="historique-result-title-value">
+            {{ getHistoriqueTitle() }}
+          </span>
+
+        </div>
+
+        <!-- ===================================================
+             FIN HISTORIQUE - VUE ACTUELLEMENT SÉLECTIONNÉE
+             =================================================== -->
+
+      </div>
+
+
+      <!-- ===================================================
+           HISTORIQUE - FUTUR CONTENU
+
+           Cette zone accueillera ensuite la chronologie
+           réelle des événements.
+
+           Pour le moment, on affiche un état vide propre
+           plutôt qu'un grand tableau blanc.
+           =================================================== -->
+
+      <div class="historique-result-content">
+
+        <div class="historique-empty-state">
+
+          <div class="historique-empty-state-icon">
+            <mat-icon>info</mat-icon>
+          </div>
+
+          <div class="historique-empty-state-text">
+            Les événements de l'historique apparaîtront ici.
+          </div>
+
+          <div class="historique-empty-state-subtext">
+            La chronologie sera affichée du plus récent au plus ancien.
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ===================================================
+           FIN HISTORIQUE - FUTUR CONTENU
+           =================================================== -->
+
+    </div>
+
+    <!-- =====================================================
+         FIN HISTORIQUE - BLOC DYNAMIQUE
+         ===================================================== -->
+
+
     <div class="historique-empty-content">
     </div>
 

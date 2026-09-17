@@ -457,6 +457,469 @@
    ========================================================= */
 
 
+/* =========================================================
+   HISTORIQUE - BLOC DYNAMIQUE
+
+   Présentation inspirée des interfaces modernes
+   d'historique / journal d'activité :
+
+   - bordure légère ;
+   - couleur de catégorie conservée ;
+   - en-tête clairement séparé ;
+   - espace préparé pour une future timeline ;
+   - état vide explicite tant qu'aucune donnée
+     n'est encore affichée.
+   ========================================================= */
+
+.historique-result-panel {
+  /*
+   * HISTORIQUE
+   * Valeurs par défaut.
+   * Elles sont remplacées plus bas selon la catégorie.
+   */
+  --history-color: #777777;
+  --history-text: #666666;
+  --history-soft: #f4f4f4;
+
+  position: relative;
+
+  margin: 0 16px 18px;
+  padding: 0;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: var(--history-text);
+
+  background-color: #ffffff;
+
+  /*
+   * HISTORIQUE
+   * Bordure beaucoup plus légère que l'ancien tableau.
+   */
+  border: 1px solid rgba(80, 80, 80, 0.18);
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+
+  transition:
+    box-shadow 0.20s ease,
+    border-color 0.20s ease;
+}
+
+
+/*
+ * HISTORIQUE
+ * Fine barre colorée en haut.
+ * Elle reprend automatiquement la couleur
+ * de la catégorie sélectionnée.
+ */
+.historique-result-panel::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  height: 4px;
+
+  background-color: var(--history-color);
+
+  z-index: 2;
+}
+
+
+/* =========================================================
+   HISTORIQUE - EN-TÊTE DU BLOC
+   ========================================================= */
+
+.historique-result-title {
+  position: relative;
+
+  /*
+   * HISTORIQUE
+   * Utilisation d'une grille en 3 colonnes :
+   * - colonne gauche : icône
+   * - colonne centrale : texte
+   * - colonne droite : espace miroir
+   *
+   * Cela garantit que le titre reste toujours
+   * parfaitement centré sans chevauchement.
+   */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+
+  min-height: 62px;
+  padding: 7px 18px 4px;
+
+  box-sizing: border-box;
+
+  color: var(--history-text);
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--history-soft) 0%,
+      #ffffff 50%,
+      var(--history-soft) 100%
+    );
+
+  text-align: center;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================================================
+   HISTORIQUE - IDENTIFICATION DE LA VUE ACTUELLE
+
+   Le petit libellé "Vue sélectionnée" permet de comprendre
+   immédiatement dans quelle partie de l'historique
+   l'utilisateur se trouve.
+   ========================================================= */
+
+.historique-result-title-text {
+  /*
+   * =========================================================
+   * HISTORIQUE - TITRE TOUJOURS PARFAITEMENT CENTRÉ
+   *
+   * Le texte est placé dans la colonne centrale
+   * de la grille pour rester toujours parfaitement centré.
+   * =========================================================
+   */
+  grid-column: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1px;
+
+  width: max-content;
+  max-width: 100%;
+
+  text-align: center;
+}
+
+
+.historique-result-title-label {
+  width: 100%;
+
+  color: #8a8a8a;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  line-height: 13px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+
+.historique-result-title-value {
+  width: 100%;
+
+  color: var(--history-text);
+
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.15px;
+  line-height: 20px;
+  text-align: center;
+}
+
+/* =========================================================
+   FIN HISTORIQUE - IDENTIFICATION DE LA VUE ACTUELLE
+   ========================================================= */
+
+
+/* =========================================================
+   HISTORIQUE - ICÔNE DU TITRE
+   ========================================================= */
+
+.historique-result-title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  /*
+   * HISTORIQUE
+   * L'icône occupe la colonne gauche
+   * et se place juste avant le titre centré.
+   */
+  grid-column: 1;
+  justify-self: end;
+
+  margin-right: 10px;
+
+  color: var(--history-color);
+
+  background-color: #ffffff;
+
+  border: 1px solid var(--history-color);
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+
+.historique-result-title-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  margin: 0;
+
+  color: inherit;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   HISTORIQUE - ZONE DE CONTENU
+
+   Cette zone deviendra ensuite la timeline réelle.
+   ========================================================= */
+
+.historique-result-content {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 190px;
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  /*
+   * HISTORIQUE
+   * La zone reprend maintenant très légèrement
+   * la couleur de la catégorie sélectionnée.
+   *
+   * Cela renforce visuellement le contexte :
+   * Matériel, Semence, Stockage, etc.
+   */
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      var(--history-soft) 100%
+    );
+}
+
+
+/* =========================================================
+   HISTORIQUE - ÉTAT VIDE
+
+   Affichage temporaire tant que la vraie chronologie
+   n'est pas encore construite.
+   ========================================================= */
+
+.historique-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 470px;
+
+  padding: 18px 28px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  /*
+   * HISTORIQUE
+   * Le message appartient maintenant clairement
+   * à la catégorie sélectionnée.
+   */
+  background:
+    linear-gradient(
+      135deg,
+      var(--history-soft) 0%,
+      #ffffff 100%
+    );
+
+  border: 1px solid var(--history-color);
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+
+.historique-empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+  margin-bottom: 12px;
+
+  color: var(--history-color);
+
+  background-color: var(--history-soft);
+
+  border: 1px solid var(--history-color);
+  border-radius: 50%;
+
+  opacity: 0.85;
+
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+
+.historique-empty-state-icon mat-icon {
+  width: 26px;
+  height: 26px;
+
+  color: inherit;
+
+  font-size: 26px;
+  line-height: 26px;
+}
+
+
+.historique-empty-state-text {
+  margin-bottom: 5px;
+
+  /*
+   * HISTORIQUE
+   * Le texte principal reprend la couleur
+   * de la catégorie actuellement consultée.
+   */
+  color: var(--history-text);
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.historique-empty-state-subtext {
+  color: #777777;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   HISTORIQUE TOTALE
+   Gris
+   ========================================================= */
+
+.historique-result-all {
+  --history-color: #777777;
+  --history-text: #666666;
+  --history-soft: #f2f2f2;
+}
+
+
+/* =========================================================
+   HISTORIQUE DU MATÉRIEL RÉCOLTÉ
+   Vert olive
+   ========================================================= */
+
+.historique-result-material {
+  --history-color: #7a8f45;
+  --history-text: #667a32;
+  --history-soft: #f3f6ea;
+}
+
+
+/* =========================================================
+   HISTORIQUE DE LA SEMENCE
+   Ocre / jaune
+   ========================================================= */
+
+.historique-result-seed {
+  --history-color: #c89500;
+  --history-text: #a77b00;
+  --history-soft: #fff6d8;
+}
+
+
+/* =========================================================
+   HISTORIQUE DU STOCKAGE
+   Bleu-gris
+   ========================================================= */
+
+.historique-result-storage {
+  --history-color: #607d8b;
+  --history-text: #455a64;
+  --history-soft: #eef3f5;
+}
+
+
+/* =========================================================
+   HISTORIQUE DU TEST DE GERMINATION
+   Turquoise
+   ========================================================= */
+
+.historique-result-germination {
+  --history-color: #00897b;
+  --history-text: #00695c;
+  --history-soft: #e7f5f3;
+}
+
+
+/* =========================================================
+   HISTORIQUE DU SEMIS
+   Vert
+   ========================================================= */
+
+.historique-result-sowing {
+  --history-color: #43a047;
+  --history-text: #2e7d32;
+  --history-soft: #edf7ee;
+}
+
+
+/* =========================================================
+   HISTORIQUE DU TEST DE VIABILITÉ
+   Orange
+   ========================================================= */
+
+.historique-result-viability {
+  --history-color: #e07a1f;
+  --history-text: #c7620e;
+  --history-soft: #fff2e6;
+}
+
+
+/* =========================================================
+   HISTORIQUE DE LA CULTURE
+   Brun
+   ========================================================= */
+
+.historique-result-culture {
+  --history-color: #6d4c41;
+  --history-text: #4e342e;
+  --history-soft: #efebe9;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - BLOC DYNAMIQUE
+   ========================================================= */
+
 .historique-empty-content {
   flex: 1 1 auto;
 
@@ -464,7 +927,7 @@
    * HISTORIQUE
    * Zone réservée au futur contenu de l'historique.
    */
-  min-height: 250px;
+  min-height: 40px;
 }
 
 
