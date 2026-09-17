@@ -143,12 +143,326 @@
 }
 
 
+/* =========================================================
+   HISTORIQUE - BARRE DE FILTRAGE
+
+   Le cadre reprend exactement les mêmes marges que le bloc
+   "N° du matériel récolté associé" de la fiche Matériel :
+
+   margin: 14px 16px 18px;
+
+   Chaque catégorie reprend sa couleur déjà utilisée
+   dans l'application.
+   ========================================================= */
+
+.historique-filter-panel {
+  margin: 14px 16px 18px;
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f7f7f7 0%,
+      #fbfcf7 100%
+    );
+
+  border: 1px solid #d6d6d6;
+  border-radius: 9px;
+}
+
+
+.historique-filter-grid {
+  display: grid;
+
+  /*
+   * =========================================================
+   * HISTORIQUE - FILTRES SUR UNE SEULE LIGNE
+   *
+   * Les colonnes n'ont volontairement pas toutes la même
+   * largeur :
+   * - les libellés courts prennent moins de place ;
+   * - "Test de germination" et "Test de viabilité"
+   *   disposent de davantage d'espace.
+   * =========================================================
+   */
+  grid-template-columns:
+    0.55fr
+    1.25fr
+    0.75fr
+    0.80fr
+    1.45fr
+    0.65fr
+    1.30fr
+    0.70fr;
+
+  gap: 6px;
+}
+
+
+/* =========================================================
+   HISTORIQUE - STYLE COMMUN DES CHOIX
+   ========================================================= */
+
+.historique-filter-button {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+
+  /*
+   * HISTORIQUE
+   * Padding réduit afin que les 8 filtres tiennent
+   * proprement sur une seule ligne.
+   */
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+
+  /*
+   * HISTORIQUE
+   * Empêche les libellés de passer sur une deuxième ligne.
+   */
+  white-space: nowrap;
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08);
+
+  /*
+   * HISTORIQUE
+   * L'agrandissement utilise transform: scale()
+   * au lieu d'augmenter la taille de police.
+   *
+   * Cela évite de déplacer les autres filtres
+   * lorsque la souris passe sur un bouton.
+   */
+  transform: scale(1);
+  transform-origin: center;
+
+  transition:
+    transform 0.15s ease,
+    font-weight 0.15s ease,
+    box-shadow 0.15s ease,
+    outline 0.15s ease;
+}
+
+
+/* =========================================================
+   HISTORIQUE - SURVOL D'UN FILTRE
+
+   Le contenu devient plus grand et plus gras uniquement
+   pendant le passage de la souris.
+   ========================================================= */
+
+.historique-filter-button:hover {
+  /*
+   * HISTORIQUE
+   * Grossissement visuel sans modifier la largeur
+   * occupée par le bouton dans la grille.
+   */
+  transform: scale(1.07);
+
+  font-weight: 800;
+
+  z-index: 3;
+}
+
+
+/* =========================================================
+   HISTORIQUE - FILTRE SÉLECTIONNÉ
+
+   Le filtre sélectionné :
+   - reste plus grand ;
+   - reste en gras ;
+   - reçoit un contour vert ;
+   - conserve sa propre couleur de catégorie.
+   ========================================================= */
+
+.historique-filter-button.historique-filter-active {
+  /*
+   * HISTORIQUE
+   * Le filtre validé reste légèrement agrandi,
+   * en gras et entouré en vert.
+   */
+  transform: scale(1.04);
+
+  font-weight: 800;
+
+  outline: 2px solid #43a047;
+  outline-offset: 2px;
+
+  box-shadow:
+    0 0 0 1px rgba(67, 160, 71, 0.20),
+    0 3px 7px rgba(0, 0, 0, 0.16);
+
+  z-index: 2;
+}
+
+
+/*
+ * HISTORIQUE
+ * Si le filtre sélectionné est également survolé,
+ * il grossit légèrement davantage.
+ */
+.historique-filter-button.historique-filter-active:hover {
+  transform: scale(1.07);
+
+  z-index: 3;
+}
+
+/* =========================================================
+   FIN HISTORIQUE - SURVOL / SÉLECTION DES FILTRES
+   ========================================================= */
+
+
+/* =========================================================
+   HISTORIQUE - TOUT
+
+   Gris identique au bouton Historique.
+   "Tout" est sélectionné par défaut pour cette première
+   étape visuelle.
+   ========================================================= */
+
+.historique-filter-all {
+  color: #666666 !important;
+
+  background-color: #f1f1f1 !important;
+
+  border: 1px solid #777777 !important;
+}
+
+
+.historique-filter-all.historique-filter-active {
+  color: #ffffff !important;
+
+  background-color: #777777 !important;
+
+  border-color: #5f5f5f !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - MATÉRIEL RÉCOLTÉ
+   Couleur existante : #7a8f45
+   ========================================================= */
+
+.historique-filter-material {
+  color: #667a32 !important;
+
+  background-color: #f3f6ea !important;
+
+  border: 1px solid #7a8f45 !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - SEMENCE
+   Couleur existante : #c89500
+   ========================================================= */
+
+.historique-filter-seed {
+  color: #a77b00 !important;
+
+  background-color: #fff6d8 !important;
+
+  border: 1px solid #c89500 !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - STOCKAGE
+   Couleur existante : #607d8b
+   ========================================================= */
+
+.historique-filter-storage {
+  color: #455a64 !important;
+
+  background-color: #eef3f5 !important;
+
+  border: 1px solid #607d8b !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - TEST DE GERMINATION
+   Couleur existante : #00897b
+   ========================================================= */
+
+.historique-filter-germination {
+  color: #00695c !important;
+
+  background-color: #e7f5f3 !important;
+
+  border: 1px solid #00897b !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - SEMIS
+   Couleur existante : #43a047
+   ========================================================= */
+
+.historique-filter-sowing {
+  color: #2e7d32 !important;
+
+  background-color: #edf7ee !important;
+
+  border: 1px solid #43a047 !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - TEST DE VIABILITÉ
+   Couleur existante : #e07a1f
+   ========================================================= */
+
+.historique-filter-viability {
+  color: #c7620e !important;
+
+  background-color: #fff2e6 !important;
+
+  border: 1px solid #e07a1f !important;
+}
+
+
+/* =========================================================
+   HISTORIQUE - CULTURE
+   Couleur existante : #6d4c41
+   ========================================================= */
+
+.historique-filter-culture {
+  color: #4e342e !important;
+
+  background-color: #efebe9 !important;
+
+  border: 1px solid #6d4c41 !important;
+}
+
+
+/* =========================================================
+   FIN HISTORIQUE - BARRE DE FILTRAGE
+   ========================================================= */
+
+
 .historique-empty-content {
   flex: 1 1 auto;
 
   /*
    * HISTORIQUE
-   * Zone réservée aux futurs champs de la fiche.
+   * Zone réservée au futur contenu de l'historique.
    */
   min-height: 250px;
 }

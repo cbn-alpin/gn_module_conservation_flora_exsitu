@@ -36,6 +36,151 @@
          Les futurs champs Historique seront ajoutés ici.
          ===================================================== -->
 
+    <!-- =====================================================
+         HISTORIQUE - BARRE DE FILTRAGE
+
+         Première étape visuelle de la fiche Historique.
+         Tous les types sont regroupés dans un seul cadre.
+
+         Fonctionnement :
+         - "Tout" est sélectionné par défaut.
+         - Une seule catégorie peut être sélectionnée à la fois.
+         - Le filtre actif reste agrandi, en gras
+           et entouré d'un contour vert.
+         ===================================================== -->
+
+    <div class="historique-filter-panel">
+
+      <div class="historique-filter-grid">
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE TOUT
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-all"
+          [class.historique-filter-active]="selectedFilter === 'all'"
+          (click)="selectHistoriqueFilter('all')"
+        >
+          Tout
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE MATÉRIEL RÉCOLTÉ
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-material"
+          [class.historique-filter-active]="selectedFilter === 'material'"
+          (click)="selectHistoriqueFilter('material')"
+        >
+          Matériel récolté
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE SEMENCE
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-seed"
+          [class.historique-filter-active]="selectedFilter === 'seed'"
+          (click)="selectHistoriqueFilter('seed')"
+        >
+          Semence
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE STOCKAGE
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-storage"
+          [class.historique-filter-active]="selectedFilter === 'storage'"
+          (click)="selectHistoriqueFilter('storage')"
+        >
+          Stockage
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE TEST DE GERMINATION
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-germination"
+          [class.historique-filter-active]="selectedFilter === 'germination'"
+          (click)="selectHistoriqueFilter('germination')"
+        >
+          Test de germination
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE SEMIS
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-sowing"
+          [class.historique-filter-active]="selectedFilter === 'sowing'"
+          (click)="selectHistoriqueFilter('sowing')"
+        >
+          Semis
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE TEST DE VIABILITÉ
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-viability"
+          [class.historique-filter-active]="selectedFilter === 'viability'"
+          (click)="selectHistoriqueFilter('viability')"
+        >
+          Test de viabilité
+        </button>
+
+
+        <!-- ===================================================
+             HISTORIQUE - FILTRE CULTURE
+             =================================================== -->
+
+        <button
+          mat-button
+          type="button"
+          class="historique-filter-button historique-filter-culture"
+          [class.historique-filter-active]="selectedFilter === 'culture'"
+          (click)="selectHistoriqueFilter('culture')"
+        >
+          Culture
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- =====================================================
+         FIN HISTORIQUE - BARRE DE FILTRAGE
+         ===================================================== -->
+
+
     <div class="historique-empty-content">
     </div>
 

@@ -8,9 +8,30 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class HistoriqueComponent {
 
+  /*
+   * =========================================================
+   * HISTORIQUE - FILTRE SÉLECTIONNÉ
+   *
+   * "Tout" est sélectionné par défaut.
+   * Une seule catégorie peut être sélectionnée à la fois.
+   * =========================================================
+   */
+  public selectedFilter: string = 'all';
+
+
   constructor(
     private dialogRef: MatDialogRef<HistoriqueComponent>
   ) {}
+
+
+  /*
+   * =========================================================
+   * HISTORIQUE - SÉLECTION D'UN FILTRE
+   * =========================================================
+   */
+  public selectHistoriqueFilter(filter: string): void {
+    this.selectedFilter = filter;
+  }
 
 
   public onBack(): void {
