@@ -6,6 +6,14 @@ export interface ConfirmDialogData {
     icon?: string;
     variant?:
         | 'harvest-save'
+
+        /*
+         * =====================================================
+         * GAMIFICATION - CONFIRMATION DE SORTIE
+         * =====================================================
+         */
+        | 'gamification-exit'
+
         | 'semis'
         | 'semis-reset'
         | 'semis-exit'

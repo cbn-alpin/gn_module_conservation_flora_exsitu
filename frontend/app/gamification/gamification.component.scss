@@ -684,15 +684,322 @@
 
 
 /* =========================================================
-   GAMIFICATION - ZONE VIDE
+   GAMIFICATION - ÉCHELLE VISUELLE COMPACTE
+   ========================================================= */
 
-   Aucun contenu métier pour le moment.
+.gamification-rating-panel {
+  position: relative;
+
+  margin: 0 16px 18px;
+  padding: 14px 22px 16px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fafbf8 100%
+    );
+
+  border: 1px solid #d8dfcf;
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 7px rgba(64, 80, 33, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+
+/*
+ * Petit rappel coloré de l'échelle,
+ * intégré directement au cadre.
+ */
+.gamification-rating-panel::before {
+  content: '';
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #cf202f 0%,
+      #cf202f 20%,
+      #ef4038 20%,
+      #ef4038 40%,
+      #f5822a 40%,
+      #f5822a 60%,
+      #f8b526 60%,
+      #f8b526 80%,
+      #69be45 80%,
+      #69be45 100%
+    );
+}
+
+
+/* =========================================================
+   GAMIFICATION - VISAGES
+   ========================================================= */
+
+.gamification-rating-faces {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  align-items: center;
+  justify-items: center;
+
+  gap: 10px;
+
+  max-width: 500px;
+
+  margin: 2px auto 16px;
+}
+
+
+.gamification-rating-face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 58px;
+  height: 58px;
+
+  padding: 0;
+
+  color: #111111;
+
+  border: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.10);
+
+  transform: scale(1);
+
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
+}
+
+
+.gamification-rating-face mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  margin: 0;
+
+  color: #111111 !important;
+
+  font-size: 38px;
+  line-height: 38px;
+}
+
+
+.gamification-rating-face:hover {
+  transform:
+    translateY(-1px)
+    scale(1.04);
+
+  filter: brightness(1.03);
+
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.14);
+}
+
+
+/*
+ * Visage sélectionné :
+ * contour beaucoup plus discret.
+ */
+.gamification-rating-face-active {
+  transform: scale(1.05);
+
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px rgba(70, 70, 70, 0.16),
+    0 4px 8px rgba(0, 0, 0, 0.13);
+}
+
+
+/* =========================================================
+   GAMIFICATION - COULEURS DES 5 NIVEAUX
+   ========================================================= */
+
+.gamification-rating-face-1 {
+  background-color: #cf202f;
+}
+
+
+.gamification-rating-face-2 {
+  background-color: #ef4038;
+}
+
+
+.gamification-rating-face-3 {
+  background-color: #f5822a;
+}
+
+
+.gamification-rating-face-4 {
+  background-color: #f8b526;
+}
+
+
+.gamification-rating-face-5 {
+  background-color: #69be45;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CURSEUR
+   ========================================================= */
+
+.gamification-rating-slider-wrapper {
+  position: relative;
+
+  max-width: 525px;
+
+  margin: 0 auto;
+
+  padding: 0 4px;
+}
+
+
+.gamification-rating-percentage {
+  position: absolute;
+
+  top: 50%;
+  right: calc(100% + 10px);
+
+  min-width: 38px;
+
+  transform: translateY(-50%);
+
+  color: #6b6b6b;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: right;
+
+  pointer-events: none;
+}
+
+
+.gamification-rating-slider {
+  display: block;
+
+  width: 100%;
+  height: 8px;
+
+  margin: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      #cf202f 0%,
+      #cf202f 20%,
+      #ef4038 20%,
+      #ef4038 40%,
+      #f5822a 40%,
+      #f5822a 60%,
+      #f8b526 60%,
+      #f8b526 80%,
+      #69be45 80%,
+      #69be45 100%
+    );
+
+  border: 0;
+  border-radius: 5px;
+
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.12);
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+
+/* Chrome / Edge */
+
+.gamification-rating-slider::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background-color: #ffffff;
+
+  border: 3px solid #ececec;
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.20);
+
+  cursor: grab;
+}
+
+
+.gamification-rating-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+
+
+/* Firefox */
+
+.gamification-rating-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+
+  background-color: #ffffff;
+
+  border: 3px solid #ececec;
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.20);
+
+  cursor: grab;
+}
+
+
+.gamification-rating-slider:focus-visible {
+  outline:
+    2px solid rgba(33, 150, 243, 0.24);
+
+  outline-offset: 4px;
+}
+
+
+/* =========================================================
+   GAMIFICATION - ZONE VIDE
    ========================================================= */
 
 .gamification-empty-content {
   flex: 1 1 auto;
 
-  min-height: 220px;
+  min-height: 40px;
 }
 
 

@@ -2,6 +2,10 @@
     class="confirm-dialog-shell"
     [class.harvest-confirm-dialog]="dialogData?.variant === 'harvest-save'"
 
+    [class.gamification-confirm-dialog]="
+        dialogData?.variant === 'gamification-exit'
+    "
+
     [class.semis-confirm-dialog]="
         dialogData?.variant === 'semis'
         || dialogData?.variant === 'semis-reset'
@@ -56,6 +60,7 @@
 
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'harvest-save'
+        || dialogData?.variant === 'gamification-exit'
         || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
@@ -89,7 +94,8 @@
     "
 
     [class.workflow-exit-dialog]="
-        dialogData?.variant === 'culture-exit'
+        dialogData?.variant === 'gamification-exit'
+        || dialogData?.variant === 'culture-exit'
         || dialogData?.variant === 'viability-exit'
         || dialogData?.variant === 'germination-exit'
         || dialogData?.variant === 'stock-exit'
@@ -176,7 +182,8 @@
         <p
             *ngIf="
                 (
-                    dialogData?.variant === 'culture-exit'
+                    dialogData?.variant === 'gamification-exit'
+                    || dialogData?.variant === 'culture-exit'
                     || dialogData?.variant === 'viability-exit'
                     || dialogData?.variant === 'germination-exit'
                     || dialogData?.variant === 'stock-exit'

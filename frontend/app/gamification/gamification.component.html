@@ -255,10 +255,130 @@
 
 
     <!-- =====================================================
-         GAMIFICATION - CONTENU FUTUR
+         GAMIFICATION - NIVEAU
 
-         Volontairement vide pour cette première étape.
+         Échelle visuelle de 1 à 5 :
+         rouge = très mauvais
+         vert = très bon.
          ===================================================== -->
+
+    <div class="gamification-rating-panel">
+
+      <div class="gamification-rating-faces">
+
+        <button
+          type="button"
+          class="
+            gamification-rating-face
+            gamification-rating-face-1
+          "
+          [class.gamification-rating-face-active]="
+            gamificationScore === 1
+          "
+          (click)="setGamificationScore(1)"
+          aria-label="Niveau 1 - Très insatisfaisant"
+        >
+          <mat-icon>
+            sentiment_very_dissatisfied
+          </mat-icon>
+        </button>
+
+
+        <button
+          type="button"
+          class="
+            gamification-rating-face
+            gamification-rating-face-2
+          "
+          [class.gamification-rating-face-active]="
+            gamificationScore === 2
+          "
+          (click)="setGamificationScore(2)"
+          aria-label="Niveau 2 - Insatisfaisant"
+        >
+          <mat-icon>
+            sentiment_dissatisfied
+          </mat-icon>
+        </button>
+
+
+        <button
+          type="button"
+          class="
+            gamification-rating-face
+            gamification-rating-face-3
+          "
+          [class.gamification-rating-face-active]="
+            gamificationScore === 3
+          "
+          (click)="setGamificationScore(3)"
+          aria-label="Niveau 3 - Neutre"
+        >
+          <mat-icon>
+            sentiment_neutral
+          </mat-icon>
+        </button>
+
+
+        <button
+          type="button"
+          class="
+            gamification-rating-face
+            gamification-rating-face-4
+          "
+          [class.gamification-rating-face-active]="
+            gamificationScore === 4
+          "
+          (click)="setGamificationScore(4)"
+          aria-label="Niveau 4 - Satisfaisant"
+        >
+          <mat-icon>
+            sentiment_satisfied
+          </mat-icon>
+        </button>
+
+
+        <button
+          type="button"
+          class="
+            gamification-rating-face
+            gamification-rating-face-5
+          "
+          [class.gamification-rating-face-active]="
+            gamificationScore === 5
+          "
+          (click)="setGamificationScore(5)"
+          aria-label="Niveau 5 - Très satisfaisant"
+        >
+          <mat-icon>
+            sentiment_very_satisfied
+          </mat-icon>
+        </button>
+
+      </div>
+
+
+      <div class="gamification-rating-slider-wrapper">
+
+        <div class="gamification-rating-percentage">
+          {{ (gamificationScore - 1) * 25 }}%
+        </div>
+
+        <input
+          class="gamification-rating-slider"
+          type="range"
+          min="1"
+          max="5"
+          step="1"
+          [value]="gamificationScore"
+          (input)="onGamificationScoreChange($event)"
+          aria-label="Niveau de gamification"
+        >
+
+      </div>
+
+    </div>
+
 
     <div class="gamification-empty-content">
     </div>

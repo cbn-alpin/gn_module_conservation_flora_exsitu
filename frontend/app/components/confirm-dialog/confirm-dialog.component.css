@@ -419,6 +419,29 @@
    RÉCOLTE / VIABILITÉ / GERMINATION / STOCKAGE / MATÉRIEL / SEMENCE
    ========================================================= */
 
+/* =========================================================
+   GAMIFICATION - COULEURS DE LA CONFIRMATION DE SORTIE
+
+   Identité noire de Gamification.
+
+   Le rouge du mot "quitter" et du bouton Oui
+   reste géré par workflow-exit-dialog,
+   exactement comme pour Historique.
+   ========================================================= */
+
+.gamification-confirm-dialog {
+    --dialog-accent: #202020;
+    --dialog-title: #000000;
+    --dialog-border: #d6d6d6;
+    --dialog-shadow: rgba(32, 32, 32, 0.14);
+}
+
+
+/* =========================================================
+   FIN GAMIFICATION - COULEURS DE CONFIRMATION
+   ========================================================= */
+
+
 .harvest-confirm-dialog {
     --dialog-accent: #1e88e5;
     --dialog-title: #0d4f8b;

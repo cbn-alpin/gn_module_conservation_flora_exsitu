@@ -18,6 +18,14 @@ import {
 } from 'rxjs';
 
 import {
+  CommonService
+} from '@geonature_common/service/common.service';
+
+import {
+  DialogService
+} from '../components/confirm-dialog/confirm-dialog.service';
+
+import {
   GamificationService
 } from './gamification.service';
 
@@ -25,7 +33,19 @@ import {
 @Component({
   selector: 'app-gamification',
   templateUrl: './gamification.component.html',
-  styleUrls: ['./gamification.component.scss']
+  styleUrls: ['./gamification.component.scss'],
+
+  /* =========================================================
+     GAMIFICATION - SERVICE DE CONFIRMATION
+
+     Même logique qu'Historique :
+     DialogService est fourni directement au composant
+     afin qu'il reste disponible lorsque Gamification
+     est ouvert depuis le MatDialog global.
+     ========================================================= */
+  providers: [
+    DialogService
+  ]
 })
 export class GamificationComponent implements OnInit, OnDestroy {
 
@@ -54,6 +74,19 @@ export class GamificationComponent implements OnInit, OnDestroy {
   public selectedFilter = 'all';
 
 
+  /* =========================================================
+     GAMIFICATION - NIVEAU VISUEL
+
+     1 = très insatisfaisant
+     2 = insatisfaisant
+     3 = neutre
+     4 = satisfaisant
+     5 = très satisfaisant
+     ========================================================= */
+
+  public gamificationScore = 3;
+
+
   @HostBinding('class.gamification-inline-host')
   public get inlineHost(): boolean {
     return !this.isDialog;
@@ -75,8 +108,32 @@ export class GamificationComponent implements OnInit, OnDestroy {
   private enabledSubscription: Subscription | null = null;
 
 
+  /* =========================================================
+     GAMIFICATION - DIALOGUE DE SORTIE
+
+     Empêche l'ouverture de plusieurs confirmations
+     si Retour ou le fond extérieur est cliqué
+     plusieurs fois.
+     ========================================================= */
+
+  private exitDialogOpen = false;
+
+
   constructor(
     private gamificationService: GamificationService,
+
+    /*
+     * GAMIFICATION
+     * Même service de confirmation qu'Historique.
+     */
+    private dialogService: DialogService,
+
+    /*
+     * GAMIFICATION
+     * Utilisé pour afficher le message d'information
+     * après la fermeture volontaire de la fiche.
+     */
+    private _commonService: CommonService,
 
     /*
      * MAT_DIALOG_DATA et MatDialogRef sont optionnels
@@ -138,6 +195,34 @@ export class GamificationComponent implements OnInit, OnDestroy {
           }
         );
 
+
+    /*
+     * =========================================================
+     * GAMIFICATION - CLIC EN DEHORS DE LA FICHE
+     *
+     * Même comportement qu'Historique.
+     *
+     * La fiche ne se ferme pas directement.
+     * Le clic sur le fond déclenche la même confirmation
+     * que le bouton Retour.
+     * =========================================================
+     */
+
+    if (
+      this.isDialog &&
+      this.dialogRef
+    ) {
+
+      this.dialogRef
+        .backdropClick()
+        .subscribe(() => {
+
+          this.onBack();
+
+        });
+
+    }
+
   }
 
 
@@ -187,14 +272,68 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
 
   /* =========================================================
-     GAMIFICATION - RETOUR
+     GAMIFICATION - CONFIRMATION DU BOUTON RETOUR
+
+     Même fonctionnement qu'Historique :
+
+     - Non : rester dans Gamification
+     - Oui : quitter Gamification
+       et afficher un toast d'information
+
+     Cette méthode est également appelée lorsque
+     l'utilisateur clique en dehors de la fiche.
      ========================================================= */
 
   public onBack(): void {
 
-    if (this.dialogRef) {
-      this.dialogRef.close();
+    if (
+      !this.isDialog ||
+      !this.dialogRef
+    ) {
+      return;
     }
+
+
+    if (this.exitDialogOpen) {
+      return;
+    }
+
+
+    this.exitDialogOpen = true;
+
+
+    this.dialogService
+      .confirmDialog({
+        message: '',
+        icon: 'star',
+        variant: 'gamification-exit',
+        entityLabel: 'la fiche de Gamification',
+        disableClose: false
+      })
+      .subscribe((yes) => {
+
+        this.exitDialogOpen = false;
+
+
+        if (!yes) {
+          return;
+        }
+
+
+        /*
+         * GAMIFICATION
+         * Message d'information affiché après
+         * la fermeture volontaire de la fiche.
+         */
+        this._commonService.translateToaster(
+          'info',
+          'Consultation de la gamification terminée'
+        );
+
+
+        this.dialogRef.close();
+
+      });
 
   }
 
@@ -213,17 +352,40 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
 
   /* =========================================================
+     GAMIFICATION - NIVEAU VISUEL
+     ========================================================= */
+
+  public setGamificationScore(
+    score: number
+  ): void {
+
+    this.gamificationScore = score;
+
+  }
+
+
+  public onGamificationScoreChange(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    this.gamificationScore =
+      Number(input.value);
+
+  }
+
+
+  /* =========================================================
      GAMIFICATION - RÉINITIALISER
-
-     Pour cette première étape, aucune donnée métier
-     n'est modifiée.
-
-     On replace simplement l'affichage sur "Tout".
      ========================================================= */
 
   public onReset(): void {
 
     this.selectedFilter = 'all';
+
+    this.gamificationScore = 3;
 
   }
 
