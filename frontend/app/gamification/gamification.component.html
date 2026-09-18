@@ -1,0 +1,47 @@
+<div
+  class="gamification-control"
+  [class.gamification-control-off]="!enabled"
+>
+
+  <label class="gamification-switch-zone">
+
+    <input
+      type="checkbox"
+      [checked]="enabled"
+      (change)="onToggle($event)"
+      aria-label="Activer ou désactiver la gamification"
+    >
+
+    <span class="gamification-switch-track">
+
+      <span class="gamification-switch-label">
+        {{ enabled ? 'ON' : 'OFF' }}
+      </span>
+
+      <span class="gamification-switch-knob">
+        {{ enabled ? '✓' : '×' }}
+      </span>
+
+    </span>
+
+  </label>
+
+
+  <button
+    type="button"
+    class="gamification-button"
+    [disabled]="!enabled"
+    [attr.aria-disabled]="!enabled"
+  >
+
+    <mat-icon>
+      {{ enabled ? 'star' : 'lock' }}
+    </mat-icon>
+
+    <span>
+      Gamification
+    </span>
+
+  </button>
+
+</div>

@@ -86,6 +86,16 @@ import {
   CultureActionDetailsComponent
 } from './culture-action-details/culture-action-details.component';
 
+
+/* =========================================================
+   GAMIFICATION - COMPOSANT COMMUN
+   ========================================================= */
+
+import {
+  GamificationComponent
+} from './gamification/gamification.component';
+
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -153,6 +163,9 @@ registerLocaleData(localeFr);
     CultureDetailsComponent,
     CultureActionComponent,
     CultureActionDetailsComponent,
+
+    /* GAMIFICATION - COMPOSANT COMMUN */
+    GamificationComponent,
   ],
   providers: [
     HarvestStoreService, 

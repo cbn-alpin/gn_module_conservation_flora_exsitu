@@ -1,0 +1,276 @@
+:host {
+  position: absolute;
+
+  top: 20px;
+  right: 14px;
+
+  display: block;
+
+  z-index: 5;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CONTRÔLE COMMUN
+   ========================================================= */
+
+.gamification-control {
+  display: inline-flex;
+  align-items: center;
+
+  height: 36px;
+
+  box-sizing: border-box;
+
+  background-color: #202020;
+
+  border: 1px solid #0d0d0d;
+  border-radius: 9px;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.20);
+
+  overflow: hidden;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+/* =========================================================
+   GAMIFICATION - ON / OFF
+   ========================================================= */
+
+.gamification-switch-zone {
+  display: grid;
+  place-items: center;
+
+  width: 50px;
+  height: 36px;
+
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+
+  background-color:
+    rgba(255, 255, 255, 0.04);
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.16);
+
+  cursor: pointer;
+  user-select: none;
+}
+
+
+.gamification-switch-zone input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+.gamification-switch-track {
+  position: relative;
+
+  display: block;
+
+  width: 40px;
+  height: 20px;
+
+  box-sizing: border-box;
+
+  background-color: #c62828;
+
+  border: 1px solid #a91f1f;
+  border-radius: 10px;
+
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.18);
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+
+.gamification-switch-label {
+  position: absolute;
+
+  top: 50%;
+  right: 4px;
+
+  transform: translateY(-50%);
+
+  color: #ffffff;
+
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.2px;
+}
+
+
+.gamification-switch-knob {
+  position: absolute;
+
+  top: 50%;
+  left: 1px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  transform: translateY(-50%);
+
+  color: #c62828;
+  background-color: #ffffff;
+
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 16px;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+
+
+.gamification-switch-zone input:checked
+  + .gamification-switch-track {
+  background-color: #43a047;
+  border-color: #2e7d32;
+}
+
+
+.gamification-switch-zone input:checked
+  + .gamification-switch-track
+  .gamification-switch-label {
+  right: auto;
+  left: 4px;
+}
+
+
+.gamification-switch-zone input:checked
+  + .gamification-switch-track
+  .gamification-switch-knob {
+  color: #2e7d32;
+
+  transform:
+    translate(20px, -50%);
+}
+
+
+/* =========================================================
+   GAMIFICATION - BOUTON
+   ========================================================= */
+
+.gamification-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  height: 36px;
+
+  padding: 0 13px;
+
+  box-sizing: border-box;
+
+  color: #ffffff;
+  background-color: #202020;
+
+  border: 0;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+
+.gamification-button mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 20px;
+  height: 20px;
+
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.gamification-button:hover:not(:disabled) {
+  background-color: #000000;
+}
+
+
+/* =========================================================
+   GAMIFICATION OFF
+   ========================================================= */
+
+.gamification-control-off {
+  background-color: #eeeeee;
+
+  border-color: #c3c3c3;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.10);
+}
+
+
+.gamification-control-off
+  .gamification-switch-zone {
+  background-color: #dddddd;
+
+  border-right-color: #c3c3c3;
+}
+
+
+.gamification-button:disabled {
+  color: #8f8f8f;
+
+  background-color: #eeeeee;
+
+  cursor: not-allowed;
+  pointer-events: none;
+
+  opacity: 1;
+}
+
+
+.gamification-button:disabled mat-icon {
+  color: #8f8f8f;
+}
