@@ -262,7 +262,12 @@
          vert = très bon.
          ===================================================== -->
 
-    <div class="gamification-rating-panel">
+    <div
+      class="gamification-rating-panel"
+      [class.gamification-rating-readonly]="
+        selectedFilter !== 'all'
+      "
+    >
 
       <div class="gamification-rating-faces">
 
@@ -361,19 +366,303 @@
       <div class="gamification-rating-slider-wrapper">
 
         <div class="gamification-rating-percentage">
-          {{ (gamificationScore - 1) * 25 }}%
+          {{ gamificationPercentage }}%
         </div>
 
         <input
           class="gamification-rating-slider"
           type="range"
-          min="1"
-          max="5"
-          step="1"
-          [value]="gamificationScore"
+          min="0"
+          max="100"
+          [attr.step]="
+            selectedFilter === 'all'
+              ? 25
+              : 1
+          "
+          [value]="gamificationPercentage"
           (input)="onGamificationScoreChange($event)"
-          aria-label="Niveau de gamification"
+          aria-label="Progression de la gamification"
         >
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         GAMIFICATION - VUE SÉLECTIONNÉE
+
+         Même logique visuelle que la fiche Historique.
+         La couleur et le contenu suivent automatiquement
+         l'onglet actuellement sélectionné.
+         ===================================================== -->
+
+    <div
+      class="gamification-result-panel"
+      [ngClass]="'gamification-result-' + selectedFilter"
+    >
+
+      <!-- ===================================================
+           GAMIFICATION - EN-TÊTE DE LA VUE
+           =================================================== -->
+
+      <div class="gamification-result-title">
+
+        <div class="gamification-result-title-icon">
+          <mat-icon>star</mat-icon>
+        </div>
+
+
+        <div class="gamification-result-title-text">
+
+          <span class="gamification-result-title-value">
+            {{ getGamificationTitle() }}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================
+           GAMIFICATION - ÉTAT VIDE
+
+           Pour le moment aucun élément métier n'est
+           encore affiché dans cette rubrique.
+           =================================================== -->
+
+      <div class="gamification-result-content">
+
+        <!-- ===============================================
+             GAMIFICATION - TOUT
+
+             On ne touche pas encore à Tout.
+             =============================================== -->
+
+        <div
+          *ngIf="selectedFilter === 'all'"
+          class="gamification-empty-state"
+        >
+
+          <div class="gamification-empty-state-icon">
+            <mat-icon>info</mat-icon>
+          </div>
+
+          <div class="gamification-empty-state-text">
+            {{ getGamificationEmptyMessage() }}
+          </div>
+
+          <div class="gamification-empty-state-subtext">
+            Aucun événement n'est actuellement disponible
+            pour cette rubrique.
+          </div>
+
+        </div>
+
+
+        <!-- ===============================================
+             CHARGEMENT
+             =============================================== -->
+
+        <div
+          *ngIf="
+            selectedFilter !== 'all'
+            && gamificationLoading
+          "
+          class="gamification-progress-message"
+        >
+          Chargement de la progression...
+        </div>
+
+
+        <!-- ===============================================
+             ERREUR
+             =============================================== -->
+
+        <div
+          *ngIf="
+            selectedFilter !== 'all'
+            && !gamificationLoading
+            && gamificationError
+          "
+          class="
+            gamification-progress-message
+            gamification-progress-error
+          "
+        >
+          Impossible de charger la progression
+          de cette rubrique.
+        </div>
+
+
+        <!-- ===============================================
+             TIMELINE DES SUCCÈS
+             =============================================== -->
+
+        <div
+          *ngIf="
+            selectedFilter !== 'all'
+            && !gamificationLoading
+            && !gamificationError
+          "
+          class="gamification-success-timeline"
+        >
+
+          <div
+            *ngFor="
+              let success of gamificationSuccesses;
+              let last = last
+            "
+            class="gamification-success-item"
+            [class.gamification-success-unlocked]="
+              isGamificationSuccessUnlocked(
+                success.threshold
+              )
+            "
+            [class.gamification-success-next]="
+              isGamificationNextSuccess(
+                success.threshold
+              )
+            "
+          >
+
+            <div class="gamification-success-marker">
+
+              <span class="gamification-success-emoji">
+                {{ success.icon }}
+              </span>
+
+            </div>
+
+
+            <div class="gamification-success-card">
+
+              <div class="gamification-success-card-header">
+
+                <strong class="gamification-success-label">
+                  {{ success.label }}
+                </strong>
+
+
+                <!-- SUCCÈS OBTENU -->
+
+                <span
+                  *ngIf="
+                    isGamificationSuccessUnlocked(
+                      success.threshold
+                    )
+                  "
+                  class="
+                    gamification-success-status
+                    gamification-success-status-unlocked
+                  "
+                >
+                  ✓ Succès débloqué
+                </span>
+
+
+                <!-- PROCHAIN SUCCÈS -->
+
+                <span
+                  *ngIf="
+                    isGamificationNextSuccess(
+                      success.threshold
+                    )
+                  "
+                  class="
+                    gamification-success-status
+                    gamification-success-status-progress
+                  "
+                >
+                  {{ gamificationActionCount }}
+                  /
+                  {{ success.threshold }}
+                </span>
+
+
+                <!-- SUCCÈS FUTUR -->
+
+                <span
+                  *ngIf="
+                    !isGamificationSuccessUnlocked(
+                      success.threshold
+                    )
+                    && !isGamificationNextSuccess(
+                      success.threshold
+                    )
+                  "
+                  class="
+                    gamification-success-status
+                    gamification-success-status-locked
+                  "
+                >
+                  🔒 À débloquer
+                </span>
+
+              </div>
+
+
+              <div class="gamification-success-description">
+
+                <ng-container *ngIf="success.threshold === 0">
+                  Votre parcours de Gamification commence ici.
+                </ng-container>
+
+
+                <ng-container
+                  *ngIf="
+                    success.threshold > 0
+                    && isGamificationSuccessUnlocked(
+                      success.threshold
+                    )
+                  "
+                >
+                  Objectif atteint :
+                  {{ success.threshold }}
+                  ajout(s) ou modification(s).
+                </ng-container>
+
+
+                <ng-container
+                  *ngIf="
+                    success.threshold > 0
+                    && isGamificationNextSuccess(
+                      success.threshold
+                    )
+                  "
+                >
+                  Encore
+                  {{
+                    success.threshold
+                    - gamificationActionCount
+                  }}
+                  action(s) pour débloquer ce succès.
+                </ng-container>
+
+
+                <ng-container
+                  *ngIf="
+                    success.threshold > 0
+                    && !isGamificationSuccessUnlocked(
+                      success.threshold
+                    )
+                    && !isGamificationNextSuccess(
+                      success.threshold
+                    )
+                  "
+                >
+                  Objectif :
+                  {{ success.threshold }}
+                  ajout(s) ou modification(s).
+                </ng-container>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 

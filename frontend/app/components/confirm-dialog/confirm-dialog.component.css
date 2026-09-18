@@ -438,6 +438,64 @@
 
 
 /* =========================================================
+   GAMIFICATION - RUBRIQUES DANS LA RÉINITIALISATION
+   ========================================================= */
+
+.gamification-confirm-dialog
+.gamification-context-highlight {
+    font-weight: 800;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-material {
+    color: #667a32;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-seed {
+    color: #a77b00;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-storage {
+    color: #455a64;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-germination {
+    color: #00695c;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-sowing {
+    color: #2e7d32;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-viability {
+    color: #c7620e;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-culture {
+    color: #4e342e;
+}
+
+
+.gamification-confirm-dialog
+.gamification-context-all {
+    color: #666666;
+}
+
+
+/* =========================================================
    FIN GAMIFICATION - COULEURS DE CONFIRMATION
    ========================================================= */
 

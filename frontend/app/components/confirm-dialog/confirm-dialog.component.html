@@ -4,6 +4,7 @@
 
     [class.gamification-confirm-dialog]="
         dialogData?.variant === 'gamification-exit'
+        || dialogData?.variant === 'gamification-reset'
     "
 
     [class.semis-confirm-dialog]="
@@ -61,6 +62,7 @@
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'harvest-save'
         || dialogData?.variant === 'gamification-exit'
+        || dialogData?.variant === 'gamification-reset'
         || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
@@ -85,7 +87,8 @@
     "
 
     [class.workflow-reset-dialog]="
-        dialogData?.variant === 'culture-reset'
+        dialogData?.variant === 'gamification-reset'
+        || dialogData?.variant === 'culture-reset'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'germination-reset'
         || dialogData?.variant === 'stock-reset'
@@ -240,6 +243,69 @@
 
             ?
         </p>
+
+        <!-- ===================================================
+             GAMIFICATION - RÉINITIALISATION
+             =================================================== -->
+
+        <p *ngIf="dialogData?.variant === 'gamification-reset'">
+
+            Êtes-vous certain de vouloir
+
+            <span class="reset-word">
+                réinitialiser
+            </span>
+
+            la Gamification
+
+
+            <ng-container
+                *ngIf="
+                    dialogData?.gamificationCurrentLabel
+                    !== dialogData?.gamificationTargetLabel;
+                    else gamificationResetSameSection
+                "
+            >
+
+                actuellement sur
+
+                <strong
+                    class="gamification-context-highlight"
+                    [ngClass]="dialogData?.gamificationCurrentClass"
+                >
+                    {{ dialogData?.gamificationCurrentLabel }}
+                </strong>
+
+
+                et revenir à
+
+                <strong
+                    class="gamification-context-highlight"
+                    [ngClass]="dialogData?.gamificationTargetClass"
+                >
+                    {{ dialogData?.gamificationTargetLabel }}
+                </strong>
+
+            </ng-container>
+
+
+            <ng-template #gamificationResetSameSection>
+
+                de
+
+                <strong
+                    class="gamification-context-highlight"
+                    [ngClass]="dialogData?.gamificationTargetClass"
+                >
+                    {{ dialogData?.gamificationTargetLabel }}
+                </strong>
+
+            </ng-template>
+
+            ?
+
+        </p>
+
 
         <p
             *ngIf="

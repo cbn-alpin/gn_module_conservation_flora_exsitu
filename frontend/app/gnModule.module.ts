@@ -95,6 +95,10 @@ import {
   GamificationComponent
 } from './gamification/gamification.component';
 
+import {
+  GamificationService
+} from './gamification/gamification.service';
+
 
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
@@ -179,6 +183,7 @@ registerLocaleData(localeFr);
     ObserversService,
     DialogService,
     ConfigService,
+    GamificationService,
     StockManagementService,
     SemisService,
     GerminationFormService,

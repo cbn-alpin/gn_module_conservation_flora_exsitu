@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
   MatDialog
 } from '@angular/material/dialog';
 
@@ -10,30 +14,25 @@ import {
 } from 'rxjs';
 
 import {
+  ConfigService
+} from '../services/config.service';
+
+import {
   GamificationComponent
 } from './gamification.component';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface GamificationStats {
+  entity_type: string;
+  action_count: number;
+}
+
+
+@Injectable()
 export class GamificationService {
 
   /* =========================================================
      GAMIFICATION - ÉTAT GLOBAL ON / OFF
-
-     Une seule valeur est utilisée par toutes les rubriques :
-
-     - Matériel récolté
-     - Semence
-     - Stockage
-     - Germination
-     - Semis
-     - Viabilité
-     - Culture
-
-     L'état est également conservé après navigation
-     et après actualisation de la page.
      ========================================================= */
 
   private readonly storageKey =
@@ -46,9 +45,19 @@ export class GamificationService {
     );
 
 
+  private moduleBaseUrl: string;
+
+
   constructor(
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private api: HttpClient,
+    private cfg: ConfigService
+  ) {
+
+    this.moduleBaseUrl =
+      this.cfg.getModuleBackendUrl();
+
+  }
 
 
   public get enabled$(): Observable<boolean> {
@@ -63,17 +72,8 @@ export class GamificationService {
 
   public setEnabled(enabled: boolean): void {
 
-    /*
-     * Met immédiatement à jour tous les
-     * <app-gamification> actuellement présents.
-     */
     this.enabledSubject.next(enabled);
 
-
-    /*
-     * Conserve le même état lorsque l'utilisateur
-     * change de rubrique ou recharge la page.
-     */
     localStorage.setItem(
       this.storageKey,
       String(enabled)
@@ -90,10 +90,6 @@ export class GamificationService {
       );
 
 
-    /*
-     * Aucun choix enregistré :
-     * Gamification reste ON par défaut.
-     */
     if (storedValue === null) {
       return true;
     }
@@ -105,9 +101,28 @@ export class GamificationService {
 
 
   /* =========================================================
-     GAMIFICATION - OUVERTURE DE LA FICHE
+     GAMIFICATION - STATISTIQUES AUTONOMES
 
-     Même logique que HistoriqueService.openHistorique().
+     Aucun appel à Historique.
+
+     Chaque rubrique possède son propre compteur.
+     ========================================================= */
+
+  public getGamificationStats(
+    idHarvest: number,
+    entityType: string
+  ): Observable<GamificationStats> {
+
+    return this.api
+      .get<GamificationStats>(
+        `${this.moduleBaseUrl}/harvests/${idHarvest}/gamification/${entityType}`
+      );
+
+  }
+
+
+  /* =========================================================
+     GAMIFICATION - OUVERTURE DE LA FICHE
      ========================================================= */
 
   public openGamification(

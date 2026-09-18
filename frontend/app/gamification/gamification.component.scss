@@ -993,6 +993,751 @@
 
 
 /* =========================================================
+   GAMIFICATION - BLOC VUE SÉLECTIONNÉE
+
+   Reprise du visuel utilisé dans Historique.
+   ========================================================= */
+
+.gamification-result-panel {
+  --gamification-section-color: #777777;
+  --gamification-section-text: #666666;
+  --gamification-section-soft: #f2f2f2;
+
+  position: relative;
+
+  margin: 0 16px 18px;
+  padding: 0;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: var(--gamification-section-text);
+
+  background-color: #ffffff;
+
+  border:
+    1px solid
+    rgba(80, 80, 80, 0.18);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+
+/*
+ * Fine barre de couleur en haut,
+ * comme dans Historique.
+ */
+.gamification-result-panel::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  left: 0;
+
+  height: 4px;
+
+  background-color:
+    var(--gamification-section-color);
+
+  z-index: 2;
+}
+
+
+/* =========================================================
+   GAMIFICATION - EN-TÊTE DE LA VUE
+   ========================================================= */
+
+.gamification-result-title {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  min-height: 62px;
+
+  padding: 7px 18px 4px;
+
+  box-sizing: border-box;
+
+  color:
+    var(--gamification-section-text);
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--gamification-section-soft) 0%,
+      #ffffff 50%,
+      var(--gamification-section-soft) 100%
+    );
+
+  text-align: center;
+
+  border-bottom:
+    1px solid
+    rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================================================
+   GAMIFICATION - VUE SÉLECTIONNÉE
+   ========================================================= */
+
+.gamification-result-title-text {
+  grid-column: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1px;
+
+  width: max-content;
+  max-width: 100%;
+
+  text-align: center;
+}
+
+
+.gamification-result-title-label {
+  width: 100%;
+
+  color: #8a8a8a;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  line-height: 13px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+
+.gamification-result-title-value {
+  width: 100%;
+
+  color:
+    var(--gamification-section-text);
+
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.15px;
+  line-height: 20px;
+  text-align: center;
+}
+
+
+/* =========================================================
+   GAMIFICATION - ICÔNE DU TITRE
+   ========================================================= */
+
+.gamification-result-title-icon {
+  grid-column: 1;
+  justify-self: end;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  margin-right: 10px;
+
+  color:
+    var(--gamification-section-color);
+
+  background-color: #ffffff;
+
+  border:
+    1px solid
+    var(--gamification-section-color);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 5px
+    rgba(0, 0, 0, 0.08);
+}
+
+
+.gamification-result-title-icon mat-icon {
+  width: 18px;
+  height: 18px;
+
+  margin: 0;
+
+  color: inherit;
+
+  font-size: 18px;
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CONTENU
+   ========================================================= */
+
+.gamification-result-content {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 190px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      var(--gamification-section-soft) 100%
+    );
+}
+
+
+/* =========================================================
+   GAMIFICATION - ÉTAT VIDE
+
+   Même apparence que l'état vide d'Historique.
+   ========================================================= */
+
+.gamification-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 470px;
+
+  padding: 18px 28px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--gamification-section-soft) 0%,
+      #ffffff 100%
+    );
+
+  border:
+    1px solid
+    var(--gamification-section-color);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(0, 0, 0, 0.05);
+}
+
+
+.gamification-empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  margin-bottom: 12px;
+
+  color:
+    var(--gamification-section-color);
+
+  background-color:
+    var(--gamification-section-soft);
+
+  border:
+    1px solid
+    var(--gamification-section-color);
+
+  border-radius: 50%;
+
+  opacity: 0.85;
+
+  box-shadow:
+    0 3px 8px
+    rgba(0, 0, 0, 0.06);
+}
+
+
+.gamification-empty-state-icon mat-icon {
+  width: 26px;
+  height: 26px;
+
+  color: inherit;
+
+  font-size: 26px;
+  line-height: 26px;
+}
+
+
+.gamification-empty-state-text {
+  margin-bottom: 5px;
+
+  color:
+    var(--gamification-section-text);
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+
+.gamification-empty-state-subtext {
+  color: #777777;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   GAMIFICATION - TOUT
+   ========================================================= */
+
+.gamification-result-all {
+  --gamification-section-color: #777777;
+  --gamification-section-text: #666666;
+  --gamification-section-soft: #f2f2f2;
+}
+
+
+/* =========================================================
+   GAMIFICATION - MATÉRIEL RÉCOLTÉ
+   ========================================================= */
+
+.gamification-result-material {
+  --gamification-section-color: #7a8f45;
+  --gamification-section-text: #667a32;
+  --gamification-section-soft: #f3f6ea;
+}
+
+
+/* =========================================================
+   GAMIFICATION - SEMENCE
+   ========================================================= */
+
+.gamification-result-seed {
+  --gamification-section-color: #c89500;
+  --gamification-section-text: #a77b00;
+  --gamification-section-soft: #fff6d8;
+}
+
+
+/* =========================================================
+   GAMIFICATION - STOCKAGE
+   ========================================================= */
+
+.gamification-result-storage {
+  --gamification-section-color: #607d8b;
+  --gamification-section-text: #455a64;
+  --gamification-section-soft: #eef3f5;
+}
+
+
+/* =========================================================
+   GAMIFICATION - TEST DE GERMINATION
+   ========================================================= */
+
+.gamification-result-germination {
+  --gamification-section-color: #00897b;
+  --gamification-section-text: #00695c;
+  --gamification-section-soft: #e7f5f3;
+}
+
+
+/* =========================================================
+   GAMIFICATION - SEMIS
+   ========================================================= */
+
+.gamification-result-sowing {
+  --gamification-section-color: #43a047;
+  --gamification-section-text: #2e7d32;
+  --gamification-section-soft: #edf7ee;
+}
+
+
+/* =========================================================
+   GAMIFICATION - TEST DE VIABILITÉ
+   ========================================================= */
+
+.gamification-result-viability {
+  --gamification-section-color: #e07a1f;
+  --gamification-section-text: #c7620e;
+  --gamification-section-soft: #fff2e6;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CULTURE
+   ========================================================= */
+
+.gamification-result-culture {
+  --gamification-section-color: #6d4c41;
+  --gamification-section-text: #4e342e;
+  --gamification-section-soft: #efebe9;
+}
+
+
+/* =========================================================
+   GAMIFICATION - JAUGE AUTOMATIQUE
+
+   Dans une rubrique métier, la jauge devient une statistique
+   calculée automatiquement et n'est plus manipulable.
+   ========================================================= */
+
+.gamification-rating-readonly
+.gamification-rating-face,
+.gamification-rating-readonly
+.gamification-rating-slider {
+  pointer-events: none;
+
+  cursor: default;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CHARGEMENT / ERREUR
+   ========================================================= */
+
+.gamification-progress-message {
+  width: 100%;
+
+  padding: 28px 20px;
+
+  box-sizing: border-box;
+
+  color: #777777;
+
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+.gamification-progress-error {
+  color: #c62828;
+}
+
+
+/* =========================================================
+   GAMIFICATION - TIMELINE DES SUCCÈS
+
+   Même principe visuel que la timeline Historique :
+   ligne verticale + marqueurs + cartes.
+   ========================================================= */
+
+.gamification-success-timeline {
+  position: relative;
+
+  width: 100%;
+
+  padding: 8px 10px 8px 54px;
+
+  box-sizing: border-box;
+}
+
+
+/*
+ * Ligne verticale commune aux succès.
+ */
+.gamification-success-timeline::before {
+  content: "";
+
+  position: absolute;
+
+  top: 12px;
+  bottom: 12px;
+  left: 27px;
+
+  width: 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--gamification-section-color) 0%,
+      rgba(120, 120, 120, 0.22) 100%
+    );
+}
+
+
+/* =========================================================
+   GAMIFICATION - UN SUCCÈS
+   ========================================================= */
+
+.gamification-success-item {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+
+  width: 100%;
+
+  margin-bottom: 12px;
+}
+
+
+.gamification-success-item:last-child {
+  margin-bottom: 0;
+}
+
+
+/* =========================================================
+   GAMIFICATION - MARQUEUR
+   ========================================================= */
+
+.gamification-success-marker {
+  position: absolute;
+
+  top: 10px;
+  left: -46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  box-sizing: border-box;
+
+  background-color: #f2f2f2;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.14);
+
+  z-index: 2;
+}
+
+
+.gamification-success-emoji {
+  display: block;
+
+  font-size: 21px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CARTE DU SUCCÈS
+   ========================================================= */
+
+.gamification-success-card {
+  width: 100%;
+
+  padding: 12px 15px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.05);
+
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    opacity 0.16s ease;
+}
+
+
+.gamification-success-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+
+.gamification-success-label {
+  color: #4f4f4f;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.gamification-success-description {
+  margin-top: 5px;
+
+  color: #777777;
+
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+
+/* =========================================================
+   GAMIFICATION - STATUT DU SUCCÈS
+   ========================================================= */
+
+.gamification-success-status {
+  flex-shrink: 0;
+
+  padding: 4px 8px;
+
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 14px;
+
+  border-radius: 10px;
+
+  white-space: nowrap;
+}
+
+
+.gamification-success-status-unlocked {
+  color: #2e7d32;
+
+  background-color: #edf7ee;
+
+  border: 1px solid #a5d6a7;
+}
+
+
+.gamification-success-status-progress {
+  color:
+    var(--gamification-section-text);
+
+  background-color:
+    var(--gamification-section-soft);
+
+  border:
+    1px solid
+    var(--gamification-section-color);
+}
+
+
+.gamification-success-status-locked {
+  color: #8a8a8a;
+
+  background-color: #f3f3f3;
+
+  border: 1px solid #d3d3d3;
+}
+
+
+/* =========================================================
+   GAMIFICATION - SUCCÈS DÉBLOQUÉ
+   ========================================================= */
+
+.gamification-success-unlocked
+.gamification-success-marker {
+  background-color:
+    var(--gamification-section-soft);
+
+  border-color: #ffffff;
+
+  box-shadow:
+    0 0 0 2px
+      var(--gamification-section-color),
+    0 2px 7px rgba(0, 0, 0, 0.12);
+}
+
+
+.gamification-success-unlocked
+.gamification-success-card {
+  border-color:
+    var(--gamification-section-color);
+}
+
+
+/* =========================================================
+   GAMIFICATION - PROCHAIN SUCCÈS
+
+   C'est le palier actuellement poursuivi.
+   ========================================================= */
+
+.gamification-success-next
+.gamification-success-marker {
+  background-color: #ffffff;
+
+  box-shadow:
+    0 0 0 3px
+      var(--gamification-section-soft),
+    0 0 0 5px
+      var(--gamification-section-color),
+    0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+.gamification-success-next
+.gamification-success-card {
+  background:
+    linear-gradient(
+      90deg,
+      var(--gamification-section-soft) 0%,
+      #ffffff 45%
+    );
+
+  border:
+    2px solid
+    var(--gamification-section-color);
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   GAMIFICATION - SUCCÈS FUTURS / VERROUILLÉS
+   ========================================================= */
+
+.gamification-success-item:not(
+  .gamification-success-unlocked
+):not(
+  .gamification-success-next
+)
+.gamification-success-marker {
+  opacity: 0.62;
+
+  filter: grayscale(0.45);
+}
+
+
+.gamification-success-item:not(
+  .gamification-success-unlocked
+):not(
+  .gamification-success-next
+)
+.gamification-success-card {
+  opacity: 0.62;
+}
+
+
+/* =========================================================
    GAMIFICATION - ZONE VIDE
    ========================================================= */
 

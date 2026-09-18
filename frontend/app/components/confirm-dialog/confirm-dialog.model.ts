@@ -9,10 +9,11 @@ export interface ConfirmDialogData {
 
         /*
          * =====================================================
-         * GAMIFICATION - CONFIRMATION DE SORTIE
+         * GAMIFICATION - CONFIRMATIONS
          * =====================================================
          */
         | 'gamification-exit'
+        | 'gamification-reset'
 
         | 'semis'
         | 'semis-reset'
@@ -53,4 +54,17 @@ export interface ConfirmDialogData {
     actionCancellation?: boolean;
     actionCancellationMode?: 'create' | 'edit';
     actionContextLabel?: string;
+
+
+    /*
+     * =====================================================
+     * GAMIFICATION - CONTEXTE DE RÉINITIALISATION
+     * =====================================================
+     */
+
+    gamificationCurrentLabel?: string;
+    gamificationCurrentClass?: string;
+
+    gamificationTargetLabel?: string;
+    gamificationTargetClass?: string;
 }
