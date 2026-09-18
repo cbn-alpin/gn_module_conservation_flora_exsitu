@@ -1,47 +1,295 @@
-<div
-  class="gamification-control"
-  [class.gamification-control-off]="!enabled"
->
+<!-- =========================================================
+     GAMIFICATION - CONTRÔLE COMMUN DANS LES LISTES
+     ========================================================= -->
 
-  <label class="gamification-switch-zone">
+<ng-container *ngIf="!isDialog">
 
-    <input
-      type="checkbox"
-      [checked]="enabled"
-      (change)="onToggle($event)"
-      aria-label="Activer ou désactiver la gamification"
-    >
-
-    <span class="gamification-switch-track">
-
-      <span class="gamification-switch-label">
-        {{ enabled ? 'ON' : 'OFF' }}
-      </span>
-
-      <span class="gamification-switch-knob">
-        {{ enabled ? '✓' : '×' }}
-      </span>
-
-    </span>
-
-  </label>
-
-
-  <button
-    type="button"
-    class="gamification-button"
-    [disabled]="!enabled"
-    [attr.aria-disabled]="!enabled"
+  <div
+    class="gamification-control"
+    [class.gamification-control-off]="!enabled"
   >
 
-    <mat-icon>
-      {{ enabled ? 'star' : 'lock' }}
-    </mat-icon>
+    <label class="gamification-switch-zone">
 
-    <span>
-      Gamification
-    </span>
+      <input
+        type="checkbox"
+        [checked]="enabled"
+        (change)="onToggle($event)"
+        aria-label="Activer ou désactiver la gamification"
+      >
 
-  </button>
+      <span class="gamification-switch-track">
 
-</div>
+        <span class="gamification-switch-label">
+          {{ enabled ? 'ON' : 'OFF' }}
+        </span>
+
+        <span class="gamification-switch-knob">
+          {{ enabled ? '✓' : '×' }}
+        </span>
+
+      </span>
+
+    </label>
+
+
+    <button
+      type="button"
+      class="gamification-button"
+      [disabled]="!enabled"
+      [attr.aria-disabled]="!enabled"
+      (click)="openGamification()"
+    >
+
+      <mat-icon>
+        {{ enabled ? 'star' : 'lock' }}
+      </mat-icon>
+
+      <span>
+        Gamification
+      </span>
+
+    </button>
+
+  </div>
+
+</ng-container>
+
+
+<!-- =========================================================
+     GAMIFICATION - FICHE
+
+     Même structure visuelle que la fiche Historique.
+     ========================================================= -->
+
+<mat-card
+  *ngIf="isDialog"
+  class="gamification-form-card"
+>
+
+  <!-- =====================================================
+       GAMIFICATION - EN-TÊTE
+       ===================================================== -->
+
+  <mat-card-header class="gamification-form-header">
+
+    <button
+      mat-raised-button
+      type="button"
+      class="gamification-form-back-button"
+      (click)="onBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+
+      Retour
+    </button>
+
+
+    <div class="gamification-title-wrapper">
+
+      <mat-card-title>
+        Fiche de Gamification
+      </mat-card-title>
+
+    </div>
+
+  </mat-card-header>
+
+
+  <mat-card-content class="gamification-form-content">
+
+    <!-- =====================================================
+         GAMIFICATION - BARRE D'ONGLETS
+         ===================================================== -->
+
+    <div class="gamification-filter-panel">
+
+      <div class="gamification-filter-grid">
+
+        <!-- TOUT -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-all
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'all'
+          "
+          (click)="selectGamificationFilter('all')"
+        >
+          Tout
+        </button>
+
+
+        <!-- MATÉRIEL RÉCOLTÉ -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-material
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'material'
+          "
+          (click)="selectGamificationFilter('material')"
+        >
+          Matériel récolté
+        </button>
+
+
+        <!-- SEMENCE -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-seed
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'seed'
+          "
+          (click)="selectGamificationFilter('seed')"
+        >
+          Semence
+        </button>
+
+
+        <!-- STOCKAGE -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-storage
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'storage'
+          "
+          (click)="selectGamificationFilter('storage')"
+        >
+          Stockage
+        </button>
+
+
+        <!-- TEST DE GERMINATION -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-germination
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'germination'
+          "
+          (click)="selectGamificationFilter('germination')"
+        >
+          Test de germination
+        </button>
+
+
+        <!-- SEMIS -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-sowing
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'sowing'
+          "
+          (click)="selectGamificationFilter('sowing')"
+        >
+          Semis
+        </button>
+
+
+        <!-- TEST DE VIABILITÉ -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-viability
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'viability'
+          "
+          (click)="selectGamificationFilter('viability')"
+        >
+          Test de viabilité
+        </button>
+
+
+        <!-- CULTURE -->
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-filter-button
+            gamification-filter-culture
+          "
+          [class.gamification-filter-active]="
+            selectedFilter === 'culture'
+          "
+          (click)="selectGamificationFilter('culture')"
+        >
+          Culture
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         GAMIFICATION - CONTENU FUTUR
+
+         Volontairement vide pour cette première étape.
+         ===================================================== -->
+
+    <div class="gamification-empty-content">
+    </div>
+
+
+    <!-- =====================================================
+         GAMIFICATION - BAS DE LA FICHE
+         ===================================================== -->
+
+    <div class="gamification-form-actions">
+
+      <div class="gamification-button-container">
+
+        <button
+          mat-button
+          type="button"
+          class="
+            gamification-reset-button
+            gamification-with-border
+          "
+          (click)="onReset()"
+        >
+          <mat-icon>autorenew</mat-icon>
+
+          Réinitialiser
+        </button>
+
+      </div>
+
+    </div>
+
+  </mat-card-content>
+
+</mat-card>
