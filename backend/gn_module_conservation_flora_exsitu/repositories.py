@@ -1468,8 +1468,49 @@ class HarvestRepository:
             data.pop("id_area_dept", None)
 
             additional_data = data.pop("additional_data", None)
+
             if additional_data:
-                harvest.additional_data = additional_data
+                current_additional_data = (
+                    harvest.additional_data
+                    if isinstance(
+                        harvest.additional_data,
+                        dict,
+                    )
+                    else {}
+                )
+
+                updated_additional_data = (
+                    dict(additional_data)
+                    if isinstance(
+                        additional_data,
+                        dict,
+                    )
+                    else {}
+                )
+
+                # =================================================
+                # GAMIFICATION - PRÉSERVER LES DONNÉES INTERNES
+                #
+                # Le formulaire Récolte reconstruit additional_data
+                # à partir de ses propres champs. Il ne doit donc
+                # jamais effacer les compteurs Gamification stockés
+                # dans le même JSON.
+                # =================================================
+
+                for gamification_key in (
+                    "gamification",
+                    "gamification_items",
+                ):
+                    if gamification_key in current_additional_data:
+                        updated_additional_data[
+                            gamification_key
+                        ] = current_additional_data[
+                            gamification_key
+                        ]
+
+                harvest.additional_data = (
+                    updated_additional_data
+                )
 
             observers_ids = data.pop("observers", [])
 
