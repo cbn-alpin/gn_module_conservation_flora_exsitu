@@ -33,7 +33,8 @@ import {
 
 import {
   GamificationAchievement,
-  GamificationAchievementService
+  GamificationAchievementService,
+  GamificationProgressChange
 } from './gamification-achievement.service';
 
 import {
@@ -325,6 +326,9 @@ export class GamificationComponent implements OnInit, OnDestroy {
   private achievementSubscription:
     Subscription | null = null;
 
+  private progressSubscription:
+    Subscription | null = null;
+
 
   /* =========================================================
      GAMIFICATION - DIALOGUE DE SORTIE
@@ -526,6 +530,70 @@ export class GamificationComponent implements OnInit, OnDestroy {
         );
 
 
+    /* =======================================================
+       GAMIFICATION - PROGRESSION MODIFIÉE PAR SUPPRESSION
+
+       Aucun message de félicitations n'est déclenché.
+       On rafraîchit uniquement le palier et la jauge.
+       ======================================================= */
+
+    this.progressSubscription =
+      this.gamificationAchievementService
+        .progressChanged$
+        .subscribe(
+          (
+            progress:
+              GamificationProgressChange
+          ) => {
+
+            if (!progress) {
+              return;
+            }
+
+
+            if (
+              !this.isDialog
+              && this.initialFilter
+                === progress.entity_type
+            ) {
+
+              this.loadInlineGamificationSuccess();
+
+              return;
+
+            }
+
+
+            if (!this.isDialog) {
+              return;
+            }
+
+
+            if (
+              this.selectedFilter
+              === 'all'
+            ) {
+
+              this.loadGamificationOverview();
+
+              return;
+
+            }
+
+
+            if (
+              this.selectedFilter
+              === progress.entity_type
+            ) {
+
+              this.loadGamificationProgress();
+
+            }
+
+          }
+        );
+
+
     /*
      * GAMIFICATION - MODE COMPACT
      *
@@ -599,6 +667,11 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
     if (this.achievementSubscription) {
       this.achievementSubscription.unsubscribe();
+    }
+
+
+    if (this.progressSubscription) {
+      this.progressSubscription.unsubscribe();
     }
 
   }
@@ -1614,22 +1687,77 @@ export class GamificationComponent implements OnInit, OnDestroy {
         this.selectedFilter = initialFilter;
 
 
-        /*
-         * IMPORTANT :
-         * Réinitialiser ne supprime aucun succès.
-         *
-         * On recharge uniquement la progression
-         * de la rubrique d'origine.
-         */
-        if (initialFilter === 'all') {
+        const idHarvest =
+          this.exsituFormService.idHarvest;
 
-          this.loadGamificationOverview();
 
-        } else {
-
-          this.loadGamificationProgress();
-
+        if (!idHarvest) {
+          return;
         }
+
+
+        /*
+         * Réinitialiser refait maintenant réellement
+         * le calcul Gamification de la rubrique cible.
+         *
+         * Le backend vérifie les éléments encore présents,
+         * retire les contributions devenues orphelines et
+         * conserve les modifications déjà suivies pour les
+         * éléments qui existent toujours.
+         */
+        this.gamificationLoading = true;
+        this.gamificationError = false;
+
+
+        this.gamificationService
+          .resetGamificationStats(
+            idHarvest,
+            initialFilter
+          )
+          .subscribe({
+
+            next: () => {
+
+              this.gamificationLoading = false;
+
+
+              /*
+               * Une fois le recalcul terminé,
+               * on recharge immédiatement l'affichage.
+               */
+              if (initialFilter === 'all') {
+
+                this.loadGamificationOverview();
+
+              } else {
+
+                this.loadGamificationProgress();
+
+              }
+
+
+              this._commonService.translateToaster(
+                'info',
+                'Calcul de la gamification vérifié et réinitialisé'
+              );
+
+            },
+
+
+            error: () => {
+
+              this.gamificationLoading = false;
+              this.gamificationError = true;
+
+
+              this._commonService.translateToaster(
+                'error',
+                'Impossible de recalculer la gamification'
+              );
+
+            }
+
+          });
 
       });
 

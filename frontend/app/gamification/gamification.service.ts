@@ -122,6 +122,24 @@ export class GamificationService {
 
 
   /* =========================================================
+     GAMIFICATION - RÉINITIALISER / VÉRIFIER LE CALCUL
+     ========================================================= */
+
+  public resetGamificationStats(
+    idHarvest: number,
+    entityType: string
+  ): Observable<any> {
+
+    return this.api
+      .post<any>(
+        `${this.moduleBaseUrl}/harvests/${idHarvest}/gamification/${entityType}/reset`,
+        {}
+      );
+
+  }
+
+
+  /* =========================================================
      GAMIFICATION - OUVERTURE DE LA FICHE
      ========================================================= */
 

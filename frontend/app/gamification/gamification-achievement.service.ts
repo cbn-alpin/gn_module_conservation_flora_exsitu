@@ -2,11 +2,18 @@ import { Injectable } from '@angular/core';
 
 import {
   BehaviorSubject,
-  Observable
+  Observable,
+  Subject
 } from 'rxjs';
 
 
 export interface GamificationAchievement {
+  entity_type: string;
+  action_count: number;
+}
+
+
+export interface GamificationProgressChange {
   entity_type: string;
   action_count: number;
 }
@@ -36,6 +43,10 @@ export class GamificationAchievementService {
     );
 
 
+  private progressChangedSubject =
+    new Subject<GamificationProgressChange>();
+
+
   private achievementTimer: any = null;
 
 
@@ -43,6 +54,15 @@ export class GamificationAchievementService {
     Observable<GamificationAchievement | null> {
 
     return this.achievementSubject
+      .asObservable();
+
+  }
+
+
+  public get progressChanged$():
+    Observable<GamificationProgressChange> {
+
+    return this.progressChangedSubject
       .asObservable();
 
   }
@@ -63,6 +83,32 @@ export class GamificationAchievementService {
   public notifyFromResponse(
     response: any
   ): void {
+
+    /*
+     * Une suppression actualise la progression,
+     * mais ne déclenche jamais de félicitations.
+     */
+    const progress =
+      response
+      && response.gamification_progress;
+
+
+    if (progress) {
+
+      this.progressChangedSubject.next({
+
+        entity_type:
+          progress.entity_type,
+
+        action_count:
+          Number(
+            progress.action_count
+          )
+
+      });
+
+    }
+
 
     const achievement =
       response

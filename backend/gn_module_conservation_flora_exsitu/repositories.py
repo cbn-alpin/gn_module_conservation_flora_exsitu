@@ -94,9 +94,20 @@ class GamificationRepository:
         "update_culture": "culture",
     }
 
+
+    DELETE_ENDPOINTS = {
+        "delete_material": "material",
+        "delete_seed": "seed",
+        "delete_action": "storage",
+        "delete_sowing": "sowing",
+        "delete_culture": "culture",
+    }
+
+
     TEST_ENDPOINTS = {
         "create_test",
         "update_test",
+        "delete_test",
     }
 
 
@@ -109,6 +120,18 @@ class GamificationRepository:
             in self.TRACKED_ENDPOINTS
             or endpoint_name
             in self.TEST_ENDPOINTS
+        )
+
+
+    def is_tracked_delete_endpoint(
+        self,
+        endpoint_name,
+    ):
+        return (
+            endpoint_name
+            in self.DELETE_ENDPOINTS
+            or endpoint_name
+            == "delete_test"
         )
 
 
@@ -131,21 +154,16 @@ class GamificationRepository:
                 "Récolte non trouvée"
             )
 
-        stored_count = (
-            self._get_stored_count(
+        item_contributions = (
+            self._ensure_item_contributions(
                 harvest,
+                id_harvest,
                 entity_type,
             )
         )
 
-        if stored_count is not None:
-            return stored_count
-
-        action_count = (
-            self._get_baseline_count(
-                id_harvest,
-                entity_type,
-            )
+        action_count = sum(
+            item_contributions.values()
         )
 
         self._store_count(
@@ -159,7 +177,116 @@ class GamificationRepository:
         return action_count
 
 
-    def register_successful_action(
+    # =====================================================
+    # GAMIFICATION - RECALCUL COMPLET D'UNE RUBRIQUE
+    #
+    # Vérifie les éléments réellement présents en base :
+    # - retire les contributions d'éléments supprimés ;
+    # - ajoute les éléments éventuellement manquants ;
+    # - conserve le nombre de modifications déjà suivi
+    #   pour les éléments qui existent toujours.
+    # =====================================================
+
+    def recalculate_action_count(
+        self,
+        id_harvest,
+        entity_type,
+    ):
+        if entity_type not in self.ENTITY_TYPES:
+            raise ValueError(
+                "Rubrique Gamification inconnue"
+            )
+
+        harvest = (
+            THarvest.query
+            .filter(
+                THarvest.id_harvest
+                == id_harvest
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not harvest:
+            raise ValueError(
+                "Récolte non trouvée"
+            )
+
+        current_items = (
+            self._get_baseline_items(
+                id_harvest,
+                entity_type,
+            )
+        )
+
+        stored_items = (
+            self._get_item_contributions(
+                harvest,
+                entity_type,
+            )
+            or {}
+        )
+
+        verified_items = {}
+
+        for (
+            item_id,
+            baseline_contribution
+        ) in current_items.items():
+
+            stored_contribution = (
+                stored_items.get(
+                    str(item_id)
+                )
+            )
+
+            if stored_contribution is None:
+
+                verified_items[
+                    str(item_id)
+                ] = int(
+                    baseline_contribution
+                )
+
+            else:
+
+                verified_items[
+                    str(item_id)
+                ] = max(
+                    int(
+                        baseline_contribution
+                    ),
+                    int(
+                        stored_contribution
+                    ),
+                )
+
+        action_count = sum(
+            verified_items.values()
+        )
+
+        self._store_item_contributions(
+            harvest,
+            entity_type,
+            verified_items,
+        )
+
+        self._store_count(
+            harvest,
+            entity_type,
+            action_count,
+        )
+
+        db.session.commit()
+
+        return action_count
+
+
+    # =====================================================
+    # GAMIFICATION - PRÉPARATION CRÉATION / MODIFICATION
+    # =====================================================
+
+    def prepare_action_context(
         self,
         endpoint_name,
         view_args=None,
@@ -174,7 +301,10 @@ class GamificationRepository:
             )
         )
 
-        if endpoint_name in self.TEST_ENDPOINTS:
+        if endpoint_name in {
+            "create_test",
+            "update_test",
+        }:
             entity_type = (
                 self._get_test_entity_type(
                     endpoint_name,
@@ -184,7 +314,7 @@ class GamificationRepository:
             )
 
         if not entity_type:
-            return
+            return None
 
         id_harvest = (
             self._get_harvest_id(
@@ -194,7 +324,7 @@ class GamificationRepository:
         )
 
         if not id_harvest:
-            return
+            return None
 
         harvest = (
             THarvest.query
@@ -207,29 +337,149 @@ class GamificationRepository:
         )
 
         if not harvest:
-            return
+            return None
 
-        stored_count = (
-            self._get_stored_count(
+        item_contributions = (
+            self._ensure_item_contributions(
                 harvest,
+                id_harvest,
                 entity_type,
             )
         )
 
-        if stored_count is None:
-            # L'action métier est déjà validée.
-            # Le baseline contient donc déjà
-            # la création/modification courante.
-            action_count = (
-                self._get_baseline_count(
-                    id_harvest,
-                    entity_type,
+        self._store_count(
+            harvest,
+            entity_type,
+            sum(
+                item_contributions.values()
+            ),
+        )
+
+        db.session.commit()
+
+        return {
+            "endpoint_name": endpoint_name,
+            "view_args": dict(view_args),
+            "id_harvest": id_harvest,
+            "entity_type": entity_type,
+            "item_id": self._get_item_id(
+                endpoint_name,
+                view_args,
+                {},
+            ),
+        }
+
+
+    # =====================================================
+    # GAMIFICATION - CRÉATION / MODIFICATION RÉUSSIE
+    # =====================================================
+
+    def register_successful_action(
+        self,
+        action_context,
+        response_payload=None,
+    ):
+        if not action_context:
+            return None
+
+        response_payload = (
+            response_payload or {}
+        )
+
+        id_harvest = (
+            action_context.get(
+                "id_harvest"
+            )
+        )
+
+        entity_type = (
+            action_context.get(
+                "entity_type"
+            )
+        )
+
+        endpoint_name = (
+            action_context.get(
+                "endpoint_name"
+            )
+        )
+
+        view_args = (
+            action_context.get(
+                "view_args"
+            )
+            or {}
+        )
+
+        item_id = (
+            action_context.get(
+                "item_id"
+            )
+        )
+
+        if item_id is None:
+            item_id = (
+                self._get_item_id(
+                    endpoint_name,
+                    view_args,
+                    response_payload,
                 )
             )
-        else:
-            action_count = (
-                stored_count + 1
+
+        if (
+            not id_harvest
+            or entity_type
+            not in self.ENTITY_TYPES
+            or item_id is None
+        ):
+            return None
+
+        harvest = (
+            THarvest.query
+            .filter(
+                THarvest.id_harvest
+                == id_harvest
             )
+            .with_for_update()
+            .first()
+        )
+
+        if not harvest:
+            return None
+
+        item_contributions = (
+            self._get_item_contributions(
+                harvest,
+                entity_type,
+            )
+            or {}
+        )
+
+        previous_count = sum(
+            item_contributions.values()
+        )
+
+        item_key = str(item_id)
+
+        item_contributions[item_key] = (
+            int(
+                item_contributions.get(
+                    item_key,
+                    0,
+                )
+            )
+            + 1
+        )
+
+        action_count = sum(
+            item_contributions.values()
+        )
+
+        self._store_item_contributions(
+            harvest,
+            entity_type,
+            item_contributions,
+        )
 
         self._store_count(
             harvest,
@@ -239,27 +489,195 @@ class GamificationRepository:
 
         db.session.commit()
 
-
-        # =================================================
-        # GAMIFICATION - NOUVEAU SUCCÈS
-        #
-        # L'événement n'est retourné que pour l'action
-        # précise qui vient d'atteindre un palier.
-        #
-        # Exemple :
-        # 4 -> 5  : événement
-        # 5 -> 6  : aucun événement
-        # =================================================
-
-        if action_count in self.ACHIEVEMENT_THRESHOLDS:
-
+        if (
+            action_count
+            in self.ACHIEVEMENT_THRESHOLDS
+            and previous_count < action_count
+        ):
             return {
                 "entity_type": entity_type,
                 "action_count": action_count,
             }
 
-
         return None
+
+
+    # =====================================================
+    # GAMIFICATION - PRÉPARATION SUPPRESSION
+    # =====================================================
+
+    def prepare_delete_context(
+        self,
+        endpoint_name,
+        view_args=None,
+    ):
+        view_args = view_args or {}
+
+        entity_type = (
+            self.DELETE_ENDPOINTS.get(
+                endpoint_name
+            )
+        )
+
+        if endpoint_name == "delete_test":
+            entity_type = (
+                self._get_test_entity_type(
+                    endpoint_name,
+                    view_args,
+                    {},
+                )
+            )
+
+        if not entity_type:
+            return None
+
+        id_harvest = (
+            self._get_harvest_id(
+                endpoint_name,
+                view_args,
+            )
+        )
+
+        if not id_harvest:
+            return None
+
+        item_id = (
+            self._get_item_id(
+                endpoint_name,
+                view_args,
+                {},
+            )
+        )
+
+        if item_id is None:
+            return None
+
+        harvest = (
+            THarvest.query
+            .filter(
+                THarvest.id_harvest
+                == id_harvest
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not harvest:
+            return None
+
+        item_contributions = (
+            self._ensure_item_contributions(
+                harvest,
+                id_harvest,
+                entity_type,
+            )
+        )
+
+        self._store_count(
+            harvest,
+            entity_type,
+            sum(
+                item_contributions.values()
+            ),
+        )
+
+        db.session.commit()
+
+        return {
+            "id_harvest": id_harvest,
+            "entity_type": entity_type,
+            "item_id": item_id,
+        }
+
+
+    # =====================================================
+    # GAMIFICATION - SUPPRESSION RÉUSSIE
+    #
+    # Toute la contribution de l'élément disparaît :
+    # sa création + toutes ses modifications comptabilisées.
+    # =====================================================
+
+    def register_successful_deletion(
+        self,
+        delete_context,
+    ):
+        if not delete_context:
+            return None
+
+        id_harvest = (
+            delete_context.get(
+                "id_harvest"
+            )
+        )
+
+        entity_type = (
+            delete_context.get(
+                "entity_type"
+            )
+        )
+
+        item_id = (
+            delete_context.get(
+                "item_id"
+            )
+        )
+
+        if (
+            not id_harvest
+            or entity_type
+            not in self.ENTITY_TYPES
+            or item_id is None
+        ):
+            return None
+
+        harvest = (
+            THarvest.query
+            .filter(
+                THarvest.id_harvest
+                == id_harvest
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not harvest:
+            return None
+
+        item_contributions = (
+            self._get_item_contributions(
+                harvest,
+                entity_type,
+            )
+            or {}
+        )
+
+        item_contributions.pop(
+            str(item_id),
+            None,
+        )
+
+        action_count = sum(
+            item_contributions.values()
+        )
+
+        self._store_item_contributions(
+            harvest,
+            entity_type,
+            item_contributions,
+        )
+
+        self._store_count(
+            harvest,
+            entity_type,
+            action_count,
+        )
+
+        db.session.commit()
+
+        return {
+            "entity_type": entity_type,
+            "action_count": action_count,
+        }
 
 
     def _get_test_entity_type(
@@ -271,13 +689,18 @@ class GamificationRepository:
         id_test_type = None
 
         if endpoint_name == "create_test":
+
             id_test_type = (
                 payload.get(
                     "id_test_type"
                 )
             )
 
-        elif endpoint_name == "update_test":
+        elif endpoint_name in {
+            "update_test",
+            "delete_test",
+        }:
+
             id_test = (
                 view_args.get(
                     "id_test"
@@ -345,7 +768,10 @@ class GamificationRepository:
         if (
             not id_material
             and endpoint_name
-            == "update_seed"
+            in {
+                "update_seed",
+                "delete_seed",
+            }
         ):
             id_seed = (
                 view_args.get(
@@ -382,6 +808,120 @@ class GamificationRepository:
             else None
         )
 
+    # =====================================================
+    # GAMIFICATION - ID DE L'ÉLÉMENT
+    # =====================================================
+
+    def _get_item_id(
+        self,
+        endpoint_name,
+        view_args,
+        response_payload,
+    ):
+        view_arg_by_endpoint = {
+            "update_material": "id_material",
+            "delete_material": "id_material",
+
+            "update_seed": "id_seed",
+            "delete_seed": "id_seed",
+
+            "update_action": "id_storage",
+            "delete_action": "id_storage",
+
+            "update_sowing": "id_sowing",
+            "delete_sowing": "id_sowing",
+
+            "update_culture": "id_culture",
+            "delete_culture": "id_culture",
+
+            "update_test": "id_test",
+            "delete_test": "id_test",
+        }
+
+        view_arg = (
+            view_arg_by_endpoint.get(
+                endpoint_name
+            )
+        )
+
+        if view_arg:
+
+            return view_args.get(
+                view_arg
+            )
+
+
+        if endpoint_name == "create_material":
+
+            material = (
+                response_payload.get(
+                    "material"
+                )
+                or {}
+            )
+
+            return material.get(
+                "id_material"
+            )
+
+
+        if endpoint_name == "add_seed_to_material":
+
+            return response_payload.get(
+                "id_seed"
+            )
+
+
+        if endpoint_name == "add_action":
+
+            return response_payload.get(
+                "id_storage"
+            )
+
+
+        if endpoint_name == "create_sowing":
+
+            sowing = (
+                response_payload.get(
+                    "sowing"
+                )
+                or {}
+            )
+
+            return sowing.get(
+                "id_sowing"
+            )
+
+
+        if endpoint_name == "create_culture":
+
+            culture = (
+                response_payload.get(
+                    "culture"
+                )
+                or {}
+            )
+
+            return culture.get(
+                "id_culture"
+            )
+
+
+        if endpoint_name == "create_test":
+
+            test = (
+                response_payload.get(
+                    "test"
+                )
+                or {}
+            )
+
+            return test.get(
+                "id_test"
+            )
+
+
+        return None
 
     def _get_stored_count(
         self,
@@ -471,30 +1011,190 @@ class GamificationRepository:
         )
 
 
-    def _get_baseline_count(
+    # =====================================================
+    # GAMIFICATION - CONTRIBUTIONS PAR ÉLÉMENT
+    # =====================================================
+
+    def _get_item_contributions(
+        self,
+        harvest,
+        entity_type,
+    ):
+        additional_data = (
+            harvest.additional_data
+            if isinstance(
+                harvest.additional_data,
+                dict,
+            )
+            else {}
+        )
+
+        all_items = (
+            additional_data.get(
+                "gamification_items"
+            )
+        )
+
+        if not isinstance(
+            all_items,
+            dict,
+        ):
+            return None
+
+        entity_items = (
+            all_items.get(
+                entity_type
+            )
+        )
+
+        if not isinstance(
+            entity_items,
+            dict,
+        ):
+            return None
+
+        result = {}
+
+        for (
+            item_id,
+            contribution
+        ) in entity_items.items():
+
+            try:
+
+                result[
+                    str(item_id)
+                ] = int(
+                    contribution
+                )
+
+            except (
+                TypeError,
+                ValueError,
+            ):
+
+                continue
+
+        return result
+
+
+    def _store_item_contributions(
+        self,
+        harvest,
+        entity_type,
+        item_contributions,
+    ):
+        additional_data = dict(
+            harvest.additional_data
+            if isinstance(
+                harvest.additional_data,
+                dict,
+            )
+            else {}
+        )
+
+        all_items = dict(
+            additional_data.get(
+                "gamification_items"
+            )
+            if isinstance(
+                additional_data.get(
+                    "gamification_items"
+                ),
+                dict,
+            )
+            else {}
+        )
+
+        all_items[
+            entity_type
+        ] = {
+
+            str(item_id):
+                int(contribution)
+
+            for (
+                item_id,
+                contribution
+            )
+            in item_contributions.items()
+
+        }
+
+        additional_data[
+            "gamification_items"
+        ] = all_items
+
+        harvest.additional_data = (
+            additional_data
+        )
+
+
+    def _ensure_item_contributions(
+        self,
+        harvest,
+        id_harvest,
+        entity_type,
+    ):
+        item_contributions = (
+            self._get_item_contributions(
+                harvest,
+                entity_type,
+            )
+        )
+
+        if item_contributions is not None:
+
+            return item_contributions
+
+        item_contributions = (
+            self._get_baseline_items(
+                id_harvest,
+                entity_type,
+            )
+        )
+
+        self._store_item_contributions(
+            harvest,
+            entity_type,
+            item_contributions,
+        )
+
+        return item_contributions
+
+
+    # =====================================================
+    # GAMIFICATION - BASE INITIALE PAR ÉLÉMENT
+    # =====================================================
+
+    def _get_baseline_items(
         self,
         id_harvest,
         entity_type,
     ):
         if entity_type == "material":
 
-            query = (
+            items = (
                 TMaterial.query
                 .filter(
                     TMaterial.id_harvest
                     == id_harvest
                 )
+                .all()
             )
 
-            model = TMaterial
+            id_attribute = (
+                "id_material"
+            )
 
 
         elif entity_type == "seed":
 
-            query = (
+            items = (
                 TMaterielSeed.query
                 .join(
                     TMaterial,
+
                     TMaterielSeed.id_material
                     == TMaterial.id_material,
                 )
@@ -502,17 +1202,21 @@ class GamificationRepository:
                     TMaterial.id_harvest
                     == id_harvest
                 )
+                .all()
             )
 
-            model = TMaterielSeed
+            id_attribute = (
+                "id_seed"
+            )
 
 
         elif entity_type == "storage":
 
-            query = (
+            items = (
                 TStorage.query
                 .join(
                     TMaterial,
+
                     TStorage.id_material
                     == TMaterial.id_material,
                 )
@@ -520,9 +1224,12 @@ class GamificationRepository:
                     TMaterial.id_harvest
                     == id_harvest
                 )
+                .all()
             )
 
-            model = TStorage
+            id_attribute = (
+                "id_storage"
+            )
 
 
         elif entity_type in {
@@ -537,35 +1244,42 @@ class GamificationRepository:
                 else "via"
             )
 
-            query = (
+            items = (
                 TTest.query
                 .join(
                     TMaterial,
+
                     TTest.id_material
                     == TMaterial.id_material,
                 )
                 .join(
                     TNomenclatures,
+
                     TTest.id_test_type
                     == TNomenclatures.id_nomenclature,
                 )
                 .filter(
                     TMaterial.id_harvest
                     == id_harvest,
+
                     TNomenclatures.cd_nomenclature
                     == test_code,
                 )
+                .all()
             )
 
-            model = TTest
+            id_attribute = (
+                "id_test"
+            )
 
 
         elif entity_type == "sowing":
 
-            query = (
+            items = (
                 TSowing.query
                 .join(
                     TMaterial,
+
                     TSowing.id_material
                     == TMaterial.id_material,
                 )
@@ -573,17 +1287,21 @@ class GamificationRepository:
                     TMaterial.id_harvest
                     == id_harvest
                 )
+                .all()
             )
 
-            model = TSowing
+            id_attribute = (
+                "id_sowing"
+            )
 
 
         elif entity_type == "culture":
 
-            query = (
+            items = (
                 TCulture.query
                 .join(
                     TMaterial,
+
                     TCulture.id_material
                     == TMaterial.id_material,
                 )
@@ -591,33 +1309,46 @@ class GamificationRepository:
                     TMaterial.id_harvest
                     == id_harvest
                 )
+                .all()
             )
 
-            model = TCulture
+            id_attribute = (
+                "id_culture"
+            )
 
 
         else:
-            return 0
+
+            return {}
 
 
-        creation_count = (
-            query.count()
-        )
+        result = {}
 
-        modification_count = (
-            query
-            .filter(
-                model.meta_update_date
-                .isnot(None)
-            )
-            .count()
-        )
 
-        return (
-            creation_count
-            + modification_count
-        )
+        for item in items:
 
+            contribution = 1
+
+
+            if (
+                item.meta_update_date
+                is not None
+            ):
+
+                contribution += 1
+
+
+            result[
+                str(
+                    getattr(
+                        item,
+                        id_attribute,
+                    )
+                )
+            ] = contribution
+
+
+        return result
 
 class HarvestRepository:
     date_fmt = "%Y-%m-%d"

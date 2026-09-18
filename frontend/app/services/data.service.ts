@@ -81,8 +81,18 @@ export class DataService {
     return this.api.put(`${this.moduleBaseUrl}/harvests/${id_harvest}`, data);
   }
 
-  deleteMaterial(id_material: number) {
-    return this.api.delete(`${this.moduleBaseUrl}/materials/${id_material}`);
+  deleteMaterial(
+    id_material: number
+  ) {
+
+    return this.trackGamificationAchievement(
+
+      this.api.delete(
+        `${this.moduleBaseUrl}/materials/${id_material}`
+      )
+
+    );
+
   }
 
   getMaterialsByHarvest(id_harvest: number, params: HttpParams) {
@@ -182,8 +192,18 @@ export class DataService {
 
   }
 
-  deleteSeed(id_seed: number) {
-    return this.api.delete(`${this.moduleBaseUrl}/materials/seeds/${id_seed}`);
+  deleteSeed(
+    id_seed: number
+  ) {
+
+    return this.trackGamificationAchievement(
+
+      this.api.delete(
+        `${this.moduleBaseUrl}/materials/seeds/${id_seed}`
+      )
+
+    );
+
   }  
 
   getSeedByMaterial(id_material: number): Observable<any> {
@@ -276,8 +296,19 @@ export class DataService {
   }
 
 
-  deleteAction(idMaterial: number, idStorage: number): Observable<any> {
-    return this.api.delete(`${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idStorage}`);
+  deleteAction(
+    idMaterial: number,
+    idStorage: number
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.delete(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idStorage}`
+      )
+
+    );
+
   }
 
   addTest(
@@ -345,10 +376,19 @@ export class DataService {
 
   
   
-  deleteTest(id_material: number, id_test: number): Observable<any> {
-    return this.api.delete(
-      `${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`
+  deleteTest(
+    id_material: number,
+    id_test: number
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.delete(
+        `${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`
+      )
+
     );
+
   }
 
   updateTest(
@@ -488,8 +528,19 @@ export class DataService {
 
   }
 
-  deleteSowing(idMaterial: number, idSowing: number): Observable<any> {
-    return this.api.delete<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`);
+  deleteSowing(
+    idMaterial: number,
+    idSowing: number
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.delete<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`
+      )
+
+    );
+
   }
   
   getSowingsByMaterial(idMaterial: number): Observable<any[]> {
@@ -702,8 +753,14 @@ export class DataService {
     idMaterial: number,
     idCulture: number
   ): Observable<any> {
-    return this.api.delete<any>(
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures/${idCulture}`
+
+    return this.trackGamificationAchievement(
+
+      this.api.delete<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/cultures/${idCulture}`
+      )
+
     );
+
   }  
 }

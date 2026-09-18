@@ -67,14 +67,105 @@ SEED_MATERIAL_CODE = "gr"
 # =========================================================
 # GAMIFICATION - SUIVI AUTONOME
 #
-# IMPORTANT :
+# La préparation est faite AVANT l'opération métier afin de
+# connaître l'élément concerné.
 #
-# cette fonction intervient APRÈS la réponse métier.
+# Le compteur n'est réellement modifié qu'APRÈS une réponse
+# métier réussie (2xx).
 #
-# La création ou la modification a donc déjà été validée.
-# Si Gamification rencontre un problème, l'opération métier
-# reste intacte.
+# Une suppression retire toute la contribution de l'élément
+# sans jamais déclencher de félicitations.
 # =========================================================
+
+
+@blueprint.before_request
+def prepare_gamification_context():
+    if request.method not in {
+        "POST",
+        "PUT",
+        "DELETE",
+    }:
+        return None
+
+
+    endpoint_name = (
+        request.endpoint.rsplit(
+            ".",
+            1,
+        )[-1]
+
+        if request.endpoint
+
+        else ""
+    )
+
+
+    repo = GamificationRepository()
+
+
+    try:
+
+        if (
+            request.method in {
+                "POST",
+                "PUT",
+            }
+            and repo.is_tracked_endpoint(
+                endpoint_name
+            )
+        ):
+
+            g.gamification_action_context = (
+                repo.prepare_action_context(
+                    endpoint_name=endpoint_name,
+                    view_args=(
+                        request.view_args
+                        or {}
+                    ),
+                    payload=(
+                        request.get_json(
+                            silent=True
+                        )
+                        or {}
+                    ),
+                )
+            )
+
+
+        elif (
+            request.method == "DELETE"
+            and repo.is_tracked_delete_endpoint(
+                endpoint_name
+            )
+        ):
+
+            g.gamification_delete_context = (
+                repo.prepare_delete_context(
+                    endpoint_name=endpoint_name,
+                    view_args=(
+                        request.view_args
+                        or {}
+                    ),
+                )
+            )
+
+
+    except Exception:
+
+        db.session.rollback()
+
+
+        current_app.logger.exception(
+            "Gamification preparation failed for %s",
+            endpoint_name,
+        )
+
+
+        g.gamification_action_context = None
+        g.gamification_delete_context = None
+
+
+    return None
 
 
 @blueprint.after_request
@@ -84,6 +175,7 @@ def track_gamification_after_success(
     if request.method not in {
         "POST",
         "PUT",
+        "DELETE",
     }:
         return response
 
@@ -110,25 +202,91 @@ def track_gamification_after_success(
     repo = GamificationRepository()
 
 
-    if not repo.is_tracked_endpoint(
-        endpoint_name
-    ):
-        return response
-
-
     try:
 
-        achievement = repo.register_successful_action(
-            endpoint_name=endpoint_name,
-            view_args=(
-                request.view_args
-                or {}
-            ),
-            payload=(
-                request.get_json(
-                    silent=True
+        response_payload = (
+            response.get_json(
+                silent=True
+            )
+            or {}
+        )
+
+
+        # =================================================
+        # GAMIFICATION - SUPPRESSION
+        # =================================================
+
+        if request.method == "DELETE":
+
+            if not repo.is_tracked_delete_endpoint(
+                endpoint_name
+            ):
+                return response
+
+
+            progress = (
+                repo.register_successful_deletion(
+                    getattr(
+                        g,
+                        "gamification_delete_context",
+                        None,
+                    )
                 )
-                or {}
+            )
+
+
+            if (
+                progress
+                and isinstance(
+                    response_payload,
+                    dict,
+                )
+            ):
+
+                response_payload[
+                    "gamification_progress"
+                ] = progress
+
+
+                response.set_data(
+                    json.dumps(
+                        response_payload,
+                        ensure_ascii=False,
+                    )
+                )
+
+
+                response.content_type = (
+                    "application/json; charset=utf-8"
+                )
+
+
+            return response
+
+
+        # =================================================
+        # GAMIFICATION - CRÉATION / MODIFICATION
+        # =================================================
+
+        if not repo.is_tracked_endpoint(
+            endpoint_name
+        ):
+            return response
+
+
+        achievement = repo.register_successful_action(
+            getattr(
+                g,
+                "gamification_action_context",
+                None,
+            ),
+            response_payload=(
+                response_payload
+                if isinstance(
+                    response_payload,
+                    dict,
+                )
+                else {}
             ),
         )
 
@@ -657,6 +815,87 @@ def get_gamification_stats(
 
         action_count = (
             repo.get_action_count(
+                id_harvest,
+                entity_type,
+            )
+        )
+
+
+    except ValueError as error:
+
+        message = str(error)
+
+
+        status_code = (
+            404
+            if message
+            == "Récolte non trouvée"
+            else 400
+        )
+
+
+        return {
+            "error": message
+        }, status_code
+
+
+    return {
+        "entity_type": entity_type,
+        "action_count": action_count,
+    }, 200
+
+
+# =========================================================
+# GAMIFICATION - RÉINITIALISER / VÉRIFIER LE CALCUL
+#
+# Une rubrique : recalcul uniquement de cette rubrique.
+# "all"        : recalcul des 7 rubriques.
+# =========================================================
+
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/gamification/<string:entity_type>/reset",
+    methods=["POST"],
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def reset_gamification_stats(
+    id_harvest,
+    entity_type,
+):
+    repo = GamificationRepository()
+
+
+    try:
+
+        if entity_type == "all":
+
+            sections = {}
+
+
+            for section in sorted(
+                repo.ENTITY_TYPES
+            ):
+
+                sections[section] = (
+                    repo.recalculate_action_count(
+                        id_harvest,
+                        section,
+                    )
+                )
+
+
+            return {
+                "entity_type": "all",
+                "sections": sections,
+            }, 200
+
+
+        action_count = (
+            repo.recalculate_action_count(
                 id_harvest,
                 entity_type,
             )
