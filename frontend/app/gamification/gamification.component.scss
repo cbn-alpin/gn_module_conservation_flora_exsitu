@@ -1531,6 +1531,14 @@
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.14);
 
+  transform: translateY(0) scale(1);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease,
+    filter 0.18s ease;
+
   z-index: 2;
 }
 
@@ -1562,16 +1570,20 @@
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.05);
 
+  transform: translateY(0);
+
   transition:
-    border-color 0.16s ease,
-    box-shadow 0.16s ease,
-    opacity 0.16s ease;
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    opacity 0.18s ease;
 }
 
 
 .gamification-success-card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 
   gap: 12px;
@@ -1585,6 +1597,7 @@
 
   font-size: 13px;
   font-weight: 800;
+  line-height: 18px;
 }
 
 
@@ -1619,11 +1632,22 @@
 
 
 .gamification-success-status-unlocked {
-  color: #2e7d32;
+  padding: 5px 10px;
 
-  background-color: #edf7ee;
+  color: #ffffff;
 
-  border: 1px solid #a5d6a7;
+  background-color: #43a047;
+
+  border: 1px solid #2e7d32;
+  border-radius: 12px;
+
+  box-shadow:
+    0 2px 5px rgba(46, 125, 50, 0.20);
+
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 14px;
+  letter-spacing: 0.1px;
 }
 
 
@@ -1651,6 +1675,10 @@
 
 /* =========================================================
    GAMIFICATION - SUCCÈS DÉBLOQUÉ
+
+   Mise en avant nette sans agrandir la carte,
+   afin de conserver un espacement régulier
+   entre tous les succès.
    ========================================================= */
 
 .gamification-success-unlocked
@@ -1658,19 +1686,50 @@
   background-color:
     var(--gamification-section-soft);
 
-  border-color: #ffffff;
+  border: 3px solid #ffffff;
 
   box-shadow:
     0 0 0 2px
       var(--gamification-section-color),
-    0 2px 7px rgba(0, 0, 0, 0.12);
+    0 3px 7px rgba(0, 0, 0, 0.14);
 }
 
 
 .gamification-success-unlocked
 .gamification-success-card {
-  border-color:
+  border:
+    2px solid
     var(--gamification-section-color);
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--gamification-section-soft) 0%,
+      #ffffff 34%
+    );
+
+  box-shadow:
+    0 3px 9px rgba(0, 0, 0, 0.09);
+}
+
+
+.gamification-success-unlocked
+.gamification-success-label {
+  color:
+    var(--gamification-section-text);
+
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1px;
+}
+
+
+.gamification-success-unlocked
+.gamification-success-description {
+  color: #555555;
+
+  font-size: 11px;
+  font-weight: 600;
 }
 
 
@@ -1734,6 +1793,110 @@
 )
 .gamification-success-card {
   opacity: 0.62;
+}
+
+
+/* =========================================================
+   GAMIFICATION - SURVOL DES SUCCÈS
+
+   Effet d'élévation léger et dynamique.
+   Aucun changement de taille dans le flux :
+   les autres cartes ne bougent pas.
+   ========================================================= */
+
+.gamification-success-item:hover
+.gamification-success-card {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.13);
+}
+
+
+.gamification-success-item:hover
+.gamification-success-marker {
+  transform:
+    translateY(-2px)
+    scale(1.10);
+
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 5px 12px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================================
+   GAMIFICATION - SURVOL SUCCÈS DÉBLOQUÉ
+   ========================================================= */
+
+.gamification-success-unlocked:hover
+.gamification-success-card {
+  border-color:
+    var(--gamification-section-color);
+
+  box-shadow:
+    0 9px 20px rgba(0, 0, 0, 0.14);
+}
+
+
+.gamification-success-unlocked:hover
+.gamification-success-marker {
+  box-shadow:
+    0 0 0 3px #ffffff,
+    0 0 0 5px
+      var(--gamification-section-color),
+    0 5px 12px rgba(0, 0, 0, 0.20);
+}
+
+
+.gamification-success-unlocked:hover
+.gamification-success-status-unlocked {
+  background-color: #388e3c;
+
+  box-shadow:
+    0 3px 8px rgba(46, 125, 50, 0.30);
+}
+
+
+/* =========================================================
+   GAMIFICATION - SURVOL DU PROCHAIN SUCCÈS
+   ========================================================= */
+
+.gamification-success-next:hover
+.gamification-success-card {
+  box-shadow:
+    0 9px 20px rgba(0, 0, 0, 0.13);
+}
+
+
+/* =========================================================
+   GAMIFICATION - SURVOL SUCCÈS VERROUILLÉ
+   ========================================================= */
+
+.gamification-success-item:not(
+  .gamification-success-unlocked
+):not(
+  .gamification-success-next
+):hover
+.gamification-success-card {
+  opacity: 0.82;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.09);
+}
+
+
+.gamification-success-item:not(
+  .gamification-success-unlocked
+):not(
+  .gamification-success-next
+):hover
+.gamification-success-marker {
+  opacity: 0.82;
+
+  filter: grayscale(0.20);
 }
 
 
