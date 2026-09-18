@@ -48,6 +48,7 @@ from .repositories import (
     CultureActionTransplantationRepository,
     CultureActionTreatmentRepository,
     CultureRepository,
+    GamificationRepository,
     HarvestMaterialRepository,
     HarvestRepository,
     SowingRepository,
@@ -61,6 +62,92 @@ log = logging.getLogger(__name__)
 
 
 SEED_MATERIAL_CODE = "gr"
+
+
+# =========================================================
+# GAMIFICATION - SUIVI AUTONOME
+#
+# IMPORTANT :
+#
+# cette fonction intervient APRÈS la réponse métier.
+#
+# La création ou la modification a donc déjà été validée.
+# Si Gamification rencontre un problème, l'opération métier
+# reste intacte.
+# =========================================================
+
+
+@blueprint.after_request
+def track_gamification_after_success(
+    response,
+):
+    if request.method not in {
+        "POST",
+        "PUT",
+    }:
+        return response
+
+
+    if (
+        response.status_code < 200
+        or response.status_code >= 300
+    ):
+        return response
+
+
+    endpoint_name = (
+        request.endpoint.rsplit(
+            ".",
+            1,
+        )[-1]
+
+        if request.endpoint
+
+        else ""
+    )
+
+
+    repo = GamificationRepository()
+
+
+    if not repo.is_tracked_endpoint(
+        endpoint_name
+    ):
+        return response
+
+
+    try:
+
+        repo.register_successful_action(
+            endpoint_name=endpoint_name,
+            view_args=(
+                request.view_args
+                or {}
+            ),
+            payload=(
+                request.get_json(
+                    silent=True
+                )
+                or {}
+            ),
+        )
+
+
+    except Exception:
+
+        # Gamification ne doit jamais casser
+        # une opération métier déjà réussie.
+
+        db.session.rollback()
+
+
+        current_app.logger.exception(
+            "Gamification tracking failed for %s",
+            endpoint_name,
+        )
+
+
+    return response
 
 
 def get_material_type_code(material):
@@ -501,6 +588,64 @@ def get_harvest_details(harvest_id):
 
     except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
+
+
+# =========================================================
+# GAMIFICATION - STATISTIQUES D'UNE RUBRIQUE
+#
+# Cette route appartient uniquement à Gamification.
+# Elle ne dépend pas d'Historique.
+# =========================================================
+
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/gamification/<string:entity_type>",
+    methods=["GET"],
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def get_gamification_stats(
+    id_harvest,
+    entity_type,
+):
+    repo = GamificationRepository()
+
+
+    try:
+
+        action_count = (
+            repo.get_action_count(
+                id_harvest,
+                entity_type,
+            )
+        )
+
+
+    except ValueError as error:
+
+        message = str(error)
+
+
+        status_code = (
+            404
+            if message
+            == "Récolte non trouvée"
+            else 400
+        )
+
+
+        return {
+            "error": message
+        }, status_code
+
+
+    return {
+        "entity_type": entity_type,
+        "action_count": action_count,
+    }, 200
 
 
 @blueprint.route("/harvests/<int:id_harvest>/materials", methods=["POST"])

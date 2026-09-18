@@ -35,6 +35,550 @@ from .models import (
 )
 
 
+# =========================================================
+# GAMIFICATION - STATISTIQUES AUTONOMES
+#
+# Historique n'est jamais utilisé ici.
+#
+# Les compteurs sont conservés dans
+# t_harvest.additional_data sous la clé "gamification".
+#
+# Chaque rubrique possède son compteur indépendant.
+#
+# Création     = +1
+# Modification = +1
+# Suppression  =  0
+# =========================================================
+
+
+class GamificationRepository:
+
+    ENTITY_TYPES = {
+        "material",
+        "seed",
+        "storage",
+        "germination",
+        "sowing",
+        "viability",
+        "culture",
+    }
+
+    TRACKED_ENDPOINTS = {
+        "create_material": "material",
+        "update_material": "material",
+        "add_seed_to_material": "seed",
+        "update_seed": "seed",
+        "add_action": "storage",
+        "update_action": "storage",
+        "create_sowing": "sowing",
+        "update_sowing": "sowing",
+        "create_culture": "culture",
+        "update_culture": "culture",
+    }
+
+    TEST_ENDPOINTS = {
+        "create_test",
+        "update_test",
+    }
+
+
+    def is_tracked_endpoint(
+        self,
+        endpoint_name,
+    ):
+        return (
+            endpoint_name
+            in self.TRACKED_ENDPOINTS
+            or endpoint_name
+            in self.TEST_ENDPOINTS
+        )
+
+
+    def get_action_count(
+        self,
+        id_harvest,
+        entity_type,
+    ):
+        if entity_type not in self.ENTITY_TYPES:
+            raise ValueError(
+                "Rubrique Gamification inconnue"
+            )
+
+        harvest = THarvest.query.get(
+            id_harvest
+        )
+
+        if not harvest:
+            raise ValueError(
+                "Récolte non trouvée"
+            )
+
+        stored_count = (
+            self._get_stored_count(
+                harvest,
+                entity_type,
+            )
+        )
+
+        if stored_count is not None:
+            return stored_count
+
+        action_count = (
+            self._get_baseline_count(
+                id_harvest,
+                entity_type,
+            )
+        )
+
+        self._store_count(
+            harvest,
+            entity_type,
+            action_count,
+        )
+
+        db.session.commit()
+
+        return action_count
+
+
+    def register_successful_action(
+        self,
+        endpoint_name,
+        view_args=None,
+        payload=None,
+    ):
+        view_args = view_args or {}
+        payload = payload or {}
+
+        entity_type = (
+            self.TRACKED_ENDPOINTS.get(
+                endpoint_name
+            )
+        )
+
+        if endpoint_name in self.TEST_ENDPOINTS:
+            entity_type = (
+                self._get_test_entity_type(
+                    endpoint_name,
+                    view_args,
+                    payload,
+                )
+            )
+
+        if not entity_type:
+            return
+
+        id_harvest = (
+            self._get_harvest_id(
+                endpoint_name,
+                view_args,
+            )
+        )
+
+        if not id_harvest:
+            return
+
+        harvest = (
+            THarvest.query
+            .filter(
+                THarvest.id_harvest
+                == id_harvest
+            )
+            .with_for_update()
+            .first()
+        )
+
+        if not harvest:
+            return
+
+        stored_count = (
+            self._get_stored_count(
+                harvest,
+                entity_type,
+            )
+        )
+
+        if stored_count is None:
+            # L'action métier est déjà validée.
+            # Le baseline contient donc déjà
+            # la création/modification courante.
+            action_count = (
+                self._get_baseline_count(
+                    id_harvest,
+                    entity_type,
+                )
+            )
+        else:
+            action_count = (
+                stored_count + 1
+            )
+
+        self._store_count(
+            harvest,
+            entity_type,
+            action_count,
+        )
+
+        db.session.commit()
+
+
+    def _get_test_entity_type(
+        self,
+        endpoint_name,
+        view_args,
+        payload,
+    ):
+        id_test_type = None
+
+        if endpoint_name == "create_test":
+            id_test_type = (
+                payload.get(
+                    "id_test_type"
+                )
+            )
+
+        elif endpoint_name == "update_test":
+            id_test = (
+                view_args.get(
+                    "id_test"
+                )
+            )
+
+            test = (
+                TTest.query.get(
+                    id_test
+                )
+                if id_test
+                else None
+            )
+
+            id_test_type = (
+                test.id_test_type
+                if test
+                else None
+            )
+
+        if not id_test_type:
+            return None
+
+        code = (
+            db.session
+            .query(
+                TNomenclatures.cd_nomenclature
+            )
+            .filter(
+                TNomenclatures.id_nomenclature
+                == id_test_type
+            )
+            .scalar()
+        )
+
+        if code == "ger":
+            return "germination"
+
+        if code == "via":
+            return "viability"
+
+        return None
+
+
+    def _get_harvest_id(
+        self,
+        endpoint_name,
+        view_args,
+    ):
+        id_harvest = (
+            view_args.get(
+                "id_harvest"
+            )
+        )
+
+        if id_harvest:
+            return id_harvest
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        if (
+            not id_material
+            and endpoint_name
+            == "update_seed"
+        ):
+            id_seed = (
+                view_args.get(
+                    "id_seed"
+                )
+            )
+
+            seed = (
+                TMaterielSeed.query.get(
+                    id_seed
+                )
+                if id_seed
+                else None
+            )
+
+            id_material = (
+                seed.id_material
+                if seed
+                else None
+            )
+
+        if not id_material:
+            return None
+
+        material = (
+            TMaterial.query.get(
+                id_material
+            )
+        )
+
+        return (
+            material.id_harvest
+            if material
+            else None
+        )
+
+
+    def _get_stored_count(
+        self,
+        harvest,
+        entity_type,
+    ):
+        additional_data = (
+            harvest.additional_data
+            if isinstance(
+                harvest.additional_data,
+                dict,
+            )
+            else {}
+        )
+
+        gamification = (
+            additional_data.get(
+                "gamification"
+            )
+        )
+
+        if not isinstance(
+            gamification,
+            dict,
+        ):
+            return None
+
+        value = (
+            gamification.get(
+                entity_type
+            )
+        )
+
+        if value is None:
+            return None
+
+        try:
+            return int(value)
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+            return None
+
+
+    def _store_count(
+        self,
+        harvest,
+        entity_type,
+        action_count,
+    ):
+        additional_data = dict(
+            harvest.additional_data
+            if isinstance(
+                harvest.additional_data,
+                dict,
+            )
+            else {}
+        )
+
+        gamification = dict(
+            additional_data.get(
+                "gamification"
+            )
+            if isinstance(
+                additional_data.get(
+                    "gamification"
+                ),
+                dict,
+            )
+            else {}
+        )
+
+        gamification[
+            entity_type
+        ] = int(
+            action_count
+        )
+
+        additional_data[
+            "gamification"
+        ] = gamification
+
+        harvest.additional_data = (
+            additional_data
+        )
+
+
+    def _get_baseline_count(
+        self,
+        id_harvest,
+        entity_type,
+    ):
+        if entity_type == "material":
+
+            query = (
+                TMaterial.query
+                .filter(
+                    TMaterial.id_harvest
+                    == id_harvest
+                )
+            )
+
+            model = TMaterial
+
+
+        elif entity_type == "seed":
+
+            query = (
+                TMaterielSeed.query
+                .join(
+                    TMaterial,
+                    TMaterielSeed.id_material
+                    == TMaterial.id_material,
+                )
+                .filter(
+                    TMaterial.id_harvest
+                    == id_harvest
+                )
+            )
+
+            model = TMaterielSeed
+
+
+        elif entity_type == "storage":
+
+            query = (
+                TStorage.query
+                .join(
+                    TMaterial,
+                    TStorage.id_material
+                    == TMaterial.id_material,
+                )
+                .filter(
+                    TMaterial.id_harvest
+                    == id_harvest
+                )
+            )
+
+            model = TStorage
+
+
+        elif entity_type in {
+            "germination",
+            "viability",
+        }:
+
+            test_code = (
+                "ger"
+                if entity_type
+                == "germination"
+                else "via"
+            )
+
+            query = (
+                TTest.query
+                .join(
+                    TMaterial,
+                    TTest.id_material
+                    == TMaterial.id_material,
+                )
+                .join(
+                    TNomenclatures,
+                    TTest.id_test_type
+                    == TNomenclatures.id_nomenclature,
+                )
+                .filter(
+                    TMaterial.id_harvest
+                    == id_harvest,
+                    TNomenclatures.cd_nomenclature
+                    == test_code,
+                )
+            )
+
+            model = TTest
+
+
+        elif entity_type == "sowing":
+
+            query = (
+                TSowing.query
+                .join(
+                    TMaterial,
+                    TSowing.id_material
+                    == TMaterial.id_material,
+                )
+                .filter(
+                    TMaterial.id_harvest
+                    == id_harvest
+                )
+            )
+
+            model = TSowing
+
+
+        elif entity_type == "culture":
+
+            query = (
+                TCulture.query
+                .join(
+                    TMaterial,
+                    TCulture.id_material
+                    == TMaterial.id_material,
+                )
+                .filter(
+                    TMaterial.id_harvest
+                    == id_harvest
+                )
+            )
+
+            model = TCulture
+
+
+        else:
+            return 0
+
+
+        creation_count = (
+            query.count()
+        )
+
+        modification_count = (
+            query
+            .filter(
+                model.meta_update_date
+                .isnot(None)
+            )
+            .count()
+        )
+
+        return (
+            creation_count
+            + modification_count
+        )
+
+
 class HarvestRepository:
     date_fmt = "%Y-%m-%d"
     date_time_fmt = "%Y-%m-%d %H:%M:%S"
