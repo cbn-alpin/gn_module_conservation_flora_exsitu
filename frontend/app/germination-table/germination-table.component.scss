@@ -108,6 +108,84 @@
 }
 
 
+/* =========================================================
+   GAMIFICATION - BOUTON COMMUN
+   ========================================================= */
+
+.gamification-button {
+  position: absolute;
+
+  top: 12px;
+  right: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  width: auto;
+  min-width: 0;
+  min-height: 36px;
+
+  padding: 0 13px;
+
+  color: #ffffff !important;
+
+  background-color: #202020 !important;
+
+  border: 1px solid #0d0d0d;
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.20);
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.gamification-button mat-icon {
+  flex-shrink: 0;
+
+  width: 20px;
+  height: 20px;
+
+  margin: 0;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.gamification-button:hover {
+  background-color: #000000 !important;
+
+  transform: scale(1.03);
+
+  box-shadow:
+    0 4px 11px rgba(0, 0, 0, 0.28);
+}
+
+
+/* =========================================================
+   FIN GAMIFICATION - BOUTON COMMUN
+   ========================================================= */
+
+
 .germination-list-hero-icon {
   display: flex;
   align-items: center;
