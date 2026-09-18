@@ -2,7 +2,11 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ConfigService } from './config.service';
 import { Observable, of, } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+
+import {
+  GamificationAchievementService
+} from '../gamification/gamification-achievement.service';
 
 
 @Injectable()
@@ -10,10 +14,46 @@ export class DataService {
   
   private moduleBaseUrl: string;
 
+
   constructor(
-    private api: HttpClient, 
-    private cfg: ConfigService,) {
-    this.moduleBaseUrl = this.cfg.getModuleBackendUrl();
+    private api: HttpClient,
+    private cfg: ConfigService,
+    private gamificationAchievementService:
+      GamificationAchievementService
+  ) {
+
+    this.moduleBaseUrl =
+      this.cfg.getModuleBackendUrl();
+
+  }
+
+
+  /* =========================================================
+     GAMIFICATION - DÉTECTION CENTRALISÉE DES SUCCÈS
+
+     Seules les réponses contenant réellement
+     gamification_achievement provoquent quelque chose.
+     ========================================================= */
+
+  private trackGamificationAchievement<T>(
+    request$: Observable<T>
+  ): Observable<T> {
+
+    return request$.pipe(
+
+      tap(
+        response => {
+
+          this.gamificationAchievementService
+            .notifyFromResponse(
+              response
+            );
+
+        }
+      )
+
+    );
+
   }
 
   getLocationTypeIds() {
@@ -59,11 +99,34 @@ export class DataService {
   }
 
   addMaterial(data: any, id_harvest: number) {
-    return this.api.post<any>(`${this.moduleBaseUrl}/harvests/${id_harvest}/materials`, data);
+
+    return this.trackGamificationAchievement(
+
+      this.api.post<any>(
+        `${this.moduleBaseUrl}/harvests/${id_harvest}/materials`,
+        data
+      )
+
+    );
+
   }
 
-  updateMaterial(data: any, id_harvest: number, id_material: number) {
-    return this.api.put<any>(`${this.moduleBaseUrl}/harvests/${id_harvest}/materials/${id_material}`, data);
+
+  updateMaterial(
+    data: any,
+    id_harvest: number,
+    id_material: number
+  ) {
+
+    return this.trackGamificationAchievement(
+
+      this.api.put<any>(
+        `${this.moduleBaseUrl}/harvests/${id_harvest}/materials/${id_material}`,
+        data
+      )
+
+    );
+
   }
 
   getFilteredCodes(query: string): Observable<string[]> {
@@ -103,8 +166,20 @@ export class DataService {
     return this.api.get(`${this.moduleBaseUrl}/harvest/export?format=csv`, { params, responseType: 'blob' });
   }
 
-  addSeedToMaterial(idMaterial: number, seedData: any): Observable<any> {
-    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/seeds`, seedData);
+  addSeedToMaterial(
+    idMaterial: number,
+    seedData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.post<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/seeds`,
+        seedData
+      )
+
+    );
+
   }
 
   deleteSeed(id_seed: number) {
@@ -115,8 +190,20 @@ export class DataService {
     return this.api.get<any>(`${this.moduleBaseUrl}/materials/${id_material}/seeds`);
   }
 
-  updateSeed(id_seed: number, data: any) {
-    return this.api.put<any>(`${this.moduleBaseUrl}/materials/seeds/${id_seed}`, data);
+  updateSeed(
+    id_seed: number,
+    data: any
+  ) {
+
+    return this.trackGamificationAchievement(
+
+      this.api.put<any>(
+        `${this.moduleBaseUrl}/materials/seeds/${id_seed}`,
+        data
+      )
+
+    );
+
   }
 
   getFullSeedDetails(idSeed: number): Observable<any> {
@@ -139,12 +226,38 @@ export class DataService {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/harvests/${idHarvest}/materials/code-autocomplete`);
   }
 
-  addAction(idMaterial: number, actionData: any): Observable<any> {
-    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/actions`, actionData);
+  addAction(
+    idMaterial: number,
+    actionData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.post<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/actions`,
+        actionData
+      )
+
+    );
+
   }
 
-  upAction(idMaterial: number, idAction: number, actionData: any): Observable<any> {
-    return this.api.put<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idAction}`, actionData);
+
+  upAction(
+    idMaterial: number,
+    idAction: number,
+    actionData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.put<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idAction}`,
+        actionData
+      )
+
+    );
+
   }
 
   getActionContextStorage(idMaterial: number, placeCode: string) : Observable<any>{
@@ -167,8 +280,20 @@ export class DataService {
     return this.api.delete(`${this.moduleBaseUrl}/materials/${idMaterial}/actions/${idStorage}`);
   }
 
-  addTest(id_material: number, testData: any): Observable<any> {
-    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${id_material}/tests`, testData);
+  addTest(
+    id_material: number,
+    testData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.post<any>(
+        `${this.moduleBaseUrl}/materials/${id_material}/tests`,
+        testData
+      )
+
+    );
+
   }  
   getTestsByMaterial(id_material: number): Observable<any[]> {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${id_material}/tests`);
@@ -178,8 +303,20 @@ export class DataService {
   getTestCodeParent(id_material: number): Observable<any[]> {
     return this.api.get<any[]>(`${this.moduleBaseUrl}/materials/${id_material}/tests/code-autocomplete`);
   }
-  createTest(data: any, id_material: number): Observable<any> {
-    return this.api.post(`${this.moduleBaseUrl}/materials/${id_material}/tests`, data);
+  createTest(
+    data: any,
+    id_material: number
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.post(
+        `${this.moduleBaseUrl}/materials/${id_material}/tests`,
+        data
+      )
+
+    );
+
   }
   
   getTestById(id_test: number): Observable<any> {
@@ -214,8 +351,21 @@ export class DataService {
     );
   }
 
-  updateTest(id_material: number, id_test: number, testData: any): Observable<any> {
-    return this.api.put(`${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`, testData);
+  updateTest(
+    id_material: number,
+    id_test: number,
+    testData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.put(
+        `${this.moduleBaseUrl}/materials/${id_material}/tests/${id_test}`,
+        testData
+      )
+
+    );
+
   }
   getTestWithLabelsById(id_test: number): Observable<any> {
     return this.api.get<any>(`${this.moduleBaseUrl}/tests/${id_test}/with-labels`);
@@ -304,12 +454,38 @@ export class DataService {
     return this.api.patch(`${this.moduleBaseUrl}/test/${id_test}/indicators`, indicators);
   }
   
-  addSowing(idMaterial: number, actionData: any): Observable<any> {
-    return this.api.post<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings`, actionData);
+  addSowing(
+    idMaterial: number,
+    actionData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.post<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/sowings`,
+        actionData
+      )
+
+    );
+
   }
 
-  updateSowing(idMaterial: number, idSowing: number, actionData: any): Observable<any> {
-    return this.api.put<any>(`${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`, actionData);
+
+  updateSowing(
+    idMaterial: number,
+    idSowing: number,
+    actionData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.put<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/sowings/${idSowing}`,
+        actionData
+      )
+
+    );
+
   }
 
   deleteSowing(idMaterial: number, idSowing: number): Observable<any> {
@@ -327,11 +503,20 @@ export class DataService {
   }
 
   // Ajouter une culture
-  addCulture(idMaterial: number, cultureData: any): Observable<any> {
-    return this.api.post<any>(
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures`,
-      cultureData
+  addCulture(
+    idMaterial: number,
+    cultureData: any
+  ): Observable<any> {
+
+    return this.trackGamificationAchievement(
+
+      this.api.post<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/cultures`,
+        cultureData
+      )
+
     );
+
   }
 
   // Récupérer les cultures associées à un matériel
@@ -500,10 +685,16 @@ export class DataService {
     idCulture: number,
     cultureData: any
   ): Observable<any> {
-    return this.api.put<any>(
-      `${this.moduleBaseUrl}/materials/${idMaterial}/cultures/${idCulture}`,
-      cultureData
+
+    return this.trackGamificationAchievement(
+
+      this.api.put<any>(
+        `${this.moduleBaseUrl}/materials/${idMaterial}/cultures/${idCulture}`,
+        cultureData
+      )
+
     );
+
   }
 
   // Supprimer une culture

@@ -33,6 +33,38 @@
     </label>
 
 
+    <!-- ===================================================
+         GAMIFICATION - PLUS HAUT SUCCÈS DE LA RUBRIQUE
+         =================================================== -->
+
+    <div
+      class="gamification-inline-success"
+      [attr.title]="
+        inlineSuccessLoading
+          ? 'Chargement du succès'
+          : (
+              inlineSuccessError
+                ? 'Succès indisponible'
+                : inlineSuccessLabel
+            )
+      "
+    >
+
+      <span class="gamification-inline-success-icon">
+        {{
+          inlineSuccessLoading
+            ? '…'
+            : (
+                inlineSuccessError
+                  ? '•'
+                  : inlineSuccessIcon
+              )
+        }}
+      </span>
+
+    </div>
+
+
     <button
       type="button"
       class="gamification-button"
@@ -54,6 +86,112 @@
   </div>
 
 </ng-container>
+
+
+<!-- =========================================================
+     GAMIFICATION - CÉLÉBRATION D'UN SUCCÈS
+     ========================================================= -->
+
+<div
+  *ngIf="!isDialog && achievement"
+  class="gamification-achievement-overlay"
+>
+
+  <!-- CONFETTIS -->
+
+  <div
+    class="gamification-confetti-layer"
+    aria-hidden="true"
+  >
+
+    <span
+      *ngFor="let piece of confettiPieces"
+      class="gamification-confetti-piece"
+      [ngClass]="
+        'gamification-confetti-color-'
+        + (piece % 6)
+      "
+      [style.left.%]="
+        4 + ((piece * 17) % 92)
+      "
+      [style.animation-delay]="
+        ((piece % 9) * 0.06) + 's'
+      "
+      [style.animation-duration]="
+        (1.8 + ((piece % 5) * 0.16)) + 's'
+      "
+    >
+    </span>
+
+  </div>
+
+
+  <!-- CARTE DE FÉLICITATION -->
+
+  <div
+    class="gamification-achievement-card"
+    [ngClass]="
+      'gamification-achievement-'
+      + achievement.entity_type
+    "
+    role="status"
+    aria-live="polite"
+  >
+
+    <button
+      type="button"
+      class="gamification-achievement-close"
+      aria-label="Fermer la félicitation"
+      (click)="closeAchievementCelebration()"
+    >
+      ×
+    </button>
+
+
+    <div class="gamification-achievement-emblem">
+
+      <span>
+        {{ achievementSuccessIcon }}
+      </span>
+
+    </div>
+
+
+    <div class="gamification-achievement-kicker">
+      🎉 Félicitations !
+    </div>
+
+
+    <div class="gamification-achievement-title">
+      Nouveau succès débloqué
+    </div>
+
+
+    <div class="gamification-achievement-success">
+
+      {{ achievementSuccessIcon }}
+
+      {{ achievementSuccessLabel }}
+
+    </div>
+
+
+    <div class="gamification-achievement-section">
+      {{ achievementSectionLabel }}
+    </div>
+
+
+    <div class="gamification-achievement-message">
+
+      Vous venez d'atteindre un nouveau palier.
+
+      Continuez comme ça !
+
+    </div>
+
+  </div>
+
+</div>
 
 
 <!-- =========================================================

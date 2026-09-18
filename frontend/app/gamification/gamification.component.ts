@@ -32,6 +32,11 @@ import {
 } from './gamification.service';
 
 import {
+  GamificationAchievement,
+  GamificationAchievementService
+} from './gamification-achievement.service';
+
+import {
   ExsituFormService
 } from '../form/shared/exsitu-form.service';
 
@@ -99,6 +104,45 @@ export class GamificationComponent implements OnInit, OnDestroy {
   public gamificationLoading = false;
 
   public gamificationError = false;
+
+
+  /* =========================================================
+     GAMIFICATION - PLUS HAUT SUCCÈS DANS LE BOUTON COMPACT
+     ========================================================= */
+
+  public inlineSuccessIcon = '🏅';
+
+  public inlineSuccessLabel =
+    'Bienvenue / Premier pas';
+
+  public inlineSuccessLoading = false;
+
+  public inlineSuccessError = false;
+
+
+  /* =========================================================
+     GAMIFICATION - CÉLÉBRATION D'UN NOUVEAU SUCCÈS
+     ========================================================= */
+
+  public achievement:
+    GamificationAchievement | null = null;
+
+
+  public achievementSuccessIcon = '🏆';
+
+  public achievementSuccessLabel = '';
+
+  public achievementSectionLabel = '';
+
+
+  /*
+   * Confettis créés sans bibliothèque externe.
+   */
+  public readonly confettiPieces =
+    Array.from(
+      { length: 44 },
+      (_, index) => index
+    );
 
 
   /*
@@ -278,6 +322,9 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
   private enabledSubscription: Subscription | null = null;
 
+  private achievementSubscription:
+    Subscription | null = null;
+
 
   /* =========================================================
      GAMIFICATION - DIALOGUE DE SORTIE
@@ -303,6 +350,9 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
   constructor(
     private gamificationService: GamificationService,
+
+    private gamificationAchievementService:
+      GamificationAchievementService,
 
     /*
      * GAMIFICATION
@@ -379,9 +429,112 @@ export class GamificationComponent implements OnInit, OnDestroy {
       this.gamificationService.enabled$
         .subscribe(
           enabled => {
+
             this.enabled = enabled;
+
+
+            /*
+             * Si Gamification passe OFF pendant
+             * une célébration, elle disparaît.
+             */
+            if (!enabled) {
+              this.achievement = null;
+            }
+
           }
         );
+
+
+    /* =======================================================
+       GAMIFICATION - NOUVEAU SUCCÈS
+
+       Cet événement n'existe que si :
+       - une création/modification vient de réussir ;
+       - cette action atteint exactement un palier ;
+       - Gamification était ON à cet instant.
+       ======================================================= */
+
+    this.achievementSubscription =
+      this.gamificationAchievementService
+        .achievement$
+        .subscribe(
+          achievement => {
+
+            if (
+              !achievement
+              || !this.enabled
+            ) {
+
+              this.achievement = null;
+
+              return;
+
+            }
+
+
+            const success =
+              this.gamificationSuccesses.find(
+                item =>
+                  item.threshold
+                  === achievement.action_count
+              );
+
+
+            if (!success) {
+              return;
+            }
+
+
+            this.achievement =
+              achievement;
+
+
+            this.achievementSuccessIcon =
+              success.icon;
+
+
+            this.achievementSuccessLabel =
+              success.label;
+
+
+            this.achievementSectionLabel =
+              this.getGamificationSectionLabel(
+                achievement.entity_type
+              );
+
+
+            /*
+             * Actualise également immédiatement
+             * le petit badge rond à côté du ON/OFF.
+             */
+            if (
+              !this.isDialog
+              && this.initialFilter
+                === achievement.entity_type
+            ) {
+
+              this.inlineSuccessIcon =
+                success.icon;
+
+
+              this.inlineSuccessLabel =
+                success.label;
+
+            }
+
+          }
+        );
+
+
+    /*
+     * GAMIFICATION - MODE COMPACT
+     *
+     * Charge le plus haut succès de la rubrique
+     * affichée à gauche du bouton Gamification.
+     */
+    if (!this.isDialog) {
+      this.loadInlineGamificationSuccess();
+    }
 
 
     /*
@@ -443,6 +596,11 @@ export class GamificationComponent implements OnInit, OnDestroy {
       this.enabledSubscription.unsubscribe();
     }
 
+
+    if (this.achievementSubscription) {
+      this.achievementSubscription.unsubscribe();
+    }
+
   }
 
 
@@ -455,8 +613,122 @@ export class GamificationComponent implements OnInit, OnDestroy {
     const input =
       event.target as HTMLInputElement;
 
+
     this.gamificationService
       .setEnabled(input.checked);
+
+
+    /*
+     * OFF :
+     * on détruit immédiatement toute célébration courante.
+     *
+     * Un succès éventuellement obtenu pendant OFF
+     * ne sera jamais rejoué plus tard.
+     */
+    if (!input.checked) {
+
+      this.gamificationAchievementService
+        .clear();
+
+      return;
+
+    }
+
+
+    /*
+     * ON :
+     * on rafraîchit seulement le logo du meilleur succès.
+     *
+     * IMPORTANT :
+     * ceci ne génère aucune célébration rétroactive.
+     */
+    if (!this.isDialog) {
+      this.loadInlineGamificationSuccess();
+    }
+
+  }
+
+
+  public closeAchievementCelebration(): void {
+
+    this.gamificationAchievementService
+      .clear();
+
+  }
+
+
+  /* =========================================================
+     GAMIFICATION - PLUS HAUT SUCCÈS DU MODE COMPACT
+
+     Chaque rubrique charge uniquement son propre compteur.
+     ========================================================= */
+
+  private loadInlineGamificationSuccess(): void {
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+
+    if (
+      !idHarvest
+      || !this.initialFilter
+      || this.initialFilter === 'all'
+    ) {
+
+      this.inlineSuccessLoading = false;
+      return;
+
+    }
+
+
+    this.inlineSuccessLoading = true;
+    this.inlineSuccessError = false;
+
+
+    this.gamificationService
+      .getGamificationStats(
+        idHarvest,
+        this.initialFilter
+      )
+      .subscribe({
+
+        next: (stats: GamificationStats) => {
+
+          const actionCount =
+            Math.max(
+              0,
+              Number(
+                stats
+                && stats.action_count
+              ) || 0
+            );
+
+
+          const highestSuccess =
+            this.getHighestGamificationSuccess(
+              actionCount
+            );
+
+
+          this.inlineSuccessIcon =
+            highestSuccess.icon;
+
+          this.inlineSuccessLabel =
+            highestSuccess.label;
+
+          this.inlineSuccessLoading = false;
+
+        },
+
+
+        error: () => {
+
+          this.inlineSuccessLoading = false;
+          this.inlineSuccessError = true;
+
+        }
+
+      });
 
   }
 

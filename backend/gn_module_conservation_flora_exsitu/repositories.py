@@ -53,6 +53,24 @@ from .models import (
 
 class GamificationRepository:
 
+    # =====================================================
+    # GAMIFICATION - PALIERS QUI DÉCLENCHENT
+    # UNE CÉLÉBRATION
+    # =====================================================
+
+    ACHIEVEMENT_THRESHOLDS = {
+        1,
+        5,
+        10,
+        15,
+        20,
+        25,
+        35,
+        40,
+        50,
+    }
+
+
     ENTITY_TYPES = {
         "material",
         "seed",
@@ -220,6 +238,28 @@ class GamificationRepository:
         )
 
         db.session.commit()
+
+
+        # =================================================
+        # GAMIFICATION - NOUVEAU SUCCÈS
+        #
+        # L'événement n'est retourné que pour l'action
+        # précise qui vient d'atteindre un palier.
+        #
+        # Exemple :
+        # 4 -> 5  : événement
+        # 5 -> 6  : aucun événement
+        # =================================================
+
+        if action_count in self.ACHIEVEMENT_THRESHOLDS:
+
+            return {
+                "entity_type": entity_type,
+                "action_count": action_count,
+            }
+
+
+        return None
 
 
     def _get_test_entity_type(

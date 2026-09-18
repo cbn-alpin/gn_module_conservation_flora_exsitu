@@ -99,6 +99,10 @@ import {
   GamificationService
 } from './gamification/gamification.service';
 
+import {
+  GamificationAchievementService
+} from './gamification/gamification-achievement.service';
+
 
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
@@ -184,6 +188,7 @@ registerLocaleData(localeFr);
     DialogService,
     ConfigService,
     GamificationService,
+    GamificationAchievementService,
     StockManagementService,
     SemisService,
     GerminationFormService,

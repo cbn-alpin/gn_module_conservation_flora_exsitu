@@ -195,6 +195,76 @@
 
 
 /* =========================================================
+   GAMIFICATION - PLUS HAUT SUCCÈS DU MODE COMPACT
+   ========================================================= */
+
+.gamification-inline-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 36px;
+
+  padding: 0;
+
+  box-sizing: border-box;
+
+  background-color: #292929;
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.16);
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+
+.gamification-inline-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #2e7d32;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f3f3f3 100%
+    );
+
+  border: 2px solid #d9d9d9;
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.18);
+
+  font-size: 16px;
+  line-height: 1;
+
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    opacity 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+
+.gamification-inline-success:hover
+.gamification-inline-success-icon {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 3px 7px rgba(0, 0, 0, 0.22);
+}
+
+
+/* =========================================================
    GAMIFICATION - BOUTON
    ========================================================= */
 
@@ -277,6 +347,34 @@
 }
 
 
+.gamification-control-off
+  .gamification-inline-success {
+  background-color: #eeeeee;
+
+  border-right-color: #c3c3c3;
+}
+
+
+.gamification-control-off
+  .gamification-inline-success-icon {
+  color: #8f8f8f;
+  background:
+    linear-gradient(
+      180deg,
+      #f8f8f8 0%,
+      #ebebeb 100%
+    );
+
+  border-color: #d3d3d3;
+
+  filter: grayscale(1);
+  opacity: 0.70;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.10);
+}
+
+
 .gamification-button:disabled {
   color: #8f8f8f;
 
@@ -291,6 +389,496 @@
 
 .gamification-button:disabled mat-icon {
   color: #8f8f8f;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CÉLÉBRATION D'UN NOUVEAU SUCCÈS
+   ========================================================= */
+
+.gamification-achievement-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding-top: 10vh;
+
+  box-sizing: border-box;
+
+  pointer-events: none;
+
+  z-index: 5000;
+}
+
+
+.gamification-achievement-overlay::before {
+  content: '';
+
+  position: fixed;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.00) 0%,
+      rgba(255, 255, 255, 0.00) 38%,
+      rgba(0, 0, 0, 0.08) 100%
+    );
+
+  pointer-events: none;
+}
+
+
+.gamification-achievement-card {
+  --achievement-color: #7a8f45;
+  --achievement-soft: #f3f6ea;
+  --achievement-text: #667a32;
+
+  position: relative;
+
+  width:
+    min(
+      440px,
+      calc(100vw - 40px)
+    );
+
+  padding:
+    84px
+    30px
+    28px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  color: #444444;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      var(--achievement-soft) 100%
+    );
+
+  border:
+    2px solid
+    var(--achievement-color);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 6px rgba(255, 255, 255, 0.84);
+
+  text-align: center;
+
+  pointer-events: auto;
+
+  z-index: 2;
+
+  animation:
+    gamification-achievement-enter
+    0.42s
+    cubic-bezier(
+      0.2,
+      0.9,
+      0.3,
+      1.15
+    )
+    both;
+}
+
+
+.gamification-achievement-card::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  left: 0;
+
+  height: 6px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--achievement-color) 0%,
+      #ffffff 50%,
+      var(--achievement-color) 100%
+    );
+
+  opacity: 0.95;
+}
+
+
+/* =========================================================
+   GAMIFICATION - MÉDAILLE CENTRALE
+   ========================================================= */
+
+.gamification-achievement-emblem {
+  position: absolute;
+
+  top: 16px;
+  left: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 70px;
+  height: 70px;
+
+  transform:
+    translateX(-50%);
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f8f8f8 100%
+    );
+
+  border:
+    3px solid
+    var(--achievement-color);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 7px 18px rgba(0, 0, 0, 0.16);
+}
+
+
+.gamification-achievement-emblem span {
+  font-size: 35px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   GAMIFICATION - TEXTES
+   ========================================================= */
+
+.gamification-achievement-kicker {
+  color:
+    var(--achievement-text);
+
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+
+.gamification-achievement-title {
+  margin-top: 6px;
+
+  color: #202020;
+
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 28px;
+}
+
+
+.gamification-achievement-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 15px;
+
+  padding:
+    9px
+    16px;
+
+  color:
+    var(--achievement-text);
+
+  background-color: #ffffff;
+
+  border:
+    1px solid
+    var(--achievement-color);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.08);
+
+  font-size: 14px;
+  font-weight: 900;
+}
+
+
+.gamification-achievement-section {
+  margin-top: 12px;
+
+  color:
+    var(--achievement-text);
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.gamification-achievement-message {
+  max-width: 330px;
+
+  margin:
+    10px
+    auto
+    0;
+
+  color: #666666;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   GAMIFICATION - FERMETURE
+   ========================================================= */
+
+.gamification-achievement-close {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  color: #777777;
+
+  background-color:
+    rgba(255, 255, 255, 0.82);
+
+  border:
+    1px solid
+    #dddddd;
+
+  border-radius: 50%;
+
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+}
+
+
+.gamification-achievement-close:hover {
+  transform:
+    scale(1.08);
+
+  background-color: #ffffff;
+}
+
+
+/* =========================================================
+   GAMIFICATION - COULEURS PAR RUBRIQUE
+   ========================================================= */
+
+.gamification-achievement-material {
+  --achievement-color: #7a8f45;
+  --achievement-soft: #f3f6ea;
+  --achievement-text: #667a32;
+}
+
+
+.gamification-achievement-seed {
+  --achievement-color: #c89500;
+  --achievement-soft: #fff6d8;
+  --achievement-text: #a77b00;
+}
+
+
+.gamification-achievement-storage {
+  --achievement-color: #607d8b;
+  --achievement-soft: #eef3f5;
+  --achievement-text: #455a64;
+}
+
+
+.gamification-achievement-germination {
+  --achievement-color: #00897b;
+  --achievement-soft: #e7f5f3;
+  --achievement-text: #00695c;
+}
+
+
+.gamification-achievement-sowing {
+  --achievement-color: #43a047;
+  --achievement-soft: #edf7ee;
+  --achievement-text: #2e7d32;
+}
+
+
+.gamification-achievement-viability {
+  --achievement-color: #e07a1f;
+  --achievement-soft: #fff2e6;
+  --achievement-text: #c7620e;
+}
+
+
+.gamification-achievement-culture {
+  --achievement-color: #6d4c41;
+  --achievement-soft: #efebe9;
+  --achievement-text: #4e342e;
+}
+
+
+/* =========================================================
+   GAMIFICATION - CONFETTIS
+   ========================================================= */
+
+.gamification-confetti-layer {
+  position: fixed;
+  inset: 0;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  z-index: 1;
+}
+
+
+.gamification-confetti-piece {
+  position: absolute;
+
+  top: -20px;
+
+  width: 9px;
+  height: 16px;
+
+  border-radius: 2px;
+
+  opacity: 0;
+
+  animation-name:
+    gamification-confetti-fall;
+
+  animation-timing-function:
+    ease-out;
+
+  animation-fill-mode:
+    both;
+}
+
+
+.gamification-confetti-piece:nth-child(3n) {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+}
+
+
+.gamification-confetti-piece:nth-child(4n) {
+  width: 13px;
+  height: 7px;
+}
+
+
+/* COULEURS DES CONFETTIS */
+
+.gamification-confetti-color-0 {
+  background-color: #e53935;
+}
+
+
+.gamification-confetti-color-1 {
+  background-color: #fbc02d;
+}
+
+
+.gamification-confetti-color-2 {
+  background-color: #43a047;
+}
+
+
+.gamification-confetti-color-3 {
+  background-color: #1e88e5;
+}
+
+
+.gamification-confetti-color-4 {
+  background-color: #8e24aa;
+}
+
+
+.gamification-confetti-color-5 {
+  background-color: #fb8c00;
+}
+
+
+/* =========================================================
+   GAMIFICATION - ANIMATIONS
+   ========================================================= */
+
+@keyframes gamification-confetti-fall {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, -20px, 0)
+      rotate(0deg);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate3d(30px, 82vh, 0)
+      rotate(720deg);
+  }
+
+}
+
+
+@keyframes gamification-achievement-enter {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(-18px)
+      scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
 }
 
 

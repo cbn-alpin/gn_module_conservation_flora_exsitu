@@ -118,7 +118,7 @@ def track_gamification_after_success(
 
     try:
 
-        repo.register_successful_action(
+        achievement = repo.register_successful_action(
             endpoint_name=endpoint_name,
             view_args=(
                 request.view_args
@@ -131,6 +131,45 @@ def track_gamification_after_success(
                 or {}
             ),
         )
+
+
+        # =================================================
+        # GAMIFICATION - ÉVÉNEMENT DE CÉLÉBRATION
+        #
+        # On ajoute l'information uniquement à LA réponse
+        # qui vient réellement de débloquer le succès.
+        #
+        # Aucun historique de célébration n'est conservé.
+        # =================================================
+
+        if achievement:
+
+            response_payload = response.get_json(
+                silent=True
+            )
+
+
+            if isinstance(
+                response_payload,
+                dict
+            ):
+
+                response_payload[
+                    "gamification_achievement"
+                ] = achievement
+
+
+                response.set_data(
+                    json.dumps(
+                        response_payload,
+                        ensure_ascii=False,
+                    )
+                )
+
+
+                response.content_type = (
+                    "application/json; charset=utf-8"
+                )
 
 
     except Exception:
