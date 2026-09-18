@@ -14,6 +14,7 @@ import {
 } from '@angular/material/dialog';
 
 import {
+  forkJoin,
   Subscription
 } from 'rxjs';
 
@@ -168,6 +169,90 @@ export class GamificationComponent implements OnInit, OnDestroy {
       threshold: 50,
       icon: '💎',
       label: '50 ajouts ou modifications'
+    }
+
+  ];
+
+
+  /* =========================================================
+     GAMIFICATION - VUE GLOBALE "TOUT"
+
+     Chaque carte résume le plus haut palier atteint
+     dans une rubrique.
+     ========================================================= */
+
+  public gamificationGlobalUnlockedCount = 0;
+
+  public gamificationOverviewSections = [
+
+    {
+      filter: 'material',
+      label: 'Matériel récolté',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
+    },
+
+    {
+      filter: 'seed',
+      label: 'Semence',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
+    },
+
+    {
+      filter: 'storage',
+      label: 'Stockage',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
+    },
+
+    {
+      filter: 'germination',
+      label: 'Test de germination',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
+    },
+
+    {
+      filter: 'sowing',
+      label: 'Semis',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
+    },
+
+    {
+      filter: 'viability',
+      label: 'Test de viabilité',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
+    },
+
+    {
+      filter: 'culture',
+      label: 'Culture',
+      actionCount: 0,
+      unlockedCount: 0,
+      percentage: 0,
+      successIcon: '🏅',
+      successLabel: 'Bienvenue / Premier pas'
     }
 
   ];
@@ -335,12 +420,17 @@ export class GamificationComponent implements OnInit, OnDestroy {
      *
      * "Tout" reste volontairement inchangé.
      */
-    if (
-      this.isDialog &&
-      this.selectedFilter !== 'all'
-    ) {
+    if (this.isDialog) {
 
-      this.loadGamificationProgress();
+      if (this.selectedFilter === 'all') {
+
+        this.loadGamificationOverview();
+
+      } else {
+
+        this.loadGamificationProgress();
+
+      }
 
     }
 
@@ -471,12 +561,12 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
 
     /*
-     * "Tout" reste volontairement hors
-     * du système de succès pour le moment.
+     * "Tout" affiche maintenant la progression
+     * globale des 7 rubriques.
      */
     if (filter === 'all') {
 
-      this.resetGamificationDisplay();
+      this.loadGamificationOverview();
 
       return;
 
@@ -746,21 +836,218 @@ export class GamificationComponent implements OnInit, OnDestroy {
 
 
   /* =========================================================
-     GAMIFICATION - ÉTAT VISUEL DE "TOUT"
+     GAMIFICATION - VUE GLOBALE "TOUT"
 
-     "Tout" n'est pas encore inclus dans les statistiques.
+     9 succès réels par rubrique x 7 rubriques = 63 points.
+
+     La jauge générale représente le nombre total
+     de paliers débloqués sur ces 63 points possibles.
      ========================================================= */
 
-  private resetGamificationDisplay(): void {
+  private loadGamificationOverview(): void {
 
-    this.gamificationActionCount = 0;
+    const idHarvest =
+      this.exsituFormService.idHarvest;
 
-    this.gamificationPercentage = 50;
 
-    this.gamificationScore = 3;
+    if (!idHarvest) {
+      return;
+    }
 
-    this.gamificationLoading = false;
+
+    const requestedFilter = 'all';
+
+
+    this.gamificationLoading = true;
     this.gamificationError = false;
+
+
+    const requests =
+      this.gamificationOverviewSections
+        .map(
+          section =>
+            this.gamificationService
+              .getGamificationStats(
+                idHarvest,
+                section.filter
+              )
+        );
+
+
+    forkJoin(requests)
+      .subscribe({
+
+        next: (statsList: GamificationStats[]) => {
+
+          if (
+            this.selectedFilter
+            !== requestedFilter
+          ) {
+            return;
+          }
+
+
+          let totalUnlocked = 0;
+          let totalActions = 0;
+
+
+          this.gamificationOverviewSections =
+            this.gamificationOverviewSections
+              .map(
+                (section, index) => {
+
+                  const stats =
+                    statsList[index];
+
+
+                  const actionCount =
+                    Math.max(
+                      0,
+                      Number(
+                        stats
+                        && stats.action_count
+                      ) || 0
+                    );
+
+
+                  const unlockedCount =
+                    this.getGamificationUnlockedCount(
+                      actionCount
+                    );
+
+
+                  const highestSuccess =
+                    this.getHighestGamificationSuccess(
+                      actionCount
+                    );
+
+
+                  totalUnlocked +=
+                    unlockedCount;
+
+                  totalActions +=
+                    actionCount;
+
+
+                  return {
+                    ...section,
+                    actionCount: actionCount,
+                    unlockedCount: unlockedCount,
+                    percentage: Math.round(
+                      (unlockedCount / 9)
+                      * 100
+                    ),
+                    successIcon:
+                      highestSuccess.icon,
+                    successLabel:
+                      highestSuccess.label
+                  };
+
+                }
+              );
+
+
+          this.gamificationGlobalUnlockedCount =
+            totalUnlocked;
+
+          this.gamificationActionCount =
+            totalActions;
+
+          /*
+           * 7 rubriques x 9 succès = 63.
+           */
+          this.gamificationPercentage =
+            Math.round(
+              (totalUnlocked / 63)
+              * 100
+            );
+
+
+          this.gamificationScore =
+            this.getGamificationScoreFromPercentage(
+              this.gamificationPercentage
+            );
+
+
+          this.gamificationLoading = false;
+
+        },
+
+
+        error: () => {
+
+          if (
+            this.selectedFilter
+            !== requestedFilter
+          ) {
+            return;
+          }
+
+
+          this.gamificationGlobalUnlockedCount = 0;
+          this.gamificationActionCount = 0;
+          this.gamificationPercentage = 0;
+          this.gamificationScore = 1;
+
+          this.gamificationLoading = false;
+          this.gamificationError = true;
+
+        }
+
+      });
+
+  }
+
+
+  /* =========================================================
+     GAMIFICATION - NOMBRE DE SUCCÈS DÉBLOQUÉS
+     ========================================================= */
+
+  private getGamificationUnlockedCount(
+    actionCount: number
+  ): number {
+
+    return this.gamificationSuccesses
+      .filter(
+        success =>
+          success.threshold > 0
+          && actionCount >= success.threshold
+      )
+      .length;
+
+  }
+
+
+  /* =========================================================
+     GAMIFICATION - PLUS HAUT PALIER ATTEINT
+     ========================================================= */
+
+  private getHighestGamificationSuccess(
+    actionCount: number
+  ) {
+
+    let highestSuccess =
+      this.gamificationSuccesses[0];
+
+
+    this.gamificationSuccesses
+      .forEach(
+        success => {
+
+          if (
+            actionCount
+            >= success.threshold
+          ) {
+
+            highestSuccess = success;
+
+          }
+
+        }
+      );
+
+
+    return highestSuccess;
 
   }
 
@@ -1064,7 +1351,7 @@ export class GamificationComponent implements OnInit, OnDestroy {
          */
         if (initialFilter === 'all') {
 
-          this.resetGamificationDisplay();
+          this.loadGamificationOverview();
 
         } else {
 

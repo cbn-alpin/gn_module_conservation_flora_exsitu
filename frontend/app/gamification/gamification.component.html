@@ -263,9 +263,9 @@
          ===================================================== -->
 
     <div
-      class="gamification-rating-panel"
-      [class.gamification-rating-readonly]="
-        selectedFilter !== 'all'
+      class="
+        gamification-rating-panel
+        gamification-rating-readonly
       "
     >
 
@@ -439,25 +439,141 @@
              On ne touche pas encore à Tout.
              =============================================== -->
 
-        <div
-          *ngIf="selectedFilter === 'all'"
-          class="gamification-empty-state"
-        >
+        <ng-container *ngIf="selectedFilter === 'all'">
 
-          <div class="gamification-empty-state-icon">
-            <mat-icon>info</mat-icon>
+          <!-- =============================================
+               CHARGEMENT GLOBAL
+               ============================================= -->
+
+          <div
+            *ngIf="gamificationLoading"
+            class="gamification-progress-message"
+          >
+            Chargement de la progression générale...
           </div>
 
-          <div class="gamification-empty-state-text">
-            {{ getGamificationEmptyMessage() }}
+
+          <!-- =============================================
+               ERREUR GLOBALE
+               ============================================= -->
+
+          <div
+            *ngIf="
+              !gamificationLoading
+              && gamificationError
+            "
+            class="
+              gamification-progress-message
+              gamification-progress-error
+            "
+          >
+            Impossible de charger la progression générale.
           </div>
 
-          <div class="gamification-empty-state-subtext">
-            Aucun événement n'est actuellement disponible
-            pour cette rubrique.
+
+          <!-- =============================================
+               TABLEAU DE BORD GLOBAL
+               ============================================= -->
+
+          <div
+            *ngIf="
+              !gamificationLoading
+              && !gamificationError
+            "
+            class="gamification-overview"
+          >
+
+            <div class="gamification-overview-summary">
+
+              <mat-icon>emoji_events</mat-icon>
+
+              <span>
+                <strong>
+                  {{ gamificationGlobalUnlockedCount }}
+                  / 63
+                </strong>
+                succès débloqués au total
+              </span>
+
+            </div>
+
+
+            <div class="gamification-overview-grid">
+
+              <button
+                *ngFor="let section of gamificationOverviewSections"
+                type="button"
+                class="gamification-overview-card"
+                [ngClass]="
+                  'gamification-overview-card-'
+                  + section.filter
+                "
+                (click)="
+                  selectGamificationFilter(
+                    section.filter
+                  )
+                "
+              >
+
+                <div class="gamification-overview-card-top">
+
+                  <span class="gamification-overview-icon">
+                    {{ section.successIcon }}
+                  </span>
+
+                  <span class="gamification-overview-name">
+                    {{ section.label }}
+                  </span>
+
+                  <span class="gamification-overview-points">
+                    {{ section.unlockedCount }} / 9
+                  </span>
+
+                </div>
+
+
+                <div class="gamification-overview-level">
+
+                  <span class="gamification-overview-level-caption">
+                    Plus haut palier atteint
+                  </span>
+
+                  <strong>
+                    {{ section.successLabel }}
+                  </strong>
+
+                </div>
+
+
+                <div class="gamification-overview-meta">
+
+                  <span>
+                    {{ section.actionCount }}
+                    action(s)
+                  </span>
+
+                  <strong>
+                    {{ section.percentage }}%
+                  </strong>
+
+                </div>
+
+
+                <div class="gamification-overview-progress">
+
+                  <span
+                    [style.width.%]="section.percentage"
+                  ></span>
+
+                </div>
+
+              </button>
+
+            </div>
+
           </div>
 
-        </div>
+        </ng-container>
 
 
         <!-- ===============================================
