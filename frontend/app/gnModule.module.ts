@@ -86,6 +86,16 @@ import {
   CultureActionDetailsComponent
 } from './culture-action-details/culture-action-details.component';
 
+
+/* =========================================================
+   MAIL - COMPOSANT COMMUN
+   ========================================================= */
+
+import {
+  MailComponent
+} from './mail/mail.component';
+
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -153,6 +163,9 @@ registerLocaleData(localeFr);
     CultureDetailsComponent,
     CultureActionComponent,
     CultureActionDetailsComponent,
+
+    /* MAIL - COMPOSANT COMMUN */
+    MailComponent,
   ],
   providers: [
     HarvestStoreService, 

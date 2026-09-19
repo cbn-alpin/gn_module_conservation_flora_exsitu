@@ -1,0 +1,46 @@
+<!-- =========================================================
+     MAIL - CONTRÔLE GLOBAL ON / OFF
+     ========================================================= -->
+
+<div
+  class="mail-control"
+  [class.mail-control-off]="!enabled"
+>
+
+  <label class="mail-switch-zone">
+
+    <input
+      type="checkbox"
+      [checked]="enabled"
+      (change)="onToggle($event)"
+      aria-label="Activer ou désactiver les mails"
+    >
+
+    <span class="mail-switch-track">
+
+      <span class="mail-switch-label">
+        {{ enabled ? 'ON' : 'OFF' }}
+      </span>
+
+      <span class="mail-switch-knob">
+        {{ enabled ? '✓' : '×' }}
+      </span>
+
+    </span>
+
+  </label>
+
+
+  <div class="mail-button-zone">
+
+    <mat-icon>
+      mail_outline
+    </mat-icon>
+
+    <span class="mail-button-label">
+      Mail
+    </span>
+
+  </div>
+
+</div>

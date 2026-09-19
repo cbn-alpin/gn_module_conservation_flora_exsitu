@@ -1,0 +1,332 @@
+/* =========================================================
+   MAIL - POSITION DANS LES FICHES
+   ========================================================= */
+
+:host {
+  display: flex;
+  justify-content: center;
+
+  margin:
+    -7px
+    16px
+    17px;
+}
+
+
+/* =========================================================
+   MAIL - CONTRÔLE PRINCIPAL
+   ========================================================= */
+
+.mail-control {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+
+  height: 38px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid #dadce0;
+  border-radius: 9px;
+
+  box-shadow:
+    0 2px 6px rgba(60, 64, 67, 0.18);
+
+  overflow: hidden;
+
+  transition:
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+
+/*
+ * Bande Google :
+ * bleu / rouge / jaune / vert.
+ */
+.mail-control::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #4285f4 0%,
+      #4285f4 25%,
+      #ea4335 25%,
+      #ea4335 50%,
+      #fbbc05 50%,
+      #fbbc05 75%,
+      #34a853 75%,
+      #34a853 100%
+    );
+}
+
+
+.mail-control:hover {
+  border-color: #bdc1c6;
+
+  box-shadow:
+    0 3px 8px rgba(60, 64, 67, 0.24);
+}
+
+
+/* =========================================================
+   MAIL - INTERRUPTEUR ON / OFF
+   ========================================================= */
+
+.mail-switch-zone {
+  display: grid;
+  place-items: center;
+
+  width: 54px;
+  height: 38px;
+
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+
+  background-color: #f8f9fa;
+
+  border-right: 1px solid #dadce0;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+
+.mail-switch-zone input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+.mail-switch-track {
+  position: relative;
+
+  display: block;
+
+  width: 40px;
+  height: 20px;
+
+  box-sizing: border-box;
+
+  background-color: #ea4335;
+
+  border: 1px solid #d93025;
+  border-radius: 10px;
+
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.16);
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+
+.mail-switch-label {
+  position: absolute;
+
+  top: 50%;
+  right: 4px;
+
+  transform: translateY(-50%);
+
+  color: #ffffff;
+
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.2px;
+}
+
+
+.mail-switch-knob {
+  position: absolute;
+
+  top: 50%;
+  left: 1px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  transform: translateY(-50%);
+
+  color: #ea4335;
+  background-color: #ffffff;
+
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 16px;
+
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+
+
+/* ON = vert Google */
+
+.mail-switch-zone input:checked
+  + .mail-switch-track {
+
+  background-color: #34a853;
+  border-color: #188038;
+}
+
+
+.mail-switch-zone input:checked
+  + .mail-switch-track
+  .mail-switch-label {
+
+  right: auto;
+  left: 4px;
+}
+
+
+.mail-switch-zone input:checked
+  + .mail-switch-track
+  .mail-switch-knob {
+
+  color: #188038;
+
+  transform:
+    translate(20px, -50%);
+}
+
+
+/* =========================================================
+   MAIL - PARTIE VISUELLE
+   ========================================================= */
+
+.mail-button-zone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-width: 94px;
+  height: 38px;
+
+  padding:
+    0
+    14px;
+
+  box-sizing: border-box;
+
+  color: #3c4043;
+  background-color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+
+.mail-button-zone mat-icon {
+  width: 19px;
+  height: 19px;
+
+  color: #4285f4;
+
+  font-size: 19px;
+  line-height: 19px;
+}
+
+
+.mail-button-label {
+  position: relative;
+}
+
+
+/*
+ * Petit rappel des quatre couleurs Google
+ * sous le mot Mail.
+ */
+.mail-button-label::after {
+  content: '';
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: -5px;
+
+  height: 2px;
+
+  border-radius: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #4285f4 0%,
+      #4285f4 25%,
+      #ea4335 25%,
+      #ea4335 50%,
+      #fbbc05 50%,
+      #fbbc05 75%,
+      #34a853 75%,
+      #34a853 100%
+    );
+}
+
+
+/* =========================================================
+   MAIL - ÉTAT OFF
+   ========================================================= */
+
+.mail-control-off::before {
+  filter: grayscale(1);
+
+  opacity: 0.45;
+}
+
+
+.mail-control-off .mail-button-zone {
+  color: #9aa0a6;
+
+  background-color: #f8f9fa;
+}
+
+
+.mail-control-off .mail-button-zone mat-icon {
+  color: #9aa0a6;
+}
+
+
+.mail-control-off .mail-button-label::after {
+  filter: grayscale(1);
+
+  opacity: 0.45;
+}
