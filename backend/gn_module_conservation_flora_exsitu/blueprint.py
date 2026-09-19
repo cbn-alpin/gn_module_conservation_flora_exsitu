@@ -28,6 +28,7 @@ from werkzeug.utils import secure_filename
 
 from gn_module_conservation_flora_exsitu import MODULE_CODE
 
+from .mail_service import send_mail
 from .models import (
     CorHarvestObserver,
     CorMaterialTaxon,
@@ -93,6 +94,602 @@ def normalize_mail_addresses(values):
             normalized.append(email)
 
     return normalized
+
+
+MAIL_ACTION_LABELS = {
+    "create": "Création",
+    "update": "Modification",
+    "delete": "Suppression",
+}
+
+MAIL_ENTITY_LABELS = {
+    "material": "Matériel récolté",
+    "seed": "Semence",
+    "stock": "Stockage",
+    "culture": "Culture",
+    "sowing": "Semis",
+    "germination": "Germination",
+    "viability": "Viabilité",
+}
+
+MAIL_MUTATION_ENDPOINTS = {
+    "create_material": ("POST", "create", "material"),
+    "update_material": ("PUT", "update", "material"),
+    "delete_material": ("DELETE", "delete", "material"),
+
+    "add_seed_to_material": ("POST", "create", "seed"),
+    "update_seed": ("PUT", "update", "seed"),
+    "delete_seed": ("DELETE", "delete", "seed"),
+
+    "add_action": ("POST", "create", "stock"),
+    "update_action": ("PUT", "update", "stock"),
+    "delete_action": ("DELETE", "delete", "stock"),
+
+    "create_sowing": ("POST", "create", "sowing"),
+    "update_sowing": ("PUT", "update", "sowing"),
+    "delete_sowing": ("DELETE", "delete", "sowing"),
+
+    "create_culture": ("POST", "create", "culture"),
+    "update_culture": ("PUT", "update", "culture"),
+    "delete_culture": ("DELETE", "delete", "culture"),
+
+    "create_test": ("POST", "create", "test"),
+    "update_test": ("PUT", "update", "test"),
+    "delete_test": ("DELETE", "delete", "test"),
+}
+
+
+def get_test_mail_entity_from_type(
+    id_test_type
+):
+    if not id_test_type:
+        return None
+
+    test_type_code = (
+        db.session.query(
+            TNomenclatures.cd_nomenclature
+        )
+        .filter(
+            TNomenclatures.id_nomenclature
+            == id_test_type
+        )
+        .scalar()
+    )
+
+    return {
+        "ger": "germination",
+        "via": "viability",
+    }.get(test_type_code)
+
+
+def send_harvest_mail_notification(
+    id_harvest,
+    action,
+    entity,
+    reference="",
+):
+    try:
+        harvest = THarvest.query.get(
+            id_harvest
+        )
+
+        if not harvest:
+            log.warning(
+                "[MAIL] Notification ignorée : "
+                "récolte %s introuvable",
+                id_harvest,
+            )
+            return
+
+        mail_configuration = dict(
+            (
+                harvest.additional_data
+                or {}
+            ).get("mail")
+            or {}
+        )
+
+        if (
+            mail_configuration.get("enabled")
+            is not True
+        ):
+            log.info(
+                "[MAIL] Notification ignorée : "
+                "Mail OFF "
+                "(récolte=%s action=%s entity=%s)",
+                id_harvest,
+                action,
+                entity,
+            )
+            return
+
+        recipients = normalize_mail_addresses(
+            mail_configuration.get(
+                "selected_recipients",
+                [],
+            )
+        )
+
+        if not recipients:
+            log.warning(
+                "[MAIL] Notification ignorée : "
+                "aucun destinataire "
+                "(récolte=%s action=%s entity=%s)",
+                id_harvest,
+                action,
+                entity,
+            )
+            return
+
+        action_label = (
+            MAIL_ACTION_LABELS.get(
+                action,
+                action,
+            )
+        )
+
+        entity_label = (
+            MAIL_ENTITY_LABELS.get(
+                entity,
+                entity,
+            )
+        )
+
+        reference = str(
+            reference or ""
+        ).strip()
+
+        subject = (
+            f"Flora ExSitu - "
+            f"{action_label} - "
+            f"{entity_label}"
+        )
+
+        if reference:
+            subject += (
+                f" - {reference}"
+            )
+
+        body = (
+            "Bonjour,\n\n"
+            "Une opération vient d'être "
+            "effectuée dans Flora ExSitu.\n\n"
+            f"Action : {action_label}\n"
+            f"Élément : {entity_label}\n"
+            f"Référence : "
+            f"{reference or '-'}\n"
+            f"Récolte : {id_harvest}\n\n"
+            "Cordialement,\n"
+            "Flora ExSitu"
+        )
+
+        log.info(
+            "[MAIL] Notification automatique : "
+            "récolte=%s action=%s "
+            "entity=%s reference=%s",
+            id_harvest,
+            action,
+            entity,
+            reference or "-",
+        )
+
+        send_mail(
+            recipients=recipients,
+            subject=subject,
+            body=body,
+        )
+
+    except Exception:
+        log.exception(
+            "[MAIL] Échec de la "
+            "notification automatique "
+            "(récolte=%s action=%s entity=%s)",
+            id_harvest,
+            action,
+            entity,
+        )
+
+
+@blueprint.before_request
+def prepare_mail_notification_context():
+    endpoint = (
+        (request.endpoint or "")
+        .rsplit(".", 1)[-1]
+    )
+
+    mutation = (
+        MAIL_MUTATION_ENDPOINTS.get(
+            endpoint
+        )
+    )
+
+    if not mutation:
+        return
+
+    expected_method, action, entity = mutation
+
+    if request.method != expected_method:
+        return
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    view_args = (
+        request.view_args
+        or {}
+    )
+
+    id_harvest = (
+        view_args.get(
+            "id_harvest"
+        )
+    )
+
+    reference = ""
+
+
+    if entity == "material":
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        if action == "create":
+
+            reference = (
+                data.get(
+                    "code_material",
+                    "",
+                )
+            )
+
+        elif id_material:
+
+            material = (
+                TMaterial.query.get(
+                    id_material
+                )
+            )
+
+            if material:
+
+                id_harvest = (
+                    id_harvest
+                    or material.id_harvest
+                )
+
+                reference = (
+                    data.get(
+                        "code_material"
+                    )
+                    or material.code_material
+                    or ""
+                )
+
+
+    elif entity == "seed":
+
+        material = None
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        if id_material:
+
+            material = (
+                TMaterial.query.get(
+                    id_material
+                )
+            )
+
+        else:
+
+            id_seed = (
+                view_args.get(
+                    "id_seed"
+                )
+            )
+
+            seed = (
+                TMaterielSeed.query.get(
+                    id_seed
+                )
+                if id_seed
+                else None
+            )
+
+            material = (
+                seed.material
+                if seed
+                else None
+            )
+
+        if material:
+
+            id_harvest = (
+                material.id_harvest
+            )
+
+            reference = (
+                material.code_material
+                or ""
+            )
+
+
+    elif entity == "stock":
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        material = (
+            TMaterial.query.get(
+                id_material
+            )
+            if id_material
+            else None
+        )
+
+        if material:
+
+            id_harvest = (
+                material.id_harvest
+            )
+
+            reference = (
+                material.code_material
+                or ""
+            )
+
+            id_storage = (
+                view_args.get(
+                    "id_storage"
+                )
+            )
+
+            if id_storage:
+
+                reference = (
+                    f"{reference} / "
+                    f"stockage {id_storage}"
+                )
+
+
+    elif entity == "sowing":
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        material = (
+            TMaterial.query.get(
+                id_material
+            )
+            if id_material
+            else None
+        )
+
+        if material:
+
+            id_harvest = (
+                material.id_harvest
+            )
+
+        id_sowing = (
+            view_args.get(
+                "id_sowing"
+            )
+        )
+
+        sowing = (
+            TSowing.query.get(
+                id_sowing
+            )
+            if id_sowing
+            else None
+        )
+
+        reference = (
+            data.get("code")
+            or (
+                sowing.code
+                if sowing
+                else ""
+            )
+        )
+
+
+    elif entity == "culture":
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        material = (
+            TMaterial.query.get(
+                id_material
+            )
+            if id_material
+            else None
+        )
+
+        if material:
+
+            id_harvest = (
+                material.id_harvest
+            )
+
+        id_culture = (
+            view_args.get(
+                "id_culture"
+            )
+        )
+
+        culture = (
+            TCulture.query.get(
+                id_culture
+            )
+            if id_culture
+            else None
+        )
+
+        reference = (
+            data.get(
+                "code_culture"
+            )
+            or (
+                culture.code_culture
+                if culture
+                else ""
+            )
+        )
+
+
+    elif entity == "test":
+
+        id_material = (
+            view_args.get(
+                "id_material"
+            )
+        )
+
+        material = (
+            TMaterial.query.get(
+                id_material
+            )
+            if id_material
+            else None
+        )
+
+        if material:
+
+            id_harvest = (
+                material.id_harvest
+            )
+
+        id_test = (
+            view_args.get(
+                "id_test"
+            )
+        )
+
+        test = (
+            TTest.query.get(
+                id_test
+            )
+            if id_test
+            else None
+        )
+
+        id_test_type = (
+            data.get(
+                "id_test_type"
+            )
+            or (
+                test.id_test_type
+                if test
+                else None
+            )
+        )
+
+        entity = (
+            get_test_mail_entity_from_type(
+                id_test_type
+            )
+        )
+
+        if not entity:
+            return
+
+        reference = (
+            data.get("code")
+            or (
+                test.code
+                if test
+                else ""
+            )
+        )
+
+
+    if not id_harvest:
+
+        log.warning(
+            "[MAIL] Contexte non préparé : "
+            "récolte introuvable "
+            "(endpoint=%s)",
+            endpoint,
+        )
+
+        return
+
+
+    g.mail_notification_context = {
+        "id_harvest":
+            id_harvest,
+
+        "action":
+            action,
+
+        "entity":
+            entity,
+
+        "reference":
+            reference,
+    }
+
+
+@blueprint.after_request
+def send_mail_notification_after_success(
+    response,
+):
+
+    if request.method not in {
+        "POST",
+        "PUT",
+        "DELETE",
+    }:
+        return response
+
+    if not (
+        200
+        <= response.status_code
+        < 300
+    ):
+        return response
+
+
+    context = getattr(
+        g,
+        "mail_notification_context",
+        None,
+    )
+
+
+    if not context:
+        return response
+
+
+    send_harvest_mail_notification(
+        context["id_harvest"],
+        context["action"],
+        context["entity"],
+        context["reference"],
+    )
+
+
+    return response
 
 
 def get_material_type_code(material):
@@ -233,6 +830,9 @@ def get_mail_configuration(id_harvest):
     )
 
     return {
+        "enabled": mail_configuration.get(
+            "enabled"
+        ),
         "available_recipients": (
             mail_configuration.get(
                 "available_recipients",
@@ -269,6 +869,18 @@ def update_mail_configuration(id_harvest):
         silent=True
     ) or {}
 
+    enabled = payload.get(
+        "enabled"
+    )
+
+    if (
+        enabled is not None
+        and not isinstance(enabled, bool)
+    ):
+        return {
+            "error": "L'état Mail doit être un booléen"
+        }, 400
+
     try:
         available_recipients = (
             normalize_mail_addresses(
@@ -301,7 +913,19 @@ def update_mail_configuration(id_harvest):
         harvest.additional_data or {}
     )
 
+    current_mail_configuration = dict(
+        additional_data.get("mail") or {}
+    )
+
+    if enabled is None:
+        enabled = (
+            current_mail_configuration.get(
+                "enabled"
+            )
+        )
+
     additional_data["mail"] = {
+        "enabled": enabled,
         "available_recipients":
             available_recipients,
         "selected_recipients":
@@ -315,6 +939,72 @@ def update_mail_configuration(id_harvest):
     db.session.commit()
 
     return additional_data["mail"], 200
+
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/mail-test",
+    methods=["POST"],
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def test_mail(id_harvest):
+    harvest = THarvest.query.get(id_harvest)
+
+    if not harvest:
+        return {
+            "error": "Harvest not found"
+        }, 404
+
+    additional_data = dict(
+        harvest.additional_data or {}
+    )
+
+    mail_configuration = dict(
+        additional_data.get("mail") or {}
+    )
+
+    recipients = mail_configuration.get(
+        "selected_recipients",
+        [],
+    )
+
+    if not recipients:
+        return {
+            "error": (
+                "Aucun destinataire sélectionné "
+                "pour cette récolte"
+            )
+        }, 400
+
+    try:
+        send_mail(
+            recipients=recipients,
+            subject="Flora ExSitu - Test d'envoi",
+            body=(
+                "Bonjour,\n\n"
+                "Ceci est un mail de test envoyé "
+                "automatiquement par Flora ExSitu.\n\n"
+                "La configuration Yahoo SMTP "
+                "fonctionne correctement."
+            ),
+        )
+
+    except Exception as error:
+        log.exception(
+            "Erreur lors de l'envoi du mail de test"
+        )
+
+        return {
+            "error": str(error)
+        }, 500
+
+    return {
+        "message": "Mail de test envoyé avec succès",
+        "recipients": recipients,
+    }, 200
 
 
 @blueprint.route("/harvests", methods=["GET"])

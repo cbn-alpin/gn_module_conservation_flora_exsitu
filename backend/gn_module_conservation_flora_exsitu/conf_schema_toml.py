@@ -18,6 +18,15 @@ class FormAdditionalConfigSchema(Schema):
     additional_data = fields.List(fields.Nested(AdditionalDataSchema), load_default=[])
 
 
+class MailConfigSchema(Schema):
+    smtp_host = fields.String(load_default="")
+    smtp_port = fields.Integer(load_default=465)
+    smtp_ssl = fields.Boolean(load_default=True)
+    smtp_user = fields.String(load_default="")
+    smtp_password = fields.String(load_default="")
+    sender = fields.String(load_default="")
+
+
 class GnModuleSchemaConf(Schema):
     module_code = fields.String(load_default="CONSERVATION_FLORA_EXSITU")
     module_title = fields.String(load_default="Exsitu")
@@ -46,4 +55,9 @@ class GnModuleSchemaConf(Schema):
     )
     semis_form = fields.Nested(
         FormAdditionalConfigSchema, load_default=FormAdditionalConfigSchema().load({})
+    )
+
+    mail = fields.Nested(
+        MailConfigSchema,
+        load_default=MailConfigSchema().load({})
     )
