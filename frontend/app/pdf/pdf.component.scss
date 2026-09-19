@@ -1,0 +1,87 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  margin-top: 2px;
+}
+
+
+.pdf-action-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 6px;
+
+  min-width: 92px;
+  min-height: 36px;
+
+  padding: 0 16px !important;
+
+  color: #ffffff !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #e53935 0%,
+      #d32f2f 50%,
+      #b71c1c 100%
+    ) !important;
+
+  border:
+    1px solid
+    #a71919 !important;
+
+  border-radius:
+    999px !important;
+
+  box-shadow:
+    0 4px 10px
+    rgba(183, 28, 28, 0.22) !important;
+
+  font-size: 13px;
+  font-weight: 750;
+
+  letter-spacing: 0.3px;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
+}
+
+
+.pdf-action-button:hover {
+  transform:
+    translateY(-1px);
+
+  filter:
+    brightness(0.96);
+
+  box-shadow:
+    0 6px 14px
+    rgba(183, 28, 28, 0.28) !important;
+}
+
+
+.pdf-action-button mat-icon {
+  width: 20px;
+  height: 20px;
+
+  margin: 0 !important;
+
+  color: #ffffff !important;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+
+.pdf-action-button span {
+  color: #ffffff;
+
+  line-height: 1;
+}

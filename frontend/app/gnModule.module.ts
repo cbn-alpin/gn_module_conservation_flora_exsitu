@@ -69,6 +69,7 @@ import { SemisTableService } from './semis-table/semis-table.service';
 import { ReplicatesModalComponent } from './replicates/replicates-modal.component';
 import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
 import { ViabilityFormService } from './viability/viability-form.service';
+import { PdfComponent } from './pdf/pdf.component';
 
 import { CultureComponent } from './culture/culture.component';
 import { CultureService } from './culture/culture.service';
@@ -148,6 +149,7 @@ registerLocaleData(localeFr);
     ViabilityDetailsComponent,
     ReplicatesModalComponent,
     FollowupDetailsComponent,
+    PdfComponent,
     CultureComponent,
     CultureTableComponent,
     CultureDetailsComponent,
