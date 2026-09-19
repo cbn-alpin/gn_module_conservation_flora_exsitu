@@ -257,8 +257,7 @@ def send_harvest_mail_notification(
             f"Action : {action_label}\n"
             f"Élément : {entity_label}\n"
             f"Référence : "
-            f"{reference or '-'}\n"
-            f"Récolte : {id_harvest}\n\n"
+            f"{reference or '-'}\n\n"
             "Cordialement,\n"
             "Flora ExSitu"
         )
