@@ -12,6 +12,9 @@ import {
   MailService
 } from './mail.service';
 
+import {
+  CommonService
+} from '@geonature_common/service/common.service';
 
 @Component({
   selector: 'app-mail',
@@ -35,7 +38,8 @@ export class MailComponent
 
 
   constructor(
-    private mailService: MailService
+    private mailService: MailService,
+    private commonService: CommonService
   ) {}
 
 
@@ -201,6 +205,78 @@ export class MailComponent
 
     this.mailService
       .deleteRecipient(email);
+
+  }
+
+
+  public testMail(): void {
+
+    if (!this.enabled) {
+
+      this.commonService.translateToaster(
+        'warning',
+        'Activez Mail avant de tester l’envoi.'
+      );
+
+      return;
+    }
+
+
+    if (this.selectedRecipients.length === 0) {
+
+      this.commonService.translateToaster(
+        'warning',
+        'Sélectionnez au moins une adresse e-mail.'
+      );
+
+      return;
+    }
+
+
+    console.log(
+      '[MAIL] Test d’envoi demandé'
+    );
+
+
+    this.mailService
+      .testMail()
+      .subscribe({
+
+        next: response => {
+
+          console.log(
+            '[MAIL] Réponse du serveur :',
+            response
+          );
+
+          this.commonService.translateToaster(
+            'success',
+            'Mail de test envoyé avec succès.'
+          );
+
+        },
+
+
+        error: error => {
+
+          console.error(
+            '[MAIL] Erreur du test :',
+            error
+          );
+
+          const message =
+            error?.error?.error
+            || 'Erreur lors de l’envoi du mail de test.';
+
+
+          this.commonService.translateToaster(
+            'error',
+            message
+          );
+
+        }
+
+      });
 
   }
 

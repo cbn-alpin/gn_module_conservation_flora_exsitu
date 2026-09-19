@@ -25,6 +25,7 @@ import {
 
 
 export interface MailConfiguration {
+  enabled?: boolean | null;
   available_recipients: string[];
   selected_recipients: string[];
 }
@@ -121,6 +122,9 @@ export class MailService {
       this.storageKey,
       String(enabled)
     );
+
+
+    this.persistConfiguration();
 
   }
 
@@ -329,8 +333,21 @@ export class MailService {
 
 
   /* =========================================================
-     MAIL - MESSAGE DANS LES CONFIRMATIONS
+     MAIL - TEST D'ENVOI
      ========================================================= */
+
+  public testMail(): Observable<any> {
+
+    const idHarvest =
+      this.exsituFormService.idHarvest;
+
+
+    return this.api.post(
+      `${this.moduleBaseUrl}/harvests/${idHarvest}/mail-test`,
+      {}
+    );
+
+  }
 
   public getConfirmationWarning(
     action: 'create' | 'update' | 'delete'
@@ -372,6 +389,9 @@ export class MailService {
 
 
     const payload: MailConfiguration = {
+
+      enabled:
+        this.enabled,
 
       available_recipients:
         this.availableRecipients,
@@ -427,6 +447,18 @@ export class MailService {
       configuration?.selected_recipients
       || []
     );
+
+
+    /*
+     * L'état ON / OFF reste global dans localStorage.
+     * On le synchronise simplement vers la récolte courante
+     * afin que le backend sache s'il doit envoyer les mails.
+     */
+    if (
+      configuration?.enabled !== this.enabled
+    ) {
+      this.persistConfiguration();
+    }
 
   }
 

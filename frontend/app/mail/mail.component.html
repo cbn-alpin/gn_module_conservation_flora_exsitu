@@ -164,6 +164,20 @@
       </span>
     </div>
 
+        <div
+      *ngIf="enabled && selectedRecipients.length > 0"
+      style="margin-top: 10px; text-align: center;"
+    >
+      <button
+        type="button"
+        class="mail-add-button"
+        style="height: 34px; border-radius: 6px; border-left: 0;"
+        (click)="testMail()"
+      >
+        Tester l'envoi
+      </button>
+    </div>
+
   </div>
 
 </div>
