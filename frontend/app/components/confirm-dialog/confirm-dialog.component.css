@@ -624,20 +624,21 @@
    ========================================================= */
 
 .workflow-confirm-dialog .mail-warning-message {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
+    position: relative;
 
     margin-top: 14px;
-    padding: 9px 11px;
+    padding: 13px 11px 10px;
 
     color: #3c4043;
-    background-color: #f8fbff;
+    background-color: #ffffff;
 
-    border: 1px solid #d2e3fc;
-    border-left: 3px solid #4285f4;
-    border-radius: 7px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+
+    box-shadow:
+        0 2px 6px rgba(60, 64, 67, 0.12);
+
+    overflow: hidden;
 
     font-size: 12px;
     font-weight: 600;
@@ -646,7 +647,42 @@
 }
 
 
-.workflow-confirm-dialog .mail-warning-message mat-icon {
+/* Bande Google : bleu / rouge / jaune / vert. */
+.workflow-confirm-dialog .mail-warning-message::before {
+    content: '';
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #4285f4 0%,
+            #4285f4 25%,
+            #ea4335 25%,
+            #ea4335 50%,
+            #fbbc05 50%,
+            #fbbc05 75%,
+            #34a853 75%,
+            #34a853 100%
+        );
+}
+
+
+.workflow-confirm-dialog .mail-warning-main {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 8px;
+}
+
+
+.workflow-confirm-dialog .mail-warning-main > mat-icon {
     flex: 0 0 auto;
 
     width: 18px;
@@ -656,6 +692,68 @@
 
     font-size: 18px;
     line-height: 18px;
+}
+
+
+.workflow-confirm-dialog .mail-warning-main > span {
+    flex: 1 1 auto;
+
+    color: #3c4043;
+    font-weight: 700;
+}
+
+
+.workflow-confirm-dialog .mail-warning-recipients {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 9px;
+    padding-top: 8px;
+
+    border-top: 1px solid #e8eaed;
+}
+
+
+.workflow-confirm-dialog .mail-warning-recipients-label {
+    margin-right: 2px;
+
+    color: #137333;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+.workflow-confirm-dialog .mail-warning-recipient {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 3px;
+
+    padding: 3px 6px;
+
+    color: #174ea6;
+    background-color: #e8f0fe;
+
+    border: 1px solid #d2e3fc;
+    border-radius: 10px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+.workflow-confirm-dialog .mail-warning-recipient mat-icon {
+    width: 12px;
+    height: 12px;
+
+    color: #ea4335;
+
+    font-size: 12px;
+    line-height: 12px;
 }
 
 

@@ -1,45 +1,168 @@
 <!-- =========================================================
-     MAIL - CONTRÔLE GLOBAL ON / OFF
+     MAIL - CONTRÔLE GLOBAL + DESTINATAIRES
      ========================================================= -->
 
-<div
-  class="mail-control"
-  [class.mail-control-off]="!enabled"
->
+<div class="mail-wrapper">
 
-  <label class="mail-switch-zone">
+  <div
+    class="mail-control"
+    [class.mail-control-off]="!enabled"
+  >
 
-    <input
-      type="checkbox"
-      [checked]="enabled"
-      (change)="onToggle($event)"
-      aria-label="Activer ou désactiver les mails"
+    <label class="mail-switch-zone">
+
+      <input
+        type="checkbox"
+        [checked]="enabled"
+        (change)="onToggle($event)"
+        aria-label="Activer ou désactiver les mails"
+      >
+
+      <span class="mail-switch-track">
+
+        <span class="mail-switch-label">
+          {{ enabled ? 'ON' : 'OFF' }}
+        </span>
+
+        <span class="mail-switch-knob">
+          {{ enabled ? '✓' : '×' }}
+        </span>
+
+      </span>
+
+    </label>
+
+
+    <div class="mail-button-zone">
+
+      <mat-icon>
+        mail_outline
+      </mat-icon>
+
+      <span class="mail-button-label">
+        Mail
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="mail-recipient-panel"
+    [class.mail-recipient-panel-off]="!enabled"
+  >
+
+    <div class="mail-recipient-header">
+
+      <span>
+        Destinataire(s)
+
+        <strong
+          *ngIf="enabled"
+          class="mail-required"
+        >
+          *
+        </strong>
+      </span>
+
+      <span class="mail-recipient-count">
+        {{ selectedRecipients.length }} sélectionné(s)
+      </span>
+
+    </div>
+
+
+    <div class="mail-recipient-input-row">
+
+      <mat-icon>
+        alternate_email
+      </mat-icon>
+
+      <input
+        type="email"
+        [(ngModel)]="emailInput"
+        (keydown.enter)="onEmailEnter($event)"
+        placeholder="Ajouter une adresse e-mail"
+        autocomplete="off"
+      >
+
+      <button
+        type="button"
+        class="mail-add-button"
+        (click)="addEmail()"
+        [disabled]="!emailInput.trim()"
+      >
+        Ajouter
+      </button>
+
+    </div>
+
+
+    <div
+      *ngIf="emailError"
+      class="mail-email-error"
+    >
+      {{ emailError }}
+    </div>
+
+
+    <div
+      *ngIf="availableRecipients.length > 0"
+      class="mail-recipient-list"
     >
 
-    <span class="mail-switch-track">
+      <div
+        *ngFor="let email of availableRecipients"
+        class="mail-recipient-chip"
+        [class.mail-recipient-chip-selected]="isSelected(email)"
+      >
 
-      <span class="mail-switch-label">
-        {{ enabled ? 'ON' : 'OFF' }}
+        <button
+          type="button"
+          class="mail-recipient-choice"
+          (click)="toggleRecipient(email)"
+        >
+
+          <mat-icon>
+            {{
+              isSelected(email)
+                ? 'check_circle'
+                : 'radio_button_unchecked'
+            }}
+          </mat-icon>
+
+          <span>
+            {{ email }}
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="mail-recipient-remove"
+          (click)="removeRecipient(email, $event)"
+          [attr.aria-label]="'Supprimer ' + email"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div
+      *ngIf="enabled && selectedRecipients.length === 0"
+      class="mail-recipient-required-message"
+    >
+      <mat-icon>info</mat-icon>
+
+      <span>
+        Au moins une adresse e-mail doit être sélectionnée lorsque Mail est ON.
       </span>
-
-      <span class="mail-switch-knob">
-        {{ enabled ? '✓' : '×' }}
-      </span>
-
-    </span>
-
-  </label>
-
-
-  <div class="mail-button-zone">
-
-    <mat-icon>
-      mail_outline
-    </mat-icon>
-
-    <span class="mail-button-label">
-      Mail
-    </span>
+    </div>
 
   </div>
 

@@ -398,11 +398,30 @@
             *ngIf="dialogData?.mailWarningMessage"
             class="mail-warning-message"
         >
-            <mat-icon>mail_outline</mat-icon>
+            <div class="mail-warning-main">
+                <mat-icon>mail_outline</mat-icon>
 
-            <span>
-                {{ dialogData?.mailWarningMessage }}
-            </span>
+                <span>
+                    {{ dialogData?.mailWarningMessage }}
+                </span>
+            </div>
+
+            <div
+                *ngIf="mailRecipients.length > 0"
+                class="mail-warning-recipients"
+            >
+                <span class="mail-warning-recipients-label">
+                    Destinataire(s) :
+                </span>
+
+                <span
+                    *ngFor="let email of mailRecipients"
+                    class="mail-warning-recipient"
+                >
+                    <mat-icon>alternate_email</mat-icon>
+                    {{ email }}
+                </span>
+            </div>
         </div>
 
 

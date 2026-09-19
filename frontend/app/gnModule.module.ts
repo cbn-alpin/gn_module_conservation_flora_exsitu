@@ -95,6 +95,10 @@ import {
   MailComponent
 } from './mail/mail.component';
 
+import {
+  MailService
+} from './mail/mail.service';
+
 
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
@@ -178,6 +182,7 @@ registerLocaleData(localeFr);
     HarvestMapService,
     ObserversService,
     DialogService,
+    MailService,
     ConfigService,
     StockManagementService,
     SemisService,

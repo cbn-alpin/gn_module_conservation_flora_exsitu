@@ -69,5 +69,15 @@ export class ConfirmDialogComponent implements OnInit {
     }
   }
 
+
+  /* =======================================================
+     MAIL - DESTINATAIRES AFFICHÉS DANS LA CONFIRMATION
+     ======================================================= */
+
+  public get mailRecipients(): string[] {
+    return this.mailService.selectedRecipients;
+  }
+
+
   ngOnInit(): void {}
 }

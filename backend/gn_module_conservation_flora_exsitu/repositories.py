@@ -153,8 +153,28 @@ class HarvestRepository:
             data.pop("id_area_dept", None)
 
             additional_data = data.pop("additional_data", None)
+
             if additional_data:
-                harvest.additional_data = additional_data
+                current_additional_data = dict(
+                    harvest.additional_data or {}
+                )
+
+                mail_configuration = (
+                    current_additional_data.get("mail")
+                )
+
+                merged_additional_data = dict(
+                    additional_data
+                )
+
+                if mail_configuration is not None:
+                    merged_additional_data["mail"] = (
+                        mail_configuration
+                    )
+
+                harvest.additional_data = (
+                    merged_additional_data
+                )
 
             observers_ids = data.pop("observers", [])
 

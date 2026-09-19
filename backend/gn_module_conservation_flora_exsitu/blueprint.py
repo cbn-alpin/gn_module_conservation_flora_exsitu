@@ -1,6 +1,7 @@
 import csv
 import json
 import logging
+import re
 from collections import defaultdict
 from datetime import datetime
 from io import StringIO
@@ -61,6 +62,37 @@ log = logging.getLogger(__name__)
 
 
 SEED_MATERIAL_CODE = "gr"
+
+MAIL_ADDRESS_RE = re.compile(
+    r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+)
+
+
+def normalize_mail_addresses(values):
+    if values is None:
+        return []
+
+    if not isinstance(values, list):
+        raise ValueError(
+            "La liste des adresses e-mail est invalide"
+        )
+
+    normalized = []
+    seen = set()
+
+    for value in values:
+        email = str(value or "").strip().lower()
+
+        if not MAIL_ADDRESS_RE.fullmatch(email):
+            raise ValueError(
+                f"Adresse e-mail invalide : {email}"
+            )
+
+        if email not in seen:
+            seen.add(email)
+            normalized.append(email)
+
+    return normalized
 
 
 def get_material_type_code(material):
@@ -165,6 +197,124 @@ def update_harvest(id_harvest):
         }, 200
     except Exception as e:
         return {"message": str(e)}, 400
+
+
+# =========================================================
+# MAIL - CONFIGURATION DES DESTINATAIRES
+#
+# Configuration commune aux 7 rubriques de la récolte.
+# Elle est conservée dans THarvest.additional_data.
+# =========================================================
+
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/mail-config",
+    methods=["GET"],
+)
+@permissions.check_cruved_scope(
+    "R",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def get_mail_configuration(id_harvest):
+    harvest = THarvest.query.get(id_harvest)
+
+    if not harvest:
+        return {
+            "error": "Harvest not found"
+        }, 404
+
+    additional_data = dict(
+        harvest.additional_data or {}
+    )
+
+    mail_configuration = dict(
+        additional_data.get("mail") or {}
+    )
+
+    return {
+        "available_recipients": (
+            mail_configuration.get(
+                "available_recipients",
+                [],
+            )
+        ),
+        "selected_recipients": (
+            mail_configuration.get(
+                "selected_recipients",
+                [],
+            )
+        ),
+    }, 200
+
+
+@blueprint.route(
+    "/harvests/<int:id_harvest>/mail-config",
+    methods=["PUT"],
+)
+@permissions.check_cruved_scope(
+    "U",
+    module_code=MODULE_CODE,
+)
+@json_resp
+def update_mail_configuration(id_harvest):
+    harvest = THarvest.query.get(id_harvest)
+
+    if not harvest:
+        return {
+            "error": "Harvest not found"
+        }, 404
+
+    payload = request.get_json(
+        silent=True
+    ) or {}
+
+    try:
+        available_recipients = (
+            normalize_mail_addresses(
+                payload.get(
+                    "available_recipients",
+                    [],
+                )
+            )
+        )
+
+        selected_recipients = (
+            normalize_mail_addresses(
+                payload.get(
+                    "selected_recipients",
+                    [],
+                )
+            )
+        )
+
+    except ValueError as error:
+        return {
+            "error": str(error)
+        }, 400
+
+    for email in selected_recipients:
+        if email not in available_recipients:
+            available_recipients.append(email)
+
+    additional_data = dict(
+        harvest.additional_data or {}
+    )
+
+    additional_data["mail"] = {
+        "available_recipients":
+            available_recipients,
+        "selected_recipients":
+            selected_recipients,
+    }
+
+    harvest.additional_data = additional_data
+    harvest.meta_update_by = g.current_user.id_role
+    harvest.meta_update_date = datetime.utcnow()
+
+    db.session.commit()
+
+    return additional_data["mail"], 200
 
 
 @blueprint.route("/harvests", methods=["GET"])
