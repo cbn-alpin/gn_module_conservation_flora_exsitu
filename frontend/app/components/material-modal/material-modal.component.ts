@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 import { map, startWith, switchMap, debounceTime } from 'rxjs/operators';
 import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { MailService } from '../../mail/mail.service';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class MaterialModalComponent implements OnInit {
         public cfg: ConfigService,
         private dialogService: DialogService,
         private _commonService: CommonService,
+        private mailService: MailService,
         @Inject(MAT_DIALOG_DATA) public dialogData: any
     ){
 
@@ -436,6 +438,12 @@ export class MaterialModalComponent implements OnInit {
               ? 'les modifications du matériel récolté'
               : 'le matériel récolté',
             entityCode: currentCode || undefined,
+
+            mailWarningMessage:
+              this.mailService.getConfirmationWarning(
+                isEdit ? 'update' : 'create'
+              ),
+
             disableClose: false
           })
           .subscribe((yes) => {

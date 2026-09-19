@@ -619,6 +619,46 @@
 }
 
 
+/* =========================================================
+   MAIL - INFORMATION DANS LA CONFIRMATION
+   ========================================================= */
+
+.workflow-confirm-dialog .mail-warning-message {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 14px;
+    padding: 9px 11px;
+
+    color: #3c4043;
+    background-color: #f8fbff;
+
+    border: 1px solid #d2e3fc;
+    border-left: 3px solid #4285f4;
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: left;
+}
+
+
+.workflow-confirm-dialog .mail-warning-message mat-icon {
+    flex: 0 0 auto;
+
+    width: 18px;
+    height: 18px;
+
+    color: #4285f4;
+
+    font-size: 18px;
+    line-height: 18px;
+}
+
+
 .workflow-confirm-dialog .dialog-actions {
     display: flex;
     justify-content: center;

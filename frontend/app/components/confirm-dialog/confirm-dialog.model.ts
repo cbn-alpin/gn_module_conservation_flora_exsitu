@@ -41,6 +41,8 @@ export interface ConfirmDialogData {
     entityDate?: string;
     storageLocation?: string;
     warningMessage?: string;
+    mailWarningMessage?: string;
+    mailAction?: 'create' | 'update' | 'delete';
     actionDeletion?: boolean;
     actionCancellation?: boolean;
     actionCancellationMode?: 'create' | 'edit';

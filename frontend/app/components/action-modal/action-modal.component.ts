@@ -447,6 +447,7 @@ export class ActionModalComponent implements OnInit {
           ? 'les modifications de l’action de stockage du matériel'
           : 'l’action de stockage du matériel',
         entityCode: currentCode || undefined,
+        mailAction: this.edit ? 'update' : 'create',
         disableClose: false
       })
       .subscribe((yes) => {

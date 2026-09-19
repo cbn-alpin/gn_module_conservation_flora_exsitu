@@ -19,6 +19,7 @@ import { ConstantsService } from '../../services/constants.service';
 import { Router } from '@angular/router';
 import { ConfigService } from '../../services/config.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { MailService } from '../../mail/mail.service';
 
 
 @Component({
@@ -126,7 +127,8 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         public constants: ConstantsService,
         public router: Router,
         public cfg: ConfigService,
-        private toast: CommonService
+        private toast: CommonService,
+        private mailService: MailService
         
     ){
 
@@ -989,6 +991,12 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
           warningMessage: hasLinkedTaxons
             ? 'Ce matériel est lié à un ou plusieurs taxons.'
             : undefined,
+
+          mailWarningMessage:
+            this.mailService.getConfirmationWarning(
+              'delete'
+            ),
+
           disableClose: false
         })
         .subscribe((yes) => {

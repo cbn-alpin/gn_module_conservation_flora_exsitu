@@ -390,6 +390,7 @@ export class ViabilityComponent implements OnInit {
           ? 'les modifications du test de viabilité'
           : 'le test de viabilité',
         entityCode: currentCode || undefined,
+        mailAction: this.data?.edit ? 'update' : 'create',
         disableClose: false
       })
       .subscribe((yes) => {

@@ -31,6 +31,10 @@ import {
   MaterialFormService
 } from '../material-form/material-form.service';
 
+import {
+  MailService
+} from '../../mail/mail.service';
+
 
 @Component({
   selector: 'app-material-details',
@@ -82,7 +86,8 @@ export class MaterialDetailsComponent implements OnInit {
     private toast: CommonService,
     private dialogService: DialogService,
     private exsituFormService: ExsituFormService,
-    private materialFormService: MaterialFormService
+    private materialFormService: MaterialFormService,
+    private mailService: MailService
   ) {}
 
 
@@ -736,6 +741,12 @@ export class MaterialDetailsComponent implements OnInit {
           hasLinkedTaxons
             ? 'Ce matériel est lié à un ou plusieurs taxons.'
             : undefined,
+
+        mailWarningMessage:
+          this.mailService.getConfirmationWarning(
+            'delete'
+          ),
+
         disableClose: false
       })
       .subscribe((yes) => {

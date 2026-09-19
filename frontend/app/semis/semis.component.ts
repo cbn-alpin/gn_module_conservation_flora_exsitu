@@ -1007,6 +1007,7 @@ export class SemisComponent implements OnInit {
               ? 'les modifications du semis'
               : 'le semis',
             entityCode: currentCode || undefined,
+            mailAction: this.modalData?.edit ? 'update' : 'create',
             disableClose: false
           })
           .subscribe((yes) => {

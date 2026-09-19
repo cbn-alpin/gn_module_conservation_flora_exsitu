@@ -56,6 +56,14 @@
 
     [class.workflow-confirm-dialog]="
         dialogData?.variant === 'harvest-save'
+        || dialogData?.variant === 'semis'
+        || dialogData?.variant === 'semis-reset'
+        || dialogData?.variant === 'semis-exit'
+        || dialogData?.variant === 'semis-save'
+        || dialogData?.variant === 'culture'
+        || dialogData?.variant === 'culture-reset'
+        || dialogData?.variant === 'culture-exit'
+        || dialogData?.variant === 'culture-save'
         || dialogData?.variant === 'viability'
         || dialogData?.variant === 'viability-reset'
         || dialogData?.variant === 'viability-exit'
@@ -380,6 +388,23 @@
             "<strong class="entity-code">{{ dialogData?.entityLabel }}</strong>"
             ?
         </p>
+
+
+        <!-- =================================================
+             MAIL - INFORMATION SI ACTIVÉ
+             ================================================= -->
+
+        <div
+            *ngIf="dialogData?.mailWarningMessage"
+            class="mail-warning-message"
+        >
+            <mat-icon>mail_outline</mat-icon>
+
+            <span>
+                {{ dialogData?.mailWarningMessage }}
+            </span>
+        </div>
+
 
         <p *ngIf="!dialogData?.variant">
             {{ dialogData?.message }}

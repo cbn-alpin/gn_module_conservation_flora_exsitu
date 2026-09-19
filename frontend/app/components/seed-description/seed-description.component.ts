@@ -204,6 +204,7 @@ export class SeddDescriptionComponent implements OnInit {
               ? 'les modifications de la semence du matériel'
               : 'la semence du matériel',
             entityCode: currentCode || undefined,
+            mailAction: this.edit ? 'update' : 'create',
             disableClose: false
           })
           .subscribe((yes) => {

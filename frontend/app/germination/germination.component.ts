@@ -481,6 +481,7 @@ ngOnInit(): void {
           ? 'les modifications du test de germination'
           : 'le test de germination',
         entityCode: currentCode || undefined,
+        mailAction: this.data?.edit ? 'update' : 'create',
         disableClose: false
       })
       .subscribe((yes) => {

@@ -899,6 +899,7 @@ export class CultureComponent implements OnInit {
           ? 'les modifications de la culture'
           : 'la culture',
         entityCode: currentCode || undefined,
+        mailAction: this.modalData?.edit ? 'update' : 'create',
         disableClose: false
       })
       .subscribe((yes) => {

@@ -49,6 +49,34 @@ export class MailService {
   }
 
 
+  /* =========================================================
+     MAIL - MESSAGE DANS LES CONFIRMATIONS
+     ========================================================= */
+
+  public getConfirmationWarning(
+    action: 'create' | 'update' | 'delete'
+  ): string | undefined {
+
+    if (!this.enabled) {
+      return undefined;
+    }
+
+
+    const actionLabel = {
+      create: "l'ajout",
+      update: 'la modification',
+      delete: 'la suppression'
+    }[action];
+
+
+    return (
+      `Attention : Mail activé. Après ${actionLabel}, ` +
+      'un mail vous sera envoyé automatiquement.'
+    );
+
+  }
+
+
   private getStoredEnabledState(): boolean {
 
     const storedValue =
