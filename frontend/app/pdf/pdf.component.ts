@@ -173,27 +173,12 @@ export class PdfComponent {
           }
 
 
-          /*
-           * Message demandé avant
-           * le téléchargement.
-           */
-          this.commonService
-            .translateToaster(
-              'info',
-              `Le PDF « ${fileName} » va être téléchargé.`
-            );
-
-
-          /*
-           * setTimeout permet au toast
-           * de s'afficher avant la génération.
-           */
           setTimeout(
-            () => {
+            async () => {
 
               try {
 
-                this.pdfExportService
+                await this.pdfExportService
                   .generate(
                     fileName,
                     {
@@ -222,6 +207,13 @@ export class PdfComponent {
                       actionContext:
                         this.actionContext
                     }
+                  );
+
+
+                this.commonService
+                  .translateToaster(
+                    'info',
+                    `Le PDF « ${fileName} » a été téléchargé.`
                   );
 
 

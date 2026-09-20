@@ -21,6 +21,10 @@ type RgbColor =
   [number, number, number];
 
 
+const CBNA_LOGO_URL =
+  'assets/conservation_flora_exsitu/cbna-logo.jpeg';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,10 +37,14 @@ export class PdfExportService {
   private readonly pageStartY = 12;
 
 
-  generate(
+  async generate(
     fileName: string,
     payload: PdfExportPayload
-  ): void {
+  ): Promise<void> {
+
+    const logoDataUrl =
+      await this.getLogoDataUrl();
+
 
     const doc =
       new jsPDF({
@@ -84,7 +92,8 @@ export class PdfExportService {
       this.drawHero(
         doc,
         payload,
-        accent
+        accent,
+        logoDataUrl
       );
 
 
@@ -143,7 +152,8 @@ export class PdfExportService {
   private drawHero(
     doc: jsPDF,
     payload: PdfExportPayload,
-    accent: RgbColor
+    accent: RgbColor,
+    logoDataUrl: string | null
   ): number {
 
     const pageWidth =
@@ -158,7 +168,7 @@ export class PdfExportService {
 
     const top = 12;
 
-    const height = 27;
+    const height = 31;
 
 
     const light =
@@ -212,8 +222,53 @@ export class PdfExportService {
 
 
     /*
-     * Nom de la partie.
+     * Logo du Conservatoire Botanique National Alpin.
+     *
+     * Le JPEG original est chargé directement depuis
+     * frontend/assets/conservation_flora_exsitu/cbna-logo.jpeg.
+     *
+     * Les marges blanches sont supprimées
+     * automatiquement avant l'insertion.
      */
+    const logoWidth = 28;
+
+    const logoHeight = 24;
+
+    const logoX =
+      this.margin + 7;
+
+    const logoY =
+      top + 3.5;
+
+
+    if (
+      logoDataUrl
+    ) {
+
+      doc.addImage(
+        logoDataUrl,
+        'JPEG',
+        logoX,
+        logoY,
+        logoWidth,
+        logoHeight,
+        undefined,
+        'FAST'
+      );
+
+    }
+
+
+    /*
+     * Nom de la partie.
+     *
+     * Le texte est décalé vers la droite
+     * pour laisser la place au logo.
+     */
+    const titleX =
+      this.margin + 39;
+
+
     doc.setFont(
       'helvetica',
       'bold'
@@ -232,8 +287,8 @@ export class PdfExportService {
       this.normalizeText(
         payload.entityLabel
       ),
-      this.margin + 9,
-      top + 9
+      titleX,
+      top + 10
     );
 
 
@@ -258,8 +313,8 @@ export class PdfExportService {
 
     doc.text(
       'Vue détaillée des données principales',
-      this.margin + 9,
-      top + 15
+      titleX,
+      top + 17
     );
 
 
@@ -310,7 +365,7 @@ export class PdfExportService {
 
     doc.roundedRect(
       codeX,
-      top + 7,
+      top + 10,
       codeWidth,
       11,
       2.5,
@@ -339,7 +394,7 @@ export class PdfExportService {
       codeX +
       codeWidth / 2,
 
-      top + 14,
+      top + 17,
 
       {
         align: 'center',
@@ -1728,6 +1783,411 @@ export class PdfExportService {
     );
   }
 
+    /* =========================================================
+     LOGO CBNA
+     ========================================================= */
+
+  private logoDataUrl:
+    string | null =
+      null;
+
+
+  private async getLogoDataUrl():
+    Promise<string | null> {
+
+    /*
+     * Une fois le logo préparé,
+     * on le garde en mémoire.
+     */
+    if (
+      this.logoDataUrl
+    ) {
+      return this.logoDataUrl;
+    }
+
+
+    try {
+
+      this.logoDataUrl =
+        await this.loadAndCropLogo(
+          CBNA_LOGO_URL
+        );
+
+
+      return this.logoDataUrl;
+
+    } catch (error) {
+
+      /*
+       * Le logo ne doit jamais empêcher
+       * la génération du PDF.
+       */
+      console.error(
+        '[PDF] Impossible de charger le logo CBNA :',
+        error
+      );
+
+
+      return null;
+
+    }
+  }
+
+
+  private loadAndCropLogo(
+    imageUrl: string
+  ): Promise<string> {
+
+    return new Promise(
+      (
+        resolve,
+        reject
+      ) => {
+
+        const image =
+          new Image();
+
+
+        image.onload =
+          () => {
+
+            try {
+
+              /*
+               * Canvas contenant
+               * le JPEG original.
+               */
+              const sourceCanvas =
+                document.createElement(
+                  'canvas'
+                );
+
+
+              sourceCanvas.width =
+                image.naturalWidth;
+
+              sourceCanvas.height =
+                image.naturalHeight;
+
+
+              const sourceContext =
+                sourceCanvas.getContext(
+                  '2d'
+                );
+
+
+              if (
+                !sourceContext
+              ) {
+
+                reject(
+                  new Error(
+                    'Impossible de préparer le logo CBNA.'
+                  )
+                );
+
+                return;
+              }
+
+
+              sourceContext.drawImage(
+                image,
+                0,
+                0
+              );
+
+
+              const imageData =
+                sourceContext
+                  .getImageData(
+                    0,
+                    0,
+                    sourceCanvas.width,
+                    sourceCanvas.height
+                  );
+
+
+              const pixels =
+                imageData.data;
+
+
+              let minX =
+                sourceCanvas.width;
+
+              let minY =
+                sourceCanvas.height;
+
+              let maxX =
+                -1;
+
+              let maxY =
+                -1;
+
+
+              /*
+               * Recherche de la zone réellement
+               * occupée par le logo.
+               *
+               * Tout pixel presque blanc
+               * est considéré comme marge.
+               */
+              for (
+                let y = 0;
+                y < sourceCanvas.height;
+                y++
+              ) {
+
+                for (
+                  let x = 0;
+                  x < sourceCanvas.width;
+                  x++
+                ) {
+
+                  const index =
+                    (
+                      y *
+                      sourceCanvas.width +
+                      x
+                    ) * 4;
+
+
+                  const red =
+                    pixels[
+                      index
+                    ];
+
+                  const green =
+                    pixels[
+                      index + 1
+                    ];
+
+                  const blue =
+                    pixels[
+                      index + 2
+                    ];
+
+                  const alpha =
+                    pixels[
+                      index + 3
+                    ];
+
+
+                  const isContent =
+                    alpha > 0 &&
+                    (
+                      red < 245 ||
+                      green < 245 ||
+                      blue < 245
+                    );
+
+
+                  if (
+                    !isContent
+                  ) {
+                    continue;
+                  }
+
+
+                  minX =
+                    Math.min(
+                      minX,
+                      x
+                    );
+
+                  minY =
+                    Math.min(
+                      minY,
+                      y
+                    );
+
+                  maxX =
+                    Math.max(
+                      maxX,
+                      x
+                    );
+
+                  maxY =
+                    Math.max(
+                      maxY,
+                      y
+                    );
+
+                }
+
+              }
+
+
+              /*
+               * Sécurité :
+               * si aucun contenu n'est détecté,
+               * on utilise simplement l'image entière.
+               */
+              if (
+                maxX < minX ||
+                maxY < minY
+              ) {
+
+                resolve(
+                  sourceCanvas
+                    .toDataURL(
+                      'image/jpeg',
+                      0.95
+                    )
+                );
+
+                return;
+              }
+
+
+              /*
+               * Petite marge autour du logo
+               * après le rognage automatique.
+               */
+              const padding =
+                8;
+
+
+              const cropX =
+                Math.max(
+                  0,
+                  minX - padding
+                );
+
+
+              const cropY =
+                Math.max(
+                  0,
+                  minY - padding
+                );
+
+
+              const cropWidth =
+                Math.min(
+                  sourceCanvas.width -
+                  cropX,
+
+                  maxX -
+                  minX +
+                  1 +
+                  padding * 2
+                );
+
+
+              const cropHeight =
+                Math.min(
+                  sourceCanvas.height -
+                  cropY,
+
+                  maxY -
+                  minY +
+                  1 +
+                  padding * 2
+                );
+
+
+              const cropCanvas =
+                document.createElement(
+                  'canvas'
+                );
+
+
+              cropCanvas.width =
+                cropWidth;
+
+              cropCanvas.height =
+                cropHeight;
+
+
+              const cropContext =
+                cropCanvas.getContext(
+                  '2d'
+                );
+
+
+              if (
+                !cropContext
+              ) {
+
+                reject(
+                  new Error(
+                    'Impossible de rogner le logo CBNA.'
+                  )
+                );
+
+                return;
+              }
+
+
+              /*
+               * Le JPEG n'a pas de transparence :
+               * on conserve donc un fond blanc propre.
+               */
+              cropContext.fillStyle =
+                '#ffffff';
+
+
+              cropContext.fillRect(
+                0,
+                0,
+                cropWidth,
+                cropHeight
+              );
+
+
+              cropContext.drawImage(
+                sourceCanvas,
+
+                cropX,
+                cropY,
+                cropWidth,
+                cropHeight,
+
+                0,
+                0,
+                cropWidth,
+                cropHeight
+              );
+
+
+              resolve(
+                cropCanvas
+                  .toDataURL(
+                    'image/jpeg',
+                    0.95
+                  )
+              );
+
+            } catch (
+              error
+            ) {
+
+              reject(
+                error
+              );
+
+            }
+
+          };
+
+
+        image.onerror =
+          () => {
+
+            reject(
+              new Error(
+                `Impossible de charger le logo CBNA : ${imageUrl}`
+              )
+            );
+
+          };
+
+
+        image.src =
+          imageUrl;
+
+      }
+    );
+  }
 
   /* =========================================================
      COULEURS
