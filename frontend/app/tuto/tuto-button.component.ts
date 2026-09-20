@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Input,
   Output
 } from '@angular/core';
 
@@ -19,6 +20,13 @@ import {
   styleUrls: ['./tuto-button.component.scss']
 })
 export class TutoButtonComponent {
+
+  @Input()
+  sectionName = '';
+
+  @Input()
+  sectionColor = '#6a1b9a';
+
 
   @Output()
   tutoClick =
@@ -40,6 +48,14 @@ export class TutoButtonComponent {
 
           panelClass:
             'tuto-confirm-dialog-panel',
+
+          data: {
+            sectionName:
+              this.sectionName,
+
+            sectionColor:
+              this.sectionColor
+          },
 
           disableClose: true,
           autoFocus: false,

@@ -1,9 +1,11 @@
 import {
   Component,
+  Inject,
   ViewEncapsulation
 } from '@angular/core';
 
 import {
+  MAT_DIALOG_DATA,
   MatDialogRef
 } from '@angular/material/dialog';
 
@@ -26,7 +28,13 @@ export class TutoConfirmDialogComponent {
 
   constructor(
     public dialogRef:
-      MatDialogRef<TutoConfirmDialogComponent>
+      MatDialogRef<TutoConfirmDialogComponent>,
+
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      sectionName: string;
+      sectionColor: string;
+    }
   ) {}
 
 
