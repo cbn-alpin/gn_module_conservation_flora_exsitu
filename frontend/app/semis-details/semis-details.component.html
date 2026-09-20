@@ -44,6 +44,10 @@
           sowingForm.get('code')?.value || ''
         "
         accentColor="#43a047"
+        detailRootSelector=".sowing-info-content"
+        [includeActions]="true"
+        [actions]="dataSource.data"
+        actionContext="standard"
         [defaultFileName]="
           (sowingForm.get('code')?.value || 'semis')
           + '-detail.pdf'

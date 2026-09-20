@@ -53,6 +53,10 @@
           germinationForm.get('code')?.value || ''
         "
         accentColor="#e07a1f"
+        detailRootSelector=".viability-info-content"
+        [includeActions]="true"
+        [actions]="dataSource.data"
+        actionContext="standard"
         [defaultFileName]="
           (
             germinationForm.get('code')?.value
