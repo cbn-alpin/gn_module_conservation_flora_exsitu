@@ -75,7 +75,23 @@
       </div>
 
 
-      <app-pdf></app-pdf>
+      <app-pdf
+        entityLabel="Stockage"
+        [entityCode]="
+          idStorage
+            ? 'N° ' + idStorage
+            : ''
+        "
+        accentColor="#607d8b"
+        [defaultFileName]="
+          (
+            idStorage
+              ? 'stockage-' + idStorage
+              : 'stockage'
+          )
+          + '-detail.pdf'
+        "
+      ></app-pdf>
 
     </div>
 

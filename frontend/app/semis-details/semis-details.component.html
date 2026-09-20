@@ -38,7 +38,17 @@
       </div>
 
 
-      <app-pdf></app-pdf>
+      <app-pdf
+        entityLabel="Semis"
+        [entityCode]="
+          sowingForm.get('code')?.value || ''
+        "
+        accentColor="#43a047"
+        [defaultFileName]="
+          (sowingForm.get('code')?.value || 'semis')
+          + '-detail.pdf'
+        "
+      ></app-pdf>
 
     </div>
 

@@ -70,6 +70,7 @@ import { ReplicatesModalComponent } from './replicates/replicates-modal.componen
 import { FollowupDetailsComponent } from'./FollowupDetailsComponent/followup-details.component';
 import { ViabilityFormService } from './viability/viability-form.service';
 import { PdfComponent } from './pdf/pdf.component';
+import { PdfConfirmDialogComponent } from './pdf/pdf-confirm-dialog.component';
 
 import { CultureComponent } from './culture/culture.component';
 import { CultureService } from './culture/culture.service';
@@ -150,6 +151,7 @@ registerLocaleData(localeFr);
     ReplicatesModalComponent,
     FollowupDetailsComponent,
     PdfComponent,
+    PdfConfirmDialogComponent,
     CultureComponent,
     CultureTableComponent,
     CultureDetailsComponent,
@@ -203,6 +205,7 @@ registerLocaleData(localeFr);
   ],
   entryComponents: [
     ConfirmDialogComponent,
+    PdfConfirmDialogComponent,
   ],
   bootstrap: []
 })

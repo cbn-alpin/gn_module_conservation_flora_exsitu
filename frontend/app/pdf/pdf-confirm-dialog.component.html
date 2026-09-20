@@ -1,0 +1,126 @@
+<div class="pdf-confirm-dialog-shell">
+
+  <div class="pdf-confirm-dialog-icon">
+    <mat-icon>
+      picture_as_pdf
+    </mat-icon>
+  </div>
+
+
+  <button
+    mat-icon-button
+    type="button"
+    class="pdf-confirm-dialog-close"
+    [mat-dialog-close]="null"
+    aria-label="Fermer"
+  >
+    <mat-icon>
+      close
+    </mat-icon>
+  </button>
+
+
+  <div class="pdf-confirm-dialog-header">
+
+    <h2 mat-dialog-title>
+      Téléchargement PDF
+    </h2>
+
+  </div>
+
+
+  <div
+    mat-dialog-content
+    class="pdf-confirm-dialog-content"
+  >
+
+    <p class="pdf-confirm-dialog-context">
+
+      Vous êtes sur la partie
+
+      <strong
+        class="pdf-confirm-dialog-entity"
+        [style.color]="data.accentColor"
+      >
+        {{ data.entityLabel }}
+      </strong>
+
+      <strong
+        *ngIf="data.entityCode"
+        class="pdf-confirm-dialog-code"
+        [style.color]="data.accentColor"
+      >
+        {{ data.entityCode }}
+      </strong>
+
+      .
+
+    </p>
+
+
+    <p class="pdf-confirm-dialog-question">
+
+      Êtes-vous sûr de vouloir télécharger
+      le PDF des détails de cet élément ?
+
+    </p>
+
+
+    <div class="pdf-confirm-dialog-file-name">
+
+      <label for="pdf-file-name">
+        Nom du fichier
+      </label>
+
+
+      <input
+        id="pdf-file-name"
+        type="text"
+        [(ngModel)]="fileName"
+        autocomplete="off"
+        (keydown.enter)="confirmDownload()"
+      />
+
+
+      <span class="pdf-confirm-dialog-hint">
+
+        Vous pouvez conserver le nom proposé
+        ou le modifier.
+        L’extension .pdf sera ajoutée
+        automatiquement si nécessaire.
+
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div
+    mat-dialog-actions
+    class="pdf-confirm-dialog-actions"
+  >
+
+    <button
+      mat-raised-button
+      type="button"
+      class="pdf-cancel-button"
+      [mat-dialog-close]="null"
+    >
+      Non
+    </button>
+
+
+    <button
+      mat-raised-button
+      type="button"
+      class="pdf-confirm-button"
+      [disabled]="!fileName.trim()"
+      (click)="confirmDownload()"
+    >
+      Oui
+    </button>
+
+  </div>
+
+</div>

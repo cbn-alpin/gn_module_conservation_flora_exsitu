@@ -75,7 +75,15 @@
       </div>
 
 
-      <app-pdf></app-pdf>
+      <app-pdf
+        entityLabel="Matériel récolté"
+        [entityCode]="codeMaterial || ''"
+        accentColor="#667a32"
+        [defaultFileName]="
+          (codeMaterial || 'materiel-recolte')
+          + '-detail.pdf'
+        "
+      ></app-pdf>
 
     </div>
 

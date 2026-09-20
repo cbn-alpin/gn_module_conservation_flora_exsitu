@@ -54,6 +54,21 @@
 
   <app-pdf
     *ngIf="seed"
+    entityLabel="Semence"
+    [entityCode]="
+      seed?.id_seed
+        ? 'N° ' + seed.id_seed
+        : ''
+    "
+    accentColor="#c89500"
+    [defaultFileName]="
+      (
+        seed?.id_seed
+          ? 'semence-' + seed.id_seed
+          : 'semence'
+      )
+      + '-detail.pdf'
+    "
   ></app-pdf>
 
 

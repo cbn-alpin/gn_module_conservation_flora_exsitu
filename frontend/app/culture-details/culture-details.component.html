@@ -77,7 +77,15 @@
       </div>
 
 
-      <app-pdf></app-pdf>
+      <app-pdf
+        entityLabel="Culture"
+        [entityCode]="culture?.code_culture || ''"
+        accentColor="#6d4c41"
+        [defaultFileName]="
+          (culture?.code_culture || 'culture')
+          + '-detail.pdf'
+        "
+      ></app-pdf>
 
     </div>
 

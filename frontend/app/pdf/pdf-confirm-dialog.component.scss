@@ -1,0 +1,212 @@
+.pdf-confirm-dialog-shell {
+  position: relative;
+
+  padding-top: 20px;
+}
+
+
+.pdf-confirm-dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 54px;
+  height: 54px;
+
+  margin: 0 auto 12px;
+
+  color: #d32f2f;
+
+  background-color: #ffffff;
+
+  border: 1px solid #ef9a9a;
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px
+    rgba(211, 47, 47, 0.16);
+}
+
+
+.pdf-confirm-dialog-icon mat-icon {
+  width: 30px;
+  height: 30px;
+
+  font-size: 30px;
+  line-height: 30px;
+}
+
+
+.pdf-confirm-dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px !important;
+  height: 40px !important;
+
+  color: #d32f2f;
+
+  background-color: #fff5f5;
+
+  border: 1px solid #ef9a9a;
+  border-radius: 50%;
+
+  --mdc-icon-button-state-layer-size: 40px;
+}
+
+
+.pdf-confirm-dialog-header {
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: 10px;
+}
+
+
+.pdf-confirm-dialog-header h2 {
+  margin: 0;
+  padding: 0 56px;
+
+  color: #a71919;
+
+  font-size: 20px;
+  font-weight: 750;
+  text-align: center;
+}
+
+
+.pdf-confirm-dialog-content {
+  padding: 6px 32px 18px !important;
+
+  color: #455a64;
+
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+
+.pdf-confirm-dialog-context,
+.pdf-confirm-dialog-question {
+  margin: 0;
+}
+
+
+.pdf-confirm-dialog-question {
+  margin-top: 12px;
+}
+
+
+.pdf-confirm-dialog-entity,
+.pdf-confirm-dialog-code {
+  font-weight: 800;
+}
+
+
+.pdf-confirm-dialog-code {
+  margin-left: 4px;
+}
+
+
+.pdf-confirm-dialog-file-name {
+  display: flex;
+  flex-direction: column;
+
+  margin-top: 20px;
+
+  text-align: left;
+}
+
+
+.pdf-confirm-dialog-file-name label {
+  margin-bottom: 7px;
+
+  color: #37474f;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+
+.pdf-confirm-dialog-file-name input {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  color: #263238;
+
+  background-color: #ffffff;
+
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 14px;
+
+  box-sizing: border-box;
+}
+
+
+.pdf-confirm-dialog-file-name input:focus {
+  border-color: #d32f2f;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(211, 47, 47, 0.10);
+}
+
+
+.pdf-confirm-dialog-hint {
+  margin-top: 6px;
+
+  color: #78909c;
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+
+.pdf-confirm-dialog-actions {
+  display: flex;
+  justify-content: center;
+
+  gap: 12px;
+
+  padding: 12px 24px 20px;
+}
+
+
+.pdf-confirm-dialog-actions button {
+  min-width: 92px;
+
+  border-radius: 8px;
+}
+
+
+.pdf-cancel-button {
+  color: #607d8b !important;
+
+  background-color: #ffffff !important;
+
+  border: 1px solid #90a4ae;
+}
+
+
+.pdf-confirm-button {
+  color: #ffffff !important;
+
+  background-color: #d32f2f !important;
+}
+
+
+.pdf-confirm-button:disabled {
+  color: #9e9e9e !important;
+
+  background-color: #eeeeee !important;
+}

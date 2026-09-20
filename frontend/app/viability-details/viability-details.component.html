@@ -47,7 +47,20 @@
       </div>
 
 
-      <app-pdf></app-pdf>
+      <app-pdf
+        entityLabel="Test de viabilité"
+        [entityCode]="
+          germinationForm.get('code')?.value || ''
+        "
+        accentColor="#e07a1f"
+        [defaultFileName]="
+          (
+            germinationForm.get('code')?.value
+            || 'viabilite'
+          )
+          + '-detail.pdf'
+        "
+      ></app-pdf>
 
     </div>
 
