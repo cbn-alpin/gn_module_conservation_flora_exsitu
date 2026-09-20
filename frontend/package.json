@@ -10,6 +10,8 @@
   "homepage": "https://github.com/cbn-alpin/gn_module_conservation_flora_exsitu#readme",
   "dependencies": {
     "@angular-material-components/datetime-picker": "^15.0.0",
-    "@angular-material-components/moment-adapter": "^15.0.0"
+    "@angular-material-components/moment-adapter": "^15.0.0",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4"
   }
 }

@@ -17,6 +17,19 @@ import {
   PdfConfirmDialogComponent
 } from './pdf-confirm-dialog.component';
 
+import {
+  PdfActionContext,
+  PdfDetailMode
+} from './pdf.models';
+
+import {
+  PdfContentService
+} from './pdf-content.service';
+
+import {
+  PdfExportService
+} from './pdf-export.service';
+
 
 @Component({
   selector: 'app-pdf',
@@ -42,6 +55,40 @@ export class PdfComponent {
     'details.pdf';
 
 
+  /*
+   * Zone HTML qui contient les informations
+   * actuellement affichées à l'utilisateur.
+   */
+  @Input()
+  detailRootSelector: string =
+    '';
+
+
+  /*
+   * Semence possède une mise en page
+   * différente des autres fiches.
+   */
+  @Input()
+  detailMode: PdfDetailMode =
+    'standard';
+
+
+  /*
+   * Liste d'actions facultative.
+   */
+  @Input()
+  includeActions =
+    false;
+
+  @Input()
+  actions: any[] =
+    [];
+
+  @Input()
+  actionContext: PdfActionContext =
+    'standard';
+
+
   @Output()
   pdfRequested =
     new EventEmitter<string>();
@@ -49,7 +96,9 @@ export class PdfComponent {
 
   constructor(
     private dialog: MatDialog,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private pdfContentService: PdfContentService,
+    private pdfExportService: PdfExportService
   ) {}
 
 
@@ -61,7 +110,8 @@ export class PdfComponent {
         {
           width: '480px',
 
-          panelClass: 'pdf-confirm-dialog-panel',
+          panelClass:
+            'pdf-confirm-dialog-panel',
 
           disableClose: true,
           autoFocus: false,
@@ -87,13 +137,46 @@ export class PdfComponent {
     dialogRef
       .afterClosed()
       .subscribe(
-        (fileName: string | null) => {
+        (
+          fileName:
+            string | null
+        ) => {
 
           if (!fileName) {
             return;
           }
 
 
+          /*
+           * Lecture des informations telles
+           * qu'elles sont affichées dans la fiche.
+           */
+          const sections =
+            this.pdfContentService
+              .extractSections(
+                this.detailRootSelector,
+                this.detailMode
+              );
+
+
+          if (
+            sections.length === 0
+          ) {
+
+            this.commonService
+              .translateToaster(
+                'warning',
+                'Impossible de récupérer les détails à intégrer au PDF.'
+              );
+
+            return;
+          }
+
+
+          /*
+           * Message demandé avant
+           * le téléchargement.
+           */
           this.commonService
             .translateToaster(
               'info',
@@ -102,13 +185,68 @@ export class PdfComponent {
 
 
           /*
-           * Pour l'instant aucun téléchargement.
-           *
-           * Cet événement sera utilisé plus tard
-           * pour brancher la vraie génération PDF.
+           * setTimeout permet au toast
+           * de s'afficher avant la génération.
            */
-          this.pdfRequested.emit(
-            fileName
+          setTimeout(
+            () => {
+
+              try {
+
+                this.pdfExportService
+                  .generate(
+                    fileName,
+                    {
+                      entityLabel:
+                        this.entityLabel,
+
+                      entityCode:
+                        this.entityCode,
+
+                      accentColor:
+                        this.accentColor,
+
+                      sections,
+
+                      includeActions:
+                        this.includeActions,
+
+                      /*
+                       * dataSource.data contient
+                       * déjà les actions filtrées.
+                       */
+                      actions:
+                        this.actions ||
+                        [],
+
+                      actionContext:
+                        this.actionContext
+                    }
+                  );
+
+
+                this.pdfRequested.emit(
+                  fileName
+                );
+
+              } catch (error) {
+
+                console.error(
+                  'Erreur lors de la génération du PDF :',
+                  error
+                );
+
+
+                this.commonService
+                  .translateToaster(
+                    'warning',
+                    'Impossible de générer le PDF.'
+                  );
+
+              }
+
+            },
+            0
           );
 
         }
