@@ -1,0 +1,96 @@
+<div class="tuto-confirm-dialog-shell">
+
+  <div class="tuto-confirm-dialog-icon">
+    <mat-icon>
+      school
+    </mat-icon>
+  </div>
+
+
+  <button
+    mat-icon-button
+    type="button"
+    class="tuto-confirm-dialog-close"
+    [mat-dialog-close]="false"
+    aria-label="Fermer"
+  >
+    <mat-icon>
+      close
+    </mat-icon>
+  </button>
+
+
+  <div class="tuto-confirm-dialog-header">
+
+    <h2 mat-dialog-title>
+      Tutoriel
+    </h2>
+
+  </div>
+
+
+  <div
+    mat-dialog-content
+    class="tuto-confirm-dialog-content"
+  >
+
+    <p class="tuto-confirm-dialog-question">
+
+      Êtes-vous sûr de vouloir
+      lancer le tutoriel ?
+
+    </p>
+
+
+    <div class="tuto-confirm-dialog-illustration">
+
+      <div class="tuto-confirm-dialog-illustration-circle">
+
+        <img
+          [src]="tutoImageDataUrl"
+          alt="Illustration du tutoriel"
+        >
+
+      </div>
+
+    </div>
+
+
+    <p class="tuto-confirm-dialog-description">
+
+      Le tutoriel vous accompagnera
+      pas à pas dans l'utilisation
+      de cette partie.
+
+    </p>
+
+  </div>
+
+
+  <div
+    mat-dialog-actions
+    class="tuto-confirm-dialog-actions"
+  >
+
+    <button
+      mat-raised-button
+      type="button"
+      class="tuto-cancel-button"
+      [mat-dialog-close]="false"
+    >
+      Non
+    </button>
+
+
+    <button
+      mat-raised-button
+      type="button"
+      class="tuto-confirm-button"
+      (click)="confirm()"
+    >
+      Oui
+    </button>
+
+  </div>
+
+</div>

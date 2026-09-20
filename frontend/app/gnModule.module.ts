@@ -90,6 +90,10 @@ import {
   TutoButtonComponent
 } from './tuto/tuto-button.component';
 
+import {
+  TutoConfirmDialogComponent
+} from './tuto/tuto-confirm-dialog.component';
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -158,6 +162,7 @@ registerLocaleData(localeFr);
     CultureActionComponent,
     CultureActionDetailsComponent,
     TutoButtonComponent,
+    TutoConfirmDialogComponent,
   ],
   providers: [
     HarvestStoreService, 
