@@ -1,6 +1,7 @@
 import {
   Component,
-  Inject
+  Inject,
+  ViewEncapsulation
 } from '@angular/core';
 
 import {
@@ -20,7 +21,8 @@ export interface PdfConfirmDialogData {
 @Component({
   selector: 'app-pdf-confirm-dialog',
   templateUrl: './pdf-confirm-dialog.component.html',
-  styleUrls: ['./pdf-confirm-dialog.component.scss']
+  styleUrls: ['./pdf-confirm-dialog.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class PdfConfirmDialogComponent {
 

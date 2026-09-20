@@ -61,6 +61,8 @@ export class PdfComponent {
         {
           width: '480px',
 
+          panelClass: 'pdf-confirm-dialog-panel',
+
           disableClose: true,
           autoFocus: false,
           restoreFocus: false,
