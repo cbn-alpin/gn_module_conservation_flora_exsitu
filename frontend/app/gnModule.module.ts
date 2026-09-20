@@ -86,6 +86,10 @@ import {
   CultureActionDetailsComponent
 } from './culture-action-details/culture-action-details.component';
 
+import {
+  TutoButtonComponent
+} from './tuto/tuto-button.component';
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -153,6 +157,7 @@ registerLocaleData(localeFr);
     CultureDetailsComponent,
     CultureActionComponent,
     CultureActionDetailsComponent,
+    TutoButtonComponent,
   ],
   providers: [
     HarvestStoreService, 
