@@ -16,13 +16,13 @@ import {
   PdfSection
 } from './pdf.models';
 
+import {
+  CBNA_LOGO_DATA_URL
+} from './pdf-logo';
+
 
 type RgbColor =
   [number, number, number];
-
-
-const CBNA_LOGO_URL =
-  'assets/conservation_flora_exsitu/cbna-logo.jpeg';
 
 
 @Injectable({
@@ -224,8 +224,8 @@ export class PdfExportService {
     /*
      * Logo du Conservatoire Botanique National Alpin.
      *
-     * Le JPEG original est chargé directement depuis
-     * frontend/assets/conservation_flora_exsitu/cbna-logo.jpeg.
+     * Le JPEG original est conservé dans frontend/app/pdf
+     * et embarqué dans pdf-logo.ts pour rester portable.
      *
      * Les marges blanches sont supprimées
      * automatiquement avant l'insertion.
@@ -1810,7 +1810,7 @@ export class PdfExportService {
 
       this.logoDataUrl =
         await this.loadAndCropLogo(
-          CBNA_LOGO_URL
+          CBNA_LOGO_DATA_URL
         );
 
 
