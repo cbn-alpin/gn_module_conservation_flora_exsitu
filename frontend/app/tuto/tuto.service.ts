@@ -126,7 +126,7 @@ export class TutoService {
       section: 'material',
 
       step: 1,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-add-button'
@@ -165,7 +165,7 @@ export class TutoService {
       section: 'material',
 
       step: 2,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-code',
@@ -292,6 +292,49 @@ export class TutoService {
 
       return;
     }
+
+
+    if (
+      current.step === 21 &&
+      current.canNext
+    ) {
+
+      this.showStorageTabStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 23 &&
+      current.canNext
+    ) {
+
+      this.showStoragePlacesStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 24 &&
+      current.canNext
+    ) {
+
+      this.showStorageAddStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 27 &&
+      current.canNext
+    ) {
+
+      this.complete();
+
+    }
   }
 
 
@@ -309,7 +352,7 @@ export class TutoService {
       section: 'material',
 
       step: 3,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-save-button'
@@ -348,7 +391,7 @@ export class TutoService {
       section: 'material',
 
       step: 4,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -395,7 +438,7 @@ export class TutoService {
       section: 'material',
 
       step: 5,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#matlist-container'
@@ -438,7 +481,7 @@ export class TutoService {
       section: 'material',
 
       step: 6,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-created-row'
@@ -479,7 +522,7 @@ export class TutoService {
       section: 'material',
 
       step: 7,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-seed-tab',
@@ -518,7 +561,7 @@ export class TutoService {
       section: 'material',
 
       step: 8,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-germination-tab',
@@ -561,7 +604,7 @@ export class TutoService {
       section: 'material',
 
       step: 9,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-action-button'
@@ -600,7 +643,7 @@ export class TutoService {
       section: 'material',
 
       step: 10,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-edit-button'
@@ -637,7 +680,7 @@ export class TutoService {
       section: 'material',
 
       step: 11,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-taxon',
@@ -676,7 +719,7 @@ export class TutoService {
       section: 'material',
 
       step: 11,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -713,7 +756,7 @@ export class TutoService {
       section: 'material',
 
       step: 12,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-action-button'
@@ -750,7 +793,7 @@ export class TutoService {
       section: 'material',
 
       step: 13,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-details-button'
@@ -787,7 +830,7 @@ export class TutoService {
       section: 'material',
 
       step: 14,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-details-page'
@@ -826,7 +869,7 @@ export class TutoService {
       section: 'material',
 
       step: 15,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-details-back'
@@ -863,7 +906,7 @@ export class TutoService {
       section: 'material',
 
       step: 16,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-action-button'
@@ -902,7 +945,7 @@ export class TutoService {
       section: 'material',
 
       step: 17,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-material-seed-details-button'
@@ -939,7 +982,7 @@ export class TutoService {
       section: 'material',
 
       step: 18,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-seed-add-button'
@@ -976,7 +1019,7 @@ export class TutoService {
       section: 'material',
 
       step: 19,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-seed-total-mass',
@@ -1021,7 +1064,7 @@ export class TutoService {
       section: 'material',
 
       step: 20,
-      total: 20,
+      total: 27,
 
       selectors: [
         '#tuto-seed-confirm-save-button'
@@ -1041,6 +1084,310 @@ export class TutoService {
 
       canNext:
         false
+
+    });
+  }
+
+
+  showSeedSummaryStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 21,
+      total: 27,
+
+      selectors: [
+        '.seed-details-left-panel'
+      ],
+
+      title:
+        'Comprendre la fiche de Semence',
+
+      description:
+        'Cette partie regroupe les caractéristiques morphologiques du lot, sa masse, son échantillonnage et les informations complémentaires.\n\n' +
+        'Dans notre exemple : Masse totale = 100 g, 50 graines échantillonnées pour 10 g et Nombre total de graines calculé = 500.\n\n' +
+        'La vue d’ensemble reprend les informations essentielles : 500 graines estimées, 100 g de masse totale et aucune photo.',
+
+      placement:
+        'top',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  showStorageTabStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 22,
+      total: 27,
+
+      selectors: [
+        '#tuto-stock-tab'
+      ],
+
+      title:
+        'Ouvrir le Stockage',
+
+      description:
+        'Cliquez maintenant sur l’onglet « Stockage ».',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showStorageSummaryStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 23,
+      total: 27,
+
+      selectors: [
+        '.stock-summary-card'
+      ],
+
+      title:
+        'Comprendre la synthèse des quantités',
+
+      description:
+        'La quantité initiale globale est de 500 graines : elle provient de la fiche de Semence créée précédemment.\n\n' +
+        'La quantité actuelle globale est également de 500 graines car aucun mouvement de stockage, déplacement ou déstockage n’a encore diminué le lot.',
+
+      placement:
+        'top',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  showStoragePlacesStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 24,
+      total: 27,
+
+      selectors: [
+        '.stock-actions-grid'
+      ],
+
+      title:
+        'Les quatre lieux de stockage',
+
+      description:
+        'Les actions sont réparties entre quatre lieux : Salle de pré-séchage, Salle de séchage, Chambre froide et Congélateur.\n\n' +
+        'Pour le moment aucune action n’est enregistrée dans ces différents lieux.',
+
+      placement:
+        'top',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  showStorageAddStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 25,
+      total: 27,
+
+      selectors: [
+        '.stock-list-add-button'
+      ],
+
+      title:
+        'Créer une fiche de Stockage',
+
+      description:
+        'Cliquez sur « Ajouter une fiche de stockage ».',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showStorageFormStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 26,
+      total: 27,
+
+      selectors: [
+        '.stock-form-card'
+      ],
+
+      title:
+        'Créer le stockage initial',
+
+      description:
+        'La fiche est préremplie avec le type d’action « Stockage initial » et le lieu « Salle de pré-séchage ».\n\n' +
+        'La quantité reprend automatiquement les 500 graines de la fiche de Semence et les dates sont préremplies pour permettre l’enregistrement.\n\n' +
+        'Cliquez sur « Enregistrer », puis confirmez avec « Oui ».',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showStorageConfirmStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 26,
+      total: 27,
+
+      selectors: [
+        '#tuto-stock-confirm-save-button'
+      ],
+
+      title:
+        'Confirmer le stockage initial',
+
+      description:
+        'Cliquez sur « Oui » pour enregistrer le stockage initial.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showStorageSummaryAfterStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 27,
+      total: 27,
+
+      selectors: [
+        '.stock-summary-card'
+      ],
+
+      title:
+        'Le stockage initial est enregistré',
+
+      description:
+        'La synthèse reste à 500 graines initiales et 500 graines disponibles.\n\n' +
+        'C’est normal : le stockage initial enregistre le lot dans la Salle de pré-séchage mais ne retire aucune graine. Aucun déstockage ou déplacement n’a encore été effectué.\n\n' +
+        'L’action de stockage initial est maintenant enregistrée dans la Salle de pré-séchage.',
+
+      placement:
+        'top',
+
+      showNext:
+        true,
+
+      canNext:
+        true
 
     });
   }

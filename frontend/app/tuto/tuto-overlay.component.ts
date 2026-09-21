@@ -227,7 +227,8 @@ export class TutoOverlayComponent
         4,
         11,
         19,
-        20
+        20,
+        26
       ];
 
 
@@ -1018,21 +1019,33 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPE 11 :
+     * ÉTAPES 11, 19, 21, 23 ET 25 :
      *
-     * carte large et compacte en haut de la fenêtre.
-     * Elle ne masque plus Taxon, Matériel végétal
-     * ni le bouton Enregistrer.
+     * carte placée sur le côté droit de l'écran.
+     *
+     * Elle ne masque plus :
+     * - la confirmation Oui de l'étape 11 ;
+     * - les champs Semence de l'étape 19 ;
+     * - la fiche Semence de l'étape 21 ;
+     * - la synthèse Stockage de l'étape 23 ;
+     * - le bouton Ajouter une fiche de stockage
+     *   de l'étape 25.
      */
     if (
       this.state.section ===
         'material' &&
-      this.state.step === 11
+      (
+        this.state.step === 11 ||
+        this.state.step === 19 ||
+        this.state.step === 21 ||
+        this.state.step === 23 ||
+        this.state.step === 25
+      )
     ) {
 
-      const step11CardWidth =
+      const sideCardWidth =
         Math.min(
-          720,
+          380,
           window.innerWidth - 32
         );
 
@@ -1040,59 +1053,17 @@ export class TutoOverlayComponent
       return {
 
         width:
-          `${step11CardWidth}px`,
+          `${sideCardWidth}px`,
 
         left:
           `${
-            (
-              window.innerWidth -
-              step11CardWidth
-            ) / 2
+            window.innerWidth -
+            sideCardWidth -
+            this.viewportMargin
           }px`,
 
         top:
-          '12px',
-
-        transform:
-          'none'
-
-      };
-    }
-
-
-    /*
-     * ÉTAPE 19 :
-     *
-     * carte compacte en haut de la fiche Semence.
-     */
-    if (
-      this.state.section ===
-        'material' &&
-      this.state.step === 19
-    ) {
-
-      const seedCardWidth =
-        Math.min(
-          720,
-          window.innerWidth - 32
-        );
-
-
-      return {
-
-        width:
-          `${seedCardWidth}px`,
-
-        left:
-          `${
-            (
-              window.innerWidth -
-              seedCardWidth
-            ) / 2
-          }px`,
-
-        top:
-          '10px',
+          `${verticalCenter}px`,
 
         transform:
           'none'

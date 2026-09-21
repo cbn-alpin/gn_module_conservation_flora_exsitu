@@ -18,6 +18,7 @@ import { Router } from '@angular/router';
 import { ModuleService } from '@geonature/services/module.service';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { DialogService } from '../confirm-dialog/confirm-dialog.service';
+import { TutoService } from '../../tuto/tuto.service';
 
 
 
@@ -73,6 +74,7 @@ export class ActionModalComponent implements OnInit {
         public moduleService: ModuleService,
         public exsituFormService: ExsituFormService,
         private dialogService: DialogService,
+        private tutoService: TutoService,
 
 
     ){
@@ -86,6 +88,19 @@ export class ActionModalComponent implements OnInit {
       this.idMaterial =
         this.data?.data?.id_material ??
         this.exsituFormService.idMaterial;
+
+
+      if (
+        this.tutoService
+          .isMaterialStep(25) &&
+        !this.edit
+      ) {
+
+        this.tutoService
+          .showStorageFormStep();
+
+      }
+
 
       this.storagePlaces = [
         {
@@ -106,10 +121,11 @@ export class ActionModalComponent implements OnInit {
         }
       ];
 
-      this.loadStorageActionTypes();
       this.loadAssociatedMaterialCode();
 
       this.initForm();
+
+      this.loadStorageActionTypes();
         this.additionalDataForm = this.actionForm.get('additional_data') as FormGroup;
         this.listenQuantityChanges();
         this.auteurs_code = this.cfg.getObsCode()
@@ -289,10 +305,92 @@ export class ActionModalComponent implements OnInit {
         )
         .subscribe({
           next: (items) => {
+
             this.storageActionTypes =
               Array.isArray(items)
                 ? items
                 : [];
+
+
+            if (
+              this.tutoService
+                .isMaterialStep(26) &&
+              !this.edit
+            ) {
+
+              const initialStorage =
+                this.storageActionTypes
+                  .find(
+                    item =>
+                      item.cd_nomenclature ===
+                      this.constants
+                        .ACTION_CODES
+                        .INITIAL_STORAGE
+                  );
+
+
+              const today =
+                this.dateParser.parse(
+                  this.formatDate(
+                    new Date()
+                      .toISOString()
+                  )
+                );
+
+
+              this.actionForm
+                .patchValue({
+                  code_place:
+                    this.constants
+                      .PLACE_CODES
+                      .PRE_DRYING_ROOM,
+
+                  id_storage_action:
+                    initialStorage
+                      ?.id_nomenclature ||
+                    null,
+
+                  date_start:
+                    today,
+
+                  date_end:
+                    today
+                });
+
+
+              if (this.idMaterial) {
+
+                this.api
+                  .getStockSummary(
+                    this.idMaterial
+                  )
+                  .subscribe(
+                    (
+                      summary:
+                        any
+                    ) => {
+
+                      const quantity =
+                        Number(
+                          summary
+                            ?.initial_storage ||
+                          500
+                        );
+
+
+                      this.actionForm
+                        .get('quantity')
+                        ?.setValue(
+                          quantity
+                        );
+
+                    }
+                  );
+
+              }
+
+            }
+
           },
 
           error: () => {
@@ -435,8 +533,24 @@ export class ActionModalComponent implements OnInit {
       
 
   submetData(){
+
+    const tutorialStorageCreation =
+      this.tutoService
+        .isMaterialStep(26) &&
+      !this.edit;
+
+
+    if (tutorialStorageCreation) {
+
+      this.tutoService
+        .showStorageConfirmStep();
+
+    }
+
+
     const currentCode =
       this.codeMaterial || '';
+
 
     this.dialogService
       .confirmDialog({
@@ -450,81 +564,154 @@ export class ActionModalComponent implements OnInit {
         disableClose: false
       })
       .subscribe((yes) => {
+
         if (!yes) {
+
+          if (tutorialStorageCreation) {
+
+            this.tutoService
+              .showStorageFormStep();
+
+          }
+
           return;
         }
 
+
         let finalForm =
           this.formatDataForm();
+
 
         const actionTypeLabel =
           this.getStorageActionLabel(
             finalForm.id_storage_action
           );
 
+
         const dateLabel =
           this.formatDateForToaster(
             finalForm.date_start
           );
 
+
         const storageLocation =
           this.getStoragePlaceLabel(
-            this.actionForm.get('code_place')?.value ||
+            this.actionForm
+              .get('code_place')
+              ?.value ||
             this.data?.data?.placeCode
           );
 
-        if(this.edit){
-          this.api.upAction(
-            this.data.data.id_material,
-            this.data.data.id_storage,
-            finalForm
-          ).subscribe({
-            next: ()=>{
-              this._commonService.translateToaster(
-                'success',
-                `Action de stockage ${this.toBoldText(actionTypeLabel)} mise à jour avec succès
+
+        if (this.edit) {
+
+          this.api
+            .upAction(
+              this.data.data.id_material,
+              this.data.data.id_storage,
+              finalForm
+            )
+            .subscribe({
+
+              next: () => {
+
+                this._commonService
+                  .translateToaster(
+                    'success',
+                    `Action de stockage ${this.toBoldText(actionTypeLabel)} mise à jour avec succès
 Date de début : ${this.toBoldText(dateLabel)}
 Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
-              );
+                  );
 
-              this.dialogRef.close(true);
-            },
 
-            error: (err)=>{
-              console.log(err);
+                this.dialogRef
+                  .close(true);
 
-              this._commonService.translateToaster(
-                'warning',
-                'Erreur lors de la modification de l\'action'
-              );
-            }
-          })
-        }else{
-          this.api.addAction(
-            this.data.data.id_material,
-            finalForm
-          ).subscribe(
-            (response)=>{
-              this._commonService.translateToaster(
-                'success',
-                `Action de stockage ${this.toBoldText(actionTypeLabel)} créée avec succès
+              },
+
+              error: (
+                err
+              ) => {
+
+                console.log(err);
+
+
+                this._commonService
+                  .translateToaster(
+                    'warning',
+                    'Erreur lors de la modification de l\'action'
+                  );
+
+              }
+
+            });
+
+        } else {
+
+          this.api
+            .addAction(
+              this.data.data.id_material,
+              finalForm
+            )
+            .subscribe(
+
+              (
+                response
+              ) => {
+
+                this._commonService
+                  .translateToaster(
+                    'success',
+                    `Action de stockage ${this.toBoldText(actionTypeLabel)} créée avec succès
 Date de début : ${this.toBoldText(dateLabel)}
 Lieu de stockage associé : ${this.toBoldText(storageLocation)}`
-              );
+                  );
 
-              this.dialogRef.close(true);
-            },
 
-            (error) => {
-              console.log(error);
+                if (
+                  tutorialStorageCreation
+                ) {
 
-              this._commonService.translateToaster(
-                'warning',
-                'Erreur lors de l\'ajout de l\'action'
-              );
-            }
-          )  
+                  this.tutoService
+                    .showStorageSummaryAfterStep();
+
+                }
+
+
+                this.dialogRef
+                  .close(true);
+
+              },
+
+              (
+                error
+              ) => {
+
+                console.log(error);
+
+
+                if (
+                  tutorialStorageCreation
+                ) {
+
+                  this.tutoService
+                    .showStorageFormStep();
+
+                }
+
+
+                this._commonService
+                  .translateToaster(
+                    'warning',
+                    'Erreur lors de l\'ajout de l\'action'
+                  );
+
+              }
+
+            );
+
         }
+
       });
   }
 

@@ -311,7 +311,7 @@ export class SeddDescriptionComponent implements OnInit {
                     ) {
 
                       this.tutoService
-                        .complete();
+                        .showSeedSummaryStep();
 
                     }
 

@@ -12,6 +12,7 @@ import { ConstantsService } from '../services/constants.service';
 import { StockManagementService } from './stock-management.service';
 import { Router } from '@angular/router';
 import { ActionsStockComponent } from './actions-stock/actions-stock.component';
+import { TutoService } from '../tuto/tuto.service';
 
 @Component({
   selector: 'cfe-stock-management',
@@ -51,7 +52,8 @@ export class StockManagementComponent implements OnInit {
         public api: DataService,
         public constants: ConstantsService,
         private stockManagementService: StockManagementService,
-        private router: Router
+        private router: Router,
+        private tutoService: TutoService
     ) {}
 
     ngOnInit(): void {
@@ -66,6 +68,17 @@ export class StockManagementComponent implements OnInit {
         });
       
         this.getStockSummary();
+
+
+        if (
+          this.tutoService
+            .isMaterialStep(22)
+        ) {
+
+          this.tutoService
+            .showStorageSummaryStep();
+
+        }
     }
 
 

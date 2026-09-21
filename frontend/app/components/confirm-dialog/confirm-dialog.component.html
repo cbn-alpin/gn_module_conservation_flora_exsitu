@@ -407,7 +407,9 @@
                     ? 'tuto-material-confirm-save-button'
                     : dialogData?.variant === 'seed-save'
                         ? 'tuto-seed-confirm-save-button'
-                        : null
+                        : dialogData?.variant === 'stock-save'
+                            ? 'tuto-stock-confirm-save-button'
+                            : null
             "
             [mat-dialog-close]="true"
         >
