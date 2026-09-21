@@ -81,6 +81,18 @@ export class TutoOverlayComponent
     16;
 
 
+  private pageScrollLocked =
+    false;
+
+
+  private previousHtmlOverflow =
+    '';
+
+
+  private previousBodyOverflow =
+    '';
+
+
   constructor(
     public tutoService:
       TutoService,
@@ -109,6 +121,11 @@ export class TutoOverlayComponent
 
             this.lastScrolledStep =
               '';
+
+
+            this.updatePageScrollLock(
+              state
+            );
 
 
             this.stopRefresh();
@@ -168,6 +185,9 @@ export class TutoOverlayComponent
 
     this.stopRefresh();
 
+    this.restorePageScroll();
+
+
     this.stateSubscription
       ?.unsubscribe();
 
@@ -184,6 +204,107 @@ export class TutoOverlayComponent
       host.remove();
 
     }
+  }
+
+
+  /*
+   * Quand une fenêtre Angular Material est utilisée
+   * pendant le tutoriel, seule cette fenêtre doit
+   * pouvoir défiler.
+   *
+   * Cela évite d'avoir deux barres verticales
+   * utilisables simultanément à droite.
+   */
+  private updatePageScrollLock(
+    state:
+      TutoStepState | null
+  ): void {
+
+    const lockSteps =
+      [
+        2,
+        3,
+        4,
+        11,
+        19,
+        20
+      ];
+
+
+    const mustLock =
+      !!state &&
+      lockSteps.includes(
+        state.step
+      );
+
+
+    if (
+      mustLock &&
+      !this.pageScrollLocked
+    ) {
+
+      this.previousHtmlOverflow =
+        document.documentElement
+          .style
+          .overflow;
+
+
+      this.previousBodyOverflow =
+        document.body
+          .style
+          .overflow;
+
+
+      document.documentElement
+        .style
+        .overflow =
+          'hidden';
+
+
+      document.body
+        .style
+        .overflow =
+          'hidden';
+
+
+      this.pageScrollLocked =
+        true;
+
+      return;
+    }
+
+
+    if (
+      !mustLock
+    ) {
+
+      this.restorePageScroll();
+
+    }
+  }
+
+
+  private restorePageScroll(): void {
+
+    if (!this.pageScrollLocked) {
+      return;
+    }
+
+
+    document.documentElement
+      .style
+      .overflow =
+        this.previousHtmlOverflow;
+
+
+    document.body
+      .style
+      .overflow =
+        this.previousBodyOverflow;
+
+
+    this.pageScrollLocked =
+      false;
   }
 
 
@@ -812,16 +933,19 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPE 4 :
-     * carte à droite du bouton Oui.
+     * ÉTAPES 4, 15, 18 ET 20 :
      *
-     * Elle ne recouvre plus le bouton,
-     * qui reste donc accessible.
+     * carte à droite de la cible.
      */
     if (
       this.state.section ===
         'material' &&
-      this.state.step === 4
+      (
+        this.state.step === 4 ||
+        this.state.step === 15 ||
+        this.state.step === 18 ||
+        this.state.step === 20
+      )
     ) {
 
       return {
@@ -848,21 +972,23 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPES 10 ET 13 :
+     * ÉTAPES 10, 13, 16 ET 17 :
      *
      * Le bouton ciblé se trouve dans le menu Actions
      * ouvert à droite du tableau.
      *
      * La carte est donc placée à GAUCHE du menu
-     * pour laisser Modifier / Détails-Action
-     * entièrement visibles et cliquables.
+     * pour laisser l'action ciblée visible
+     * et entièrement cliquable.
      */
     if (
       this.state.section ===
         'material' &&
       (
         this.state.step === 10 ||
-        this.state.step === 13
+        this.state.step === 13 ||
+        this.state.step === 16 ||
+        this.state.step === 17
       )
     ) {
 
@@ -926,6 +1052,47 @@ export class TutoOverlayComponent
 
         top:
           '12px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPE 19 :
+     *
+     * carte compacte en haut de la fiche Semence.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 19
+    ) {
+
+      const seedCardWidth =
+        Math.min(
+          720,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${seedCardWidth}px`,
+
+        left:
+          `${
+            (
+              window.innerWidth -
+              seedCardWidth
+            ) / 2
+          }px`,
+
+        top:
+          '10px',
 
         transform:
           'none'
@@ -1182,7 +1349,10 @@ export class TutoOverlayComponent
       (
         this.state.step === 1 ||
         this.state.step === 2 ||
-        this.state.step === 4
+        this.state.step === 4 ||
+        this.state.step === 15 ||
+        this.state.step === 18 ||
+        this.state.step === 20
       )
     ) {
 
@@ -1217,7 +1387,9 @@ export class TutoOverlayComponent
       (
         this.state.step === 3 ||
         this.state.step === 10 ||
-        this.state.step === 13
+        this.state.step === 13 ||
+        this.state.step === 16 ||
+        this.state.step === 17
       )
     ) {
 
@@ -1290,7 +1462,10 @@ export class TutoOverlayComponent
       (
         this.state?.step === 1 ||
         this.state?.step === 2 ||
-        this.state?.step === 4
+        this.state?.step === 4 ||
+        this.state?.step === 15 ||
+        this.state?.step === 18 ||
+        this.state?.step === 20
       )
     ) {
 
@@ -1304,7 +1479,9 @@ export class TutoOverlayComponent
       (
         this.state?.step === 3 ||
         this.state?.step === 10 ||
-        this.state?.step === 13
+        this.state?.step === 13 ||
+        this.state?.step === 16 ||
+        this.state?.step === 17
       )
     ) {
 

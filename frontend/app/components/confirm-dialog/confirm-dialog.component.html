@@ -405,7 +405,9 @@
             [attr.id]="
                 dialogData?.variant === 'material-save'
                     ? 'tuto-material-confirm-save-button'
-                    : null
+                    : dialogData?.variant === 'seed-save'
+                        ? 'tuto-seed-confirm-save-button'
+                        : null
             "
             [mat-dialog-close]="true"
         >

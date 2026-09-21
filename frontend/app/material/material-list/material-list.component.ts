@@ -874,6 +874,18 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         this.tutoService
           .showMaterialDetailsActionStep();
 
+        return;
+      }
+
+
+      if (
+        this.tutoService
+          .isMaterialStep(16)
+      ) {
+
+        this.tutoService
+          .showMaterialSeedDetailsActionStep();
+
       }
     }
 
@@ -1583,6 +1595,7 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
     }
 
     goToSeedDetails(material: any): void {
+
       if (
         !this.constants.SEED_DESCRIPTION_CODES.includes(
           material?.harvest_material_code
@@ -1612,10 +1625,26 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
       }
 
 
+      const tutorialSeed =
+        this.tutoService
+          .isMaterialStep(17) &&
+        this.isTutorialMaterial(
+          material
+        );
+
+
       this.exsituFormService
         .setIdMaterial(
           idMaterial
         );
+
+
+      if (tutorialSeed) {
+
+        this.tutoService
+          .showSeedDetailsStep();
+
+      }
 
 
       this.exsituFormService.currentTab =

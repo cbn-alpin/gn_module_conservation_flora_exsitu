@@ -129,34 +129,59 @@
   </div>
 
   <div class="row row-0 mr-3 mt-2">
-    <div class="col-6 padding-sm">
-        <label>Masse totale(g)</label>
-        <input
-          class="form-control"
-          type="number"
-          [formControl]="seedForm.controls.total_mass"
-        />
-      </div>
-      <div class="col-6 padding-sm">
-        <label>Masse des graines échantillonnées(g)</label>
-        <input
-          class="form-control"
-          type="number"
-          [formControl]="seedForm.controls.sample_mass"
-        />
+
+    <div
+      id="tuto-seed-total-mass"
+      class="col-6 padding-sm"
+    >
+      <label>Masse totale(g)</label>
+
+      <input
+        class="form-control"
+        type="number"
+        [formControl]="seedForm.controls.total_mass"
+      />
     </div>
+
+
+    <div
+      id="tuto-seed-sample-mass"
+      class="col-6 padding-sm"
+    >
+      <label>Masse des graines échantillonnées(g)</label>
+
+      <input
+        class="form-control"
+        type="number"
+        [formControl]="seedForm.controls.sample_mass"
+      />
+    </div>
+
   </div>
+
+
   <div class="row row-0 mr-3 mt-2">
-    <div class="col-6 padding-sm">
+
+    <div
+      id="tuto-seed-sample-count"
+      class="col-6 padding-sm"
+    >
       <label>Nombre de graines échantillonnées</label>
+
       <input
         class="form-control"
         type="number"
         [formControl]="seedForm.controls.sample_count"
       />
     </div>
-    <div class="col-6 padding-sm">
+
+
+    <div
+      id="tuto-seed-total-count"
+      class="col-6 padding-sm"
+    >
       <label>Nombre total de graines calculé</label>
+
       <input
         class="form-control"
         type="number"
@@ -164,6 +189,7 @@
         readonly
       />
     </div>
+
   </div>
 
   <div class="seed-section-header">
@@ -292,6 +318,7 @@
     </button>
 
     <button
+      id="tuto-seed-save-button"
       mat-button
       type="button"
       class="save-button with-border"

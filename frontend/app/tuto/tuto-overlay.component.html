@@ -59,7 +59,10 @@
         state.step === 8 ||
         state.step === 14
       "
-      [class.tuto-guide-card-step-11]="state.step === 11"
+      [class.tuto-guide-card-step-11]="
+        state.step === 11 ||
+        state.step === 19
+      "
       [ngStyle]="cardStyle"
     >
 
@@ -90,8 +93,17 @@
 
       <div
         class="tuto-guide-section"
+        [style.color]="
+          state.step >= 18
+            ? '#c89500'
+            : '#667a32'
+        "
       >
-        Matériel récolté
+        {{
+          state.step >= 18
+            ? 'Semence'
+            : 'Matériel récolté'
+        }}
       </div>
 
 

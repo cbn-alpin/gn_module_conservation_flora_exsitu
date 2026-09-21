@@ -31,6 +31,10 @@ import {
   MaterialFormService
 } from '../material-form/material-form.service';
 
+import {
+  TutoService
+} from '../../tuto/tuto.service';
+
 
 @Component({
   selector: 'app-material-details',
@@ -82,7 +86,8 @@ export class MaterialDetailsComponent implements OnInit {
     private toast: CommonService,
     private dialogService: DialogService,
     private exsituFormService: ExsituFormService,
-    private materialFormService: MaterialFormService
+    private materialFormService: MaterialFormService,
+    private tutoService: TutoService
   ) {}
 
 
@@ -803,6 +808,18 @@ export class MaterialDetailsComponent implements OnInit {
   }
 
   onBack(): void {
+
+    if (
+      this.tutoService
+        .isMaterialStep(15)
+    ) {
+
+      this.tutoService
+        .showMaterialActionsForSeedStep();
+
+    }
+
+
     window.history.back();
   }
 

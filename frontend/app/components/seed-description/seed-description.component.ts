@@ -14,6 +14,7 @@ import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 import { ConfigService } from '../../services/config.service';
 import { ConstantsService } from '../../services/constants.service';
 import { Observable, of, forkJoin } from 'rxjs';
+import { TutoService } from '../../tuto/tuto.service';
 
 @Component({
     selector: 'cfe-seed-description',
@@ -51,7 +52,8 @@ export class SeddDescriptionComponent implements OnInit {
         private dialogService: DialogService,
         @Inject(MAT_DIALOG_DATA) public data: { id: number, mode: string, seedData: any },
         public cfg: ConfigService,
-        public constants: ConstantsService
+        public constants: ConstantsService,
+        private tutoService: TutoService
     ){
 
     }
@@ -64,6 +66,10 @@ export class SeddDescriptionComponent implements OnInit {
         this.seedForm.get('sample_count')?.valueChanges.subscribe(() => this.updateTotalCount());
         this.seedForm.get('sample_mass')?.valueChanges.subscribe(() => this.updateTotalCount());
         this.seedForm.get('total_mass')?.valueChanges.subscribe(() => this.updateTotalCount());
+
+
+        this.initializeSeedTutorial();
+
 
         this.seedForm.controls['id_media_type'].valueChanges.subscribe(value => {      
           if(value) {
@@ -97,6 +103,38 @@ export class SeddDescriptionComponent implements OnInit {
           }
         });
     }
+
+    private initializeSeedTutorial(): void {
+
+      if (
+        !this.tutoService
+          .isMaterialStep(19) ||
+        this.edit
+      ) {
+        return;
+      }
+
+
+      this.seedForm.patchValue(
+        {
+          total_mass: 100,
+          sample_mass: 10,
+          sample_count: 50
+        },
+        {
+          emitEvent: false
+        }
+      );
+
+
+      this.updateTotalCount();
+
+
+      this.seedForm
+        .updateValueAndValidity();
+
+    }
+
 
     private loadAssociatedMaterialCode(): void {
       this.dataService
@@ -192,8 +230,24 @@ export class SeddDescriptionComponent implements OnInit {
     }
 
     submetData(){
+
+        const tutorialSeedCreation =
+          this.tutoService
+            .isMaterialStep(19) &&
+          !this.edit;
+
+
+        if (tutorialSeedCreation) {
+
+          this.tutoService
+            .showSeedConfirmStep();
+
+        }
+
+
         const currentCode =
           this.codeMaterial || '';
+
 
         this.dialogService
           .confirmDialog({
@@ -207,61 +261,133 @@ export class SeddDescriptionComponent implements OnInit {
             disableClose: false
           })
           .subscribe((yes) => {
+
             if (!yes) {
+
+              if (
+                this.tutoService
+                  .isMaterialStep(20)
+              ) {
+
+                this.tutoService
+                  .showSeedFormStep();
+
+              }
+
               return;
             }
+
 
             const formData =
               this.formatDataForm();
 
-            if(!this.edit){
-                this.dataService.addSeedToMaterial(this.data.id, formData).subscribe(
-                    (response)=>{
-                        this.uploadSeedMedia(response.id_seed);
 
-                        this._commonService.translateToaster(
-                          'success',
-                          currentCode
-                            ? `Semence du matériel ${this.toBoldText(currentCode)} créée avec succès`
-                            : 'Semence créée avec succès'
-                        );
+            if (!this.edit) {
 
-                        this.close()
-                    },
-                    (error) => {
-                        this._commonService.translateToaster('warning', 'Erreur lors de l\'ajout de la semence');
-                    }
+              this.dataService
+                .addSeedToMaterial(
+                  this.data.id,
+                  formData
                 )
-            }else{
-                this.dataService.updateSeed(this.data.seedData.id_seed, formData).subscribe(
-                    ()=>{
-                      if (this.seedForm.value.has_photo) {
-                        this.uploadSeedMedia(this.data.seedData.id_seed);
+                .subscribe(
+                  (response) => {
 
-                        this._commonService.translateToaster(
-                          'success',
-                          currentCode
-                            ? `Semence du matériel ${this.toBoldText(currentCode)} mise à jour avec succès`
-                            : 'Semence mise à jour avec succès'
-                        );
+                    this.uploadSeedMedia(
+                      response.id_seed
+                    );
 
-                        this.close();
-                      } else {
-                        this._commonService.translateToaster(
-                          'success',
-                          currentCode
-                            ? `Semence du matériel ${this.toBoldText(currentCode)} mise à jour avec succès`
-                            : 'Semence mise à jour avec succès'
-                        );
 
-                        this.close();
-                      }
-                    },
-                    (error) => {
-                        this._commonService.translateToaster('warning', 'Erreur lors de la modification de la semence');
+                    this._commonService
+                      .translateToaster(
+                        'success',
+                        currentCode
+                          ? `Semence du matériel ${this.toBoldText(currentCode)} créée avec succès`
+                          : 'Semence créée avec succès'
+                      );
+
+
+                    if (
+                      tutorialSeedCreation
+                    ) {
+
+                      this.tutoService
+                        .complete();
+
                     }
+
+
+                    this.close();
+
+                  },
+
+                  () => {
+
+                    if (
+                      tutorialSeedCreation
+                    ) {
+
+                      this.tutoService
+                        .showSeedFormStep();
+
+                    }
+
+
+                    this._commonService
+                      .translateToaster(
+                        'warning',
+                        'Erreur lors de l\'ajout de la semence'
+                      );
+
+                  }
+                );
+
+            } else {
+
+              this.dataService
+                .updateSeed(
+                  this.data.seedData.id_seed,
+                  formData
                 )
+                .subscribe(
+                  () => {
+
+                    if (
+                      this.seedForm.value.has_photo
+                    ) {
+
+                      this.uploadSeedMedia(
+                        this.data.seedData.id_seed
+                      );
+
+                    }
+
+
+                    this._commonService
+                      .translateToaster(
+                        'success',
+                        currentCode
+                          ? `Semence du matériel ${this.toBoldText(currentCode)} mise à jour avec succès`
+                          : 'Semence mise à jour avec succès'
+                      );
+
+
+                    this.close();
+
+                  },
+
+                  () => {
+
+                    this._commonService
+                      .translateToaster(
+                        'warning',
+                        'Erreur lors de la modification de la semence'
+                      );
+
+                  }
+                );
+
             }
+
           });
     }
 

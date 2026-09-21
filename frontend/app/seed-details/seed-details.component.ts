@@ -9,6 +9,7 @@ import { DialogService } from '../components/confirm-dialog/confirm-dialog.servi
 import { CommonService } from '@geonature_common/service/common.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SeddDescriptionComponent } from '../components/seed-description/seed-description.component';
+import { TutoService } from '../tuto/tuto.service';
 
 interface ITaxon {
     taxhubRecordId: number;
@@ -34,7 +35,8 @@ export class SeedDetailsComponent implements OnInit {
         private dialogService: DialogService,
         private _commonService: CommonService,
         private router: Router,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private tutoService: TutoService
     ){
         this.taxhubEditFormUrl = this.cfg.getTaxHubFrontendUrl();
     }
@@ -142,21 +144,58 @@ export class SeedDetailsComponent implements OnInit {
         mode: 'create' | 'edit',
         seedData: any
     ): void {
-        const dialogRef = this.dialog.open(SeddDescriptionComponent, {
-          width: '900px',
-          height: '90vh',
-          disableClose: true,
-          autoFocus: false,
-          data: {
-            id: idMaterial,
-            mode: mode,
-            seedData: seedData
-          }
-        });
 
-        dialogRef.afterClosed().subscribe(() => {
-          this.loadSeedForCurrentMaterial();
-        });
+        const tutorialCreation =
+          this.tutoService
+            .isMaterialStep(18) &&
+          mode === 'create';
+
+
+        if (tutorialCreation) {
+
+          this.tutoService
+            .showSeedFormStep();
+
+        }
+
+
+        const dialogRef =
+          this.dialog.open(
+            SeddDescriptionComponent,
+            {
+              width: '900px',
+              height: '90vh',
+              disableClose: true,
+              autoFocus: false,
+              data: {
+                id: idMaterial,
+                mode: mode,
+                seedData: seedData
+              }
+            }
+          );
+
+
+        dialogRef
+          .afterClosed()
+          .subscribe(() => {
+
+            this.loadSeedForCurrentMaterial();
+
+
+            if (
+              this.tutoService
+                .isMaterialStep(19) ||
+              this.tutoService
+                .isMaterialStep(20)
+            ) {
+
+              this.tutoService
+                .complete();
+
+            }
+
+          });
     }
 
     onBackToMaterial(): void {

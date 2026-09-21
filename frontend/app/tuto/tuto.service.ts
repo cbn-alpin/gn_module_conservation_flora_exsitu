@@ -126,7 +126,7 @@ export class TutoService {
       section: 'material',
 
       step: 1,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-add-button'
@@ -165,7 +165,7 @@ export class TutoService {
       section: 'material',
 
       step: 2,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-code',
@@ -288,8 +288,9 @@ export class TutoService {
       current.canNext
     ) {
 
-      this.complete();
+      this.showMaterialDetailsBackStep();
 
+      return;
     }
   }
 
@@ -308,7 +309,7 @@ export class TutoService {
       section: 'material',
 
       step: 3,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-save-button'
@@ -347,7 +348,7 @@ export class TutoService {
       section: 'material',
 
       step: 4,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -394,7 +395,7 @@ export class TutoService {
       section: 'material',
 
       step: 5,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#matlist-container'
@@ -437,7 +438,7 @@ export class TutoService {
       section: 'material',
 
       step: 6,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-created-row'
@@ -478,7 +479,7 @@ export class TutoService {
       section: 'material',
 
       step: 7,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-seed-tab',
@@ -517,7 +518,7 @@ export class TutoService {
       section: 'material',
 
       step: 8,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-germination-tab',
@@ -560,7 +561,7 @@ export class TutoService {
       section: 'material',
 
       step: 9,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-action-button'
@@ -599,7 +600,7 @@ export class TutoService {
       section: 'material',
 
       step: 10,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-edit-button'
@@ -636,7 +637,7 @@ export class TutoService {
       section: 'material',
 
       step: 11,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-taxon',
@@ -675,7 +676,7 @@ export class TutoService {
       section: 'material',
 
       step: 11,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -712,7 +713,7 @@ export class TutoService {
       section: 'material',
 
       step: 12,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-action-button'
@@ -749,7 +750,7 @@ export class TutoService {
       section: 'material',
 
       step: 13,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-details-button'
@@ -786,7 +787,7 @@ export class TutoService {
       section: 'material',
 
       step: 14,
-      total: 14,
+      total: 20,
 
       selectors: [
         '#tuto-material-details-page'
@@ -808,6 +809,238 @@ export class TutoService {
 
       canNext:
         true
+
+    });
+  }
+
+
+  showMaterialDetailsBackStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 15,
+      total: 20,
+
+      selectors: [
+        '#tuto-material-details-back'
+      ],
+
+      title:
+        'Retour aux matériels récoltés',
+
+      description:
+        'Cliquez sur « Retour » pour revenir à la liste des matériels récoltés.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialActionsForSeedStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 16,
+      total: 20,
+
+      selectors: [
+        '#tuto-material-action-button'
+      ],
+
+      title:
+        'Ouvrir les actions',
+
+      description:
+        this.materialTutorialCode
+          ? `Ouvrez de nouveau les actions de « ${this.materialTutorialCode} ».`
+          : 'Ouvrez de nouveau les actions du matériel créé.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialSeedDetailsActionStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 17,
+      total: 20,
+
+      selectors: [
+        '#tuto-material-seed-details-button'
+      ],
+
+      title:
+        'Ouvrir Détails semence',
+
+      description:
+        'Le matériel possède maintenant un taxon et est de type Graine. Cliquez sur « Détails semence ».',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showSeedDetailsStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 18,
+      total: 20,
+
+      selectors: [
+        '#tuto-seed-add-button'
+      ],
+
+      title:
+        'Créer une fiche de Semence',
+
+      description:
+        'Cliquez sur « Ajouter une fiche de Semence » pour créer la fiche associée au matériel.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showSeedFormStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 19,
+      total: 20,
+
+      selectors: [
+        '#tuto-seed-total-mass',
+        '#tuto-seed-sample-mass',
+        '#tuto-seed-sample-count',
+        '#tuto-seed-total-count',
+        '#tuto-seed-save-button'
+      ],
+
+      title:
+        'Calculer le nombre total de graines',
+
+      description:
+        'La fiche de test est préremplie avec : Masse totale = 100 g, Masse des graines échantillonnées = 10 g et Nombre de graines échantillonnées = 50.\n\n' +
+        'Le calcul est automatique :\n' +
+        'Nombre total = (Nombre échantillonné × Masse totale) / Masse échantillonnée.\n\n' +
+        'Ici : (50 × 100) / 10 = 500 graines.\n\n' +
+        'Cliquez ensuite sur « Enregistrer ».',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showSeedConfirmStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 20,
+      total: 20,
+
+      selectors: [
+        '#tuto-seed-confirm-save-button'
+      ],
+
+      title:
+        'Confirmer la fiche de Semence',
+
+      description:
+        'Cliquez sur « Oui » pour confirmer l’enregistrement de la fiche de Semence.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
 
     });
   }

@@ -481,6 +481,11 @@
                 element.taxons.length > 0
               "
               class="seed-action"
+              [attr.id]="
+                isTutorialMaterial(element)
+                  ? 'tuto-material-seed-details-button'
+                  : null
+              "
               (click)="goToSeedDetails(element)"
             >
               <mat-icon>description</mat-icon>
