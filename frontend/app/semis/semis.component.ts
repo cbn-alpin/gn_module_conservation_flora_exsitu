@@ -331,6 +331,30 @@ export class SemisComponent implements OnInit {
     this.loadAssociatedMaterialCode();
 
 
+    this.exsituFormService.id_storage.subscribe(
+      id => this.idStorage = id ?? null
+    );
+
+    this.observers_list_code = this.cfg.getObsCode();
+
+    this.additionalDataForm = this.semisForm.get('additional_data') as FormGroup;
+    this.formsDefinition = this.cfg.getModuleConfigExsitu()?.['harvest_form']?.['additional_data'] ?? [];
+    this.formsDefinition.forEach(field => {
+      const name = field.attribut_name;
+      if (!this.additionalDataForm.contains(name)) {
+        this.additionalDataForm.addControl(name, this.fb.control(''));
+      }
+    });
+
+    this.initializeFormState();
+
+
+    /*
+     * Tutoriel :
+     * le préremplissage doit être effectué APRÈS
+     * initializeFormState(), sinon le reset du formulaire
+     * efface toutes les valeurs de test.
+     */
     if (
       this.tutoService.isMaterialStep(34) &&
       !this.modalData?.edit
@@ -380,25 +404,11 @@ export class SemisComponent implements OnInit {
           }
         });
 
+
+      this.initialFormState =
+        this.semisForm.getRawValue();
+
     }
-
-
-    this.exsituFormService.id_storage.subscribe(
-      id => this.idStorage = id ?? null
-    );
-
-    this.observers_list_code = this.cfg.getObsCode();
-
-    this.additionalDataForm = this.semisForm.get('additional_data') as FormGroup;
-    this.formsDefinition = this.cfg.getModuleConfigExsitu()?.['harvest_form']?.['additional_data'] ?? [];
-    this.formsDefinition.forEach(field => {
-      const name = field.attribut_name;
-      if (!this.additionalDataForm.contains(name)) {
-        this.additionalDataForm.addControl(name, this.fb.control(''));
-      }
-    });
-
-    this.initializeFormState();
 
     if (this.idMaterial) {
       this.semisService.getSowingsByMaterial(this.idMaterial).subscribe({
