@@ -1,0 +1,159 @@
+<div
+  *ngIf="state"
+  class="tuto-guide-root"
+>
+
+
+  <ng-container
+    *ngIf="targetRect; else tutoWaiting"
+  >
+
+    <div
+      class="tuto-guide-blocker"
+      [ngStyle]="topBlockStyle"
+    >
+    </div>
+
+
+    <div
+      class="tuto-guide-blocker"
+      [ngStyle]="bottomBlockStyle"
+    >
+    </div>
+
+
+    <div
+      class="tuto-guide-blocker"
+      [ngStyle]="leftBlockStyle"
+    >
+    </div>
+
+
+    <div
+      class="tuto-guide-blocker"
+      [ngStyle]="rightBlockStyle"
+    >
+    </div>
+
+
+    <div
+      class="tuto-guide-target"
+      [ngStyle]="targetStyle"
+    >
+    </div>
+
+
+    <mat-icon
+      class="tuto-guide-arrow"
+      [ngStyle]="arrowStyle"
+    >
+      {{ arrowIcon }}
+    </mat-icon>
+
+
+    <div
+      class="tuto-guide-card"
+      [class.tuto-guide-card-step-5]="state.step === 5"
+      [class.tuto-guide-card-step-7]="state.step === 7"
+      [ngStyle]="cardStyle"
+    >
+
+      <button
+        mat-icon-button
+        type="button"
+        class="tuto-guide-close"
+        (click)="quit()"
+        aria-label="Quitter le tutoriel"
+      >
+        <mat-icon>
+          close
+        </mat-icon>
+      </button>
+
+
+      <div
+        class="tuto-guide-image-circle"
+      >
+
+        <img
+          [src]="tutoImageDataUrl"
+          alt="Assistant du tutoriel"
+        >
+
+      </div>
+
+
+      <div
+        class="tuto-guide-section"
+      >
+        Matériel récolté
+      </div>
+
+
+      <div
+        class="tuto-guide-progress"
+      >
+        Étape
+        {{ state.step }}
+        sur
+        {{ state.total }}
+      </div>
+
+
+      <div
+        class="tuto-guide-title"
+      >
+        {{ state.title }}
+      </div>
+
+
+      <div
+        class="tuto-guide-description"
+        [class.tuto-guide-description-columns]="state.step === 5"
+      >
+        {{ state.description }}
+      </div>
+
+
+      <div
+        class="tuto-guide-actions"
+      >
+
+        <button
+          mat-button
+          type="button"
+          class="tuto-guide-skip"
+          (click)="quit()"
+        >
+          Passer le tutoriel
+        </button>
+
+
+        <button
+          *ngIf="state.showNext"
+          mat-raised-button
+          type="button"
+          class="tuto-guide-next"
+          [disabled]="!state.canNext"
+          (click)="next()"
+        >
+          {{ state.step === state.total ? 'Terminer' : 'Suivant' }}
+        </button>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <ng-template #tutoWaiting>
+
+    <div
+      class="tuto-guide-waiting-overlay"
+    >
+    </div>
+
+  </ng-template>
+
+</div>

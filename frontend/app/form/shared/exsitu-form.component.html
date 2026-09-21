@@ -33,6 +33,7 @@
 
             <!-- Semence (Activé uniquement pour une Graine avec au moins un taxon) -->
             <a 
+                id="tuto-seed-tab"
                 class="tablinks themed-tab seed-tab"
                 [class.disabled]="
                     !exsituFormService.idMaterial ||
@@ -57,6 +58,7 @@
 
             <!-- Stockage (Activé uniquement pour les matériels stockables) -->
             <a 
+                id="tuto-stock-tab"
                 class="tablinks themed-tab stock-tab"
                 [class.disabled]="
                     !exsituFormService.idMaterial ||
@@ -595,5 +597,10 @@
     <div *ngIf="exsituFormService.currentTab === 'viability-details'"
     >
             <app-viability-details></app-viability-details>
-    </div> 
+    </div>
+
+
+    <app-tuto-overlay>
+    </app-tuto-overlay>
+
 </div>

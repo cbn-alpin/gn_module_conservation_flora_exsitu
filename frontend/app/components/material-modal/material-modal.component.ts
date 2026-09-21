@@ -1,4 +1,9 @@
-import { Component, Inject , OnInit} from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ExsituFormService } from '../../form/shared/exsitu-form.service';
 import { DataService } from '../../services/data.service';
@@ -6,10 +11,11 @@ import { MaterialFormService } from '../../material/material-form/material-form.
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { ConstantsService } from '../../services/constants.service';
 import { ConfigService } from '../../services/config.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map, startWith, switchMap, debounceTime } from 'rxjs/operators';
 import { DialogService } from '../confirm-dialog/confirm-dialog.service';
 import { CommonService } from '@geonature_common/service/common.service';
+import { TutoService } from '../../tuto/tuto.service';
 
 
 @Component({
@@ -17,7 +23,8 @@ import { CommonService } from '@geonature_common/service/common.service';
     templateUrl: './material-modal.component.html',
     styleUrls: ['./material-modal.component.css']
 })
-export class MaterialModalComponent implements OnInit {
+export class MaterialModalComponent
+  implements OnInit, OnDestroy {
     materialForm: FormGroup;
     codeMaterialExists: boolean = false;
     allowMultipleTaxons: boolean = false;
@@ -31,6 +38,14 @@ export class MaterialModalComponent implements OnInit {
     private cancelDialogOpen = false;
     private hasSeedDescription = false;
 
+    private tutorialStatusSubscription:
+      Subscription | null =
+        null;
+
+    private tutorialCodeCheckDone =
+      false;
+
+
     constructor(
         public dialogRef: MatDialogRef<MaterialModalComponent>,
         public exsituFormService: ExsituFormService,
@@ -40,6 +55,7 @@ export class MaterialModalComponent implements OnInit {
         public cfg: ConfigService,
         private dialogService: DialogService,
         private _commonService: CommonService,
+        private tutoService: TutoService,
         @Inject(MAT_DIALOG_DATA) public dialogData: any
     ){
 
@@ -196,6 +212,10 @@ export class MaterialModalComponent implements OnInit {
           }
         );
 
+
+        this.initializeMaterialTutorial();
+
+
         this.dialogRef.backdropClick().subscribe(() => {
           this.onCancel();
         });
@@ -212,20 +232,230 @@ export class MaterialModalComponent implements OnInit {
         this.materialForm = this.materialFormService.form
     }
 
-    checkCodeMaterial(codeMaterial: string): void {
-      if (codeMaterial) {
-        this.api.checkCodeMaterial(codeMaterial).subscribe(
-          response => {
-            this.codeMaterialExists = response.exists;            
-            const control = this.materialForm.get('code_material');
-            if (this.codeMaterialExists) {
-              control?.setErrors({ codeExists: true });
-            }
-          },
-          error => {
-            console.error('Erreur lors de la vérification du code material', error);
-          }
+
+    private initializeMaterialTutorial(): void {
+
+      if (
+        !this.tutoService
+          .isMaterialStep(2)
+      ) {
+        return;
+      }
+
+
+      this.tutorialCodeCheckDone =
+        false;
+
+
+      this.materialForm
+        .get('code_material')
+        ?.setValue(
+          'test'
         );
+
+
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_HARVEST_MATERIAL'
+        )
+        .subscribe({
+
+          next: (
+            nomenclatures:
+              any[]
+          ) => {
+
+            const wholePlant =
+              nomenclatures.find(
+                nomenclature =>
+                  nomenclature
+                    ?.cd_nomenclature ===
+                  this.constants
+                    .HARVEST_MATERIAL_CODES
+                    .WHOLE_PLANT
+              );
+
+
+            if (wholePlant) {
+
+              this.materialForm
+                .get(
+                  'id_material_type'
+                )
+                ?.setValue(
+                  wholePlant.id_nomenclature
+                );
+
+            }
+
+
+            this.updateMaterialTutorialValidity();
+
+          },
+
+          error: (
+            error
+          ) => {
+
+            console.error(
+              'Impossible de préremplir le type Plante entière pour le tutoriel :',
+              error
+            );
+
+
+            this.tutoService
+              .setCanContinue(
+                false
+              );
+
+          }
+
+        });
+
+
+      this.tutorialStatusSubscription =
+        this.materialForm
+          .statusChanges
+          .subscribe(
+            () => {
+
+              this.updateMaterialTutorialValidity();
+
+            }
+          );
+
+
+      this.updateMaterialTutorialValidity();
+
+    }
+
+
+    private updateMaterialTutorialValidity(): void {
+
+      if (
+        !this.tutoService
+          .isMaterialStep(2)
+      ) {
+        return;
+      }
+
+
+      const requiredFieldsReady =
+        !!this.materialForm
+          .get('code_material')
+          ?.value &&
+        !!this.materialForm
+          .get('id_material_type')
+          ?.value;
+
+
+      this.tutoService
+        .setCanContinue(
+          requiredFieldsReady &&
+          this.materialForm.valid &&
+          this.tutorialCodeCheckDone
+        );
+
+    }
+
+
+    ngOnDestroy(): void {
+
+      this.tutorialStatusSubscription
+        ?.unsubscribe();
+
+    }
+
+
+    checkCodeMaterial(
+      codeMaterial: string
+    ): void {
+
+      if (
+        this.tutoService
+          .isMaterialStep(2)
+      ) {
+
+        this.tutorialCodeCheckDone =
+          false;
+
+        this.tutoService
+          .setCanContinue(
+            false
+          );
+
+      }
+
+
+      if (codeMaterial) {
+
+        this.api
+          .checkCodeMaterial(
+            codeMaterial
+          )
+          .subscribe(
+
+            response => {
+
+              this.codeMaterialExists =
+                response.exists;
+
+
+              const control =
+                this.materialForm
+                  .get(
+                    'code_material'
+                  );
+
+
+              if (
+                this.codeMaterialExists
+              ) {
+
+                control?.setErrors({
+                  codeExists: true
+                });
+
+              }
+
+
+              if (
+                this.tutoService
+                  .isMaterialStep(2)
+              ) {
+
+                this.tutorialCodeCheckDone =
+                  true;
+
+                this.updateMaterialTutorialValidity();
+
+              }
+
+            },
+
+            error => {
+
+              console.error(
+                'Erreur lors de la vérification du code material',
+                error
+              );
+
+
+              if (
+                this.tutoService
+                  .isMaterialStep(2)
+              ) {
+
+                this.tutorialCodeCheckDone =
+                  false;
+
+                this.updateMaterialTutorialValidity();
+
+              }
+
+            }
+
+          );
       }
     }
 
@@ -387,6 +617,18 @@ export class MaterialModalComponent implements OnInit {
     }
     
     submetData(){
+
+        if (
+          this.tutoService
+            .isMaterialStep(3)
+        ) {
+
+          this.tutoService
+            .showMaterialConfirmStep();
+
+        }
+
+
         const currentCode =
           this.materialForm.get('code_material')?.value ||
           this.initialFormState?.code_material ||
@@ -439,9 +681,35 @@ export class MaterialModalComponent implements OnInit {
             disableClose: false
           })
           .subscribe((yes) => {
+
             if (!yes) {
+
+              if (
+                this.tutoService
+                  .isMaterialStep(4)
+              ) {
+
+                this.tutoService
+                  .showMaterialSaveStep();
+
+              }
+
               return;
             }
+
+
+            if (
+              this.tutoService
+                .isMaterialStep(4)
+            ) {
+
+              this.tutoService
+                .showMaterialTableStep(
+                  currentCode
+                );
+
+            }
+
 
             const finalForm =
               this.formatDataFormHarvest();

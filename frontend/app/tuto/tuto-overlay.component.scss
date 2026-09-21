@@ -1,0 +1,680 @@
+:host {
+  position: fixed;
+  inset: 0;
+
+  display: block;
+
+  z-index: 12000;
+
+  pointer-events: none;
+}
+
+
+.tuto-guide-root {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+
+.tuto-guide-blocker {
+  position: fixed;
+
+  background:
+    rgba(
+      62,
+      68,
+      74,
+      0.58
+    );
+
+  backdrop-filter:
+    grayscale(0.85)
+    brightness(0.78);
+
+  pointer-events: auto;
+
+  z-index: 1;
+}
+
+
+.tuto-guide-waiting-overlay {
+  position: fixed;
+  inset: 0;
+
+  background:
+    rgba(
+      62,
+      68,
+      74,
+      0.58
+    );
+
+  backdrop-filter:
+    grayscale(0.85)
+    brightness(0.78);
+
+  pointer-events: auto;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   ZONE MISE EN AVANT
+   ========================================================= */
+
+.tuto-guide-target {
+  position: fixed;
+
+  border:
+    3px solid
+    #6a1b9a;
+
+  border-radius:
+    12px;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      255,
+      255,
+      255,
+      0.92
+    ),
+    0 0 0 9px
+    rgba(
+      106,
+      27,
+      154,
+      0.20
+    ),
+    0 10px 28px
+    rgba(
+      106,
+      27,
+      154,
+      0.28
+    );
+
+  pointer-events: none;
+
+  z-index: 4;
+
+  animation:
+    tuto-target-pulse
+    1.35s ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   FLÈCHE VIOLETTE
+   ========================================================= */
+
+.tuto-guide-arrow {
+  position: fixed;
+
+  width: 44px;
+  height: 44px;
+
+  color:
+    #6a1b9a;
+
+  font-size: 44px;
+  line-height: 44px;
+
+  filter:
+    drop-shadow(
+      0 2px 1px
+      rgba(
+        255,
+        255,
+        255,
+        1
+      )
+    )
+    drop-shadow(
+      0 5px 8px
+      rgba(
+        106,
+        27,
+        154,
+        0.34
+      )
+    );
+
+  pointer-events: none;
+
+  /*
+   * Elle passe AU-DESSUS de la carte.
+   * Elle ne peut donc plus disparaître comme actuellement.
+   */
+  z-index: 12;
+
+  animation:
+    tuto-arrow-pulse
+    0.85s ease-in-out
+    infinite alternate;
+}
+
+
+/* =========================================================
+   CARTE DU TUTORIEL
+   ========================================================= */
+
+.tuto-guide-card {
+  position: fixed;
+
+  width: 370px;
+  max-width:
+    calc(
+      100vw - 32px
+    );
+
+  padding:
+    18px 20px 16px;
+
+  color:
+    #455a64;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fbf9fd 100%
+    );
+
+  border:
+    2px solid
+    #d7bce4;
+
+  border-top:
+    6px solid
+    #6a1b9a;
+
+  border-radius:
+    16px;
+
+  box-shadow:
+    0 18px 42px
+    rgba(
+      32,
+      33,
+      36,
+      0.28
+    );
+
+  box-sizing:
+    border-box;
+
+  text-align:
+    center;
+
+  pointer-events:
+    auto;
+
+  z-index: 10;
+
+  animation:
+    tuto-card-in
+    0.22s ease-out;
+}
+
+.tuto-guide-card-step-5 {
+  padding:
+    6px 18px 7px;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-image-circle {
+  width: 40px;
+  height: 40px;
+
+  margin-bottom: 1px;
+
+  padding: 2px;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-image-circle img {
+  padding: 3px;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-section {
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-progress {
+  margin-top: 1px;
+
+  font-size: 10px;
+  line-height: 1.1;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-title {
+  margin-top: 2px;
+
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-description-columns {
+  margin-top: 4px;
+
+  column-count: 2;
+  column-gap: 28px;
+
+  font-size: 11.5px;
+  line-height: 1.25;
+
+  text-align: left;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-actions {
+  margin-top: 4px;
+}
+
+
+.tuto-guide-card-step-5
+.tuto-guide-actions button {
+  min-height: 30px;
+
+  line-height: 30px;
+}
+
+
+/* =========================================================
+   ÉTAPE 7
+   ========================================================= */
+
+.tuto-guide-card-step-7 {
+  padding:
+    10px 22px 12px;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-image-circle {
+  width: 52px;
+  height: 52px;
+
+  margin-bottom: 3px;
+
+  padding: 3px;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-image-circle img {
+  padding: 4px;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-section {
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-progress {
+  margin-top: 2px;
+
+  font-size: 11px;
+  line-height: 1.15;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-title {
+  margin-top: 5px;
+
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-description {
+  max-width: 650px;
+
+  margin:
+    8px auto 0;
+
+  font-size: 13px;
+  line-height: 1.4;
+
+  text-align: left;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-actions {
+  margin-top: 9px;
+}
+
+
+.tuto-guide-card-step-7
+.tuto-guide-actions button {
+  min-height: 34px;
+
+  line-height: 34px;
+}
+
+
+.tuto-guide-close {
+  position: absolute;
+
+  top: 8px;
+  right: 8px;
+
+  color:
+    #6a1b9a;
+}
+
+
+/* =========================================================
+   IMAGE TUTO
+   ========================================================= */
+
+.tuto-guide-image-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 76px;
+  height: 76px;
+
+  margin:
+    0 auto 8px;
+
+  padding: 4px;
+
+  background:
+    conic-gradient(
+      #4285f4
+        0deg 90deg,
+
+      #ea4335
+        90deg 180deg,
+
+      #fbbc05
+        180deg 270deg,
+
+      #34a853
+        270deg 360deg
+    );
+
+  border-radius:
+    50%;
+
+  box-shadow:
+    0 6px 16px
+    rgba(
+      60,
+      64,
+      67,
+      0.18
+    );
+
+  box-sizing:
+    border-box;
+}
+
+
+.tuto-guide-image-circle img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 6px;
+
+  object-fit:
+    contain;
+
+  background:
+    #ffffff;
+
+  border-radius:
+    50%;
+
+  box-sizing:
+    border-box;
+}
+
+
+/* =========================================================
+   TEXTES
+   ========================================================= */
+
+.tuto-guide-section {
+  color:
+    #667a32;
+
+  font-size:
+    14px;
+
+  font-weight:
+    800;
+}
+
+
+.tuto-guide-progress {
+  margin-top:
+    3px;
+
+  color:
+    #6a1b9a;
+
+  font-size:
+    12px;
+
+  font-weight:
+    800;
+
+  text-transform:
+    uppercase;
+}
+
+
+.tuto-guide-title {
+  margin-top:
+    7px;
+
+  color:
+    #37474f;
+
+  font-size:
+    17px;
+
+  font-weight:
+    800;
+}
+
+
+.tuto-guide-description {
+  margin-top:
+    7px;
+
+  color:
+    #607078;
+
+  font-size:
+    14px;
+
+  font-weight:
+    500;
+
+  line-height:
+    1.45;
+
+  white-space:
+    pre-line;
+}
+
+
+.tuto-guide-description-columns {
+  font-size:
+    13px;
+
+  line-height:
+    1.5;
+
+  text-align:
+    left;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.tuto-guide-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top:
+    14px;
+}
+
+
+.tuto-guide-skip {
+  color:
+    #607078 !important;
+
+  font-weight:
+    600;
+}
+
+
+.tuto-guide-next {
+  color:
+    #ffffff !important;
+
+  background:
+    #6a1b9a !important;
+
+  font-weight:
+    700;
+}
+
+
+.tuto-guide-next:disabled {
+  color:
+    #9e9e9e !important;
+
+  background:
+    #eeeeee !important;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes tuto-target-pulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 4px
+      rgba(
+        255,
+        255,
+        255,
+        0.92
+      ),
+      0 0 0 9px
+      rgba(
+        106,
+        27,
+        154,
+        0.16
+      ),
+      0 10px 28px
+      rgba(
+        106,
+        27,
+        154,
+        0.22
+      );
+  }
+
+
+  50% {
+    box-shadow:
+      0 0 0 4px
+      rgba(
+        255,
+        255,
+        255,
+        0.96
+      ),
+      0 0 0 14px
+      rgba(
+        106,
+        27,
+        154,
+        0.25
+      ),
+      0 12px 32px
+      rgba(
+        106,
+        27,
+        154,
+        0.30
+      );
+  }
+}
+
+
+@keyframes tuto-arrow-pulse {
+
+  from {
+    opacity: 0.78;
+    transform: scale(0.94);
+  }
+
+
+  to {
+    opacity: 1;
+    transform: scale(1.10);
+  }
+}
+
+
+@keyframes tuto-card-in {
+
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

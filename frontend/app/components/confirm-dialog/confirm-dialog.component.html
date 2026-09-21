@@ -402,6 +402,11 @@
             mat-raised-button
             color="primary"
             class="confirm-button"
+            [attr.id]="
+                dialogData?.variant === 'material-save'
+                    ? 'tuto-material-confirm-save-button'
+                    : null
+            "
             [mat-dialog-close]="true"
         >
             {{dialogData?.confirmCaption}}

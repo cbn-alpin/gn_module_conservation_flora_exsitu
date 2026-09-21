@@ -1,0 +1,496 @@
+import {
+  Injectable
+} from '@angular/core';
+
+import {
+  BehaviorSubject
+} from 'rxjs';
+
+
+export type TutoPlacement =
+  'top' |
+  'bottom';
+
+
+export interface TutoStepState {
+
+  section: 'material';
+
+  step: number;
+  total: number;
+
+  selectors: string[];
+
+  title: string;
+  description: string;
+
+  placement: TutoPlacement;
+
+  showNext: boolean;
+  canNext: boolean;
+
+}
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TutoService {
+
+  private readonly stateSubject =
+    new BehaviorSubject<TutoStepState | null>(
+      null
+    );
+
+
+  private materialTutorialCode:
+    string | null =
+      null;
+
+
+  readonly state$ =
+    this.stateSubject.asObservable();
+
+
+  get currentState():
+    TutoStepState | null {
+
+    return this.stateSubject.value;
+  }
+
+
+  get tutorialMaterialCode():
+    string | null {
+
+    return this.materialTutorialCode;
+  }
+
+
+  isMaterialTutorialActive(): boolean {
+
+    return (
+      this.currentState?.section ===
+      'material'
+    );
+  }
+
+
+  isMaterialStep(
+    step: number
+  ): boolean {
+
+    return (
+      this.currentState?.section ===
+        'material' &&
+      this.currentState?.step ===
+        step
+    );
+  }
+
+
+  isTutorialMaterialCode(
+    value: any
+  ): boolean {
+
+    const expected =
+      String(
+        this.materialTutorialCode || ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const current =
+      String(
+        value || ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    return (
+      !!expected &&
+      current === expected
+    );
+  }
+
+
+  startMaterialTutorial(): void {
+
+    this.materialTutorialCode =
+      null;
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 1,
+      total: 7,
+
+      selectors: [
+        '#tuto-material-add-button'
+      ],
+
+      title:
+        'Créer une fiche',
+
+      description:
+        'Cliquez sur « Ajouter une fiche de matériel récolté » pour commencer.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialFormStep(): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 2,
+      total: 7,
+
+      selectors: [
+        '#tuto-material-code',
+        '#tuto-material-type'
+      ],
+
+      title:
+        'Renseigner les champs obligatoires',
+
+      description:
+        'Les champs obligatoires du tutoriel sont préremplis avec « test » et « Plante entière ». Vous pouvez modifier le numéro de récolte, par exemple « test57 ».',
+
+      placement:
+        'bottom',
+
+      showNext:
+        true,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  setCanContinue(
+    canContinue: boolean
+  ): void {
+
+    const current =
+      this.currentState;
+
+
+    if (
+      !current ||
+      current.section !== 'material' ||
+      current.step !== 2
+    ) {
+      return;
+    }
+
+
+    if (
+      current.canNext ===
+      canContinue
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+      ...current,
+
+      canNext:
+        canContinue
+    });
+  }
+
+
+  next(): void {
+
+    const current =
+      this.currentState;
+
+
+    if (
+      !current ||
+      current.section !== 'material'
+    ) {
+      return;
+    }
+
+
+    if (
+      current.step === 2 &&
+      current.canNext
+    ) {
+
+      this.showMaterialSaveStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 5 &&
+      current.canNext
+    ) {
+
+      this.showMaterialCreatedRowStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 7 &&
+      current.canNext
+    ) {
+
+      this.complete();
+
+    }
+  }
+
+
+  showMaterialSaveStep(): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 3,
+      total: 7,
+
+      selectors: [
+        '#tuto-material-save-button'
+      ],
+
+      title:
+        'Enregistrer la fiche',
+
+      description:
+        'Cliquez sur « Enregistrer » pour poursuivre.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialConfirmStep(): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 4,
+      total: 7,
+
+      selectors: [
+        '#tuto-material-confirm-save-button'
+      ],
+
+      title:
+        'Confirmer l’enregistrement',
+
+      description:
+        'Cliquez sur « Oui » pour confirmer et enregistrer le matériel récolté.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialTableStep(
+    materialCode: string
+  ): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.materialTutorialCode =
+      String(
+        materialCode || ''
+      ).trim();
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 5,
+      total: 7,
+
+      selectors: [
+        '#matlist-container'
+      ],
+
+      title:
+        'Comprendre le tableau',
+
+      description:
+        '• N° récolte : identifiant du matériel récolté.\n' +
+        '• Taxons : taxon(s) associé(s).\n' +
+        '• Matériel végétal : nature du matériel récolté.\n' +
+        '• N° banque culturale : référence de banque culturale lorsqu’elle existe.\n' +
+        '• N° récolte parent : récolte d’origine associée lorsqu’elle existe.',
+
+      placement:
+        'top',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  showMaterialCreatedRowStep(): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 6,
+      total: 7,
+
+      selectors: [
+        '#tuto-material-created-row'
+      ],
+
+      title:
+        'Sélectionner le matériel créé',
+
+      description:
+        this.materialTutorialCode
+          ? `Cliquez sur la ligne « ${this.materialTutorialCode} » que vous venez de créer.`
+          : 'Cliquez sur la ligne du matériel que vous venez de créer.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialAvailabilityStep(): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 7,
+      total: 7,
+
+      selectors: [
+        '#tuto-seed-tab',
+        '#tuto-stock-tab'
+      ],
+
+      title:
+        'Pourquoi ces onglets sont indisponibles ?',
+
+      description:
+        'Semence : indisponible car une fiche Semence nécessite un matériel de type Graine avec au moins un taxon. Ici, le taxon est NULL et le matériel est « Plante entière ».\n\n' +
+        'Stockage : indisponible car « Plante entière » ne fait pas partie des 4 types stockables : Graine, Spore, Mélange de graine et Prélèvement de sol.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  complete(): void {
+
+    this.materialTutorialCode =
+      null;
+
+    this.stateSubject.next(
+      null
+    );
+  }
+
+}

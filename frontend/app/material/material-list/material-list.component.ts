@@ -20,6 +20,10 @@ import { Router } from '@angular/router';
 import { ConfigService } from '../../services/config.service';
 import { CommonService } from '@geonature_common/service/common.service';
 
+import {
+  TutoService
+} from '../../tuto/tuto.service';
+
 
 @Component({
     selector: 'cs-material-list',
@@ -126,7 +130,8 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         public constants: ConstantsService,
         public router: Router,
         public cfg: ConfigService,
-        private toast: CommonService
+        private toast: CommonService,
+        private tutoService: TutoService
         
     ){
 
@@ -1257,7 +1262,33 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
     }
 
 
+    startMaterialTutorial(): void {
+
+      this.tutoService
+        .startMaterialTutorial();
+
+    }
+
+
     addModalMaterial(dialogData: any = null): void {
+
+      const tutorialCreation =
+        this.tutoService
+          .isMaterialStep(1);
+
+
+      if (tutorialCreation) {
+
+        this.exsituFormService.mode =
+          'add';
+
+        this.materialFormService
+          .occurrence
+          .next(null);
+
+      }
+
+
       const dialogRef = this.dialog.open(MaterialModalComponent, {
         width: '900px',
         height: '90vh',
@@ -1265,7 +1296,31 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         autoFocus: false,
         data: dialogData || {}
       });
+
+
+      if (tutorialCreation) {
+
+        this.tutoService
+          .showMaterialFormStep();
+
+      }
+
+
       dialogRef.afterClosed().subscribe(result => {
+
+        if (
+          this.tutoService
+            .isMaterialTutorialActive() &&
+          !this.tutoService
+            .isMaterialStep(5)
+        ) {
+
+          this.tutoService
+            .complete();
+
+        }
+
+
         if (result) {
           
         }
@@ -1325,6 +1380,21 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
       ]);
     }
 
+    isTutorialMaterial(
+      material: any
+    ): boolean {
+
+      return this.tutoService
+        .isTutorialMaterialCode(
+          this.removeHtml(
+            String(
+              material?.code_material || ''
+            )
+          )
+        );
+    }
+
+
     selectMaterial(
       material: any
     ): void {
@@ -1339,6 +1409,14 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
       }
 
 
+      const tutorialSelection =
+        this.tutoService
+          .isMaterialStep(6) &&
+        this.isTutorialMaterial(
+          material
+        );
+
+
       /*
       * Le clic sur une ligne sélectionne
       * uniquement le matériel récolté.
@@ -1350,6 +1428,14 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         .setIdMaterial(
           idMaterial
         );
+
+
+      if (tutorialSelection) {
+
+        this.tutoService
+          .showMaterialAvailabilityStep();
+
+      }
     }
 
     goToCulture(material: any): void {

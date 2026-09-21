@@ -15,6 +15,7 @@
   <app-tuto-button
     sectionName="Matériel récolté"
     sectionColor="#667a32"
+    (tutoClick)="startMaterialTutorial()"
   >
   </app-tuto-button>
 
@@ -33,6 +34,7 @@
   <mat-card-header class="material-list-header">
 
     <button
+      id="tuto-material-add-button"
       mat-button
       class="material-add-button"
       (click)="addModalMaterial()"
@@ -330,24 +332,48 @@
         <div class="material-list-table-scroll">
 
         <table
+          id="tuto-material-table"
           mat-table
           [dataSource]="dataSource"
           class="material-list-table"
         >
       <!-- N° de Récolte -->
       <ng-container matColumnDef="code_material">
-        <th mat-header-cell *matHeaderCellDef > N° récolte </th>
-        <td mat-cell *matCellDef="let element"> {{ element.code_material }} </td>
+        <th
+          id="tuto-material-column-code"
+          mat-header-cell
+          *matHeaderCellDef
+        >
+          N° récolte
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.code_material }}
+        </td>
       </ng-container>
+
       <!-- Matériel végétal -->
       <ng-container matColumnDef="harvest_material">
-        <th mat-header-cell *matHeaderCellDef> Matériel végétal </th>
-        <td mat-cell *matCellDef="let element"> {{ element.harvest_material_label }} </td>
+        <th
+          id="tuto-material-column-type"
+          mat-header-cell
+          *matHeaderCellDef
+        >
+          Matériel végétal
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.harvest_material_label }}
+        </td>
       </ng-container>
 
       <!-- Taxons -->
       <ng-container matColumnDef="taxons">
-        <th mat-header-cell *matHeaderCellDef> Taxons </th>
+        <th
+          id="tuto-material-column-taxons"
+          mat-header-cell
+          *matHeaderCellDef
+        >
+          Taxons
+        </th>
         <td
           mat-cell
           *matCellDef="let element"
@@ -359,7 +385,13 @@
 
       <!-- N° de Récolte parent -->
       <ng-container matColumnDef="code_material_parent">
-        <th mat-header-cell *matHeaderCellDef> N° récolte parent </th>
+        <th
+          id="tuto-material-column-parent"
+          mat-header-cell
+          *matHeaderCellDef
+        >
+          N° récolte parent
+        </th>
         <td mat-cell *matCellDef="let element">
           {{ element.code_parent || '-' }}
         </td>
@@ -367,7 +399,13 @@
 
       <!-- N° de banque -->
       <ng-container matColumnDef="code_cultural_bank">
-        <th mat-header-cell *matHeaderCellDef> N° banque culturale </th>
+        <th
+          id="tuto-material-column-bank"
+          mat-header-cell
+          *matHeaderCellDef
+        >
+          N° banque culturale
+        </th>
         <td mat-cell *matCellDef="let element">
           {{ element.code_cultural_bank || '-' }}
         </td>
@@ -464,6 +502,11 @@
           columns: displayedColumns;
         "
         class="clickable-row"
+        [attr.id]="
+          isTutorialMaterial(row)
+            ? 'tuto-material-created-row'
+            : null
+        "
         [ngClass]="{
           highlighted:
             row.id_material ===
