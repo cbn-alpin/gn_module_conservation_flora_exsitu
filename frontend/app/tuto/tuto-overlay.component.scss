@@ -20,6 +20,12 @@
 }
 
 
+.tuto-guide-root-free-scroll
+.tuto-guide-blocker {
+  pointer-events: none;
+}
+
+
 .tuto-guide-blocker {
   position: fixed;
 
@@ -447,6 +453,77 @@
 .tuto-guide-card-step-11
 .tuto-guide-actions {
   margin-top: 5px;
+}
+
+
+/* =========================================================
+   ÉTAPE 19
+   Carte très compacte pour libérer le formulaire Semence
+   ========================================================= */
+
+.tuto-guide-card-step-19 {
+  padding:
+    3px 18px 4px;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-image-circle {
+  width: 30px;
+  height: 30px;
+
+  margin-bottom: 0;
+
+  padding: 1px;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-image-circle img {
+  padding: 1px;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-section {
+  font-size: 10px;
+  line-height: 1;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-progress {
+  margin-top: 0;
+
+  font-size: 9px;
+  line-height: 1;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-title {
+  margin-top: 1px;
+
+  font-size: 14px;
+  line-height: 1.05;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-description {
+  max-width: 1180px;
+
+  margin:
+    2px auto 0;
+
+  font-size: 11px;
+  line-height: 1.12;
+}
+
+
+.tuto-guide-card-step-19
+.tuto-guide-actions {
+  margin-top: 2px;
 }
 
 

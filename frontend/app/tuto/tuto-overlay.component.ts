@@ -841,14 +841,6 @@ export class TutoOverlayComponent
       this.state.step === 14
     ) {
 
-      /*
-       * Étape 14 :
-       * on positionne la fiche Détails une seule fois.
-       *
-       * Ensuite aucun scroll n'est forcé :
-       * l'utilisateur peut parcourir toute la page
-       * librement de haut en bas.
-       */
       if (
         this.lastScrolledStep !==
         stepKey
@@ -871,6 +863,69 @@ export class TutoOverlayComponent
             this.refreshTarget();
           },
           450
+        );
+
+      }
+
+    } else if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 46
+    ) {
+
+      /*
+       * La page Culture se replace parfois en haut
+       * pendant la navigation.
+       *
+       * On attend donc que la page soit chargée,
+       * puis on centre réellement la liste des actions.
+       * Ensuite l'utilisateur peut scroller librement.
+       */
+      if (
+        this.lastScrolledStep !==
+        stepKey
+      ) {
+
+        this.lastScrolledStep =
+          stepKey;
+
+
+        window.setTimeout(
+          () => {
+
+            if (
+              this.state?.section !==
+                'material' ||
+              this.state?.step !==
+                46
+            ) {
+              return;
+            }
+
+
+            const actionsList =
+              document.querySelector(
+                '.culture-actions-content'
+              ) as HTMLElement | null;
+
+
+            actionsList
+              ?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest'
+              });
+
+
+            window.setTimeout(
+              () => {
+                this.refreshTarget();
+              },
+              450
+            );
+
+          },
+          500
         );
 
       }
@@ -1318,20 +1373,21 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPES 10, 13, 16 ET 17 :
+     * ÉTAPES 9, 10, 12, 13, 16 ET 17 :
      *
-     * Le bouton ciblé se trouve dans le menu Actions
-     * ouvert à droite du tableau.
+     * La carte est placée à GAUCHE
+     * du bouton ou du menu Actions.
      *
-     * La carte est donc placée à GAUCHE du menu
-     * pour laisser l'action ciblée visible
-     * et entièrement cliquable.
+     * La cible reste entièrement visible
+     * et cliquable à droite.
      */
     if (
       this.state.section ===
         'material' &&
       (
+        this.state.step === 9 ||
         this.state.step === 10 ||
+        this.state.step === 12 ||
         this.state.step === 13 ||
         this.state.step === 16 ||
         this.state.step === 17
@@ -1366,9 +1422,9 @@ export class TutoOverlayComponent
     /*
      * ÉTAPE 19 :
      *
-     * carte large et compacte en haut.
-     * Elle reste au-dessus de la flèche
-     * et laisse visibles les champs Semence.
+     * carte encore plus large en haut
+     * pour réduire sa hauteur
+     * et dégager davantage le formulaire Semence.
      */
     if (
       this.state.section ===
@@ -1378,7 +1434,7 @@ export class TutoOverlayComponent
 
       const seedCardWidth =
         Math.min(
-          960,
+          1240,
           window.innerWidth - 32
         );
 
@@ -1407,7 +1463,7 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPES 25, 29 ET 33 :
+     * ÉTAPES 25, 29, 33, 37, 41 ET 47 :
      *
      * même présentation que l'étape 1 :
      * bouton à gauche,
@@ -1419,7 +1475,10 @@ export class TutoOverlayComponent
       (
         this.state.step === 25 ||
         this.state.step === 29 ||
-        this.state.step === 33
+        this.state.step === 33 ||
+        this.state.step === 37 ||
+        this.state.step === 41 ||
+        this.state.step === 47
       )
     ) {
 
@@ -1447,20 +1506,55 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPES 21 ET 27 :
+     * ÉTAPE 21 :
      *
-     * carte à droite et remontée,
-     * pour ne pas être trop basse
-     * sur la fiche Semence
-     * ou la synthèse Stockage.
+     * carte à droite mais légèrement
+     * ramenée vers le centre.
      */
     if (
       this.state.section ===
         'material' &&
-      (
-        this.state.step === 21 ||
-        this.state.step === 27
-      )
+      this.state.step === 21
+    ) {
+
+      const sideCardWidth =
+        Math.min(
+          380,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${sideCardWidth}px`,
+
+        left:
+          `${
+            window.innerWidth -
+            sideCardWidth -
+            90
+          }px`,
+
+        top:
+          '16px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPE 27 :
+     *
+     * carte à droite et remontée.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 27
     ) {
 
       const sideCardWidth =
@@ -1493,44 +1587,141 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPES 11, 19, 23, 25, 26, 29, 30, 31, 34, 38, 42 et 48 :
+     * ÉTAPE 46 :
+     * carte compacte en haut.
+     * La vraie liste des actions est centrée
+     * automatiquement dans l'écran.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 46
+    ) {
+
+      const actionsListCardWidth =
+        Math.min(
+          720,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${actionsListCardWidth}px`,
+
+        left:
+          `${
+            (
+              window.innerWidth -
+              actionsListCardWidth
+            ) / 2
+          }px`,
+
+        top:
+          '8px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPE 48 :
+     * carte en haut à gauche.
      *
-     * carte placée à droite
+     * Le formulaire reste libre à droite,
+     * notamment la Date de début et
+     * son bouton calendrier.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 48
+    ) {
+
+      const cultureActionCardWidth =
+        Math.min(
+          360,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${cultureActionCardWidth}px`,
+
+        left:
+          `${this.viewportMargin}px`,
+
+        top:
+          '16px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPE 52 :
+     * carte à gauche,
+     * détail de l'action visible à droite.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 52
+    ) {
+
+      return {
+
+        left:
+          `${this.viewportMargin}px`,
+
+        top:
+          `${verticalCenter}px`,
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * Cartes placées à droite
      * pour ne pas masquer
-     * le contenu ou les boutons.
-     *
-     * L'étape 26 couvre à la fois :
-     * - la fiche de stockage,
-     * - la confirmation du stockage.
-     *
-     * L'étape 29 ne masque plus le bouton
-     * d'ajout de la fiche de germination.
-     *
-     * L'étape 31 ne masque plus
-     * le bouton « Oui » de confirmation.
+     * les formulaires ou confirmations.
      */
     if (
       this.state.section ===
         'material' &&
       (
         this.state.step === 11 ||
-        this.state.step === 19 ||
         this.state.step === 23 ||
-        this.state.step === 25 ||
         this.state.step === 26 ||
-        this.state.step === 29 ||
         this.state.step === 30 ||
         this.state.step === 31 ||
         this.state.step === 34 ||
+        this.state.step === 35 ||
         this.state.step === 38 ||
+        this.state.step === 39 ||
         this.state.step === 42 ||
-        this.state.step === 48
+        this.state.step === 43 ||
+        this.state.step === 49
       )
     ) {
 
       const sideCardWidth =
         Math.min(
-          380,
+          this.state.step === 42
+            ? 430
+            : 380,
           window.innerWidth - 32
         );
 
@@ -1811,7 +2002,10 @@ export class TutoOverlayComponent
         this.state.step === 20 ||
         this.state.step === 25 ||
         this.state.step === 29 ||
-        this.state.step === 33
+        this.state.step === 33 ||
+        this.state.step === 37 ||
+        this.state.step === 41 ||
+        this.state.step === 47
       )
     ) {
 
@@ -1845,7 +2039,9 @@ export class TutoOverlayComponent
         'material' &&
       (
         this.state.step === 3 ||
+        this.state.step === 9 ||
         this.state.step === 10 ||
+        this.state.step === 12 ||
         this.state.step === 13 ||
         this.state.step === 16 ||
         this.state.step === 17 ||
@@ -1931,7 +2127,10 @@ export class TutoOverlayComponent
         this.state?.step === 20 ||
         this.state?.step === 25 ||
         this.state?.step === 29 ||
-        this.state?.step === 33
+        this.state?.step === 33 ||
+        this.state?.step === 37 ||
+        this.state?.step === 41 ||
+        this.state?.step === 47
       )
     ) {
 
@@ -1944,10 +2143,16 @@ export class TutoOverlayComponent
         'material' &&
       (
         this.state?.step === 3 ||
+        this.state?.step === 9 ||
         this.state?.step === 10 ||
+        this.state?.step === 12 ||
         this.state?.step === 13 ||
         this.state?.step === 16 ||
-        this.state?.step === 17
+        this.state?.step === 17 ||
+        this.state?.step === 44 ||
+        this.state?.step === 45 ||
+        this.state?.step === 50 ||
+        this.state?.step === 51
       )
     ) {
 

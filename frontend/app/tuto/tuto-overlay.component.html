@@ -1,6 +1,9 @@
 <div
   *ngIf="state"
   class="tuto-guide-root"
+  [class.tuto-guide-root-free-scroll]="
+    state.step === 46
+  "
 >
 
 
@@ -61,6 +64,9 @@
       "
       [class.tuto-guide-card-step-11]="
         state.step === 11 ||
+        state.step === 19
+      "
+      [class.tuto-guide-card-step-19]="
         state.step === 19
       "
       [ngStyle]="cardStyle"

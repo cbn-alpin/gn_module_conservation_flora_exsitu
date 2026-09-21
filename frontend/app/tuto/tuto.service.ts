@@ -1563,7 +1563,10 @@ export class TutoService {
       42,
       ['.culture-form-card'],
       'Créer C-test',
-      'La Culture est créée directement depuis le Matériel récolté.\n\nN° de semis associé : Aucun.\nN° de test de germination associé : Aucun.\n\nLa fiche « C-test » est préremplie. Cliquez sur « Enregistrer ».',
+      'Une Culture peut être créée directement depuis le Matériel récolté ou être associée aux fiches créées précédemment.\n\n' +
+      '« N° de semis associé » permet de choisir S-test et « N° de test de germination associé » permet de choisir TG-test.\n\n' +
+      'Une seule origine peut être sélectionnée à la fois : Semis ou Test de germination. Les deux peuvent aussi rester sur « Aucun » pour une Culture créée directement depuis le matériel.\n\n' +
+      'Dans le tutoriel, nous gardons « Aucun ». C-test est déjà préremplie : cliquez sur « Enregistrer ».',
       'top',
       false
     );
@@ -1623,9 +1626,9 @@ export class TutoService {
   showCultureActionsListStep(): void {
     this.setStep(
       46,
-      ['.culture-actions-panel'],
+      ['.culture-actions-content'],
       'Liste des actions de Culture',
-      'Cette liste centralise toutes les interventions réalisées sur la Culture : type d’action, dates, agent et accès aux détails.\n\nNous allons maintenant créer la première action.',
+      'Cette liste centralise les interventions réalisées sur la Culture : type d’action, dates, agent et accès aux détails.\n\nVous pouvez faire défiler librement la page pour consulter toute la liste. Nous allons ensuite créer la première action.',
       'top',
       true
     );
@@ -1649,7 +1652,7 @@ export class TutoService {
       48,
       ['.culture-action-form'],
       'Transplantation obligatoire au démarrage',
-      'Pour la première action, le Type d’action est automatiquement « Transplantation ».\n\nLe Type de transplantation est obligatoire pour cette transplantation initiale.\n\nSi la Culture possède un id_semis ou un id_germination, seul « Repiquage » est proposé.\n\nSi id_semis et id_germination sont tous les deux NULL, les possibilités sont « Rempotage » ou « Plantation ».\n\nUne valeur compatible est préremplie ici. Cliquez sur « Enregistrer ».',
+      'La première action est automatiquement une « Transplantation ».\n\nLe Type de transplantation est obligatoire : si la Culture vient d’un Semis ou d’un Test de germination, seul « Repiquage » est proposé. Si les deux origines sont absentes, vous pouvez choisir « Rempotage » ou « Plantation ».\n\nRenseignez notamment la date de début, puis cliquez sur « Enregistrer ».',
       'top',
       false
     );
