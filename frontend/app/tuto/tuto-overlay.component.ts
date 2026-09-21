@@ -369,6 +369,46 @@ export class TutoOverlayComponent
       }
 
     } else if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 14
+    ) {
+
+      /*
+       * Étape 14 :
+       * on positionne la fiche Détails une seule fois.
+       *
+       * Ensuite aucun scroll n'est forcé :
+       * l'utilisateur peut parcourir toute la page
+       * librement de haut en bas.
+       */
+      if (
+        this.lastScrolledStep !==
+        stepKey
+      ) {
+
+        this.lastScrolledStep =
+          stepKey;
+
+
+        elements[0]
+          .scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest'
+          });
+
+
+        window.setTimeout(
+          () => {
+            this.refreshTarget();
+          },
+          450
+        );
+
+      }
+
+    } else if (
       this.lastScrolledStep !==
       stepKey
     ) {
@@ -808,6 +848,93 @@ export class TutoOverlayComponent
 
 
     /*
+     * ÉTAPES 10 ET 13 :
+     *
+     * Le bouton ciblé se trouve dans le menu Actions
+     * ouvert à droite du tableau.
+     *
+     * La carte est donc placée à GAUCHE du menu
+     * pour laisser Modifier / Détails-Action
+     * entièrement visibles et cliquables.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      (
+        this.state.step === 10 ||
+        this.state.step === 13
+      )
+    ) {
+
+      return {
+
+        left:
+          `${
+            this.clamp(
+              this.targetRect.left -
+                this.cardWidth -
+                80,
+              this.viewportMargin,
+              window.innerWidth -
+                this.cardWidth -
+                this.viewportMargin
+            )
+          }px`,
+
+        top:
+          `${verticalCenter}px`,
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPE 11 :
+     *
+     * carte large et compacte en haut de la fenêtre.
+     * Elle ne masque plus Taxon, Matériel végétal
+     * ni le bouton Enregistrer.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 11
+    ) {
+
+      const step11CardWidth =
+        Math.min(
+          720,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${step11CardWidth}px`,
+
+        left:
+          `${
+            (
+              window.innerWidth -
+              step11CardWidth
+            ) / 2
+          }px`,
+
+        top:
+          '12px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
      * ÉTAPE 5 :
      *
      * carte très large et compacte en haut.
@@ -851,21 +978,22 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPE 7 :
+     * ÉTAPES 7 ET 8 :
      *
-     * carte large sous Semence + Stockage.
-     * Le texte tient sur beaucoup moins de lignes
-     * et le bouton Terminer reste toujours visible.
+     * carte large sous les onglets présentés.
      */
     if (
       this.state.section ===
         'material' &&
-      this.state.step === 7
+      (
+        this.state.step === 7 ||
+        this.state.step === 8
+      )
     ) {
 
-      const step7CardWidth =
+      const tabsCardWidth =
         Math.min(
-          720,
+          760,
           window.innerWidth - 32
         );
 
@@ -873,13 +1001,13 @@ export class TutoOverlayComponent
       return {
 
         width:
-          `${step7CardWidth}px`,
+          `${tabsCardWidth}px`,
 
         left:
           `${
             (
               window.innerWidth -
-              step7CardWidth
+              tabsCardWidth
             ) / 2
           }px`,
 
@@ -890,6 +1018,48 @@ export class TutoOverlayComponent
               180
             )
           }px`,
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPE 14 :
+     *
+     * carte compacte en haut de l'écran.
+     * La fiche Détails reste visible et scrollable.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 14
+    ) {
+
+      const detailsCardWidth =
+        Math.min(
+          760,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${detailsCardWidth}px`,
+
+        left:
+          `${
+            (
+              window.innerWidth -
+              detailsCardWidth
+            ) / 2
+          }px`,
+
+        top:
+          '10px',
 
         transform:
           'none'
@@ -984,6 +1154,24 @@ export class TutoOverlayComponent
 
 
     /*
+     * ÉTAPE 14 :
+     * toute la page Détails est présentée.
+     * Une flèche n'apporte rien ici.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 14
+    ) {
+
+      return {
+        display: 'none'
+      };
+
+    }
+
+
+    /*
      * ÉTAPES 1, 2 ET 4 :
      * carte à droite de la cible.
      * La flèche pointe vers la gauche.
@@ -1018,14 +1206,19 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPE 3 :
-     * flèche située à gauche du bouton Enregistrer,
-     * pointant vers la droite.
+     * ÉTAPES 3, 10 ET 13 :
+     *
+     * la carte est à gauche de la cible.
+     * La flèche pointe donc vers la droite.
      */
     if (
       this.state.section ===
         'material' &&
-      this.state.step === 3
+      (
+        this.state.step === 3 ||
+        this.state.step === 10 ||
+        this.state.step === 13
+      )
     ) {
 
       return {
@@ -1108,7 +1301,11 @@ export class TutoOverlayComponent
     if (
       this.state?.section ===
         'material' &&
-      this.state?.step === 3
+      (
+        this.state?.step === 3 ||
+        this.state?.step === 10 ||
+        this.state?.step === 13
+      )
     ) {
 
       return 'arrow_forward';

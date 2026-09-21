@@ -85,6 +85,7 @@
 
             <!-- Test de germination -->
             <a 
+                id="tuto-germination-tab"
                 class="tablinks themed-tab germination-tab"
                 [class.disabled]="!exsituFormService.idMaterial"
                 [ngClass]="{
@@ -101,6 +102,7 @@
 
             <!-- Semis -->
             <a
+            id="tuto-sowing-tab"
             class="tablinks"
             [class.disabled]="!exsituFormService.idMaterial"
             [ngClass]="{
@@ -119,7 +121,9 @@
 
 
             
-            <a class="tablinks themed-tab viability-tab"
+            <a
+                id="tuto-viability-tab"
+                class="tablinks themed-tab viability-tab"
                 [class.disabled]="!exsituFormService.idMaterial"
                 [ngClass]="{
                     active:
@@ -133,6 +137,7 @@
             <!-- Culture -->
 
             <a
+            id="tuto-culture-tab"
             class="tablinks culture-tab"
             [class.disabled]="
                 !exsituFormService.idMaterial

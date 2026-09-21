@@ -82,7 +82,10 @@
           Ce code de matériel existe déjà. Veuillez en choisir un autre.
         </div>
       </div>
-      <div class="col-6 padding-sm">
+      <div
+        id="tuto-material-taxon"
+        class="col-6 padding-sm"
+      >
         <div [formGroup]="materialForm">
           <pnx-taxonomy
             label="Taxon (nom cité)"
@@ -320,7 +323,10 @@
         type="button"
         class="save-button with-border"
         matTooltip="Enregistrer ce matériel"
-        [disabled]="!materialForm.valid"
+        [disabled]="
+          !materialForm.valid ||
+          !isTutorialEditReady()
+        "
         (click)="submetData()"
       >
         <mat-icon>save</mat-icon>

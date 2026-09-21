@@ -126,7 +126,7 @@ export class TutoService {
       section: 'material',
 
       step: 1,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#tuto-material-add-button'
@@ -165,7 +165,7 @@ export class TutoService {
       section: 'material',
 
       step: 2,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#tuto-material-code',
@@ -266,6 +266,28 @@ export class TutoService {
       current.canNext
     ) {
 
+      this.showMaterialWorkflowTabsStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 8 &&
+      current.canNext
+    ) {
+
+      this.showMaterialActionsStep();
+
+      return;
+    }
+
+
+    if (
+      current.step === 14 &&
+      current.canNext
+    ) {
+
       this.complete();
 
     }
@@ -286,7 +308,7 @@ export class TutoService {
       section: 'material',
 
       step: 3,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#tuto-material-save-button'
@@ -325,7 +347,7 @@ export class TutoService {
       section: 'material',
 
       step: 4,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -372,7 +394,7 @@ export class TutoService {
       section: 'material',
 
       step: 5,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#matlist-container'
@@ -415,7 +437,7 @@ export class TutoService {
       section: 'material',
 
       step: 6,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#tuto-material-created-row'
@@ -456,7 +478,7 @@ export class TutoService {
       section: 'material',
 
       step: 7,
-      total: 7,
+      total: 14,
 
       selectors: [
         '#tuto-seed-tab',
@@ -472,6 +494,314 @@ export class TutoService {
 
       placement:
         'bottom',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  showMaterialWorkflowTabsStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 8,
+      total: 14,
+
+      selectors: [
+        '#tuto-germination-tab',
+        '#tuto-sowing-tab',
+        '#tuto-viability-tab',
+        '#tuto-culture-tab'
+      ],
+
+      title:
+        'Les autres suivis du matériel',
+
+      description:
+        'Test de germination : permet de suivre les tests de germination associés au matériel sélectionné.\n\n' +
+        'Semis : permet de suivre les semis associés au matériel.\n\n' +
+        'Test de Viabilité : permet de suivre les contrôles de viabilité associés au matériel.\n\n' +
+        'Culture : permet de suivre la mise en culture et les actions réalisées sur le matériel sélectionné.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        true,
+
+      canNext:
+        true
+
+    });
+  }
+
+
+  showMaterialActionsStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 9,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-action-button'
+      ],
+
+      title:
+        'Ouvrir les actions',
+
+      description:
+        this.materialTutorialCode
+          ? `Cliquez sur le bouton d’actions de « ${this.materialTutorialCode} ».`
+          : 'Cliquez sur le bouton d’actions du matériel créé.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialEditActionStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 10,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-edit-button'
+      ],
+
+      title:
+        'Modifier le matériel',
+
+      description:
+        'Cliquez sur « Modifier » pour compléter le matériel créé pendant le tutoriel.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialEditFormStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 11,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-taxon',
+        '#tuto-material-type',
+        '#tuto-material-save-button'
+      ],
+
+      title:
+        'Activer Semence et Stockage',
+
+      description:
+        'Le type « Graine » est prérempli. Un taxon réel déjà présent dans la récolte est également repris automatiquement lorsqu’il est disponible. Sinon, sélectionnez un taxon. Puis cliquez sur « Enregistrer ».',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialEditConfirmStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 11,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-confirm-save-button'
+      ],
+
+      title:
+        'Confirmer la modification',
+
+      description:
+        'Cliquez sur « Oui » pour enregistrer le taxon et le type Graine.',
+
+      placement:
+        'bottom',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialActionsAgainStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 12,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-action-button'
+      ],
+
+      title:
+        'Rouvrir les actions',
+
+      description:
+        'Le matériel a été complété. Ouvrez de nouveau son menu d’actions.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialDetailsActionStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 13,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-details-button'
+      ],
+
+      title:
+        'Ouvrir Détails/Action',
+
+      description:
+        'Cliquez sur « Détails/Action » pour consulter la fiche détaillée du matériel.',
+
+      placement:
+        'top',
+
+      showNext:
+        false,
+
+      canNext:
+        false
+
+    });
+  }
+
+
+  showMaterialDetailsStep(): void {
+
+    if (!this.isMaterialTutorialActive()) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step: 14,
+      total: 14,
+
+      selectors: [
+        '#tuto-material-details-page'
+      ],
+
+      title:
+        'Découvrir la fiche détaillée',
+
+      description:
+        'Vous pouvez faire défiler librement cette page de haut en bas.\n\n' +
+        'Elle présente l’identification du matériel récolté, les informations d’échantillonnage et de phénologie, puis les informations complémentaires.\n\n' +
+        'Le bandeau supérieur rappelle également le N° de récolte et donne accès à la suppression du matériel.',
+
+      placement:
+        'top',
 
       showNext:
         true,

@@ -805,10 +805,76 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
     }
 
     editOccurrence(occurrence) {
-      this.exsituFormService.setIdMaterial(occurrence.id_material);
-      this.exsituFormService.mode = 'edit'      
-      this.materialFormService.occurrence.next(occurrence);
+
+      const tutorialEdition =
+        this.tutoService
+          .isMaterialStep(10) &&
+        this.isTutorialMaterial(
+          occurrence
+        );
+
+
+      this.exsituFormService
+        .setIdMaterial(
+          occurrence.id_material
+        );
+
+      this.exsituFormService.mode =
+        'edit';
+
+      this.materialFormService
+        .occurrence
+        .next(
+          occurrence
+        );
+
+
+      if (tutorialEdition) {
+
+        this.tutoService
+          .showMaterialEditFormStep();
+
+      }
+
+
       this.addModalMaterial();
+    }
+
+
+    onMaterialActionMenuOpened(
+      material: any
+    ): void {
+
+      if (
+        !this.isTutorialMaterial(
+          material
+        )
+      ) {
+        return;
+      }
+
+
+      if (
+        this.tutoService
+          .isMaterialStep(9)
+      ) {
+
+        this.tutoService
+          .showMaterialEditActionStep();
+
+        return;
+      }
+
+
+      if (
+        this.tutoService
+          .isMaterialStep(12)
+      ) {
+
+        this.tutoService
+          .showMaterialDetailsActionStep();
+
+      }
     }
 
     private toBoldText(value: string): string {
@@ -1308,11 +1374,21 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
 
       dialogRef.afterClosed().subscribe(result => {
 
+        const tutorialStep =
+          this.tutoService
+            .currentState
+            ?.step;
+
+
         if (
           this.tutoService
             .isMaterialTutorialActive() &&
-          !this.tutoService
-            .isMaterialStep(5)
+          (
+            tutorialStep === 2 ||
+            tutorialStep === 3 ||
+            tutorialStep === 4 ||
+            tutorialStep === 11
+          )
         ) {
 
           this.tutoService
@@ -1329,8 +1405,11 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
 
 
     goToMaterialDetails(material: any): void {
+
       const idMaterial =
-        Number(material?.id_material);
+        Number(
+          material?.id_material
+        );
 
       const idHarvest =
         this.exsituFormService.idHarvest;
@@ -1340,6 +1419,7 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
         !idMaterial ||
         !idHarvest
       ) {
+
         console.error(
           'Impossible d’ouvrir les détails du matériel récolté : identifiant manquant.'
         );
@@ -1348,8 +1428,27 @@ export class MaterialListComponent implements OnInit, AfterViewInit {
       }
 
 
+      const tutorialDetails =
+        this.tutoService
+          .isMaterialStep(13) &&
+        this.isTutorialMaterial(
+          material
+        );
+
+
       this.exsituFormService
-        .setIdMaterial(idMaterial);
+        .setIdMaterial(
+          idMaterial
+        );
+
+
+      if (tutorialDetails) {
+
+        this.tutoService
+          .showMaterialDetailsStep();
+
+      }
+
 
       this.exsituFormService.currentTab =
         'material-details';

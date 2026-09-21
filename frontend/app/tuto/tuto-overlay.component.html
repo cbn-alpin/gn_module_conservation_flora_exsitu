@@ -54,7 +54,12 @@
     <div
       class="tuto-guide-card"
       [class.tuto-guide-card-step-5]="state.step === 5"
-      [class.tuto-guide-card-step-7]="state.step === 7"
+      [class.tuto-guide-card-step-7]="
+        state.step === 7 ||
+        state.step === 8 ||
+        state.step === 14
+      "
+      [class.tuto-guide-card-step-11]="state.step === 11"
       [ngStyle]="cardStyle"
     >
 

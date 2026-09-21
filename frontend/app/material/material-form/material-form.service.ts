@@ -153,7 +153,12 @@ export class MaterialFormService {
       this.occurrence.next(null);
     }
 
-    submitOccurrence(data) {
+    submitOccurrence(
+      data,
+      onSuccess?: (
+        occurrence: any
+      ) => void
+    ) {
 
       const currentCode =
         String(
@@ -204,7 +209,14 @@ export class MaterialFormService {
 
       api.subscribe(
         (occurrence) => {
-          // console.log('occ1', occurrence);
+
+          if (onSuccess) {
+
+            onSuccess(
+              occurrence
+            );
+
+          }
         },
         (error) => {
 

@@ -46,6 +46,11 @@ export class MaterialModalComponent
       false;
 
 
+    private tutorialSeedMaterialTypeId:
+      number | null =
+        null;
+
+
     constructor(
         public dialogRef: MatDialogRef<MaterialModalComponent>,
         public exsituFormService: ExsituFormService,
@@ -236,6 +241,17 @@ export class MaterialModalComponent
     private initializeMaterialTutorial(): void {
 
       if (
+        this.tutoService
+          .isMaterialStep(11)
+      ) {
+
+        this.initializeMaterialTutorialEdit();
+
+        return;
+      }
+
+
+      if (
         !this.tutoService
           .isMaterialStep(2)
       ) {
@@ -279,9 +295,7 @@ export class MaterialModalComponent
             if (wholePlant) {
 
               this.materialForm
-                .get(
-                  'id_material_type'
-                )
+                .get('id_material_type')
                 ?.setValue(
                   wholePlant.id_nomenclature
                 );
@@ -327,6 +341,272 @@ export class MaterialModalComponent
 
       this.updateMaterialTutorialValidity();
 
+    }
+
+
+    private initializeMaterialTutorialEdit(): void {
+
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_HARVEST_MATERIAL'
+        )
+        .subscribe({
+
+          next: (
+            nomenclatures:
+              any[]
+          ) => {
+
+            const seed =
+              nomenclatures.find(
+                nomenclature =>
+                  nomenclature
+                    ?.cd_nomenclature ===
+                  this.constants
+                    .HARVEST_MATERIAL_CODES
+                    .SEED
+              );
+
+
+            if (seed) {
+
+              this.tutorialSeedMaterialTypeId =
+                Number(
+                  seed.id_nomenclature
+                );
+
+
+              this.materialForm
+                .get('id_material_type')
+                ?.setValue(
+                  seed.id_nomenclature
+                );
+
+            }
+
+
+            /*
+             * Si le matériel possède déjà un taxon,
+             * on le réaffiche aussi directement
+             * dans le champ de recherche.
+             */
+            const existingTaxon =
+              this.materialFormService
+                .taxons
+                .at(0)
+                ?.get(
+                  'parentFormControl'
+                )
+                ?.value;
+
+
+            if (existingTaxon?.cd_nom) {
+
+              const visibleTaxon = {
+                ...existingTaxon,
+
+                search_name:
+                  existingTaxon.search_name ||
+                  existingTaxon.nom_valide
+              };
+
+
+              this.materialForm
+                .get('taxonInput')
+                ?.setValue(
+                  visibleTaxon,
+                  {
+                    emitEvent: false
+                  }
+                );
+
+
+              return;
+            }
+
+
+            /*
+             * Le BehaviorSubject materials$ peut être
+             * incomplet ou ne plus être à jour.
+             *
+             * On recharge donc directement tous les
+             * matériels de la récolte depuis l'API
+             * et on récupère le premier vrai taxon.
+             */
+            const params =
+              this.exsituFormService
+                .params
+                .set(
+                  'page',
+                  1
+                )
+                .set(
+                  'limit',
+                  1000
+                );
+
+
+            this.api
+              .getMaterialsByHarvest(
+                this.exsituFormService
+                  .idHarvest,
+                params
+              )
+              .subscribe({
+
+                next: (
+                  response:
+                    any
+                ) => {
+
+                  const materials =
+                    response?.materials ||
+                    [];
+
+
+                  let tutorialTaxon:
+                    any =
+                      null;
+
+
+                  for (
+                    const material
+                    of materials
+                  ) {
+
+                    const taxons =
+                      material?.taxons ||
+                      [];
+
+
+                    tutorialTaxon =
+                      taxons.find(
+                        (
+                          taxon:
+                            any
+                        ) =>
+                          !!taxon?.cd_nom
+                      );
+
+
+                    if (tutorialTaxon) {
+                      break;
+                    }
+
+                  }
+
+
+                  if (!tutorialTaxon) {
+
+                    console.warn(
+                      'Tutoriel : aucun taxon existant trouvé dans cette récolte.'
+                    );
+
+                    return;
+                  }
+
+
+                  /*
+                   * Le composant pnx-taxonomy affiche
+                   * search_name.
+                   *
+                   * Les données matériaux fournissent
+                   * principalement nom_valide :
+                   * on réutilise donc ce vrai nom pour
+                   * l'affichage, sans inventer de taxon.
+                   */
+                  const visibleTaxon = {
+                    ...tutorialTaxon,
+
+                    search_name:
+                      tutorialTaxon.search_name ||
+                      tutorialTaxon.nom_valide
+                  };
+
+
+                  this.materialFormService
+                    .addTaxon(
+                      visibleTaxon,
+                      false
+                    );
+
+
+                  /*
+                   * addTaxon() remet normalement
+                   * taxonInput à null.
+                   *
+                   * On réinjecte le même vrai taxon
+                   * pour qu'il soit également visible
+                   * dans le champ Taxon du tutoriel.
+                   */
+                  this.materialForm
+                    .get('taxonInput')
+                    ?.setValue(
+                      visibleTaxon,
+                      {
+                        emitEvent: false
+                      }
+                    );
+
+                },
+
+                error: (
+                  error
+                ) => {
+
+                  console.error(
+                    'Impossible de préremplir le taxon du tutoriel :',
+                    error
+                  );
+
+                }
+
+              });
+
+          },
+
+          error: (
+            error
+          ) => {
+
+            console.error(
+              'Impossible de préremplir le type Graine pour le tutoriel :',
+              error
+            );
+
+          }
+
+        });
+    }
+
+
+    isTutorialEditReady(): boolean {
+
+      if (
+        !this.tutoService
+          .isMaterialStep(11)
+      ) {
+        return true;
+      }
+
+
+      const selectedMaterialType =
+        Number(
+          this.materialForm
+            .get('id_material_type')
+            ?.value ||
+          0
+        );
+
+
+      return (
+        !!this.tutorialSeedMaterialTypeId &&
+        selectedMaterialType ===
+          this.tutorialSeedMaterialTypeId &&
+        this.materialFormService
+          .taxons
+          .length > 0
+      );
     }
 
 
@@ -616,7 +896,12 @@ export class MaterialModalComponent
       event.preventDefault();
     }
     
-    submetData(){
+        submetData(){
+
+        const tutorialEdit =
+          this.tutoService
+            .isMaterialStep(11);
+
 
         if (
           this.tutoService
@@ -625,6 +910,14 @@ export class MaterialModalComponent
 
           this.tutoService
             .showMaterialConfirmStep();
+
+        }
+
+
+        if (tutorialEdit) {
+
+          this.tutoService
+            .showMaterialEditConfirmStep();
 
         }
 
@@ -692,6 +985,13 @@ export class MaterialModalComponent
                 this.tutoService
                   .showMaterialSaveStep();
 
+              } else if (
+                tutorialEdit
+              ) {
+
+                this.tutoService
+                  .showMaterialEditFormStep();
+
               }
 
               return;
@@ -711,11 +1011,46 @@ export class MaterialModalComponent
             }
 
 
+            if (tutorialEdit) {
+
+              this.tutoService
+                .showMaterialActionsAgainStep();
+
+            }
+
+
             const finalForm =
               this.formatDataFormHarvest();
 
+
             this.materialFormService
-              .submitOccurrence(finalForm);
+              .submitOccurrence(
+                finalForm,
+                (
+                  occurrence:
+                    any
+                ) => {
+
+                  if (
+                    tutorialEdit &&
+                    occurrence?.id_material
+                  ) {
+
+                    /*
+                     * Recharge le matériel sélectionné
+                     * pour actualiser immédiatement
+                     * Semence et Stockage.
+                     */
+                    this.exsituFormService
+                      .setIdMaterial(
+                        occurrence.id_material
+                      );
+
+                  }
+
+                }
+              );
+
 
             this.close()
           });

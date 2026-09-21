@@ -416,14 +416,28 @@
           <button
             mat-icon-button
             class="actions-trigger-red"
+            [attr.id]="
+              isTutorialMaterial(element)
+                ? 'tuto-material-action-button'
+                : null
+            "
             [matMenuTriggerFor]="menu"
             (click)="$event.stopPropagation()"
+            (menuOpened)="onMaterialActionMenuOpened(element)"
             aria-label="Actions"
           >
             <mat-icon>more_vert</mat-icon>
           </button>
+
           <mat-menu #menu="matMenu">
-            <button mat-menu-item
+
+            <button
+              mat-menu-item
+              [attr.id]="
+                isTutorialMaterial(element)
+                  ? 'tuto-material-edit-button'
+                  : null
+              "
               (click)="editOccurrence(element)"
             >
               <mat-icon>edit</mat-icon>
@@ -432,6 +446,11 @@
 
             <button
               mat-menu-item
+              [attr.id]="
+                isTutorialMaterial(element)
+                  ? 'tuto-material-details-button'
+                  : null
+              "
               (click)="goToMaterialDetails(element)"
             >
               <mat-icon style="color: #FFA726;">
