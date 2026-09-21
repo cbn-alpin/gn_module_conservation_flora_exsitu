@@ -48,6 +48,11 @@ export class TutoService {
       null;
 
 
+  private cultureTutorialCode:
+    string | null =
+      null;
+
+
   readonly state$ =
     this.stateSubject.asObservable();
 
@@ -63,6 +68,13 @@ export class TutoService {
     string | null {
 
     return this.materialTutorialCode;
+  }
+
+
+  get tutorialCultureCode():
+    string | null {
+
+    return this.cultureTutorialCode;
   }
 
 
@@ -126,7 +138,7 @@ export class TutoService {
       section: 'material',
 
       step: 1,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-add-button'
@@ -165,7 +177,7 @@ export class TutoService {
       section: 'material',
 
       step: 2,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-code',
@@ -239,100 +251,85 @@ export class TutoService {
     }
 
 
-    if (
-      current.step === 2 &&
-      current.canNext
-    ) {
+    switch (current.step) {
 
-      this.showMaterialSaveStep();
+      case 2:
+        if (current.canNext) {
+          this.showMaterialSaveStep();
+        }
+        break;
 
-      return;
-    }
+      case 5:
+        if (current.canNext) {
+          this.showMaterialCreatedRowStep();
+        }
+        break;
 
+      case 7:
+        if (current.canNext) {
+          this.showMaterialWorkflowTabsStep();
+        }
+        break;
 
-    if (
-      current.step === 5 &&
-      current.canNext
-    ) {
+      case 8:
+        if (current.canNext) {
+          this.showMaterialActionsStep();
+        }
+        break;
 
-      this.showMaterialCreatedRowStep();
+      case 14:
+        if (current.canNext) {
+          this.showMaterialDetailsBackStep();
+        }
+        break;
 
-      return;
-    }
+      case 21:
+        if (current.canNext) {
+          this.showStorageTabStep();
+        }
+        break;
 
+      case 23:
+        if (current.canNext) {
+          this.showStoragePlacesStep();
+        }
+        break;
 
-    if (
-      current.step === 7 &&
-      current.canNext
-    ) {
+      case 24:
+        if (current.canNext) {
+          this.showStorageAddStep();
+        }
+        break;
 
-      this.showMaterialWorkflowTabsStep();
+      case 27:
+        if (current.canNext) {
+          this.showGerminationTabStep();
+        }
+        break;
 
-      return;
-    }
+      case 46:
+        if (current.canNext) {
+          this.showCultureAddActionStep();
+        }
+        break;
 
+      case 52:
+        if (current.canNext) {
+          this.showOtherActionsInfoStep();
+        }
+        break;
 
-    if (
-      current.step === 8 &&
-      current.canNext
-    ) {
+      case 53:
+        if (current.canNext) {
+          this.showTutorialCompleteStep();
+        }
+        break;
 
-      this.showMaterialActionsStep();
-
-      return;
-    }
-
-
-    if (
-      current.step === 14 &&
-      current.canNext
-    ) {
-
-      this.showMaterialDetailsBackStep();
-
-      return;
-    }
-
-
-    if (
-      current.step === 21 &&
-      current.canNext
-    ) {
-
-      this.showStorageTabStep();
-
-      return;
-    }
-
-
-    if (
-      current.step === 23 &&
-      current.canNext
-    ) {
-
-      this.showStoragePlacesStep();
-
-      return;
-    }
-
-
-    if (
-      current.step === 24 &&
-      current.canNext
-    ) {
-
-      this.showStorageAddStep();
-
-      return;
-    }
-
-
-    if (
-      current.step === 27 &&
-      current.canNext
-    ) {
-
-      this.complete();
+      case 54:
+        if (current.canNext) {
+          this.complete();
+        }
+        break;
 
     }
   }
@@ -352,7 +349,7 @@ export class TutoService {
       section: 'material',
 
       step: 3,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-save-button'
@@ -391,7 +388,7 @@ export class TutoService {
       section: 'material',
 
       step: 4,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -438,7 +435,7 @@ export class TutoService {
       section: 'material',
 
       step: 5,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#matlist-container'
@@ -481,7 +478,7 @@ export class TutoService {
       section: 'material',
 
       step: 6,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-created-row'
@@ -522,7 +519,7 @@ export class TutoService {
       section: 'material',
 
       step: 7,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-seed-tab',
@@ -561,7 +558,7 @@ export class TutoService {
       section: 'material',
 
       step: 8,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-germination-tab',
@@ -604,7 +601,7 @@ export class TutoService {
       section: 'material',
 
       step: 9,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-action-button'
@@ -643,7 +640,7 @@ export class TutoService {
       section: 'material',
 
       step: 10,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-edit-button'
@@ -680,7 +677,7 @@ export class TutoService {
       section: 'material',
 
       step: 11,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-taxon',
@@ -719,7 +716,7 @@ export class TutoService {
       section: 'material',
 
       step: 11,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-confirm-save-button'
@@ -756,7 +753,7 @@ export class TutoService {
       section: 'material',
 
       step: 12,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-action-button'
@@ -793,7 +790,7 @@ export class TutoService {
       section: 'material',
 
       step: 13,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-details-button'
@@ -830,7 +827,7 @@ export class TutoService {
       section: 'material',
 
       step: 14,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-details-page'
@@ -869,7 +866,7 @@ export class TutoService {
       section: 'material',
 
       step: 15,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-details-back'
@@ -906,7 +903,7 @@ export class TutoService {
       section: 'material',
 
       step: 16,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-action-button'
@@ -945,7 +942,7 @@ export class TutoService {
       section: 'material',
 
       step: 17,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-material-seed-details-button'
@@ -982,7 +979,7 @@ export class TutoService {
       section: 'material',
 
       step: 18,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-seed-add-button'
@@ -1019,7 +1016,7 @@ export class TutoService {
       section: 'material',
 
       step: 19,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-seed-total-mass',
@@ -1064,7 +1061,7 @@ export class TutoService {
       section: 'material',
 
       step: 20,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-seed-confirm-save-button'
@@ -1101,7 +1098,7 @@ export class TutoService {
       section: 'material',
 
       step: 21,
-      total: 27,
+      total: 54,
 
       selectors: [
         '.seed-details-left-panel'
@@ -1140,7 +1137,7 @@ export class TutoService {
       section: 'material',
 
       step: 22,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-stock-tab'
@@ -1177,7 +1174,7 @@ export class TutoService {
       section: 'material',
 
       step: 23,
-      total: 27,
+      total: 54,
 
       selectors: [
         '.stock-summary-card'
@@ -1215,7 +1212,7 @@ export class TutoService {
       section: 'material',
 
       step: 24,
-      total: 27,
+      total: 54,
 
       selectors: [
         '.stock-actions-grid'
@@ -1253,7 +1250,7 @@ export class TutoService {
       section: 'material',
 
       step: 25,
-      total: 27,
+      total: 54,
 
       selectors: [
         '.stock-list-add-button'
@@ -1290,7 +1287,7 @@ export class TutoService {
       section: 'material',
 
       step: 26,
-      total: 27,
+      total: 54,
 
       selectors: [
         '.stock-form-card'
@@ -1329,7 +1326,7 @@ export class TutoService {
       section: 'material',
 
       step: 26,
-      total: 27,
+      total: 54,
 
       selectors: [
         '#tuto-stock-confirm-save-button'
@@ -1366,7 +1363,7 @@ export class TutoService {
       section: 'material',
 
       step: 27,
-      total: 27,
+      total: 54,
 
       selectors: [
         '.stock-summary-card'
@@ -1393,9 +1390,394 @@ export class TutoService {
   }
 
 
+  showGerminationTabStep(): void {
+    this.setStep(
+      28,
+      ['#tuto-germination-tab'],
+      'Ouvrir le Test de germination',
+      'Cliquez sur l’onglet « Test de germination ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showGerminationAddStep(): void {
+    this.setStep(
+      29,
+      ['.germination-add-button'],
+      'Créer un test de germination',
+      'Cliquez sur « Ajouter une fiche de germination ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showGerminationFormStep(): void {
+    this.setStep(
+      30,
+      ['.germination-form-card'],
+      'Créer TG-test',
+      'La fiche est préremplie avec « TG-test », 50 graines, 1 réplicat ainsi qu’un support et un substrat. Cliquez sur « Enregistrer ».',
+      'top',
+      false
+    );
+  }
+
+
+  showGerminationConfirmStep(): void {
+    this.setStep(
+      31,
+      ['#tuto-germination-confirm-save-button'],
+      'Confirmer TG-test',
+      'Cliquez sur « Oui » pour créer le test de germination.',
+      'bottom',
+      false
+    );
+  }
+
+
+  showSemisTabStep(): void {
+    this.setStep(
+      32,
+      ['#tuto-sowing-tab'],
+      'Ouvrir Semis',
+      'Cliquez sur l’onglet « Semis ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showSemisAddStep(): void {
+    this.setStep(
+      33,
+      ['.semis-list-header .gray-button'],
+      'Créer un Semis',
+      'Cliquez sur « Ajouter une fiche de semis ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showSemisFormStep(): void {
+    this.setStep(
+      34,
+      ['.semis-form-card'],
+      'Créer S-test',
+      'La fiche est préremplie avec « S-test » et les valeurs obligatoires nécessaires. Cliquez sur « Enregistrer ».',
+      'top',
+      false
+    );
+  }
+
+
+  showSemisConfirmStep(): void {
+    this.setStep(
+      35,
+      ['#tuto-semis-confirm-save-button'],
+      'Confirmer le Semis',
+      'Cliquez sur « Oui » pour créer S-test.',
+      'bottom',
+      false
+    );
+  }
+
+
+  showViabilityTabStep(): void {
+    this.setStep(
+      36,
+      ['#tuto-viability-tab'],
+      'Ouvrir le Test de Viabilité',
+      'Cliquez sur l’onglet « Test de Viabilité ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showViabilityAddStep(): void {
+    this.setStep(
+      37,
+      ['.viability-add-button'],
+      'Créer un test de viabilité',
+      'Cliquez sur « Ajouter une fiche de viabilité ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showViabilityFormStep(): void {
+    this.setStep(
+      38,
+      ['.viability-form-card'],
+      'Créer TV-test',
+      'La fiche est préremplie avec « TV-test » et les valeurs nécessaires. Cliquez sur « Enregistrer ».',
+      'top',
+      false
+    );
+  }
+
+
+  showViabilityConfirmStep(): void {
+    this.setStep(
+      39,
+      ['#tuto-viability-confirm-save-button'],
+      'Confirmer TV-test',
+      'Cliquez sur « Oui » pour créer le test de viabilité.',
+      'bottom',
+      false
+    );
+  }
+
+
+  showCultureTabStep(): void {
+    this.setStep(
+      40,
+      ['#tuto-culture-tab'],
+      'Ouvrir Culture',
+      'Cliquez sur l’onglet « Culture ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showCultureAddStep(): void {
+    this.setStep(
+      41,
+      ['.culture-add-button'],
+      'Créer une Culture',
+      'Cliquez sur « Ajouter une fiche de culture ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showCultureFormStep(): void {
+    this.setStep(
+      42,
+      ['.culture-form-card'],
+      'Créer C-test',
+      'La Culture est créée directement depuis le Matériel récolté.\n\nN° de semis associé : Aucun.\nN° de test de germination associé : Aucun.\n\nLa fiche « C-test » est préremplie. Cliquez sur « Enregistrer ».',
+      'top',
+      false
+    );
+  }
+
+
+  showCultureConfirmStep(): void {
+    this.setStep(
+      43,
+      ['#tuto-culture-confirm-save-button'],
+      'Confirmer C-test',
+      'Cliquez sur « Oui » pour créer la Culture.',
+      'bottom',
+      false
+    );
+  }
+
+
+  showCultureActionsStep(
+    cultureCode: string = 'C-test'
+  ): void {
+
+    this.cultureTutorialCode =
+      String(
+        cultureCode || 'C-test'
+      ).trim();
+
+
+    this.setStep(
+      44,
+      [
+        '.culture-actions-cell .actions-trigger-red'
+      ],
+      'Ouvrir les actions de C-test',
+      'Cliquez sur le bouton Actions de la Culture créée pendant le tutoriel.',
+      'top',
+      false
+    );
+  }
+
+
+  showCultureDetailsMenuStep(): void {
+    this.setStep(
+      45,
+      [
+        '.mat-menu-item',
+        '.mat-mdc-menu-item'
+      ],
+      'Ouvrir Détails/Action',
+      'Cliquez sur « Détails/Action ».',
+      'top',
+      false
+    );
+  }
+
+
+  showCultureActionsListStep(): void {
+    this.setStep(
+      46,
+      ['.culture-actions-panel'],
+      'Liste des actions de Culture',
+      'Cette liste centralise toutes les interventions réalisées sur la Culture : type d’action, dates, agent et accès aux détails.\n\nNous allons maintenant créer la première action.',
+      'top',
+      true
+    );
+  }
+
+
+  showCultureAddActionStep(): void {
+    this.setStep(
+      47,
+      ['.culture-add-action-button'],
+      'Ajouter une action',
+      'Cliquez sur « Ajouter une action ».',
+      'bottom',
+      false
+    );
+  }
+
+
+  showCultureActionFormStep(): void {
+    this.setStep(
+      48,
+      ['.culture-action-form'],
+      'Transplantation obligatoire au démarrage',
+      'Pour la première action, le Type d’action est automatiquement « Transplantation ».\n\nLe Type de transplantation est obligatoire pour cette transplantation initiale.\n\nSi la Culture possède un id_semis ou un id_germination, seul « Repiquage » est proposé.\n\nSi id_semis et id_germination sont tous les deux NULL, les possibilités sont « Rempotage » ou « Plantation ».\n\nUne valeur compatible est préremplie ici. Cliquez sur « Enregistrer ».',
+      'top',
+      false
+    );
+  }
+
+
+  showCultureActionConfirmStep(): void {
+    this.setStep(
+      49,
+      ['#tuto-culture-confirm-save-button'],
+      'Confirmer la Transplantation',
+      'Cliquez sur « Oui » pour enregistrer cette première action de Culture.',
+      'bottom',
+      false
+    );
+  }
+
+
+  showCultureActionMenuStep(): void {
+    this.setStep(
+      50,
+      ['.culture-actions-trigger-red'],
+      'Ouvrir les actions de la Transplantation',
+      'Cliquez sur le bouton Actions de la ligne Transplantation.',
+      'top',
+      false
+    );
+  }
+
+
+  showCultureActionDetailsMenuStep(): void {
+    this.setStep(
+      51,
+      [
+        '.mat-menu-item',
+        '.mat-mdc-menu-item'
+      ],
+      'Ouvrir le détail de l’action',
+      'Cliquez sur « Détails ».',
+      'top',
+      false
+    );
+  }
+
+
+  showCultureActionDetailsStep(): void {
+    this.setStep(
+      52,
+      ['.culture-action-details-card'],
+      'Détail de l’action',
+      'Cette fiche détaille la Transplantation : type d’action, dates et paramètres propres à l’intervention. Elle permet de retrouver précisément ce qui a été réalisé sur la Culture.',
+      'top',
+      true
+    );
+  }
+
+
+  showOtherActionsInfoStep(): void {
+    this.setStep(
+      53,
+      [
+        '#tuto-germination-tab',
+        '#tuto-sowing-tab',
+        '#tuto-viability-tab'
+      ],
+      'Les Actions existent aussi ailleurs',
+      'Le même principe d’Actions est disponible dans Test de germination, Semis et Test de Viabilité. Chaque partie possède sa liste d’actions et les informations adaptées à son suivi.',
+      'bottom',
+      true
+    );
+  }
+
+
+  showTutorialCompleteStep(): void {
+    this.setStep(
+      54,
+      ['#tuto-culture-tab'],
+      'Tutoriel terminé ! 🎉',
+      'Félicitations ! Vous avez parcouru le fonctionnement principal du module Ex situ : Matériel récolté, Semence, Stockage, Test de germination, Semis, Test de Viabilité, Culture et Actions.',
+      'bottom',
+      true
+    );
+  }
+
+
+  private setStep(
+    step: number,
+    selectors: string[],
+    title: string,
+    description: string,
+    placement: TutoPlacement,
+    showNext: boolean
+  ): void {
+
+    if (
+      !this.isMaterialTutorialActive()
+    ) {
+      return;
+    }
+
+
+    this.stateSubject.next({
+
+      section: 'material',
+
+      step,
+      total: 54,
+
+      selectors,
+
+      title,
+      description,
+
+      placement,
+
+      showNext,
+      canNext: showNext
+
+    });
+  }
+
+
   complete(): void {
 
     this.materialTutorialCode =
+      null;
+
+    this.cultureTutorialCode =
       null;
 
     this.stateSubject.next(

@@ -87,7 +87,7 @@ export class MaterialDetailsComponent implements OnInit {
     private dialogService: DialogService,
     private exsituFormService: ExsituFormService,
     private materialFormService: MaterialFormService,
-    private tutoService: TutoService
+    public tutoService: TutoService
   ) {}
 
 

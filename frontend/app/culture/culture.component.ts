@@ -23,6 +23,7 @@ import { CultureService } from './culture.service';
 import { ExsituFormService } from '../form/shared/exsitu-form.service';
 import { ConfigService } from '../services/config.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { TutoService } from '../tuto/tuto.service';
 import {
   DateAdapter
 } from '@angular/material/core';
@@ -94,6 +95,7 @@ export class CultureComponent implements OnInit {
     private cfg: ConfigService,
     private toast: CommonService,
     private dialogService: DialogService,
+    private tutoService: TutoService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
     
@@ -409,6 +411,31 @@ export class CultureComponent implements OnInit {
 
     this.loadAssociatedMaterialCode();
     this.loadAvailableSources();
+
+
+    if (
+      this.tutoService.isMaterialStep(42) &&
+      !this.modalData?.edit
+    ) {
+
+      /*
+       * Culture créée directement depuis
+       * le Matériel récolté :
+       * aucune origine Semis / Germination.
+       */
+      this.selectedSowingId =
+        null;
+
+      this.selectedTestId =
+        null;
+
+
+      this.cultureForm.patchValue({
+        code_culture: 'C-test',
+        date_start: new Date()
+      });
+
+    }
 
     /*
     * En modification, on utilise les relations
@@ -890,6 +917,20 @@ export class CultureComponent implements OnInit {
       this.cultureForm.get('code_culture')?.value
       || '';
 
+    const tutorialCreation =
+      this.tutoService
+        .isMaterialStep(42) &&
+      !this.modalData?.edit;
+
+
+    if (tutorialCreation) {
+
+      this.tutoService
+        .showCultureConfirmStep();
+
+    }
+
+
     this.dialogService
       .confirmDialog({
         message: '',
@@ -970,6 +1011,18 @@ export class CultureComponent implements OnInit {
                     ? `Culture ${this.toBoldText(String(cultureCode))} créée avec succès`
                     : 'Culture créée avec succès'
                 );
+
+
+                if (tutorialCreation) {
+
+                  this.tutoService
+                    .showCultureActionsStep(
+                      cultureCode ||
+                      currentCode
+                    );
+
+                }
+
 
                 this.dialogRef.close(
                   response?.culture || response

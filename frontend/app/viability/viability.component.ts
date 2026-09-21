@@ -14,6 +14,7 @@ import { CommonService } from '@geonature_common/service/common.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ViabilityFormService } from './viability-form.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { TutoService } from '../tuto/tuto.service';
 
 
 interface Viability {
@@ -70,6 +71,7 @@ export class ViabilityComponent implements OnInit {
 
     private _commonService: CommonService,
     private dialogService: DialogService,
+    private tutoService: TutoService,
 
 
    ) {
@@ -168,6 +170,56 @@ export class ViabilityComponent implements OnInit {
       });
     }
     this.getTestByCode(this.codeT);
+
+
+    if (
+      this.tutoService.isMaterialStep(38) &&
+      !this.data?.edit
+    ) {
+
+      this.germinationForm.patchValue({
+        code: 'TV-test',
+        seed_initial_count: 50,
+        replicate_count: 1
+      });
+
+
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_TG_SUPPORT'
+        )
+        .subscribe(items => {
+
+          if (items?.length) {
+
+            this.germinationForm
+              .get('id_support')
+              ?.setValue(
+                items[0].id_nomenclature
+              );
+
+          }
+        });
+
+
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_TEST_SUBSTRATE'
+        )
+        .subscribe(items => {
+
+          if (items?.length) {
+
+            this.germinationForm
+              .get('id_substrate')
+              ?.setValue(
+                items[0].id_nomenclature
+              );
+
+          }
+        });
+
+    }
   
     if (this.data?.edit && this.data?.test) {
       console.log(
@@ -381,6 +433,20 @@ export class ViabilityComponent implements OnInit {
       this.germinationForm.get('code')?.value
       || '';
 
+    const tutorialCreation =
+      this.tutoService
+        .isMaterialStep(38) &&
+      !this.data?.edit;
+
+
+    if (tutorialCreation) {
+
+      this.tutoService
+        .showViabilityConfirmStep();
+
+    }
+
+
     this.dialogService
       .confirmDialog({
         message: '',
@@ -441,9 +507,27 @@ export class ViabilityComponent implements OnInit {
                     ? `Test de viabilité ${this.toBoldText(String(currentCode))} créé avec succès`
                     : 'Test de viabilité créé avec succès'
                 );
+                if (tutorialCreation) {
+
+                  this.tutoService
+                    .showCultureTabStep();
+
+                }
+
+
                 this.dialogRef.close(res);
               },
+
               error: (err) => {
+
+                if (tutorialCreation) {
+
+                  this.tutoService
+                    .showViabilityFormStep();
+
+                }
+
+
                 console.error(
                   "Erreur lors de la création du test :",
                   err

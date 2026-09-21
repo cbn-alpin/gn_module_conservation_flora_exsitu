@@ -17,6 +17,7 @@ import { CultureService } from '../culture/culture.service';
 import { ConfigService } from '../services/config.service';
 import { DataService } from '../services/data.service';
 import { FrenchDateAdapter } from '../services/french-date-adapter';
+import { TutoService } from '../tuto/tuto.service';
 
 interface CultureActionDialogData {
   idCulture: number;
@@ -61,6 +62,7 @@ export class CultureActionComponent implements OnInit {
     private cfg: ConfigService,
     private dialogService: DialogService,
     private toast: CommonService,
+    private tutoService: TutoService,
     @Inject(MAT_DIALOG_DATA) public dialogData: CultureActionDialogData
   ) {
     this.cultureActionForm = this.fb.group(
@@ -944,6 +946,20 @@ export class CultureActionComponent implements OnInit {
         : '';
 
 
+    const tutorialCreation =
+      this.tutoService
+        .isMaterialStep(48) &&
+      !this.dialogData?.edit;
+
+
+    if (tutorialCreation) {
+
+      this.tutoService
+        .showCultureActionConfirmStep();
+
+    }
+
+
     this.dialogService
       .confirmDialog({
         message: '',
@@ -1010,6 +1026,14 @@ export class CultureActionComponent implements OnInit {
               this.showCultureActionSuccessToaster(
                 isEdit
               );
+
+
+              if (tutorialCreation) {
+
+                this.tutoService
+                  .showCultureActionMenuStep();
+
+              }
 
 
               this.dialogRef.close(
@@ -1775,6 +1799,33 @@ export class CultureActionComponent implements OnInit {
                   .toLowerCase()
               )
           );
+
+
+        /*
+         * Tutoriel :
+         * sélectionne automatiquement
+         * la première possibilité autorisée.
+         *
+         * Avec C-test créé directement depuis
+         * le Matériel récolté :
+         * Rempotage ou Plantation.
+         */
+        if (
+          this.tutoService
+            .isMaterialStep(48) &&
+          !this.dialogData?.edit &&
+          this.transplantationTypeOptions
+            .length > 0
+        ) {
+
+          this.cultureActionForm
+            .get('id_type')
+            ?.setValue(
+              this.transplantationTypeOptions[0]
+                .id_nomenclature
+            );
+
+        }
       },
       'types de transplantation'
     );

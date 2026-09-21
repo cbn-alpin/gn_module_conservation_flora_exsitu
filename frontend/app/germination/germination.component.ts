@@ -14,6 +14,7 @@ import { DataService } from '../services/data.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { TutoService } from '../tuto/tuto.service';
 
 
 interface Germination {
@@ -88,6 +89,7 @@ export class GerminationComponent implements OnInit {
 
     private _commonService: CommonService,
     private dialogService: DialogService,
+    private tutoService: TutoService,
 
 
    ) {
@@ -189,6 +191,56 @@ ngOnInit(): void {
     this.getTestByCode(this.codeT);
     this.loadSupportOptions();
     this.loadSubstrateOptions();
+
+
+    if (
+      this.tutoService.isMaterialStep(30) &&
+      !this.data?.edit
+    ) {
+
+      this.germinationForm.patchValue({
+        code: 'TG-test',
+        seed_initial_count: 50,
+        replicate_count: 1
+      });
+
+
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_TG_SUPPORT'
+        )
+        .subscribe(items => {
+
+          if (items?.length) {
+
+            this.germinationForm
+              .get('id_support')
+              ?.setValue(
+                items[0].id_nomenclature
+              );
+
+          }
+        });
+
+
+      this.api
+        .getNomenclaturesByTypeCode(
+          'CFE_TEST_SUBSTRATE'
+        )
+        .subscribe(items => {
+
+          if (items?.length) {
+
+            this.germinationForm
+              .get('id_substrate')
+              ?.setValue(
+                items[0].id_nomenclature
+              );
+
+          }
+        });
+
+    }
   
     if (this.data?.edit && this.data?.test) {
       console.log(
@@ -472,6 +524,20 @@ ngOnInit(): void {
       this.germinationForm.get('code')?.value
       || '';
 
+    const tutorialCreation =
+      this.tutoService
+        .isMaterialStep(30) &&
+      !this.data?.edit;
+
+
+    if (tutorialCreation) {
+
+      this.tutoService
+        .showGerminationConfirmStep();
+
+    }
+
+
     this.dialogService
       .confirmDialog({
         message: '',
@@ -532,9 +598,24 @@ ngOnInit(): void {
                     ? `Test de germination ${this.toBoldText(String(currentCode))} créé avec succès`
                     : 'Test de germination créé avec succès'
                 );
+                if (tutorialCreation) {
+
+                  this.tutoService
+                    .showSemisTabStep();
+
+                }
+
                 this.dialogRef.close(res);
               },
               error: (err) => {
+
+                if (tutorialCreation) {
+
+                  this.tutoService
+                    .showGerminationFormStep();
+
+                }
+
                 console.error(
                   "Erreur lors de la création du test :",
                   err

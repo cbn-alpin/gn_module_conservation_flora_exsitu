@@ -93,6 +93,14 @@ export class TutoOverlayComponent
     '';
 
 
+  private readonly documentClickCaptureHandler =
+    (event: Event) => {
+      this.handleTutorialTargetClick(
+        event
+      );
+    };
+
+
   constructor(
     public tutoService:
       TutoService,
@@ -178,6 +186,13 @@ export class TutoOverlayComponent
         .appendChild(host);
 
     }
+
+
+    document.addEventListener(
+      'click',
+      this.documentClickCaptureHandler,
+      true
+    );
   }
 
 
@@ -186,6 +201,13 @@ export class TutoOverlayComponent
     this.stopRefresh();
 
     this.restorePageScroll();
+
+
+    document.removeEventListener(
+      'click',
+      this.documentClickCaptureHandler,
+      true
+    );
 
 
     this.stateSubscription
@@ -228,7 +250,17 @@ export class TutoOverlayComponent
         11,
         19,
         20,
-        26
+        26,
+        30,
+        31,
+        34,
+        35,
+        38,
+        39,
+        42,
+        43,
+        48,
+        49
       ];
 
 
@@ -306,6 +338,219 @@ export class TutoOverlayComponent
 
     this.pageScrollLocked =
       false;
+  }
+
+
+  private handleTutorialTargetClick(
+    event: Event
+  ): void {
+
+    if (!this.state) {
+      return;
+    }
+
+
+    const target =
+      event.target as HTMLElement | null;
+
+
+    if (!target) {
+      return;
+    }
+
+
+    const step =
+      this.state.step;
+
+
+    if (
+      step === 28 &&
+      target.closest(
+        '#tuto-germination-tab'
+      )
+    ) {
+
+      this.tutoService
+        .showGerminationAddStep();
+
+    } else if (
+      step === 29 &&
+      target.closest(
+        '.germination-add-button'
+      )
+    ) {
+
+      this.tutoService
+        .showGerminationFormStep();
+
+    } else if (
+      step === 32 &&
+      target.closest(
+        '#tuto-sowing-tab'
+      )
+    ) {
+
+      this.tutoService
+        .showSemisAddStep();
+
+    } else if (
+      step === 33 &&
+      target.closest(
+        '.semis-list-header .gray-button'
+      )
+    ) {
+
+      this.tutoService
+        .showSemisFormStep();
+
+    } else if (
+      step === 36 &&
+      target.closest(
+        '#tuto-viability-tab'
+      )
+    ) {
+
+      this.tutoService
+        .showViabilityAddStep();
+
+    } else if (
+      step === 37 &&
+      target.closest(
+        '.viability-add-button'
+      )
+    ) {
+
+      this.tutoService
+        .showViabilityFormStep();
+
+    } else if (
+      step === 40 &&
+      target.closest(
+        '#tuto-culture-tab'
+      )
+    ) {
+
+      this.tutoService
+        .showCultureAddStep();
+
+    } else if (
+      step === 41 &&
+      target.closest(
+        '.culture-add-button'
+      )
+    ) {
+
+      this.tutoService
+        .showCultureFormStep();
+
+    } else if (
+      step === 44 &&
+      target.closest(
+        '.actions-trigger-red'
+      )
+    ) {
+
+      const row =
+        target.closest('tr');
+
+
+      const code =
+        String(
+          row
+            ?.querySelector('td')
+            ?.textContent || ''
+        )
+          .trim()
+          .toLowerCase();
+
+
+      const expected =
+        String(
+          this.tutoService
+            .tutorialCultureCode || ''
+        )
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        expected &&
+        code === expected
+      ) {
+
+        this.tutoService
+          .showCultureDetailsMenuStep();
+
+      }
+
+    } else if (
+      step === 45
+    ) {
+
+      const item =
+        target.closest(
+          '.mat-menu-item, .mat-mdc-menu-item'
+        );
+
+
+      if (
+        item &&
+        String(
+          item.textContent || ''
+        ).includes(
+          'Détails/Action'
+        )
+      ) {
+
+        this.tutoService
+          .showCultureActionsListStep();
+
+      }
+
+    } else if (
+      step === 47 &&
+      target.closest(
+        '.culture-add-action-button'
+      )
+    ) {
+
+      this.tutoService
+        .showCultureActionFormStep();
+
+    } else if (
+      step === 50 &&
+      target.closest(
+        '.culture-actions-trigger-red'
+      )
+    ) {
+
+      this.tutoService
+        .showCultureActionDetailsMenuStep();
+
+    } else if (
+      step === 51
+    ) {
+
+      const item =
+        target.closest(
+          '.mat-menu-item, .mat-mdc-menu-item'
+        );
+
+
+      if (
+        item &&
+        String(
+          item.textContent || ''
+        )
+          .trim()
+          .includes('Détails')
+      ) {
+
+        this.tutoService
+          .showCultureActionDetailsStep();
+
+      }
+    }
   }
 
 
@@ -409,6 +654,106 @@ export class TutoOverlayComponent
           createdRow
         ];
 
+      }
+    }
+
+
+    /*
+     * ÉTAPE 44 :
+     * retrouver précisément C-test
+     * puis son bouton Actions.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 44
+    ) {
+
+      const expected =
+        String(
+          this.tutoService
+            .tutorialCultureCode || ''
+        )
+          .trim()
+          .toLowerCase();
+
+
+      const rows =
+        Array.from(
+          document.querySelectorAll(
+            '.culture-list-table tbody tr'
+          )
+        ) as HTMLElement[];
+
+
+      const row =
+        rows.find(
+          item =>
+            String(
+              item
+                .querySelector('td')
+                ?.textContent || ''
+            )
+              .trim()
+              .toLowerCase() ===
+            expected
+        );
+
+
+      const button =
+        row?.querySelector(
+          '.actions-trigger-red'
+        ) as HTMLElement | null;
+
+
+      if (button) {
+        elements = [button];
+      }
+    }
+
+
+    /*
+     * ÉTAPES 45 ET 51 :
+     * les menus Angular sont créés dynamiquement.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      (
+        this.state.step === 45 ||
+        this.state.step === 51
+      )
+    ) {
+
+      const expectedText =
+        this.state.step === 45
+          ? 'Détails/Action'
+          : 'Détails';
+
+
+      const menuItems =
+        Array.from(
+          document.querySelectorAll(
+            '.mat-menu-item, .mat-mdc-menu-item'
+          )
+        ) as HTMLElement[];
+
+
+      const item =
+        menuItems.find(
+          button =>
+            String(
+              button.textContent || ''
+            )
+              .trim()
+              .includes(
+                expectedText
+              )
+        );
+
+
+      if (item) {
+        elements = [item];
       }
     }
 
@@ -1019,17 +1364,150 @@ export class TutoOverlayComponent
 
 
     /*
-     * ÉTAPES 11, 19, 21, 23 ET 25 :
+     * ÉTAPE 19 :
      *
-     * carte placée sur le côté droit de l'écran.
+     * carte large et compacte en haut.
+     * Elle reste au-dessus de la flèche
+     * et laisse visibles les champs Semence.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      this.state.step === 19
+    ) {
+
+      const seedCardWidth =
+        Math.min(
+          960,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${seedCardWidth}px`,
+
+        left:
+          `${
+            (
+              window.innerWidth -
+              seedCardWidth
+            ) / 2
+          }px`,
+
+        top:
+          '8px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPES 25, 29 ET 33 :
      *
-     * Elle ne masque plus :
-     * - la confirmation Oui de l'étape 11 ;
-     * - les champs Semence de l'étape 19 ;
-     * - la fiche Semence de l'étape 21 ;
-     * - la synthèse Stockage de l'étape 23 ;
-     * - le bouton Ajouter une fiche de stockage
-     *   de l'étape 25.
+     * même présentation que l'étape 1 :
+     * bouton à gauche,
+     * carte juste à droite.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      (
+        this.state.step === 25 ||
+        this.state.step === 29 ||
+        this.state.step === 33
+      )
+    ) {
+
+      return {
+
+        left:
+          `${
+            this.clamp(
+              this.targetRect.right + 72,
+              this.viewportMargin,
+              window.innerWidth -
+                this.cardWidth -
+                this.viewportMargin
+            )
+          }px`,
+
+        top:
+          `${verticalCenter}px`,
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPES 21 ET 27 :
+     *
+     * carte à droite et remontée,
+     * pour ne pas être trop basse
+     * sur la fiche Semence
+     * ou la synthèse Stockage.
+     */
+    if (
+      this.state.section ===
+        'material' &&
+      (
+        this.state.step === 21 ||
+        this.state.step === 27
+      )
+    ) {
+
+      const sideCardWidth =
+        Math.min(
+          380,
+          window.innerWidth - 32
+        );
+
+
+      return {
+
+        width:
+          `${sideCardWidth}px`,
+
+        left:
+          `${
+            window.innerWidth -
+            sideCardWidth -
+            this.viewportMargin
+          }px`,
+
+        top:
+          '16px',
+
+        transform:
+          'none'
+
+      };
+    }
+
+
+    /*
+     * ÉTAPES 11, 19, 23, 25, 26, 29, 30, 31, 34, 38, 42 et 48 :
+     *
+     * carte placée à droite
+     * pour ne pas masquer
+     * le contenu ou les boutons.
+     *
+     * L'étape 26 couvre à la fois :
+     * - la fiche de stockage,
+     * - la confirmation du stockage.
+     *
+     * L'étape 29 ne masque plus le bouton
+     * d'ajout de la fiche de germination.
+     *
+     * L'étape 31 ne masque plus
+     * le bouton « Oui » de confirmation.
      */
     if (
       this.state.section ===
@@ -1037,9 +1515,16 @@ export class TutoOverlayComponent
       (
         this.state.step === 11 ||
         this.state.step === 19 ||
-        this.state.step === 21 ||
         this.state.step === 23 ||
-        this.state.step === 25
+        this.state.step === 25 ||
+        this.state.step === 26 ||
+        this.state.step === 29 ||
+        this.state.step === 30 ||
+        this.state.step === 31 ||
+        this.state.step === 34 ||
+        this.state.step === 38 ||
+        this.state.step === 42 ||
+        this.state.step === 48
       )
     ) {
 
@@ -1323,7 +1808,10 @@ export class TutoOverlayComponent
         this.state.step === 4 ||
         this.state.step === 15 ||
         this.state.step === 18 ||
-        this.state.step === 20
+        this.state.step === 20 ||
+        this.state.step === 25 ||
+        this.state.step === 29 ||
+        this.state.step === 33
       )
     ) {
 
@@ -1360,7 +1848,11 @@ export class TutoOverlayComponent
         this.state.step === 10 ||
         this.state.step === 13 ||
         this.state.step === 16 ||
-        this.state.step === 17
+        this.state.step === 17 ||
+        this.state.step === 44 ||
+        this.state.step === 45 ||
+        this.state.step === 50 ||
+        this.state.step === 51
       )
     ) {
 
@@ -1436,7 +1928,10 @@ export class TutoOverlayComponent
         this.state?.step === 4 ||
         this.state?.step === 15 ||
         this.state?.step === 18 ||
-        this.state?.step === 20
+        this.state?.step === 20 ||
+        this.state?.step === 25 ||
+        this.state?.step === 29 ||
+        this.state?.step === 33
       )
     ) {
 

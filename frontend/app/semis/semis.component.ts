@@ -7,6 +7,7 @@ import { DataService } from '../services/data.service';
 import { ConfigService } from '../services/config.service';
 import { CommonService } from '@geonature_common/service/common.service';
 import { DialogService } from '../components/confirm-dialog/confirm-dialog.service';
+import { TutoService } from '../tuto/tuto.service';
 import {
   DateAdapter
 } from '@angular/material/core';
@@ -109,6 +110,7 @@ export class SemisComponent implements OnInit {
     private cfg: ConfigService,
     private toast: CommonService,
     private dialogService: DialogService,
+    private tutoService: TutoService,
     @Inject(MAT_DIALOG_DATA) public modalData: any
   ) {
     this.semisForm = this.fb.group({
@@ -327,6 +329,59 @@ export class SemisComponent implements OnInit {
     this.idMaterial = this.exsituFormService.idMaterial;
 
     this.loadAssociatedMaterialCode();
+
+
+    if (
+      this.tutoService.isMaterialStep(34) &&
+      !this.modalData?.edit
+    ) {
+
+      this.semisForm.patchValue({
+        code: 'S-test',
+        start_date: new Date(),
+        container: 'Pot test',
+        initial_count: 10,
+        replicate_count: 1
+      });
+
+
+      this.dataService
+        .getNomenclaturesByTypeCode(
+          'CFE_SOWING_METHOD'
+        )
+        .subscribe(items => {
+
+          if (items?.length) {
+
+            this.semisForm
+              .get('id_sowing_method')
+              ?.setValue(
+                items[0].id_nomenclature
+              );
+
+          }
+        });
+
+
+      this.dataService
+        .getNomenclaturesByTypeCode(
+          'CFE_SOWING_SUBSTRATE'
+        )
+        .subscribe(items => {
+
+          if (items?.length) {
+
+            this.semisForm
+              .get('id_substrate')
+              ?.setValue(
+                items[0].id_nomenclature
+              );
+
+          }
+        });
+
+    }
+
 
     this.exsituFormService.id_storage.subscribe(
       id => this.idStorage = id ?? null
@@ -998,6 +1053,20 @@ export class SemisComponent implements OnInit {
           return;
         }
 
+        const tutorialCreation =
+          this.tutoService
+            .isMaterialStep(34) &&
+          !this.modalData?.edit;
+
+
+        if (tutorialCreation) {
+
+          this.tutoService
+            .showSemisConfirmStep();
+
+        }
+
+
         this.dialogService
           .confirmDialog({
             message: '',
@@ -1033,10 +1102,34 @@ export class SemisComponent implements OnInit {
                   this.toast.translateToaster(
                     'success',
                     `Semis ${this.toBoldText(currentCode)} créé avec succès`
-                  );  
+                  );
+
+
+                  if (tutorialCreation) {
+
+                    this.tutoService
+                      .showViabilityTabStep();
+
+                  }
+
+
                   this.dialogRef.close(res);
                 },
-                error: (err) => this.handleSowingSaveError(err)
+
+                error: (err) => {
+
+                  if (tutorialCreation) {
+
+                    this.tutoService
+                      .showSemisFormStep();
+
+                  }
+
+
+                  this.handleSowingSaveError(
+                    err
+                  );
+                }
               });
             }
           });

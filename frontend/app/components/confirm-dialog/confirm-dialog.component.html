@@ -409,7 +409,15 @@
                         ? 'tuto-seed-confirm-save-button'
                         : dialogData?.variant === 'stock-save'
                             ? 'tuto-stock-confirm-save-button'
-                            : null
+                            : dialogData?.variant === 'germination-save'
+                                ? 'tuto-germination-confirm-save-button'
+                                : dialogData?.variant === 'semis-save'
+                                    ? 'tuto-semis-confirm-save-button'
+                                    : dialogData?.variant === 'viability-save'
+                                        ? 'tuto-viability-confirm-save-button'
+                                        : dialogData?.variant === 'culture-save'
+                                            ? 'tuto-culture-confirm-save-button'
+                                            : null
             "
             [mat-dialog-close]="true"
         >

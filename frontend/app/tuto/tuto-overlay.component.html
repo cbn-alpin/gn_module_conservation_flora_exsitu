@@ -94,19 +94,35 @@
       <div
         class="tuto-guide-section"
         [style.color]="
-          state.step >= 22
-            ? '#607d8b'
-            : state.step >= 18
-                ? '#c89500'
-                : '#667a32'
+          state.step >= 40
+            ? '#6d4c41'
+            : state.step >= 36
+                ? '#e07a1f'
+                : state.step >= 32
+                    ? '#2e7d32'
+                    : state.step >= 28
+                        ? '#00897b'
+                        : state.step >= 22
+                            ? '#607d8b'
+                            : state.step >= 18
+                                ? '#c89500'
+                                : '#667a32'
         "
       >
         {{
-          state.step >= 22
-            ? 'Stockage'
-            : state.step >= 18
-                ? 'Semence'
-                : 'Matériel récolté'
+          state.step >= 40
+            ? 'Culture'
+            : state.step >= 36
+                ? 'Test de Viabilité'
+                : state.step >= 32
+                    ? 'Semis'
+                    : state.step >= 28
+                        ? 'Test de germination'
+                        : state.step >= 22
+                            ? 'Stockage'
+                            : state.step >= 18
+                                ? 'Semence'
+                                : 'Matériel récolté'
         }}
       </div>
 
