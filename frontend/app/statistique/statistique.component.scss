@@ -1,4 +1,8 @@
-:host {
+/* =========================================================
+   COMPOSANT STATISTIQUES
+   ========================================================= */
+
+app-statistique {
   display: inline-flex;
   align-items: center;
 
@@ -239,9 +243,191 @@
 }
 
 
+/* =========================================================
+   DONUTS STATISTIQUES DYNAMIQUES
+   ========================================================= */
+
+.statistique-enabled
+.semis-filter-field,
+
+.statistique-enabled
+.germination-filter-field,
+
+.statistique-enabled
+.viability-filter-field,
+
+.statistique-enabled
+.culture-filter-field {
+
+  position: relative;
+
+  padding-bottom: 168px;
+
+  box-sizing: border-box;
+}
+
+
+/*
+ * Vrai donut statistique.
+ *
+ * --stat-donut-colors est calculé dynamiquement
+ * depuis les données réelles du tableau.
+ */
+.statistique-enabled
+.semis-filter-field::after,
+
+.statistique-enabled
+.germination-filter-field::after,
+
+.statistique-enabled
+.viability-filter-field::after,
+
+.statistique-enabled
+.culture-filter-field::after {
+
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  bottom: 38px;
+
+  width: 112px;
+  height: 112px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at center,
+      #ffffff 0%,
+      #ffffff 35%,
+      transparent 36%,
+      transparent 100%
+    ),
+    var(
+      --stat-donut-colors,
+      conic-gradient(
+        #d7dde1 0% 100%
+      )
+    );
+
+  border:
+    3px solid #ffffff;
+
+  box-sizing:
+    border-box;
+
+  box-shadow:
+    0 5px 14px
+    rgba(38, 50, 56, 0.20);
+
+  pointer-events: none;
+
+  z-index: 1;
+}
+
+
+/*
+ * Légende réelle sous chaque donut.
+ *
+ * Exemple :
+ * Oui 66,7 % • Non 33,3 %
+ */
+.statistique-enabled
+.semis-filter-field::before,
+
+.statistique-enabled
+.germination-filter-field::before,
+
+.statistique-enabled
+.viability-filter-field::before,
+
+.statistique-enabled
+.culture-filter-field::before {
+
+  content:
+    attr(data-stat-caption);
+
+  position: absolute;
+
+  left: 50%;
+  bottom: 4px;
+
+  width: calc(100% - 8px);
+  min-height: 28px;
+
+  transform:
+    translateX(-50%);
+
+  color: #4f5d65;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+
+  text-align: center;
+
+  white-space: normal;
+
+  overflow-wrap:
+    anywhere;
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+
+/*
+ * Léger effet visuel pour mieux séparer
+ * les statistiques des champs de filtre.
+ */
+.statistique-enabled
+.semis-filter-field::after,
+
+.statistique-enabled
+.germination-filter-field::after,
+
+.statistique-enabled
+.viability-filter-field::after,
+
+.statistique-enabled
+.culture-filter-field::after {
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+.statistique-enabled
+.semis-filter-field:hover::after,
+
+.statistique-enabled
+.germination-filter-field:hover::after,
+
+.statistique-enabled
+.viability-filter-field:hover::after,
+
+.statistique-enabled
+.culture-filter-field:hover::after {
+
+  transform:
+    translateX(-50%)
+    scale(1.06);
+
+  box-shadow:
+    0 7px 18px
+    rgba(38, 50, 56, 0.26);
+}
+
 @media (max-width: 700px) {
 
-  :host {
+  app-statistique {
     margin-left: 0;
   }
 }
