@@ -86,6 +86,14 @@ import {
   CultureActionDetailsComponent
 } from './culture-action-details/culture-action-details.component';
 
+import {
+  StatistiqueComponent
+} from './statistique/statistique.component';
+
+import {
+  StatistiqueService
+} from './statistique/statistique.service';
+
 export function getFrenchPaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
 
@@ -153,6 +161,7 @@ registerLocaleData(localeFr);
     CultureDetailsComponent,
     CultureActionComponent,
     CultureActionDetailsComponent,
+    StatistiqueComponent,
   ],
   providers: [
     HarvestStoreService, 
@@ -173,6 +182,7 @@ registerLocaleData(localeFr);
     ViabilityFormService,
     CultureService,
     CultureTableService,
+    StatistiqueService,
     { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
     { provide: MatPaginatorIntl, useFactory: getFrenchPaginatorIntl },
   ],

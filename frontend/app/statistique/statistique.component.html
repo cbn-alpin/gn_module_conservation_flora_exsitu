@@ -1,0 +1,53 @@
+<div
+  class="statistique-control"
+  [class.statistique-control-off]="!enabled"
+>
+
+  <label class="statistique-switch-zone">
+
+    <input
+      type="checkbox"
+      [checked]="enabled"
+      (change)="onToggle($event)"
+      aria-label="Activer ou désactiver les statistiques"
+    >
+
+    <span class="statistique-switch-track">
+
+      <span class="statistique-switch-label">
+        {{ enabled ? 'ON' : 'OFF' }}
+      </span>
+
+      <span class="statistique-switch-knob">
+        {{ enabled ? '✓' : '×' }}
+      </span>
+
+    </span>
+
+  </label>
+
+
+  <button
+    mat-button
+    type="button"
+    class="statistique-button"
+    [disabled]="!enabled"
+    [attr.aria-disabled]="!enabled"
+    (click)="openStatistique()"
+  >
+
+    <mat-icon *ngIf="enabled">
+      assessment
+    </mat-icon>
+
+    <mat-icon *ngIf="!enabled">
+      lock
+    </mat-icon>
+
+    <span>
+      Statistiques
+    </span>
+
+  </button>
+
+</div>
