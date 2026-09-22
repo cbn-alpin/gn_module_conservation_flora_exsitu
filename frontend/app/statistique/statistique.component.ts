@@ -112,19 +112,42 @@ export class StatistiqueComponent
   private distributionIndex = 0;
 
 
-  private readonly palette = [
-    '#a61e4d',
-    '#6a1b9a',
-    '#c2185b',
-    '#6d4c41',
-    '#455a64',
-    '#8e3b76',
-    '#7b2cbf',
-    '#9c6644',
-    '#5c5470',
-    '#b56576',
-    '#7f5539',
-    '#495057'
+  private readonly donutPalettes = [
+    [
+      '#b51657',
+      '#1565c0',
+      '#2e7d32',
+      '#f9a825',
+      '#6a1b9a'
+    ],
+    [
+      '#5e35b1',
+      '#ef6c00',
+      '#00897b',
+      '#c62828',
+      '#3949ab'
+    ],
+    [
+      '#00695c',
+      '#ad1457',
+      '#f9a825',
+      '#283593',
+      '#8d6e63'
+    ],
+    [
+      '#ef6c00',
+      '#1565c0',
+      '#7b1fa2',
+      '#388e3c',
+      '#c2185b'
+    ],
+    [
+      '#37474f',
+      '#c62828',
+      '#2e7d32',
+      '#6a1b9a',
+      '#f9a825'
+    ]
   ];
 
 
@@ -427,17 +450,17 @@ export class StatistiqueComponent
   private getSectionStatistics():
     StatisticDisplay[] {
 
+    /*
+     * Tous les donuts utilisent maintenant
+     * exactement les lignes restantes après
+     * l'application de TOUS les filtres actifs.
+     *
+     * Les statistiques sont donc reliées entre elles.
+     */
     const rows =
-      (
-        Array.isArray(this.allRows) &&
-        this.allRows.length > 0
-      )
-        ? this.allRows
-        : (
-            Array.isArray(this.rows)
-              ? this.rows
-              : []
-          );
+      Array.isArray(this.rows)
+        ? this.rows
+        : [];
 
 
     this.distributionIndex = 0;
@@ -650,81 +673,120 @@ export class StatistiqueComponent
 
 
     /*
-     * Aucun N° recherché :
-     * statistique classique du nombre total.
+     * Le premier donut affiche TOUJOURS
+     * la répartition réelle des codes visibles.
+     *
+     * Exemple Semis :
+     * s  = 50 %
+     * ss = 50 %
+     *
+     * Exemple Culture :
+     * c  = 50 %
+     * cc = 50 %
      */
-    if (!normalizedCode) {
-
-      return {
-
-        gradient:
-          `conic-gradient(
-            ${this.palette[0]} 0% 100%
-          )`,
-
-        caption:
-          `${total} ${label}`,
-
-        tooltip:
-          `${total} ${label}`
-
-      };
-    }
-
-
     const sourceRows =
-      (
-        Array.isArray(this.allRows) &&
-        this.allRows.length > 0
-      )
-        ? this.allRows
-        : this.rows;
+      Array.isArray(this.rows)
+        ? this.rows
+        : [];
 
 
-    const matchingCount =
-      sourceRows.filter(
-        row => {
-
-          const code =
-            this.initialFilter ===
-              'culture'
-              ? row?.code_culture
-              : row?.code;
+    const codeCounts =
+      new Map<string, number>();
 
 
-          return String(
-            code || ''
-          )
-            .trim()
-            .toLowerCase()
-            .includes(
-              normalizedCode
-            );
+    sourceRows.forEach(
+      row => {
 
-        }
-      ).length;
+        const code =
+          this.initialFilter ===
+            'culture'
+            ? row?.code_culture
+            : row?.code;
 
 
-    const otherCount =
-      Math.max(
-        sourceRows.length -
-          matchingCount,
-        0
-      );
+        const normalizedValue =
+          this.normalizeValue(
+            code
+          );
 
 
-    return this.buildSegmentStatistic(
-      [
-        {
-          label:
-            'Correspond',
+        codeCounts.set(
+          normalizedValue,
+          (
+            codeCounts.get(
+              normalizedValue
+            ) || 0
+          ) + 1
+        );
 
-          count:
-            matchingCount,
+      }
+    );
 
-          color:
-            this.palette[0]
-        },
+
+    let items =
+      Array
+        .from(
+          codeCounts.entries()
+        )
+        .map(
+          (
+            [
+              code,
+              count
+            ],
+            index
+          ) => ({
+            label:
+              code,
+
+            count,
+
+            color:
+              this.donutPalettes[0][
+                index %
+                this.donutPalettes[0].length
+              ]
+          })
+        )
+        .sort(
+          (
+            first,
+            second
+          ) =>
+            first.label.localeCompare(
+              second.label
+            )
+        );
+
+
+    /*
+     * Maximum 5 parties lisibles.
+     */
+    if (items.length > 5) {
+
+      const mainItems =
+        items.slice(
+          0,
+          4
+        );
+
+
+      const otherCount =
+        items
+          .slice(4)
+          .reduce(
+            (
+              sum,
+              item
+            ) =>
+              sum +
+              item.count,
+            0
+          );
+
+
+      items = [
+        ...mainItems,
         {
           label:
             'Autres',
@@ -735,10 +797,45 @@ export class StatistiqueComponent
           color:
             '#b0bec5'
         }
-      ],
-      new Set<string>(
-        ['Correspond']
-      )
+      ];
+    }
+
+
+    /*
+     * Si aucun N° n'est saisi :
+     * aucune tranche n'est spécialement agrandie,
+     * mais toutes les valeurs restent visibles.
+     *
+     * Si un N° est saisi :
+     * toutes les valeurs correspondantes
+     * sont mises en avant.
+     *
+     * Exemple "s" :
+     * s et ss peuvent être sélectionnés.
+     */
+    const selectedLabels =
+      normalizedCode
+        ? new Set<string>(
+            items
+              .filter(
+                item =>
+                  item.label
+                    .toLowerCase()
+                    .includes(
+                      normalizedCode
+                    )
+              )
+              .map(
+                item =>
+                  item.label
+              )
+          )
+        : new Set<string>();
+
+
+    return this.buildSegmentStatistic(
+      items,
+      selectedLabels
     );
   }
 
@@ -1409,12 +1506,53 @@ export class StatistiqueComponent
 
         /*
          * Taille réelle de la statistique.
+         *
+         * Une séparation noire très fine est ajoutée
+         * entre les différentes parties du donut.
          */
+        const separator =
+          0.12;
+
+
+        const colorStart =
+          startPercent > 0
+            ? startPercent + separator
+            : startPercent;
+
+
+        const colorEnd =
+          endPercent < 100
+            ? endPercent - separator
+            : endPercent;
+
+
+        if (startPercent > 0) {
+
+          gradientParts.push(
+            `rgba(0, 0, 0, 0.38) ` +
+            `${startPercent.toFixed(2)}% ` +
+            `${colorStart.toFixed(2)}%`
+          );
+
+        }
+
+
         gradientParts.push(
           `${item.color} ` +
-          `${startPercent.toFixed(2)}% ` +
-          `${endPercent.toFixed(2)}%`
+          `${colorStart.toFixed(2)}% ` +
+          `${colorEnd.toFixed(2)}%`
         );
+
+
+        if (endPercent < 100) {
+
+          gradientParts.push(
+            `rgba(0, 0, 0, 0.38) ` +
+            `${colorEnd.toFixed(2)}% ` +
+            `${endPercent.toFixed(2)}%`
+          );
+
+        }
 
 
         const isSelected =
@@ -1597,36 +1735,65 @@ export class StatistiqueComponent
     index: number
   ): string {
 
+    /*
+     * distributionIndex vaut :
+     *
+     * 1 = deuxième donut
+     * 2 = troisième donut
+     * 3 = quatrième donut
+     * 4 = cinquième donut
+     *
+     * Chaque donut reçoit donc
+     * une palette différente.
+     */
+    const paletteIndex =
+      Math.min(
+        this.distributionIndex,
+        this.donutPalettes.length - 1
+      );
+
+
+    const palette =
+      this.donutPalettes[
+        paletteIndex
+      ];
+
+
     if (
       index <
-      this.palette.length
+      palette.length
     ) {
 
-      return this.palette[index];
+      return palette[index];
 
     }
 
 
     /*
-     * Si beaucoup de dates différentes,
-     * on continue de générer des nuances
-     * différentes au lieu de répéter
-     * exactement la même couleur.
+     * Si un donut possède beaucoup
+     * de valeurs différentes,
+     * on continue à générer
+     * des couleurs distinctes.
      */
     const extraIndex =
       index -
-      this.palette.length;
+      palette.length;
 
 
     const hue =
-      315 +
       (
-        extraIndex % 8
-      ) * 5;
+        330 +
+        (
+          paletteIndex * 55
+        ) +
+        (
+          extraIndex * 17
+        )
+      ) % 360;
 
 
     const lightness =
-      34 +
+      36 +
       (
         extraIndex % 5
       ) * 7;
@@ -1634,7 +1801,7 @@ export class StatistiqueComponent
 
     return (
       `hsl(` +
-      `${hue}, 45%, ${lightness}%` +
+      `${hue}, 52%, ${lightness}%` +
       `)`
     );
   }
