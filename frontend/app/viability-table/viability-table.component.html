@@ -92,6 +92,11 @@
           <app-statistique
             initialFilter="viability"
             [rows]="dataSource.data"
+            [allRows]="allViabilityTests"
+            [codeFilter]="viabilityCodeFilter"
+            [dateFilter]="viabilityStartDateFromFilter"
+            [primaryFilter]="viabilityTreatmentFilter"
+            [secondaryFilter]="viabilityPreTreatmentFilter"
           >
           </app-statistique>
 

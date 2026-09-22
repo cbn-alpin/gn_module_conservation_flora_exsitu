@@ -81,6 +81,11 @@
           <app-statistique
             initialFilter="sowing"
             [rows]="dataSource.data"
+            [allRows]="allSowings"
+            [codeFilter]="semisCodeFilter"
+            [dateFilter]="semisStartDateFromFilter"
+            [primaryFilter]="semisMethodFilter"
+            [secondaryFilter]="semisSubstrateFilter"
           >
           </app-statistique>
 

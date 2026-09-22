@@ -26,6 +26,7 @@ interface StatisticDisplay {
   gradient: string;
   caption: string;
   tooltip: string;
+  selectedGradient?: string;
 }
 
 
@@ -63,6 +64,30 @@ export class StatistiqueComponent
   public rows: any[] = [];
 
 
+  @Input()
+  public allRows: any[] = [];
+
+
+  @Input()
+  public codeFilter: any = '';
+
+
+  @Input()
+  public dateFilter: any = null;
+
+
+  @Input()
+  public primaryFilter: any = null;
+
+
+  @Input()
+  public secondaryFilter: any = null;
+
+
+  @Input()
+  public tertiaryFilter: any = null;
+
+
   @Output()
   public statistiqueClick =
     new EventEmitter<string>();
@@ -84,12 +109,22 @@ export class StatistiqueComponent
   private refreshTimer: any = null;
 
 
+  private distributionIndex = 0;
+
+
   private readonly palette = [
     '#a61e4d',
     '#6a1b9a',
     '#c2185b',
     '#6d4c41',
-    '#455a64'
+    '#455a64',
+    '#8e3b76',
+    '#7b2cbf',
+    '#9c6644',
+    '#5c5470',
+    '#b56576',
+    '#7f5539',
+    '#495057'
   ];
 
 
@@ -156,6 +191,12 @@ export class StatistiqueComponent
 
     if (
       changes['rows'] ||
+      changes['allRows'] ||
+      changes['codeFilter'] ||
+      changes['dateFilter'] ||
+      changes['primaryFilter'] ||
+      changes['secondaryFilter'] ||
+      changes['tertiaryFilter'] ||
       changes['initialFilter']
     ) {
 
@@ -317,6 +358,10 @@ export class StatistiqueComponent
             '--stat-donut-colors'
           );
 
+          field.style.removeProperty(
+            '--stat-selected-colors'
+          );
+
           field.removeAttribute(
             'data-stat-caption'
           );
@@ -332,6 +377,13 @@ export class StatistiqueComponent
         field.style.setProperty(
           '--stat-donut-colors',
           statistic.gradient
+        );
+
+
+        field.style.setProperty(
+          '--stat-selected-colors',
+          statistic.selectedGradient ||
+            'conic-gradient(transparent 0% 100%)'
         );
 
 
@@ -376,9 +428,19 @@ export class StatistiqueComponent
     StatisticDisplay[] {
 
     const rows =
-      Array.isArray(this.rows)
-        ? this.rows
-        : [];
+      (
+        Array.isArray(this.allRows) &&
+        this.allRows.length > 0
+      )
+        ? this.allRows
+        : (
+            Array.isArray(this.rows)
+              ? this.rows
+              : []
+          );
+
+
+    this.distributionIndex = 0;
 
 
     switch (this.initialFilter) {
@@ -579,26 +641,140 @@ export class StatistiqueComponent
     }
 
 
-    return {
+    const normalizedCode =
+      String(
+        this.codeFilter || ''
+      )
+        .trim()
+        .toLowerCase();
 
-      gradient:
-        `conic-gradient(
-          ${this.palette[0]} 0% 100%
-        )`,
 
-      caption:
-        `${total} ${label}`,
+    /*
+     * Aucun N° recherché :
+     * statistique classique du nombre total.
+     */
+    if (!normalizedCode) {
 
-      tooltip:
-        `${total} ${label}`
+      return {
 
-    };
+        gradient:
+          `conic-gradient(
+            ${this.palette[0]} 0% 100%
+          )`,
+
+        caption:
+          `${total} ${label}`,
+
+        tooltip:
+          `${total} ${label}`
+
+      };
+    }
+
+
+    const sourceRows =
+      (
+        Array.isArray(this.allRows) &&
+        this.allRows.length > 0
+      )
+        ? this.allRows
+        : this.rows;
+
+
+    const matchingCount =
+      sourceRows.filter(
+        row => {
+
+          const code =
+            this.initialFilter ===
+              'culture'
+              ? row?.code_culture
+              : row?.code;
+
+
+          return String(
+            code || ''
+          )
+            .trim()
+            .toLowerCase()
+            .includes(
+              normalizedCode
+            );
+
+        }
+      ).length;
+
+
+    const otherCount =
+      Math.max(
+        sourceRows.length -
+          matchingCount,
+        0
+      );
+
+
+    return this.buildSegmentStatistic(
+      [
+        {
+          label:
+            'Correspond',
+
+          count:
+            matchingCount,
+
+          color:
+            this.palette[0]
+        },
+        {
+          label:
+            'Autres',
+
+          count:
+            otherCount,
+
+          color:
+            '#b0bec5'
+        }
+      ],
+      new Set<string>(
+        ['Correspond']
+      )
+    );
   }
 
 
   private buildDistribution(
-    rawValues: string[]
+    rawValues: any[]
   ): StatisticDisplay {
+
+    const currentIndex =
+      this.distributionIndex++;
+
+
+    const filter =
+      this.getDistributionFilter(
+        currentIndex
+      );
+
+
+    /*
+     * Cas spécial :
+     * filtre "À partir du".
+     */
+    if (
+      filter.isDate &&
+      this.hasFilterValue(
+        filter.value
+      )
+    ) {
+
+      return this.buildDateThresholdDistribution(
+        rawValues,
+        filter.value
+      );
+
+    }
+
 
     if (
       !rawValues ||
@@ -608,6 +784,12 @@ export class StatistiqueComponent
       return this.buildEmptyStatistic();
 
     }
+
+
+    const selectedLabels =
+      this.getSelectedLabels(
+        filter.value
+      );
 
 
     const counts =
@@ -663,40 +845,517 @@ export class StatistiqueComponent
 
 
     /*
-     * Maximum 5 parts visibles :
-     * les 4 principales + Autres.
+     * Maximum 5 parties.
+     *
+     * Si une valeur est sélectionnée,
+     * elle est toujours conservée.
      */
     if (items.length > 5) {
 
-      const mainItems =
-        items.slice(
-          0,
-          4
+      const selectedItem =
+        items.find(
+          item =>
+            selectedLabels.has(
+              item.label
+            )
         );
 
 
-      const otherCount =
-        items
-          .slice(4)
-          .reduce(
-            (
-              sum,
-              item
-            ) =>
-              sum +
-              item.count,
-            0
+      if (selectedItem) {
+
+        const remainingItems =
+          items.filter(
+            item =>
+              item.label !==
+                selectedItem.label
           );
 
 
-      items = [
-        ...mainItems,
-        {
-          label: 'Autres',
-          count: otherCount
-        }
-      ];
+        const keptItems = [
+          selectedItem,
+          ...remainingItems.slice(
+            0,
+            3
+          )
+        ];
+
+
+        const otherCount =
+          remainingItems
+            .slice(3)
+            .reduce(
+              (
+                sum,
+                item
+              ) =>
+                sum +
+                item.count,
+              0
+            );
+
+
+        items =
+          otherCount > 0
+            ? [
+                ...keptItems,
+                {
+                  label: 'Autres',
+                  count: otherCount
+                }
+              ]
+            : keptItems;
+
+      } else {
+
+        const mainItems =
+          items.slice(
+            0,
+            4
+          );
+
+
+        const otherCount =
+          items
+            .slice(4)
+            .reduce(
+              (
+                sum,
+                item
+              ) =>
+                sum +
+                item.count,
+              0
+            );
+
+
+        items = [
+          ...mainItems,
+          {
+            label: 'Autres',
+            count: otherCount
+          }
+        ];
+
+      }
     }
+
+
+    return this.buildSegmentStatistic(
+      items.map(
+        (
+          item,
+          index
+        ) => ({
+          ...item,
+
+          color:
+            item.label === 'Autres'
+              ? '#90a4ae'
+              : this.getStatisticColor(
+                  index
+                )
+        })
+      ),
+      selectedLabels
+    );
+  }
+
+
+  private getDistributionFilter(
+    index: number
+  ): {
+    value: any;
+    isDate: boolean;
+  } {
+
+    switch (this.initialFilter) {
+
+      case 'germination':
+
+        return [
+          {
+            value:
+              this.dateFilter,
+            isDate:
+              true
+          },
+          {
+            value:
+              this.primaryFilter,
+            isDate:
+              false
+          },
+          {
+            value:
+              this.secondaryFilter,
+            isDate:
+              false
+          },
+          {
+            value:
+              this.tertiaryFilter,
+            isDate:
+              false
+          }
+        ][index] || {
+          value: null,
+          isDate: false
+        };
+
+
+      case 'viability':
+
+        return [
+          {
+            value:
+              this.dateFilter,
+            isDate:
+              true
+          },
+          {
+            value:
+              this.primaryFilter,
+            isDate:
+              false
+          },
+          {
+            value:
+              this.secondaryFilter,
+            isDate:
+              false
+          }
+        ][index] || {
+          value: null,
+          isDate: false
+        };
+
+
+      case 'culture':
+
+        return [
+          {
+            value:
+              this.primaryFilter,
+            isDate:
+              false
+          },
+          {
+            value:
+              this.secondaryFilter,
+            isDate:
+              false
+          },
+          {
+            value:
+              this.dateFilter,
+            isDate:
+              true
+          },
+          {
+            value:
+              this.tertiaryFilter,
+            isDate:
+              false
+          }
+        ][index] || {
+          value: null,
+          isDate: false
+        };
+
+
+      case 'sowing':
+      default:
+
+        return [
+          {
+            value:
+              this.dateFilter,
+            isDate:
+              true
+          },
+          {
+            value:
+              this.primaryFilter,
+            isDate:
+              false
+          },
+          {
+            value:
+              this.secondaryFilter,
+            isDate:
+              false
+          }
+        ][index] || {
+          value: null,
+          isDate: false
+        };
+
+    }
+  }
+
+
+  private getSelectedLabels(
+    value: any
+  ): Set<string> {
+
+    const labels =
+      new Set<string>();
+
+
+    if (
+      !this.hasFilterValue(
+        value
+      )
+    ) {
+
+      return labels;
+
+    }
+
+
+    const normalizedValue =
+      typeof value === 'boolean'
+        ? (
+            value
+              ? 'Oui'
+              : 'Non'
+          )
+        : this.normalizeValue(
+            value
+          );
+
+
+    labels.add(
+      normalizedValue
+    );
+
+
+    /*
+     * Les filtres utilisent "-"
+     * pour une donnée absente.
+     */
+    if (normalizedValue === '-') {
+
+      labels.add(
+        'Non renseigné'
+      );
+
+      labels.add(
+        'Sans origine'
+      );
+
+    }
+
+
+    return labels;
+  }
+
+
+  private buildDateThresholdDistribution(
+    rawValues: any[],
+    threshold: any
+  ): StatisticDisplay {
+
+    const thresholdKey =
+      this.getStatisticDateKey(
+        threshold
+      );
+
+
+    if (!thresholdKey) {
+
+      return this.buildEmptyStatistic();
+
+    }
+
+
+    let beforeCount = 0;
+    let missingCount = 0;
+
+
+    const afterCounts =
+      new Map<string, number>();
+
+
+    rawValues.forEach(
+      value => {
+
+        const dateKey =
+          this.getStatisticDateKey(
+            value
+          );
+
+
+        if (!dateKey) {
+
+          missingCount++;
+
+          return;
+        }
+
+
+        /*
+         * Toutes les dates avant
+         * la date sélectionnée.
+         */
+        if (
+          dateKey <
+          thresholdKey
+        ) {
+
+          beforeCount++;
+
+          return;
+        }
+
+
+        /*
+         * Chaque date à partir du seuil
+         * garde sa propre partie.
+         */
+        afterCounts.set(
+          dateKey,
+          (
+            afterCounts.get(
+              dateKey
+            ) || 0
+          ) + 1
+        );
+
+      }
+    );
+
+
+    const thresholdLabel =
+      this.formatDate(
+        threshold
+      );
+
+
+    const items:
+      Array<{
+        label: string;
+        count: number;
+        color: string;
+      }> = [];
+
+
+    /*
+     * Une couleur unique pour
+     * toutes les données AVANT.
+     */
+    if (beforeCount > 0) {
+
+      items.push({
+        label:
+          `Avant ${thresholdLabel}`,
+
+        count:
+          beforeCount,
+
+        color:
+          '#b0bec5'
+      });
+
+    }
+
+
+    /*
+     * Toutes les dates à partir du seuil
+     * sont considérées comme sélectionnées :
+     * elles ressortent du donut.
+     */
+    const selectedLabels =
+      new Set<string>();
+
+
+    Array
+      .from(
+        afterCounts.entries()
+      )
+      .sort(
+        (
+          first,
+          second
+        ) =>
+          first[0].localeCompare(
+            second[0]
+          )
+      )
+      .forEach(
+        (
+          [
+            dateKey,
+            count
+          ],
+          index
+        ) => {
+
+          const label =
+            this.formatDate(
+              dateKey
+            );
+
+
+          items.push({
+            label,
+            count,
+
+            color:
+              this.getStatisticColor(
+                index
+              )
+          });
+
+
+          selectedLabels.add(
+            label
+          );
+
+        }
+      );
+
+
+    if (missingCount > 0) {
+
+      items.push({
+        label:
+          'Non renseigné',
+
+        count:
+          missingCount,
+
+        color:
+          '#cfd8dc'
+      });
+
+    }
+
+
+    return this.buildSegmentStatistic(
+      items,
+      selectedLabels
+    );
+  }
+
+
+  private buildSegmentStatistic(
+    rawItems:
+      Array<{
+        label: string;
+        count: number;
+        color: string;
+      }>,
+
+    selectedLabels:
+      Set<string>
+  ): StatisticDisplay {
+
+    const items =
+      rawItems.filter(
+        item =>
+          item.count > 0
+      );
 
 
     const total =
@@ -721,66 +1380,82 @@ export class StatistiqueComponent
     let startPercent = 0;
 
 
-    const gradientParts =
-      items.map(
-        (
-          item,
-          index
-        ) => {
-
-          const percent =
-            (
-              item.count /
-              total
-            ) * 100;
+    const gradientParts:
+      string[] = [];
 
 
-          const endPercent =
-            startPercent +
-            percent;
+    const selectedGradientParts:
+      string[] = [];
 
 
-          const color =
-            this.palette[
-              index %
-              this.palette.length
-            ];
+    const details:
+      string[] = [];
 
 
-          const gradientPart =
-            `${color} ` +
-            `${startPercent.toFixed(2)}% ` +
-            `${endPercent.toFixed(2)}%`;
+    items.forEach(
+      item => {
+
+        const percent =
+          (
+            item.count /
+            total
+          ) * 100;
 
 
-          startPercent =
-            endPercent;
+        const endPercent =
+          startPercent +
+          percent;
 
 
-          return gradientPart;
-
-        }
-      );
-
-
-    const details =
-      items.map(
-        item => {
-
-          const percent =
-            (
-              item.count /
-              total
-            ) * 100;
+        /*
+         * Taille réelle de la statistique.
+         */
+        gradientParts.push(
+          `${item.color} ` +
+          `${startPercent.toFixed(2)}% ` +
+          `${endPercent.toFixed(2)}%`
+        );
 
 
-          return (
-            `${item.label} ` +
-            `${this.formatPercentage(percent)}`
+        const isSelected =
+          selectedLabels.has(
+            item.label
           );
 
-        }
-      );
+
+        /*
+         * Cette deuxième couche correspond
+         * uniquement aux parties sélectionnées.
+         *
+         * Le SCSS les affiche plus grandes
+         * sans modifier leur pourcentage réel.
+         */
+        selectedGradientParts.push(
+          `${
+            isSelected
+              ? item.color
+              : 'transparent'
+          } ` +
+          `${startPercent.toFixed(2)}% ` +
+          `${endPercent.toFixed(2)}%`
+        );
+
+
+        details.push(
+          `${
+            isSelected
+              ? '★ '
+              : ''
+          }${item.label} ` +
+          `${this.formatPercentage(percent)}`
+        );
+
+
+        startPercent =
+          endPercent;
+
+      }
+    );
 
 
     return {
@@ -790,6 +1465,11 @@ export class StatistiqueComponent
           ${gradientParts.join(', ')}
         )`,
 
+      selectedGradient:
+        `conic-gradient(
+          ${selectedGradientParts.join(', ')}
+        )`,
+
       caption:
         details.join(' • '),
 
@@ -797,6 +1477,166 @@ export class StatistiqueComponent
         details.join(' | ')
 
     };
+  }
+
+
+  private hasFilterValue(
+    value: any
+  ): boolean {
+
+    return (
+      value !== null &&
+      value !== undefined &&
+      value !== ''
+    );
+  }
+
+
+  private getStatisticDateKey(
+    value: any
+  ): string {
+
+    if (!value) {
+
+      return '';
+
+    }
+
+
+    if (
+      typeof value === 'string'
+    ) {
+
+      const isoPart =
+        value.split('T')[0];
+
+
+      /*
+       * yyyy-mm-dd
+       */
+      if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+          isoPart
+        )
+      ) {
+
+        return isoPart;
+
+      }
+
+
+      /*
+       * dd/mm/yyyy
+       */
+      const frenchMatch =
+        value.match(
+          /^(\d{2})\/(\d{2})\/(\d{4})$/
+        );
+
+
+      if (frenchMatch) {
+
+        return (
+          `${frenchMatch[3]}-` +
+          `${frenchMatch[2]}-` +
+          `${frenchMatch[1]}`
+        );
+
+      }
+    }
+
+
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return '';
+
+    }
+
+
+    const year =
+      date.getFullYear();
+
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    return (
+      `${year}-` +
+      `${month}-` +
+      `${day}`
+    );
+  }
+
+
+  private getStatisticColor(
+    index: number
+  ): string {
+
+    if (
+      index <
+      this.palette.length
+    ) {
+
+      return this.palette[index];
+
+    }
+
+
+    /*
+     * Si beaucoup de dates différentes,
+     * on continue de générer des nuances
+     * différentes au lieu de répéter
+     * exactement la même couleur.
+     */
+    const extraIndex =
+      index -
+      this.palette.length;
+
+
+    const hue =
+      315 +
+      (
+        extraIndex % 8
+      ) * 5;
+
+
+    const lightness =
+      34 +
+      (
+        extraIndex % 5
+      ) * 7;
+
+
+    return (
+      `hsl(` +
+      `${hue}, 45%, ${lightness}%` +
+      `)`
+    );
   }
 
 

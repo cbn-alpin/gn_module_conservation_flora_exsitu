@@ -83,6 +83,12 @@
           <app-statistique
             initialFilter="culture"
             [rows]="dataSource.data"
+            [allRows]="allCultures"
+            [codeFilter]="cultureCodeFilter"
+            [dateFilter]="cultureStartDateFromFilter"
+            [primaryFilter]="cultureSourceTypeFilter"
+            [secondaryFilter]="cultureSourceFilter"
+            [tertiaryFilter]="cultureStatusFilter"
           >
           </app-statistique>
 

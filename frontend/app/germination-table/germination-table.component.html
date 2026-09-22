@@ -89,6 +89,12 @@
           <app-statistique
             initialFilter="germination"
             [rows]="dataSource.data"
+            [allRows]="allGerminationTests"
+            [codeFilter]="germinationCodeFilter"
+            [dateFilter]="germinationStartDateFromFilter"
+            [primaryFilter]="germinationRegimeFilter"
+            [secondaryFilter]="germinationTreatmentFilter"
+            [tertiaryFilter]="germinationPreTreatmentFilter"
           >
           </app-statistique>
 
