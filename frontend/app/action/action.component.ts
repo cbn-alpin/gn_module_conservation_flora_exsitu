@@ -263,7 +263,7 @@ export class ActionComponent implements OnInit {
         this.actionTypes =
           this.codeNomenclatureType === 'CFE_ACTION_TYPE'
             ? (actionTypes || []).filter(
-                actionType => actionType?.cd_nomenclature !== 'transp'
+                actionType => ['pret', 'scar', 'strat', 'tra', 'svr', 'synth'].includes(actionType?.cd_nomenclature)
               )
             : actionTypes || [];
       },
